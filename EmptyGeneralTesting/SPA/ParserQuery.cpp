@@ -122,6 +122,7 @@ bool ParserQuery::parseDeclaration(vector<string> splitString) {
 	for (int i = 0; i < splitString.size(); i++) {
 		variableStr += splitString.at(i);
 	}
+	//Obtain relevant synonyms
 	vector<string> synonyoms = split(variableStr, SYMBOL_COMMA);
 }
 
