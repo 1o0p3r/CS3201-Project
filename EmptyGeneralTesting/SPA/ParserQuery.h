@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <vector>
-#include "stdafx.h"
 
 using std::string;
 using std::vector;
@@ -22,7 +21,7 @@ private:
 	bool InEntityList(string entity);
 	bool inEntityList(string);
 	string parseEntityOrQuery(string, int);
-	string parseEntity(string , string, int);
+	string parseEntity(string, string, int);
 	bool parseDeclaration(vector<string> splitString);
 	string appendAdditionalSpace(string, string);
 	vector<string> split(string, char);

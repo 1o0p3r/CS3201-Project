@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "ParserQuery.h"
 #include <iostream>
 #include <string>
@@ -7,7 +6,6 @@
 #include <stdio.h>
 #include <regex>
 #include <fstream>
-#include "stdafx.h"
 #include <sstream>
 
 const char SYMBOL_WHITESPACE = ' ';
@@ -91,14 +89,14 @@ bool ParserQuery::checkEntityAndSynonym(string currentString, string str) {
 bool ParserQuery::isValidEntity(string currentString) {
 	std::vector<string> splitString = split(currentString, SYMBOL_WHITESPACE);
 	if (inEntityList(splitString.front())) {
-		
+
 		if (parseDeclaration(splitString)) {
 			return true;
 		}
 		else {
 			return false;
 		}
-	} 
+	}
 	else {
 		return false;
 	}
@@ -108,7 +106,7 @@ bool ParserQuery::isValidEntity(string currentString) {
 bool ParserQuery::InEntityList(string entity) {
 	vector<string> entityList = this->validEntities;
 
-	for (int i = 0; i < entityList.size; i++) {
+	for (int i = 0; i < entityList.size(); i++) {
 		if (entity == entityList.at(i)) {
 			return true;
 		}

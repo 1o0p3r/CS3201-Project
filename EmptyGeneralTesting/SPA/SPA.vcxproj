@@ -15,10 +15,14 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="ParserQuery.cpp" />
+    <ClCompile Include="QueryPreprocessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\TNode.h" />
+    <ClInclude Include="ParserQuery.h" />
+    <ClInclude Include="QueryPreprocessor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parser.h" />

@@ -27,6 +27,12 @@
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QueryPreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParserQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -35,5 +41,16 @@
     <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="QueryPreprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParserQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Parser.h">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
