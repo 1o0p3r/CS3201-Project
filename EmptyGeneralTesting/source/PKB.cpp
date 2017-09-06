@@ -8,12 +8,18 @@
 using namespace std;
 
 #include "PKB.h"
-#include "TNode.h"
+#include "Follow.h"
+/*
+#include "Parent.h"
+#include "Modify.h"
+#include "Use.h"
+*/
 
-int PKB::setProcToAST(PROC p, TNode* r) {
-	return NULL;
-}
-
-TNode* PKB::getRootAST (PROC p){
-	return NULL;
+PKB::PKB() {
+	Follow follow;
+	/*
+	Parent parent;
+	Modify modify;
+	Use use;
+	*/
 }
