@@ -1,10 +1,9 @@
 #pragma once
 #include <vector>
-#include <unordered_map>
+
 using namespace std;
 
-class Follow
-{
+class Follow {
 public:
 	Follow();
 	void setFollows(int s1, int s2);
