@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <SynonymEntityPair.h>
 
 using std::string;
 using std::vector;
@@ -9,23 +10,24 @@ class ParserQuery
 {
 private:
 	int numClauses;
-	vector<vector<string>> synonymList;
+	vector<SynonymEntityPair> synonymAndEntityList;
 	vector<string> validEntities;
+	vector<string> split(string, char);
+
 	string declarationString;
 	string queryString;
+	string parseEntityAndSynonym(string, string, int);
+	string appendAdditionalSpace(string, string);
 
 	void parseQueryStatement(string);
 	void parseLine(string, string);
+	void setSynonymList(vector<SynonymEntityPair> synonymList);
+
 	bool checkEntityAndSynonym(string, string);
 	bool isValidEntity(string);
-	bool InEntityList(string entity);
-	bool inEntityList(string);
-	string parseEntityOrQuery(string, int);
-	string parseEntity(string, string, int);
+	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
-	string appendAdditionalSpace(string, string);
-	vector<string> split(string, char);
-	void setSynonymList(vector<vector<string>> synonymList);
+	
 public:
 	ParserQuery();
 	~ParserQuery();

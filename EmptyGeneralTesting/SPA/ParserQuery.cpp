@@ -4,6 +4,7 @@
 #include <vector>
 #include <ctype.h>
 #include <stdio.h>
+#include <SynonymEntityPair.h>
 #include <regex>
 #include <fstream>
 #include <sstream>
@@ -20,15 +21,17 @@ ParserQuery::ParserQuery()
 {
 	//entityList, synonymList needed
 
-	vector<string> entityList;
-	vector<vector<string>> synonymList;
+	vector<SynonymEntityPair> synonymAndEntityList;
 	int numClauses = 0;
 	string declarationString;
 	string queryString;
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
 		"variable", "constant", "prog_line" };
 }
+ParserQuery::~ParserQuery()
+{
 
+}
 void ParserQuery::startParsing() {
 	cout << "Parsing input file" << endl;
 	std::ifstream file("Example.txt");
@@ -46,14 +49,17 @@ void ParserQuery::parseLine(string str, string currentString) {
 	if (str.find(SYMBOL_SEMI_COLON)) {
 		std::size_t found = str.find_first_of(SYMBOL_SEMI_COLON);
 		while (found != std::string::npos) {
-			currentString = parseEntity(currentString, str, found);
+			currentString = parseEntityAndSynonym(currentString, str, found);
 			found = str.find_first_of(SYMBOL_SEMI_COLON, found + 1);
 		}
+	}
+	else { //parsing of select clause
+
 	}
 }
 
 //This function
-string ParserQuery::parseEntity(string currentString, string str, int found) {
+string ParserQuery::parseEntityAndSynonym(string currentString, string str, int found) {
 	//If the currentString has greater size than 5 and first five words matches "Select", it is not a declaration string 
 	if ((currentString.length() >= 6) && (currentString.substr(0, 5)) == (SELECT_STRING)) {
 		//This implies that an error has occured as the Select clause is not supposed to have ;
@@ -73,7 +79,6 @@ string ParserQuery::parseEntity(string currentString, string str, int found) {
 }
 //Parse EntityAndSynonym checks for validity of the entitiy by comparing with the validEntitiesList, if its valid, it will proceed to adding the synonym
 bool ParserQuery::checkEntityAndSynonym(string currentString, string str) {
-	//first append the 2 string then split by whitespace/,
 	currentString += currentString + str;
 	if (isValidEntity(currentString)) {
 		return true;
@@ -87,9 +92,9 @@ bool ParserQuery::checkEntityAndSynonym(string currentString, string str) {
 //This function checks for the validity of the declaration by comparing with the the entityList given
 //Returns true if there is a match, else returns false
 bool ParserQuery::isValidEntity(string currentString) {
+	
 	std::vector<string> splitString = split(currentString, SYMBOL_WHITESPACE);
 	if (inEntityList(splitString.front())) {
-
 		if (parseDeclaration(splitString)) {
 			return true;
 		}
@@ -103,10 +108,10 @@ bool ParserQuery::isValidEntity(string currentString) {
 }
 
 //Checks if a given entity is in the EntityTable
-bool ParserQuery::InEntityList(string entity) {
+bool ParserQuery::inEntityList(string entity) {
 	vector<string> entityList = this->validEntities;
 
-	for (int i = 0; i < entityList.size(); i++) {
+	for (int i = 0; i < entityList.size; i++) {
 		if (entity == entityList.at(i)) {
 			return true;
 		}
@@ -115,15 +120,25 @@ bool ParserQuery::InEntityList(string entity) {
 }
 //Parses the synonym with the associated entity into the synonymTable
 bool ParserQuery::parseDeclaration(vector<string> splitString) {
-	vector<vector<string>> tempSynonymList;
+
 	string entity = splitString.front();
 	splitString.erase(splitString.begin());
 	string variableStr;
-	for (int i = 0; i < splitString.size(); i++) {
+	for (int i = 0; i < splitString.size; i++) {
 		variableStr += splitString.at(i);
 	}
 	//Obtain relevant synonyms
-	vector<string> synonyoms = split(variableStr, SYMBOL_COMMA);
+	vector<string> synonymsAndEntity = split(variableStr, SYMBOL_COMMA);
+	string reqEntity = synonymsAndEntity.at(0);
+	if (isValidEntity(reqEntity)) {
+		synonymsAndEntity.erase(synonymsAndEntity.begin);
+		SynonymEntityPair tempPair = SynonymEntityPair(reqEntity, synonymsAndEntity);
+		synonymAndEntityList.push_back(tempPair);
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 //Splits the string into vectors of string with the required symbol and returns a vector of string, mainly for usage of declaration
@@ -150,18 +165,12 @@ string ParserQuery::appendAdditionalSpace(string currentString, string str) {
 	}
 }
 
-
-ParserQuery::~ParserQuery()
-{
-
-}
-
 void ParserQuery::parseQueryStatement(string currentString) {
 
 }
 
-void ParserQuery::setSynonymList(vector<vector<string>> sList) {
-	this->synonymList = sList;
+void ParserQuery::setSynonymList(vector<SynonymEntityPair> sList) {
+	this->synonymAndEntityList = sList;
 }
 vector<string> ParserQuery::getValidEntities() {
 	return this->validEntities;
@@ -170,48 +179,3 @@ vector<string> ParserQuery::getValidEntities() {
 int ParserQuery::getNumClauses() {
 	return this->numClauses;
 }
-
-/**
-string ParserQuery::parseEntityOrQuery(string currentString, int found) {
-string selectStrQuery = "Select";
-
-//If the currentString has greater size than 5 and first five words matches "Select", it is not a declaration string
-if ((currentString.length() >= 6) && (currentString.substr(0, 5)) == (selectStrQuery)) {
-parseQueryStatement(currentString);
-
-return "";
-}
-else {
-parseEntityAndSynonym(currentString);
-return "";
-}
-}
-**/
-
-/**
-//This function takes in 1 line of string and does either declaration check
-void ParserQuery::parseLine(string str, string currentString) {
-//Attempt without regex
-//cout << "Test" + str << endl;
-string colonSymbol = ";";
-
-//If the current String consists of ';'
-if (str.find(colonSymbol)) {
-std:size_t found = str.find_first_of(";");
-while (found != std::string::npos) {
-currentString = parseEntityOrQuery(currentString, found);
-found = str.find_first_of(";", found + 1);
-}
-}
-//Line does not consist of ";", so we just add on whatever that is available from input
-//Or current String may consist of Select Statement which does not consist of ";"
-else {
-if ((currentString.length() >= 6) && (currentString.substr(0, 5) == "Select")) {
-//	currentString = appendAdditionalSpace(currentString, str);
-}
-else {
-currentString = appendAdditionalSpace(currentString, str);
-}
-}
-}
-**/
