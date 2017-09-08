@@ -8,25 +8,33 @@ Follow::Follow() {
 }
 
 void Follow::setFollows(int s1, int s2) {
-	if (followsTable.size() < s1) {
-		followsTable.reserve(s1 + 1);
-		followsTable[s1] = s2;
-	} else {
-		throw invalid_argument("Statement is already in PKB");
+	if (s1 <= 0 || s2 <= 0) {
+		throw new invalid_argument("Statement Numbers must be more than 0.");
 	}
+	if (s2 <= s1) {
+		throw new invalid_argument("s2 must be larger than s1.");
+
+	}
+	followsTable.resize(s1 + 1);
+	followsTable[s1] = s2;
+	setFollowedBy(s2, s1);
+	setFollowsStar(s1, s2);
 }
 
+/*
+	Sets s2 to be followed by s1. Meaning: s1 > s2
+*/
 void Follow::setFollowedBy(int s1, int s2) {
-	if (followedByTable.size() < s1) {
-		followedByTable.reserve(s1 + 1);
-		followedByTable[s1] = s2;
-	} else {
-		throw invalid_argument("Statement is already in PKB");
-	}
+	followedByTable.resize(s1 + 1);
+	followedByTable[s1] = s2;
 }
 
 void Follow::setFollowsStar(int s1, int s2) {
+	if (s1 <= 0 || s2 <= 0) {
+		throw new invalid_argument("Statement Number must be more than 0.");
+	}
 	followsStarTable[s1].push_back(s2);
+	setFollowedByStar(s2, s1);
 }
 
 void Follow::setFollowedByStar(int s1, int s2) {

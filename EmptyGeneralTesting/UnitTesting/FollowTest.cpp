@@ -14,8 +14,8 @@ namespace UnitTesting
 		{
 			Follow follow;
 			follow.setFollows(1, 2);
-			follow.setFollows(2, 3);
-			Assert::AreEqual(2, follow.getFollows(1).at(0));
+			Assert::AreEqual(2, follow.getFollows(1)[0]);
+			Assert::AreEqual(1, follow.getFollowedBy(2)[0]);
 		}
 
 	};
