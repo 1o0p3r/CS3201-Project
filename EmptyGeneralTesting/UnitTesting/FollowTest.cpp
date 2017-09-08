@@ -10,8 +10,7 @@ namespace UnitTesting
 	{
 	public:
 
-		TEST_METHOD(setFollowsCorrectly)
-		{
+		TEST_METHOD(setFollowsCorrectly) {
 			Follow follow;
 			follow.setFollows(1, 2);
 			Assert::AreEqual(2, follow.getFollows(1)[0]);

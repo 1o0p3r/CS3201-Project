@@ -7,7 +7,6 @@ class Parent {
 public:
 	Parent();
 	void setParent(int s1, int s2);
-	void setParentStar(int s1, int s2);
 
 	vector<int> getParent(int statementNum);
 	vector<int> getChild(int statementNum);
@@ -21,5 +20,6 @@ private:
 	vector<vector<int>> childStarTable;
 
 	void setChild(int s1, int s2);
+	void setParentStar(int s1, int s2);
 	void setChildStar(int s1, int s2);
 };
