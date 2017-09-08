@@ -19,6 +19,7 @@ int Modify::varIndexer(string varName) { //creates var index, or creates one if 
 	  return distance(varIndexTable.begin(), varIndex);
 	}
 	else {
+		varIndexTable.reserve(varIndexTable.size() + 1);
 		varIndexTable.push_back(varName);
 		return varIndexTable.size()-1;
 	} 
@@ -32,6 +33,7 @@ int Modify::procIndexer(string procName) { //creates proc index, or creates one 
 		return distance(procIndexTable.begin(), procIndex);
 	}
 	else {
+		procIndexTable.reserve(procIndexTable.size() + 1);
 		procIndexTable.push_back(procName);
 		return procIndexTable.size() - 1;
 	}

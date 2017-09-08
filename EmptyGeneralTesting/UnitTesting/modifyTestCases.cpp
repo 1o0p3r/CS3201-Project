@@ -2,6 +2,8 @@
 #include "CppUnitTest.h"
 #include "Modify.h"
 
+#include <iostream>
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting
@@ -15,7 +17,8 @@ namespace UnitTesting
 			Modify modify;
 			modify.setModifies(1, "x");
 			modify.setModifies(2, "y");
-			Assert::AreEqual(1, modify.getModifies(1).at(0));
+			string x = "x";
+			Assert::AreEqual(x, modify.getModifies(1).at(0));
 		}
 
 	};
