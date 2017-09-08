@@ -8,25 +8,25 @@ Parent::Parent() {
 }
 
 void Parent::setParent(int s1, int s2) {
-	if (parentTable.size() < s1) {
-		parentTable.reserve(s1 + 1);
-		parentTable[s1] = s2;
-	} else {
-		throw invalid_argument("Statement is already in PKB");
+	if (s1 <= 0 || s2 <= 0) {
+		throw new invalid_argument("Statement Number must be more than 0.");
 	}
+	parentTable.resize(s1 + 1);
+	parentTable[s1] = s2;
+	setChild(s2, s1);
 }
 
 void Parent::setChild(int s1, int s2) {
-	if (childTable.size() < s1) {
-		childTable.reserve(s1 + 1);
-		childTable[s1] = s2;
-	} else {
-		throw invalid_argument("Statement is already in PKB");
-	}
+	childTable.resize(s1 + 1);
+	childTable[s1] = s2;
 }
 
 void Parent::setParentStar(int s1, int s2) {
+	if (s1 <= 0 || s2 <= 0) {
+		throw new invalid_argument("Statement Number must be more than 0.");
+	}
 	parentStarTable[s1].push_back(s2);
+	setChildStar(s2, s1);
 }
 
 void Parent::setChildStar(int s1, int s2) {
