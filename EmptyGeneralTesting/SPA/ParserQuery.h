@@ -17,7 +17,7 @@ private:
 	string declarationString;
 	string queryString;
 	string parseEntityAndSynonym(string, string, int);
-	string appendAdditionalSpace(string, string);
+	
 
 	void parseQueryStatement(string);
 	void parseLine(string, string);
