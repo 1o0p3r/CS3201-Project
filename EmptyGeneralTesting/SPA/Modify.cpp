@@ -5,7 +5,7 @@ Modify::Modify() {
 	
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
-	vector<vector<string>> modifiesTable; 
+	vector<vector<string>> modifiesTable; //vector of string, at stmt can be a container stmt
 	vector<vector<int>> modifiedByTable; 
 	vector<vector<string>> procModifiesTable; 
 	vector<vector<string>> procModifiedByTable;
@@ -16,11 +16,13 @@ int Modify::varIndexer(string varName) { //creates var index, or creates one if 
 	vector<string>::iterator varIndex = find(varIndexTable.begin(), varIndexTable.end(), varName);
 
 	if (varIndex != varIndexTable.end()) {
-	  return distance(varIndexTable.begin(), varIndex);
+	  
+		return distance(varIndexTable.begin(), varIndex);
 	}
 	else {
-		varIndexTable.reserve(varIndexTable.size() + 1);
-		varIndexTable.push_back(varName);
+
+		varIndexTable.resize(varIndexTable.size() + 1);
+		varIndexTable[varIndexTable.size()] = varName;
 		return varIndexTable.size()-1;
 	} 
 }
@@ -30,26 +32,27 @@ int Modify::procIndexer(string procName) { //creates proc index, or creates one 
 	vector<string>::iterator procIndex = find(procIndexTable.begin(), procIndexTable.end(), procName);
 
 	if (procIndex != procIndexTable.end()) {
+		
 		return distance(procIndexTable.begin(), procIndex);
 	}
 	else {
-		procIndexTable.reserve(procIndexTable.size() + 1);
-		procIndexTable.push_back(procName);
+
+		procIndexTable.resize(procIndexTable.size() + 1);
+		procIndexTable[procIndexTable.size()] = procName;
 		return procIndexTable.size() - 1;
 	}
 }
 
 void Modify::setModifies(int s, string varName) {
 	
-	if (modifiesTable.size() < s) {
-		modifiesTable.reserve(s + 1);
-		modifiesTable[s].push_back(varName);
-		
-		setModifiedBy(varName, s);
-	} 
-	else {
-		throw invalid_argument("Statement is already in PKB");
+	if (s > modifiesTable.size() + 1) { //modifiesTable increases with statement, stmtNo larger than table means incorrect program reading
+
+		throw new invalid_argument("Statement is already in PKB");
 	}
+
+	modifiesTable.resize(s + 1);
+	modifiesTable[s].push_back(varName);
+	setModifiedBy(varName, s);
 }
 
 void Modify::setModifiedBy(string varName, int s) {
@@ -57,9 +60,12 @@ void Modify::setModifiedBy(string varName, int s) {
 	int indexedVarName = varIndexer(varName);
 	
 	if (find(modifiedByTable[indexedVarName].begin(), modifiedByTable[indexedVarName].end(), s) != modifiedByTable[indexedVarName].end()) {
+		
 		throw invalid_argument("Statement is already in PKB");
 	} 
+
 	else {
+
 		modifiedByTable[indexedVarName].push_back(s);
 	}
 }
@@ -69,7 +75,7 @@ void Modify::setProcModifies(string procName, string varName) {
 	int indexedProcName = procIndexer(procName);
 
 	if (find(procModifiesTable[indexedProcName].begin(), procModifiesTable[indexedProcName].end(), varName) != procModifiesTable[indexedProcName].end()) {
-		//variable already in table, do nothing
+		return; //does nothing as variable is accounted for
 	}
 	else {
 		procModifiesTable[indexedProcName].push_back(varName);
@@ -78,13 +84,13 @@ void Modify::setProcModifies(string procName, string varName) {
 
 void Modify::setProcModifiedBy(string procName, string varName) {
 	
-	int indexedProcName = procIndexer(procName);
+	int indexedVarName = varIndexer(varName);
 
-	if (find(procModifiedByTable[indexedProcName].begin(), procModifiedByTable[indexedProcName].end(), varName) != procModifiedByTable[indexedProcName].end()) {
-		//variable already in table, do nothing
+	if (find(procModifiedByTable[indexedVarName].begin(), procModifiedByTable[indexedVarName].end(), procName) != procModifiedByTable[indexedVarName].end()) {
+		return; //does nothing as var iable is accounted for
 	}
 	else {
-		procModifiedByTable[indexedProcName].push_back(varName);
+		procModifiedByTable[indexedVarName].push_back(procName);
 	}
 }
 
