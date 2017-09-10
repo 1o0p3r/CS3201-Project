@@ -5,6 +5,7 @@ Modify::Modify() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+
 	vector<vector<string>> modifiesTable; //vector of string, at stmt can be a container stmt
 	vector<vector<int>> modifiedByTable;
 	vector<vector<string>> procModifiesTable;
@@ -45,7 +46,7 @@ int Modify::procIndexer(string procName) { //creates proc index, or creates one 
 
 void Modify::setModifies(int s, string varName) {
 
-	if (s > modifiesTable.size() + 1) { //modifiesTable increases with statement, stmtNo larger than table means incorrect program reading
+	if (s < modifiesTable.size()) { //modifiesTable increases with statement, stmtNo larger than table means incorrect program reading
 
 		throw new invalid_argument("Statement is already in PKB");
 	}
