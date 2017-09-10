@@ -17,6 +17,8 @@
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="ParserQuery.cpp" />
     <ClCompile Include="QueryPreprocessor.cpp" />
+    <ClCompile Include="Relationship.cpp" />
+    <ClCompile Include="RelationshipTable.cpp" />
     <ClCompile Include="SynonymEntityPair.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -24,6 +26,8 @@
     <ClInclude Include="Follow.h" />
     <ClInclude Include="ParserQuery.h" />
     <ClInclude Include="QueryPreprocessor.h" />
+    <ClInclude Include="Relationship.h" />
+    <ClInclude Include="RelationshipTable.h" />
     <ClInclude Include="SynonymEntityPair.h" />
   </ItemGroup>
   <ItemGroup>

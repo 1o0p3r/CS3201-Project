@@ -36,6 +36,12 @@
     <ClCompile Include="SynonymEntityPair.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Relationship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -51,6 +57,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SynonymEntityPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Relationship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RelationshipTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
