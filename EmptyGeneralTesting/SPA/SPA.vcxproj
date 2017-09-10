@@ -15,11 +15,13 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="Follow.cpp" />
+    <ClCompile Include="Modify.cpp" />
     <ClCompile Include="Parent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="Follow.h" />
+    <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
   </ItemGroup>
   <ItemGroup>
