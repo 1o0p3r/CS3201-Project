@@ -13,9 +13,9 @@ namespace UnitTesting
 		TEST_METHOD(setModifiesCorrectly) {
 			
 			Modify modify;
-			modify.setModifies(1, "x");
-			string x = "x";
-			Assert::AreEqual(x, modify.getModifies(1)[0]);
+			modify.setModifies(1, 2);
+			Assert::AreEqual(2, modify.getModifies(1)[0]);
+			Assert::AreEqual(1, modify.getModifiedBy(2)[0]);
 		}
 
 	};
