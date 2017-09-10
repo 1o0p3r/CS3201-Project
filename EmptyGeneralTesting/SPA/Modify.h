@@ -3,8 +3,7 @@
 
 using namespace std;
 
-class Modify
-{
+class Modify {
 public:
 	Modify();
 
