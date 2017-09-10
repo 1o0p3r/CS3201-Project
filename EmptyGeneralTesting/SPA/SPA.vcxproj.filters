@@ -42,6 +42,12 @@
     <ClCompile Include="RelationshipTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QueryTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Clause.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -63,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RelationshipTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Clause.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
