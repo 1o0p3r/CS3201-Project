@@ -82,9 +82,9 @@ vector<int> Modify::getProcModifies(int procName) {
 	return result[0];
 }
 
-vector<int> Modify::getProcModifiedBy(int procName) {
+vector<int> Modify::getProcModifiedBy(int varName) {
 
 	vector<vector<int>> result(1);
-	result[0] = procModifiedByTable[procName];
+	result[0] = procModifiedByTable[varName];
 	return result[0];
 }

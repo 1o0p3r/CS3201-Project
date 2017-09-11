@@ -82,9 +82,9 @@ vector<int> Use::getProcUses(int procName) {
 	return result[0];
 }
 
-vector<int> Use::getProcUsedBy(int procName) {
+vector<int> Use::getProcUsedBy(int varName) {
 
 	vector<vector<int>> result(1);
-	result[0] = procUsedByTable[procName];
+	result[0] = procUsedByTable[varName];
 	return result[0];
 }
