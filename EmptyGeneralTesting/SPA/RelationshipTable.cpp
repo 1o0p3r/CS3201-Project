@@ -1,6 +1,6 @@
 #include "RelationshipTable.h"
-#include <unordered_map>;
-#include <string>;
+#include <unordered_map>
+#include <string>
 
 RelationshipTable::RelationshipTable() {
 
@@ -27,35 +27,35 @@ RelationshipTable::RelationshipTable() {
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assignment", "while", "prog_line", "if", "procedure", "string", "constant" };
 	modifiesArg2 = { "variable", "string", "wildCard" };
-	Relationship relationModifies(NUM_TWO, modifiesArg1, modifiesArg2);
+	Relationship relationModifies = Relationship(NUM_TWO, modifiesArg1, modifiesArg2);
 	relationshipTable[MODIFIES_STRING] = relationModifies;
 
 	//Add the relationship of Uses to table
 	usesArg1 = { "stmt", "assignment", "while", "prog_line", "if", "procedure", "string", "constant" };
 	usesArg2 = {"variable", "string", "wildCard"};
-	Relationship relationUses(NUM_TWO, usesArg1, usesArg2);
+	Relationship relationUses = Relationship(NUM_TWO, usesArg1, usesArg2);
 	relationshipTable[USES_STRING] = relationUses;
 
 	//Adds the relationship of Follows to table
 	followsArg = { "stmt", "assignment", "while", "if", "constant", "prog_line", "call", "wildcard" };
-	Relationship relationFollows(NUM_TWO, followsArg, followsArg);
+	Relationship relationFollows = Relationship(NUM_TWO, followsArg, followsArg);
 	relationshipTable[FOLLOWS_STRING] = relationFollows;
 
 	//Adds the relationship of Follows* to table
 	followsStarArg = { "stmt", "assignment", "while", "if", "constant", "prog_line", "call", "wildcard" };
-	Relationship relationFollowsStar(NUM_TWO, followsStarArg, followsStarArg);
+	Relationship relationFollowsStar = Relationship(NUM_TWO, followsStarArg, followsStarArg);
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
 	parentArg1 = { "stmt", "while", "if", "constant", "prog_line" ,"wilcard" };
 	parentArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assignment" };
-	Relationship relationParent(NUM_TWO, parentArg1, parentArg2);
+	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
 	parentStarArg1 = { "stmt", "while", "if", "constant", "prog_line", "wilcard" };
 	parentStarArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assignment" };
-	Relationship relationParentStar(NUM_TWO, parentStarArg1, parentStarArg2);
+	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
 }
 
@@ -73,7 +73,7 @@ bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
 bool RelationshipTable::isValidArg1(string rel, string typeArg) {
 	if (isRelationshipExists(rel)) {
 		Relationship relationship = relationshipTable.at(rel);
-		vector<string> reqArg1 = relationship.getArg1;
+		vector<string> reqArg1 = relationship.getArg1();
 
 		for (std::vector<string>::iterator it = reqArg1.begin(); it != reqArg1.end(); it++) {
 			if (typeArg == (*it)) {
@@ -87,7 +87,7 @@ bool RelationshipTable::isValidArg1(string rel, string typeArg) {
 bool RelationshipTable::isValidArg2(string rel, string typeArg) {
 	if (isRelationshipExists(rel)) {
 		Relationship relationship = relationshipTable.at(rel);
-		vector<string> reqArg2 = relationship.getArg2;
+		vector<string> reqArg2 = relationship.getArg2();
 
 		for (std::vector<string>::iterator it = reqArg2.begin(); it != reqArg2.end(); it++) {
 			if (typeArg == (*it)) {

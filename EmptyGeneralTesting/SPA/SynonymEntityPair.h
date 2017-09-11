@@ -9,7 +9,6 @@ class SynonymEntityPair
 	string entity;
 public:
 	SynonymEntityPair(string, vector<string>);
-	~SynonymEntityPair();
 	vector<string> getSynonymList();
 	string getEntity();
 };

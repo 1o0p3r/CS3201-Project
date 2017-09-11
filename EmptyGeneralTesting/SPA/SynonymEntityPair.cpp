@@ -1,5 +1,6 @@
 #include "SynonymEntityPair.h"
 #include <string>
+#include <vector>
 
 using namespace std;
 SynonymEntityPair::SynonymEntityPair(string entityIn, vector<string>synonymIn)
@@ -9,8 +10,6 @@ SynonymEntityPair::SynonymEntityPair(string entityIn, vector<string>synonymIn)
 
 	synonymList = synonymIn;
 	entity = entityIn;
-
-
 }
 
 vector<string> SynonymEntityPair::getSynonymList() {
@@ -19,8 +18,4 @@ vector<string> SynonymEntityPair::getSynonymList() {
 
 string SynonymEntityPair::getEntity() {
 	return entity;
-}
-
-SynonymEntityPair::~SynonymEntityPair()
-{
 }

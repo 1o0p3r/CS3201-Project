@@ -13,13 +13,12 @@ private:
 	vector<string> result;
 public:
 	Clause(string, vector<string>); //Selct clause
-	Clause(string, string, string, string); //Relationship clause
+	Clause(string, string, string, string); //Such that clause
 	Clause(string, string, string); //Pattern clause
 	string getRelationship();
 	string getClauseType();
 	string getRelationshipType();
 	string getArg1();
 	string getArg2();
-
 };
 

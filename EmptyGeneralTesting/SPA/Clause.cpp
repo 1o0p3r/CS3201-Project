@@ -12,7 +12,7 @@ Clause::Clause(string cType, vector<string> r)
 
 //Relationship clause
 Clause:: Clause(string cType, string rType, string arg1, string arg2) {
-	clauseType = cType;
+	clauseType = cType;	//e.g. Select clause, relationship clause, pattern clause
 	relationshipType = rType;
 	argument1 = arg1;
 	argument2 = arg2;
@@ -23,8 +23,7 @@ Clause::Clause(string cType, string arg1, string arg2) {
 	argument1 = arg1;
 	argument2 = arg2;
 }
-string Clause::getRelationship()
-{
+string Clause::getRelationship(){
 	return string();
 }
 string Clause::getClauseType() {

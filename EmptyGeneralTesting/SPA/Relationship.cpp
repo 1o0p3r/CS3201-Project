@@ -1,15 +1,11 @@
 #include "Relationship.h"
+#include "vector"
 
 Relationship::Relationship(int num, vector<string> arg1, vector<string> arg2)
 {
 	numArgs = num;
 	argument1 = arg1;
 	argument2 = arg2;
-}
-
-
-Relationship::~Relationship()
-{
 }
 
 int Relationship::getNumArgs() {
