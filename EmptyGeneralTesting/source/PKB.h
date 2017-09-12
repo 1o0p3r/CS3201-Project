@@ -98,10 +98,11 @@ public:
 	vector<int> getChildStar(int statementNum);
 
 	/**
-	Sets s to modifies varName. Implicitly set varName to be modifiedBy s.
+	Sets s to modifies varName. Implicitly set varName to be modifiedBy s and sets modifies for container statements.
 
 	@param s statement number of the input statement
 	@param s2 variable the statement modifies
+	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
 	void setModifies(int s, string varName, vector<int> parentsOfstmt);
@@ -149,13 +150,14 @@ public:
 
 
 	/**
-	Sets s to uses varName. Implicitly set varName to be UsedBy s.
+	Sets s to uses varName. Implicitly set varName to be UsedBy s and sets uses for container statements.
 
 	@param s statement number of the input statement
 	@param s2 variable the statement uses
+	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setUses(int s, string varName);
+	void setUses(int s, string varName, vector<int> parentsOfstmt);
 
 	/**
 	Sets proc to uses varName. Implicitly set varName to be UsedBy proc.

@@ -135,9 +135,9 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setUses(int s, string varName) {
+void PKB::setUses(int s, string varName, vector<int> parentsOfstmt) {
 	int index = getVarIndex(varName);
-	use.setUses(s, index);
+	use.setUses(s, index, parent.getParentStar(s));
 }
 
 void PKB::setProcUses(string procName, string varName) {

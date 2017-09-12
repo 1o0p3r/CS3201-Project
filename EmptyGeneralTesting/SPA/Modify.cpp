@@ -21,9 +21,8 @@ void Modify::setModifies(int s, int varName, vector<int> parentsOfstmt) {
 	setModifiedBy(varName, s);
 
 	if (parentsOfstmt.size() != 0)
-		for (int i = 0; i < parentsOfstmt.size(); i++){
+		for (int i = 0; i < parentsOfstmt.size(); i++) {
 			setModifies(parentsOfstmt[i], varName);
-
 	}
 }
 
