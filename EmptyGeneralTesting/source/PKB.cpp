@@ -86,9 +86,9 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
-void PKB::setModifies(int s, string varName) {
+void PKB::setModifies(int s, string varName, vector<int> parentsOfstmt) {
 	int index = getVarIndex(varName);
-	modify.setModifies(s, index);
+	modify.setModifies(s, index, parent.getParentStar(s));
 }
 
 void PKB::setProcModifies(string procName, string varName) {

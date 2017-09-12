@@ -10,12 +10,22 @@ namespace UnitTesting
 	{
 	public:
 
-		TEST_METHOD(setModifiesCorrectly) {
+		TEST_METHOD(setModifiesCorrectly_wParent) { //check is parent has added variable
 			
 			Modify modify;
-			modify.setModifies(1, 2);
+			vector<int> parentStar;
+			parentStar.push_back(1);
+			modify.setModifies(2, 2, parentStar);
 			Assert::AreEqual(2, modify.getModifies(1)[0]);
-			Assert::AreEqual(1, modify.getModifiedBy(2)[0]);
+		}
+
+		TEST_METHOD(setModifiesCorrectly_woParent) {
+
+			Modify modify;
+			vector<int> parentStar;
+			modify.setModifies(1, 2, parentStar);
+			Assert::AreEqual(2, modify.getModifies(1)[0]);
+			Assert::IsTrue(parentStar.empty());
 		}
 
 	};

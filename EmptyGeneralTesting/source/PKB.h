@@ -104,7 +104,7 @@ public:
 	@param s2 variable the statement modifies
 	@returns void
 	*/
-	void setModifies(int s, string varName);
+	void setModifies(int s, string varName, vector<int> parentsOfstmt);
 
 	/**
 	Sets proc to modifies varName. Implicitly set varName to be modifiedBy proc.
