@@ -107,6 +107,7 @@ public:
 	vector<string> getProcUses(string procName);
 	vector<string> getProcUsedBy(string varName);
 
+
 private:
 	Follow follow;
 	Parent parent;
@@ -116,9 +117,7 @@ private:
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
 
-	void PKB::setVarIndex(string varName);
 	int PKB::getVarIndex(string varName);
-	void PKB::setProcIndex(string varName);
 	int PKB::getProcIndex(string varName);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);

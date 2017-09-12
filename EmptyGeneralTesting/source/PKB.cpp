@@ -24,44 +24,26 @@ PKB::PKB() {
 	vector<string> procIndexTable;
 }
 
-void PKB::setVarIndex(string varName) {
-
-	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
-		return;
-	
-	else 
-		varIndexTable.push_back(varName);
-}
-
 int PKB::getVarIndex(string varName) {
 
-	int pos = find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
-
-	if (pos < varIndexTable.size())
-		return pos;
-
-	else
-		throw new invalid_argument("Variable not found in PKB.");
+	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
+		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
+	
+	else {
+		varIndexTable.push_back(varName);
+		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
+	}
 }
 
-void PKB::setProcIndex(string varName) {
+int PKB::getProcIndex(string procName) {
 
-	if (find(procIndexTable.begin(), procIndexTable.end(), varName) != procIndexTable.end())
-		return;
+	if (find(procIndexTable.begin(), procIndexTable.end(), procName) != procIndexTable.end())
+		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
 
-	else
-		procIndexTable.push_back(varName);
-}
-
-int PKB::getProcIndex(string varName) {
-
-	int pos = find(procIndexTable.begin(), procIndexTable.end(), varName) - procIndexTable.begin();
-
-	if (pos < procIndexTable.size())
-		return pos;
-
-	else
-		throw new invalid_argument("Variable not found in PKB.");
+	else {
+		procIndexTable.push_back(procName);
+		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
+	}
 }
 
 void PKB::setFollows(int s1, int s2) {
