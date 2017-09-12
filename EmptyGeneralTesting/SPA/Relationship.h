@@ -11,6 +11,7 @@ private:
 	vector<string> argument2;
 public:
 	Relationship(int, vector<string>, vector<string>);
+	Relationship();
 	int getNumArgs();
 	vector<string> getArg1();
 	vector<string> getArg2();
