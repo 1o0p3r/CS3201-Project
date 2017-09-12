@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -22,9 +23,14 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+
+	set<string> allVariables;
+	set<string> allConstants;
 }
 
 int PKB::getVarIndex(string varName) {
+
+	allVariables.insert(varName);
 
 	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
 		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
@@ -44,6 +50,23 @@ int PKB::getProcIndex(string procName) {
 		procIndexTable.push_back(procName);
 		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
 	}
+}
+
+vector<string> PKB::getAllVariables() {
+
+	vector<string> result;
+	result.insert(result.end(), allVariables. begin(), allVariables.end());
+	return result;
+}
+
+void PKB::setAllConstants(string c) {
+	allConstants.insert(c);
+}
+
+vector<string> PKB::getAllConstants() {
+	vector<string> result;
+	result.insert(result.end(), allConstants.begin(), allConstants.end());
+	return result;
 }
 
 void PKB::setFollows(int s1, int s2) {
@@ -86,7 +109,7 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
-void PKB::setModifies(int s, string varName, vector<int> parentsOfstmt) {
+void PKB::setModifies(int s, string varName, vector<int> parentStarOfStmt) {
 	int index = getVarIndex(varName);
 	modify.setModifies(s, index, parent.getParentStar(s));
 }
@@ -135,7 +158,7 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setUses(int s, string varName, vector<int> parentsOfstmt) {
+void PKB::setUses(int s, string varName, vector<int> parentStarOfStmt) {
 	int index = getVarIndex(varName);
 	use.setUses(s, index, parent.getParentStar(s));
 }

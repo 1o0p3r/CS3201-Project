@@ -10,7 +10,7 @@ Modify::Modify() {
 	vector<set<int>> procModifiedByTable;
 } 
 
-void Modify::setModifies(int s, int varName, vector<int> parentsOfstmt) {
+void Modify::setModifies(int s, int varName, vector<int> parentStarOfStmt) {
 
 	if (s <= 0) { 
 
@@ -20,9 +20,9 @@ void Modify::setModifies(int s, int varName, vector<int> parentsOfstmt) {
 	setModifies(s, varName);
 	setModifiedBy(varName, s);
 
-	if (parentsOfstmt.size() != 0)
-		for (int i = 0; i < parentsOfstmt.size(); i++) {
-			setModifies(parentsOfstmt[i], varName);
+	if (parentStarOfStmt.size() != 0)
+		for (int i = 0; i < parentStarOfStmt.size(); i++) {
+			setModifies(parentStarOfStmt[i], varName);
 	}
 }
 

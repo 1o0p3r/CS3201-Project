@@ -16,6 +16,20 @@ public:
 	PKB();
 
 	/**
+	Returns all variables in PKB
+
+	@returns vector string of all variables in PKB
+	*/
+	vector<string> getAllVariables();
+
+	/**
+	Returns all constants in PKB
+
+	@returns vector string of all constants in PKB
+	*/
+	vector<string> PKB::getAllConstants();
+
+	/**
 	Sets s2 to follow s1. Meaning: s2 > s1.
 
 	@param s1 the statment before
@@ -105,7 +119,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setModifies(int s, string varName, vector<int> parentsOfstmt);
+	void setModifies(int s, string varName, vector<int> parentStarOfStmt);
 
 	/**
 	Sets proc to modifies varName. Implicitly set varName to be modifiedBy proc.
@@ -157,7 +171,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setUses(int s, string varName, vector<int> parentsOfstmt);
+	void setUses(int s, string varName, vector<int> parentStarOfStmt);
 
 	/**
 	Sets proc to uses varName. Implicitly set varName to be UsedBy proc.
@@ -211,8 +225,12 @@ private:
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
 
-	int PKB::getVarIndex(string varName);
-	int PKB::getProcIndex(string varName);
+	set<string> allVariables;
+	set<string> allConstants;
+
+	int getVarIndex(string varName);
+	int getProcIndex(string varName);
+	void setAllConstants(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
 };

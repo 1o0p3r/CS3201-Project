@@ -10,7 +10,7 @@ Use::Use() {
 	vector<set<int>> procUsedByTable;
 }
 
-void Use::setUses(int s, int varName, vector<int> parentsOfstmt) {
+void Use::setUses(int s, int varName, vector<int> parentStarOfStmt) {
 
 	if (s <= 0) {
 
@@ -20,9 +20,9 @@ void Use::setUses(int s, int varName, vector<int> parentsOfstmt) {
 	setUses(s, varName);
 	setUsedBy(varName, s);
 
-	if (parentsOfstmt.size() != 0)
-		for (int i = 0; i < parentsOfstmt.size(); i++) {
-			setUses(parentsOfstmt[i], varName);
+	if (parentStarOfStmt.size() != 0)
+		for (int i = 0; i < parentStarOfStmt.size(); i++) {
+			setUses(parentStarOfStmt[i], varName);
 		}
 }
 

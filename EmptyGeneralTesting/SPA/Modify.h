@@ -8,7 +8,7 @@ class Modify {
 public:
 	Modify();
 
-	void setModifies(int s, int varName, vector<int> parentsOfstmt);
+	void setModifies(int s, int varName, vector<int> parentStarOfStmt);
 	void Modify::setModifies(int s, int varName);
 	void setProcModifies(int procName, int varName);
 

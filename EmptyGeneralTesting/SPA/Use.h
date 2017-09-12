@@ -8,7 +8,7 @@ class Use {
 public:
 	Use();
 
-	void setUses(int s, int varName, vector<int> parentsOfstmt);
+	void setUses(int s, int varName, vector<int> parentStarOfStmt);
 	void setUses(int s, int varName);
 	void setProcUses(int procName, int varName);
 
