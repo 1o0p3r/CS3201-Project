@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -22,49 +23,50 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
-	vector<int> whileTable;
-	vector<int> assignTable;
-	vector<int> ifTable;
-}
 
-void PKB::setVarIndex(string varName) {
-
-	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
-		return;
-	
-	else 
-		varIndexTable.push_back(varName);
+	set<string> allVariables;
+	set<string> allConstants;
 }
 
 int PKB::getVarIndex(string varName) {
 
-	int pos = find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
+	allVariables.insert(varName);
 
-	if (pos < varIndexTable.size())
-		return pos;
-
-	else
-		throw new invalid_argument("Variable not found in PKB.");
+	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
+		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
+	
+	else {
+		varIndexTable.push_back(varName);
+		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
+	}
 }
 
-void PKB::setProcIndex(string varName) {
+int PKB::getProcIndex(string procName) {
 
-	if (find(procIndexTable.begin(), procIndexTable.end(), varName) != procIndexTable.end())
-		return;
+	if (find(procIndexTable.begin(), procIndexTable.end(), procName) != procIndexTable.end())
+		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
 
-	else
-		procIndexTable.push_back(varName);
+	else {
+		procIndexTable.push_back(procName);
+		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
+	}
 }
 
-int PKB::getProcIndex(string varName) {
+vector<string> PKB::getAllVariables() {
 
-	int pos = find(procIndexTable.begin(), procIndexTable.end(), varName) - procIndexTable.begin();
+	vector<string> result;
+	result.insert(result.end(), allVariables. begin(), allVariables.end());
+	return result;
+}
 
-	if (pos < procIndexTable.size())
-		return pos;
+void PKB::setAllConstants(string c) {
+	allConstants.insert(c);
+}
 
-	else
-		throw new invalid_argument("Variable not found in PKB.");
+vector<string> PKB::getAllConstants() {
+	vector<string> result;
+	result.insert(result.end(), allConstants.begin(), allConstants.end());
+	return result;
 }
 
 void PKB::setFollows(int s1, int s2) {
@@ -107,9 +109,9 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
-void PKB::setModifies(int s, string varName) {
+void PKB::setModifies(int s, string varName, vector<int> parentStarOfStmt) {
 	int index = getVarIndex(varName);
-	modify.setModifies(s, index);
+	modify.setModifies(s, index, parent.getParentStar(s));
 }
 
 void PKB::setProcModifies(string procName, string varName) {
@@ -156,9 +158,9 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setUses(int s, string varName) {
+void PKB::setUses(int s, string varName, vector<int> parentStarOfStmt) {
 	int index = getVarIndex(varName);
-	use.setUses(s, index);
+	use.setUses(s, index, parent.getParentStar(s));
 }
 
 void PKB::setProcUses(string procName, string varName) {
