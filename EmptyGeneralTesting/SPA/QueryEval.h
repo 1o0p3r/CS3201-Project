@@ -5,6 +5,7 @@
 #include "Modify.h"
 #include "Use.h"
 #include <vector>
+#include "Querystatement.h"
 
 using namespace std;
 
@@ -32,3 +33,12 @@ private:
 	vector<int> usesResult(int s1, int opt);
 };
 
+/* 
+Getters from querystatement
+QueryStatement();
+QueryElement getSelectQueryElement();
+vector<QueryElement> getSuchThatQueryElement();
+vector<QueryElement> getPatternQueryElement();
+vector<SynonymEntityPair> getSynonymEntityList();
+
+*/
