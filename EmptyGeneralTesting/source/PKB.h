@@ -1,4 +1,8 @@
 #pragma once
+#include "Follow.h"
+#include "Modify.h"
+#include "Parent.h"
+#include "Use.h"
 
 #include <stdio.h>
 #include <iostream>
