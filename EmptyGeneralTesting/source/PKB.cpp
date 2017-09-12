@@ -22,6 +22,9 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
 }
 
 void PKB::setVarIndex(string varName) {
@@ -185,4 +188,33 @@ vector<string> PKB::getProcUsedBy(string varName) {
 	int index = getVarIndex(varName);
 	vector<int> results = use.getProcUsedBy(index);
 	return convertToProcNames(results);
+}
+
+void PKB::setStatementType(int statementNum, int type) {
+	// 1 = while, 2 = assign, 3 = if
+	switch (type) {
+	case(1): 
+		whileTable.push_back(statementNum);
+		break;
+	case(2): 
+		assignTable.push_back(statementNum);
+		break;
+	case(3): 
+		ifTable.push_back(statementNum);
+		break;
+	default:
+		break;
+	}
+}
+
+vector<int> PKB::getWhile() {
+	return whileTable;
+}
+
+vector<int> PKB::getAssign() {
+	return assignTable;
+}
+
+vector<int> PKB::getIf() {
+	return ifTable;
 }

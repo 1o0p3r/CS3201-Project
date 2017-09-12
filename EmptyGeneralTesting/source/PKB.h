@@ -107,6 +107,11 @@ public:
 	vector<string> getProcUses(string procName);
 	vector<string> getProcUsedBy(string varName);
 
+	void setStatementType(int statementNum, int type);
+	vector<int> getWhile();
+	vector<int> getAssign();
+	vector<int> getIf();
+
 private:
 	Follow follow;
 	Parent parent;
@@ -115,6 +120,9 @@ private:
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
 
 	void PKB::setVarIndex(string varName);
 	int PKB::getVarIndex(string varName);
