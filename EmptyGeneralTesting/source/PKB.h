@@ -215,6 +215,11 @@ public:
 	*/
 	vector<string> getProcUsedBy(string varName);
 
+	void setStatementType(int statementNum, int type);
+
+	vector<int> getWhile();
+	vector<int> getAssign();
+	vector<int> getIf();
 
 private:
 	Follow follow;
@@ -224,6 +229,9 @@ private:
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
 
 	set<string> allVariables;
 	set<string> allConstants;
