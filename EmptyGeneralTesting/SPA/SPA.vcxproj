@@ -17,6 +17,7 @@
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="Parent.cpp" />
+    <ClCompile Include="QueryEval.cpp" />
     <ClCompile Include="Use.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -24,6 +25,7 @@
     <ClInclude Include="Follow.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
+    <ClInclude Include="QueryEval.h" />
     <ClInclude Include="Use.h" />
   </ItemGroup>
   <ItemGroup>
@@ -57,7 +59,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\Mitigator\Documents\CS3201-2-Group-9-SPA\EmptyGeneralTesting\source;$(ProjectDir);$(SolutionDir);$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
