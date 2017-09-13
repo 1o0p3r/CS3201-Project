@@ -220,3 +220,10 @@ vector<int> PKB::getAssign() {
 vector<int> PKB::getIf() {
 	return ifTable;
 }
+
+vector<int> PKB::getAllStmt() {
+	vector<int> result = getWhile();
+	result.insert(result.end(), getAssign().begin(), getAssign().end());
+	result.insert(result.end(), getIf().begin(), getIf().end());
+	return result;
+}

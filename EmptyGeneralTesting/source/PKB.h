@@ -220,6 +220,7 @@ public:
 	vector<int> getWhile();
 	vector<int> getAssign();
 	vector<int> getIf();
+	vector<int> getAllStmt();
 
 private:
 	Follow follow;
