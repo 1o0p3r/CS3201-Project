@@ -3,6 +3,5 @@ class QueryPreprocessor
 {
 public:
 	QueryPreprocessor();
-	~QueryPreprocessor();
 };
 

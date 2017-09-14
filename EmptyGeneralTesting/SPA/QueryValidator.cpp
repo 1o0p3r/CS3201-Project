@@ -1,4 +1,4 @@
-#include "ParserQuery.h"
+#include "QueryValidator.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -40,7 +40,7 @@ const string NUMBER_STRING = "number";
 const string PATTERN_REGEX = "pattern \w+[(][^\s]+,\s[^\s]+[)]";
 
 using namespace std;
-ParserQuery::ParserQuery()
+QueryValidator::QueryValidator()
 {
 	//entityList, synonymList needed
 
@@ -48,7 +48,7 @@ ParserQuery::ParserQuery()
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
 		"variable", "constant", "prog_line" };
 }
-void ParserQuery::startParsing() {
+void QueryValidator::startParsing() {
 	cout << "Parsing input file" << endl;
 	std::ifstream file("Example.txt");
 	std::string str;
@@ -66,7 +66,7 @@ void ParserQuery::startParsing() {
 		}
 	}
 }
-void ParserQuery::parseLine(string str, string currentString) {
+void QueryValidator::parseLine(string str, string currentString) {
 
 	//If currentLine consist of a ; It likely implies that a declaration is being done
 	//So firstly check for the position of
@@ -102,7 +102,7 @@ void ParserQuery::parseLine(string str, string currentString) {
 }
 
 //This function parses the Entity And Synonym and checks for the validity of Entity
-bool ParserQuery::parseEntityAndSynonym(string currentString) {
+bool QueryValidator::parseEntityAndSynonym(string currentString) {
 
 	if (currentString.find(SELECT_STRING)) {
 		cout << "Error occured, please check syntax of the query";
@@ -118,13 +118,13 @@ bool ParserQuery::parseEntityAndSynonym(string currentString) {
 	}
 }
 
-void ParserQuery::parseQueryLine(string str) {
+void QueryValidator::parseQueryLine(string str) {
 	if (!isValidQueryLine(str)) {
 		cout << "Invalid queryLine" << endl;
 	}
 }
 //Parse EntityAndSynonym checks for validity of the entitiy by comparing with the validEntitiesList, if its valid, it will proceed to adding the synonym
-bool ParserQuery::checkEntityAndSynonym(string currentString) {
+bool QueryValidator::checkEntityAndSynonym(string currentString) {
 
 	if (isValidEntity(currentString)) {
 		return true;
@@ -137,7 +137,7 @@ bool ParserQuery::checkEntityAndSynonym(string currentString) {
 
 //This function checks for the validity of the declaration by comparing with the the entityList given
 //Returns true if there is a match, else returns false
-bool ParserQuery::isValidEntity(string currentString) {
+bool QueryValidator::isValidEntity(string currentString) {
 	
 	std::vector<string> splitString = split(currentString, SYMBOL_WHITESPACE);
 	//checks if the entity exists, if so, do parsing on the declarations
@@ -155,7 +155,7 @@ bool ParserQuery::isValidEntity(string currentString) {
 }
 
 //Checks if a given entity is in the EntityTable
-bool ParserQuery::inEntityList(string entity) {
+bool QueryValidator::inEntityList(string entity) {
 	vector<string> entityList = validEntities;
 	
 	for (std::size_t i=ZERO; i < entityList.size(); i++) {
@@ -166,7 +166,7 @@ bool ParserQuery::inEntityList(string entity) {
 	return false;
 }
 //Parses the synonym with the associated entity into the synonymTable
-bool ParserQuery::parseDeclaration(vector<string> splitString) {
+bool QueryValidator::parseDeclaration(vector<string> splitString) {
 	
 	//Obtains the entity and erase it from vector
 	string reqEntity = splitString.front();
@@ -183,7 +183,7 @@ bool ParserQuery::parseDeclaration(vector<string> splitString) {
 	return true;
 }
 
-bool ParserQuery::isValidQueryLine(string selectString) {
+bool QueryValidator::isValidQueryLine(string selectString) {
 
 	vector<string> initialVector;
 	initialVector.push_back(selectString);
@@ -200,7 +200,7 @@ bool ParserQuery::isValidQueryLine(string selectString) {
 
 	}
 }
-bool ParserQuery::isValidPattern(string str, string syn) {
+bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
 	std::regex patternRgx(PATTERN_REGEX);
@@ -237,7 +237,7 @@ bool ParserQuery::isValidPattern(string str, string syn) {
 	}
 }
 
-vector<string> ParserQuery::splitStatement(vector<string> currentVector) {
+vector<string> QueryValidator::splitStatement(vector<string> currentVector) {
 	//Split by such that
 	currentVector = split(currentVector, SUCH_THAT_STRING);
 
@@ -247,7 +247,7 @@ vector<string> ParserQuery::splitStatement(vector<string> currentVector) {
 	return currentVector;
 }
 //This function function checks for the select portion of the select query and ensure that the synonym
-bool ParserQuery::isValidSelect(vector<string> vectorClauses) {
+bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	//First element of this vector gives the select clause
 	string selectClause = vectorClauses.at(ZERO);
 	vector<string> selectClauseSplit = split(selectClause, SYMBOL_WHITESPACE);
@@ -267,16 +267,16 @@ bool ParserQuery::isValidSelect(vector<string> vectorClauses) {
 		return false;
 	}
 }
-void ParserQuery::addSelectQueryElement(string ent, string syn) {
+void QueryValidator::addSelectQueryElement(string ent, string syn) {
 	queryStatement.addSelectQuery(QueryElement(ent, syn));
 }
-void ParserQuery::addPatternQueryElement(string arg1, string arg2, string ent, string syn) {
+void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn) {
 	queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, ONE));
 }
-void ParserQuery::addSuchThatQueryElement(QueryElement qe) {
+void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
 }
-bool ParserQuery::isValidOthers(vector<string> vec) {
+bool QueryValidator::isValidOthers(vector<string> vec) {
 	if (vec.size() < 2) {
 		return true;
 	}
@@ -298,7 +298,7 @@ bool ParserQuery::isValidOthers(vector<string> vec) {
 		}
 	}
 }
-bool ParserQuery::isValidSuchThat(string str, string syn) {
+bool QueryValidator::isValidSuchThat(string str, string syn) {
 	//Firstly extract/split till a relation is found
 	string tempString = str.substr(9, str.length()-ONE);
 
@@ -389,7 +389,7 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 	
 }
 
-bool ParserQuery::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2) {
+bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2) {
 	if (arg1_NUM == false && arg1_UNDER == false) {
 		//If a match is found create a query element with following parameters (arg1, arg1Type, arg2, arg2Type, rel)
 		if (arg2_NUM == false && arg2_UNDER == false) {
@@ -455,7 +455,7 @@ bool ParserQuery::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool a
 }
 
 //This function takes in e.g. str = Follows, type = stmt, idx = 1
-bool ParserQuery::checkRelationshipTable(string rel, string type, int idx) {
+bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 	if (relationshipTable.isValidArg(rel, type, idx)) {
 		return true;
 	}
@@ -463,7 +463,7 @@ bool ParserQuery::checkRelationshipTable(string rel, string type, int idx) {
 		return false;
 	}
 }
-string ParserQuery::getCorrespondingEntity(string syn) {
+string QueryValidator::getCorrespondingEntity(string syn) {
 	string reqEntity = "nth";
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
@@ -477,12 +477,12 @@ string ParserQuery::getCorrespondingEntity(string syn) {
 	}
 	return reqEntity;
 }
-bool ParserQuery::is_number(string s) {
+bool QueryValidator::is_number(string s) {
 	return s.find_first_not_of("0123456789") == string::npos;
 }
 
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
-bool ParserQuery::isValidSynonym(string syn) {
+bool QueryValidator::isValidSynonym(string syn) {
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
 		vector<string> tempVec = tempPair.getSynonymList();
@@ -495,7 +495,7 @@ bool ParserQuery::isValidSynonym(string syn) {
 	return false;
 }
 //Splits the string into vectors of string with the required symbol and returns a vector of string, mainly for usage of declaration
-vector<string> ParserQuery::split(string str, char symbolSplitWith) {
+vector<string> QueryValidator::split(string str, char symbolSplitWith) {
 	
 	vector<string> result = vector<string>();
 	size_t pos = ZERO;
@@ -509,7 +509,7 @@ vector<string> ParserQuery::split(string str, char symbolSplitWith) {
 	return result;
 }
 
-vector <string> ParserQuery::split(string str, string symbolSplitWith) {
+vector <string> QueryValidator::split(string str, string symbolSplitWith) {
 
 	vector<string> result = vector<string>();
 	size_t pos = ZERO;
@@ -524,7 +524,7 @@ vector <string> ParserQuery::split(string str, string symbolSplitWith) {
 	return result;
 }
 
-vector<string> ParserQuery::split(vector<string> vectorToSplit, string strToSplitWith) {
+vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToSplitWith) {
 
 	vector<string> result = vector<string>();
 	size_t pos = ZERO;
@@ -538,7 +538,7 @@ vector<string> ParserQuery::split(vector<string> vectorToSplit, string strToSpli
 	}
 	return result;
 }
-string ParserQuery::removeSymbols(string str, string symbolToRemove) {
+string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	string toReturn = "";
 	size_t pos = ZERO;
 	std::string token;
@@ -551,13 +551,13 @@ string ParserQuery::removeSymbols(string str, string symbolToRemove) {
 	}
 	return toReturn;
 }
-void ParserQuery::setSynonymList(vector<SynonymEntityPair> sList) {
+void QueryValidator::setSynonymList(vector<SynonymEntityPair> sList) {
 	this->synonymAndEntityList = sList;
 }
-int ParserQuery::getNumClauses() {
+int QueryValidator::getNumClauses() {
 	return this->numClauses;
 }
-string ParserQuery::changeLowerCase(string str) {
+string QueryValidator::changeLowerCase(string str) {
 	 std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	 return str;
 }

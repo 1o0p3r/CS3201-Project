@@ -1,12 +1,13 @@
 // QueryPreprocessor.cpp : Defines the entry point for the console application.
 //
 
-#include "ParserQuery.h"
+#include "QueryValidator.h"
 
 using namespace std;
 int main()
 {
-	ParserQuery parseQuery = ParserQuery();
-	parseQuery.startParsing();
+	QueryValidator queryValidator = QueryValidator();
+	queryValidator.startParsing();
+
 }
 

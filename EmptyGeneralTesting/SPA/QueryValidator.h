@@ -11,7 +11,7 @@
 using std::string;
 using std::vector;
 
-class ParserQuery
+class QueryValidator
 {
 private:
 	int numClauses;
@@ -54,10 +54,9 @@ private:
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
 
-	bool createSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2);
 	bool checkRelationshipTable(string, string, int);
 public:
-	ParserQuery();
+	QueryValidator();
 	int getNumClauses();
 	string changeLowerCase(string str);
 	void startParsing();

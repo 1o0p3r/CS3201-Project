@@ -15,7 +15,7 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="Follow.cpp" />
-    <ClCompile Include="ParserQuery.cpp" />
+    <ClCompile Include="QueryValidator.cpp" />
     <ClCompile Include="QueryElement.cpp" />
     <ClCompile Include="QueryPreprocessor.cpp" />
     <ClCompile Include="QueryStatement.cpp" />
@@ -26,7 +26,7 @@
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="Follow.h" />
-    <ClInclude Include="ParserQuery.h" />
+    <ClInclude Include="QueryValidator.h" />
     <ClInclude Include="QueryElement.h" />
     <ClInclude Include="QueryPreprocessor.h" />
     <ClInclude Include="QueryStatement.h" />
