@@ -3,7 +3,7 @@
 #include <string>
 
 RelationshipTable::RelationshipTable() {
-
+	const int NUM_ONE = 1;
 	const int NUM_TWO = 2;
 	const string MODIFIES_STRING = "modfiies";
 	const string USES_STRING = "uses";
@@ -25,13 +25,15 @@ RelationshipTable::RelationshipTable() {
 	vector<string> parentStarArg2;
 
 	//Add the relationship of Modifies to table
-	modifiesArg1 = { "stmt", "assignment", "while", "prog_line", "if", "procedure", "string", "constant" };
+	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
+		"string", "number", "constant" };
 	modifiesArg2 = { "variable", "string", "wildCard" };
 	Relationship relationModifies = Relationship(NUM_TWO, modifiesArg1, modifiesArg2);
 	relationshipTable[MODIFIES_STRING] = relationModifies;
 
 	//Add the relationship of Uses to table
-	usesArg1 = { "stmt", "assignment", "while", "prog_line", "if", "procedure", "string", "constant" };
+	usesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
+		"string", "number", "constant" };
 	usesArg2 = {"variable", "string", "wildCard"};
 	Relationship relationUses = Relationship(NUM_TWO, usesArg1, usesArg2);
 	relationshipTable[USES_STRING] = relationUses;

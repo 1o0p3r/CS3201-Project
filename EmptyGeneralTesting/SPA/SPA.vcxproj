@@ -14,22 +14,22 @@
     <ClCompile Include="..\source\DesignExtractor.cpp" />
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
-    <ClCompile Include="Clause.cpp" />
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="ParserQuery.cpp" />
+    <ClCompile Include="QueryElement.cpp" />
     <ClCompile Include="QueryPreprocessor.cpp" />
-    <ClCompile Include="QueryTree.cpp" />
+    <ClCompile Include="QueryStatement.cpp" />
     <ClCompile Include="Relationship.cpp" />
     <ClCompile Include="RelationshipTable.cpp" />
     <ClCompile Include="SynonymEntityPair.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
-    <ClInclude Include="Clause.h" />
     <ClInclude Include="Follow.h" />
     <ClInclude Include="ParserQuery.h" />
+    <ClInclude Include="QueryElement.h" />
     <ClInclude Include="QueryPreprocessor.h" />
-    <ClInclude Include="QueryTree.h" />
+    <ClInclude Include="QueryStatement.h" />
     <ClInclude Include="Relationship.h" />
     <ClInclude Include="RelationshipTable.h" />
     <ClInclude Include="SynonymEntityPair.h" />

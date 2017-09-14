@@ -8,8 +8,11 @@
 #include <regex>
 #include <fstream>
 #include <sstream>
-#include <QueryTree.h>
+#include <regex>
 
+const int ZERO = 0;
+const int ONE = 1;
+const int TWO = 2;
 const char SYMBOL_WHITESPACE = ' ';
 const char SYMBOL_COMMA = ',';
 const char SYMBOL_LEFT_BRACKET = '(';
@@ -33,13 +36,15 @@ const string CONSTANT_STRING = "constant";
 const string RELATIONSHIP_STRING = "relationship";
 const string SYMBOL_LEFT_BRACKET_STRING = "(";
 const string SYMBOL_RIGHT_BRACKET_STRING = ")";
+const string NUMBER_STRING = "number";
+const string PATTERN_REGEX = "pattern \w+[(][^\s]+,\s[^\s]+[)]";
 
 using namespace std;
 ParserQuery::ParserQuery()
 {
 	//entityList, synonymList needed
 
-	int numClauses = 0;
+	int numClauses = ZERO;
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
 		"variable", "constant", "prog_line" };
 }
@@ -55,40 +60,36 @@ void ParserQuery::startParsing() {
 			currentString.clear();
 			str.clear();
 			synonymAndEntityList.clear();
-			removeTree(queryTree);
 		}
 		else {
 			parseLine(str, currentString);
 		}
 	}
 }
-void ParserQuery::removeTree(QueryTree querytree) {
-	QueryTree emptyTree;
-	queryTree = emptyTree;
-}
 void ParserQuery::parseLine(string str, string currentString) {
 
 	//If currentLine consist of a ; It likely implies that a declaration is being done
 	//So firstly check for the position of
 	if (str.find(SYMBOL_SEMI_COLON)) {
-		size_t pos = 0;
+		size_t pos = ZERO;
 		std::string token;
 		string originalString = str;
 		while ((pos = str.find(SYMBOL_SEMI_COLON) != std::string::npos)) {
-			token = str.substr(0, pos);	//gets the string up to ;
+			token = str.substr(ZERO, pos);	//gets the string up to ;
 			
 			if(!parseEntityAndSynonym(token)) {
 				cout << "Error occured while parsing Entity and Synonym, please key in a valid Entity";
 			}
 			//After parsing 1 token, erase the parsed token
 			else {
-				str.erase(0, pos + 1);
+				str.erase(ZERO, pos + ONE);
 			}
 		}
 		//Since the last found will be the index of a whitespace, before a select statement is here
 		//Make sure that it is indeed a whitespace first, before proceeding to parse the select clauses
 		if (str.find(SELECT_STRING)) {
-			parseSelectClauses(str);
+			//parseSelectClauses(str);
+			parseQueryLine(str);
 		}
 		else {
 			cout << "Syntax is wrong, please key in the proper syntax for query";
@@ -96,7 +97,7 @@ void ParserQuery::parseLine(string str, string currentString) {
 	}
 	else { 
 		cout << "Syntax is wrong, please key in semi colon";
-		exit(0);
+		exit(ZERO);
 	}
 }
 
@@ -114,6 +115,12 @@ bool ParserQuery::parseEntityAndSynonym(string currentString) {
 		else {
 			return false;
 		}
+	}
+}
+
+void ParserQuery::parseQueryLine(string str) {
+	if (!isValidQueryLine(str)) {
+		cout << "Invalid queryLine" << endl;
 	}
 }
 //Parse EntityAndSynonym checks for validity of the entitiy by comparing with the validEntitiesList, if its valid, it will proceed to adding the synonym
@@ -151,7 +158,7 @@ bool ParserQuery::isValidEntity(string currentString) {
 bool ParserQuery::inEntityList(string entity) {
 	vector<string> entityList = validEntities;
 	
-	for (std::size_t i=0; i < entityList.size(); i++) {
+	for (std::size_t i=ZERO; i < entityList.size(); i++) {
 		if (entity == entityList.at(i)) {
 			return true;
 		}
@@ -166,7 +173,7 @@ bool ParserQuery::parseDeclaration(vector<string> splitString) {
 	splitString.erase(splitString.begin());
 	string synonymsStr;
 	//Adds back the rest of the string into 1 string
-	for (std::size_t i = 0; i < splitString.size(); i++) {
+	for (std::size_t i = ZERO; i < splitString.size(); i++) {
 		synonymsStr += splitString.at(i);
 	}
 	//Split the synonymsStr by comma to obtain relevant synonyms create object SynonymEntityPair and places in the "EntTable"
@@ -176,92 +183,83 @@ bool ParserQuery::parseDeclaration(vector<string> splitString) {
 	return true;
 }
 
-//This function assumes that the inputString has left out the semi_colon
-bool ParserQuery::parseSelectClauses(string selectString) {
-	if (selectString.find(SELECT_STRING)) {
-		isValidResultClauses(selectString);
-		return true;
-	}
-	else {
-		return false;
-	}
-}	
+bool ParserQuery::isValidQueryLine(string selectString) {
 
-bool ParserQuery::isValidResultClauses(string selectString) {
-
-	//First split the select string to different partition i.e. easier for query tree to process later on
-	//Can do so by creating a vector of string initially with selectString inside
 	vector<string> initialVector;
 	initialVector.push_back(selectString);
-	
-	//This vector now contains of first element consisting of select sth, and subsequent elements are of different clauses
-	initialVector = splitDiffClauses(initialVector);
 
-	//Afters splitting, do validation on different parts of the vector
-	if (isValidSelect(initialVector) && isValidClauses(initialVector)) {
+	initialVector = splitStatement(initialVector);
+
+	//After splitting do validation different parts of the vector
+
+	if(isValidSelect(initialVector) && isValidOthers(initialVector)) {
 		return true;
 	}
 	else {
 		return false;
+
 	}
 }
-
-
 bool ParserQuery::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
+	std::regex patternRgx(PATTERN_REGEX);
+	
+	if (std::regex_match(str, patternRgx)) {
+		//do my stuff as the syntax matches and i can obtain my string in a hardcode way
 
-	if (!str.find(SYMBOL_LEFT_BRACKET) || !str.find(SYMBOL_RIGHT_BRACKET)) {
+		//remove the the string pattern
+		string tempPatternStr = str.substr(8, str.length() - ONE);
+
+		//Obtain the index of left bracket
+		int idxLeft = tempPatternStr.find(SYMBOL_LEFT_BRACKET);
+
+		//Create new string to store PatternStr
+		string patternStr = tempPatternStr.substr(idxLeft, tempPatternStr.length() - ONE);
+		
+		patternStr = removeSymbols(patternStr, SYMBOL_LEFT_BRACKET_STRING);
+		patternStr = removeSymbols(patternStr, SYMBOL_RIGHT_BRACKET_STRING);
+
+		//Split the string further by comma and space
+		vector<string> splitPattern = split(patternStr, COMMA_WHITESPACE_STRING);
+
+		if (splitPattern.size() == ONE) {
+			return false;
+		}
+		string arg1 = splitPattern.at(ZERO);
+		string arg2 = splitPattern.at(ONE);
+
+		string ent = getCorrespondingEntity(syn);
+		addPatternQueryElement(arg1, arg2, ent, syn);
+	}
+	else {
 		return false;
 	}
-	//Since index of  what we are interested in is from index 8 onwards, create a variable patternStr to hold the value we are interested in
-	string tempPatternStr = str.substr(8, str.length()-1);
-
-	//Now find the next occurence of "("
-	int idxLeft = tempPatternStr.find(SYMBOL_LEFT_BRACKET);
-
-	//Create new string to store PatternStr
-	string PatternStr = tempPatternStr.substr(idxLeft, tempPatternStr.length()-1);
-
-	//Clean up the unwated bracket
-	PatternStr = removeSymbols(PatternStr, SYMBOL_LEFT_BRACKET_STRING);
-	PatternStr = removeSymbols(PatternStr, SYMBOL_RIGHT_BRACKET_STRING);
-
-	//Split the string further by comma and space
-	vector<string> splitPattern = split(PatternStr, COMMA_WHITESPACE_STRING);
-	
-	if (splitPattern.size() == 1) {
-		return false;
-	}
-	string arg1 = splitPattern.at(0);
-	string arg2 = splitPattern.at(1);
-
-	addPatternClauseTree(Clause(PATTERN_STRING, arg1, arg2));
-	
-	return true;
 }
-vector<string> ParserQuery::splitDiffClauses(vector<string> currentVector)
-{
+
+vector<string> ParserQuery::splitStatement(vector<string> currentVector) {
 	//Split by such that
-	currentVector = splitSelect(currentVector, SUCH_THAT_STRING);
+	currentVector = split(currentVector, SUCH_THAT_STRING);
 
 	//Split by pattern
-	currentVector = splitSelect(currentVector, PATTERN_STRING);
+	currentVector = split(currentVector, PATTERN_STRING);
 
 	return currentVector;
 }
-
 //This function function checks for the select portion of the select query and ensure that the synonym
 bool ParserQuery::isValidSelect(vector<string> vectorClauses) {
 	//First element of this vector gives the select clause
-	string selectClause = vectorClauses.at(0);
+	string selectClause = vectorClauses.at(ZERO);
 	vector<string> selectClauseSplit = split(selectClause, SYMBOL_WHITESPACE);
-	string syn = selectClauseSplit.at(1);
+	string syn = selectClauseSplit.at(ONE);
 	vector<string> tempVec;
 	tempVec.push_back(syn);
 	if (isValidSynonym(syn)) {
 		//Add to the tree Select clause
-		addSelectClauseTree(Clause(SELECT_STRING, tempVec));
+		//I neeed entity and synonym, synonym is now valid and can be used, nw i need toget corresponding entity
+		string ent = getCorrespondingEntity(syn);
+		addSelectQueryElement(ent, syn);
+		
 		return true;
 	}
 	else {
@@ -269,22 +267,30 @@ bool ParserQuery::isValidSelect(vector<string> vectorClauses) {
 		return false;
 	}
 }
-bool ParserQuery::isValidClauses(vector<string> vectorClauses) {
-
-	//First check if vectorClause is greater size than 1 to check for redundant statement like Select stmt s
-	if (vectorClauses.size() < 2) {
+void ParserQuery::addSelectQueryElement(string ent, string syn) {
+	queryStatement.addSelectQuery(QueryElement(ent, syn));
+}
+void ParserQuery::addPatternQueryElement(string arg1, string arg2, string ent, string syn) {
+	queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, ONE));
+}
+void ParserQuery::addSuchThatQueryElement(QueryElement qe) {
+	queryStatement.addSuchThatQuery(qe);
+}
+bool ParserQuery::isValidOthers(vector<string> vec) {
+	if (vec.size() < 2) {
 		return true;
 	}
-	else {	//loop thru the rest of the clauses
-		string selectClause = vectorClauses.at(0);
-		vector<string> selectClausesSplit = split(selectClause, SYMBOL_WHITESPACE);
-		string syn = selectClausesSplit.at(1);
-		for (size_t i = 1; i < vectorClauses.size(); i++) {
-			if (vectorClauses.at(i).find(SUCH_THAT_STRING)) {
-				return isValidSuchThat(vectorClauses.at(i), syn);
+	else {
+		string select = vec.at(ZERO);
+		vector<string> vecSplit = split(select, SYMBOL_WHITESPACE);
+		
+		string syn = vecSplit.at(ONE);
+		for (size_t i = ONE; i < vecSplit.size(); i++) {
+			if (vecSplit.at(i).find(SUCH_THAT_STRING)) {
+				return isValidSuchThat(vecSplit.at(i), syn);
 			}
-			else if (vectorClauses.at(i).find(PATTERN_STRING)) {
-				return isValidPattern(vectorClauses.at(i), syn);
+			else if (vecSplit.at(i).find(PATTERN_STRING)) {
+				return isValidPattern(vecSplit.at(i), syn);
 			}
 			else {
 				return false;
@@ -294,19 +300,19 @@ bool ParserQuery::isValidClauses(vector<string> vectorClauses) {
 }
 bool ParserQuery::isValidSuchThat(string str, string syn) {
 	//Firstly extract/split till a relation is found
-	string tempString = str.substr(9, str.length()-1);
+	string tempString = str.substr(9, str.length()-ONE);
 
 	vector<string> tempVec = split(tempString, SYMBOL_LEFT_BRACKET);
-	string relation = tempVec.at(0);
-	//string argsWithoutBracket = tempVec.at(1).substr(1, tempVec.at(1).end);
-	string argsWithoutBracket = tempVec.at(1).substr(1, tempVec.at(1).length() - 2);
+	string relation = tempVec.at(ZERO);
+	string argsWithoutBracket = tempVec.at(ONE).substr(ONE, tempVec.at(ONE).length() - 2);
 	vector<string> args = split(argsWithoutBracket, COMMA_WHITESPACE_STRING);
 
-	string arg1 = args.at(0);
-	string arg2 = args.at(1);
+	string arg1 = args.at(ZERO);
+	string arg2 = args.at(ONE);
 
-	string type1 = checkDeclaration(arg1);
-	string type2 = checkDeclaration(arg2);
+	string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
+	string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
+	
 	bool arg1Valid = false;
 	bool arg2Valid = false;
 	bool arg1_NUM = false;
@@ -314,16 +320,15 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 	bool arg1_UNDER = false;
 	bool arg2_UNDER = false;
 
-	//Implies that it is part of the declared synonym
-	if (type1 != "nth") {
-		arg1Valid = checkRelationshipTable(relation, type1, 1);
+	if (arg1Ent != "nth") {
+		//Implies that a corresponding entity was obtained
+		arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
 	}
 	else {
-		//Implies that it is not part of the declaration synonyms
-		//So it could be either a digit or a wildcard
-		if (is_number(type1)) {
+		//If no correspond entity was obtained, try to check if it is a number or wildcard
+		if (is_number(arg1Ent)) {
 			//If exists in table and part of declared relationship, create a clause and add it to query tree
-			arg1Valid = checkRelationshipTable("constant", type1, 1);
+			arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
 			if (arg1Valid) {
 				arg1_NUM = true;
 			}
@@ -331,23 +336,26 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 				arg1_NUM = false;
 			}
 		}
-		else if (type1 == UNDER_SCORE_STRING) {
-			arg1Valid = checkRelationshipTable(UNDER_SCORE_STRING, type1, 1);
+		else if (arg1Ent == UNDER_SCORE_STRING) {
+			arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
 			if (arg1Valid) {
-				arg2_UNDER = true;
+				arg1_UNDER = true;
 			}
 			else {
-				arg2_UNDER = false;
+				arg1_UNDER = false;
 			}
+		}
+		else {
+			arg1Valid = false;
 		}
 	}
 	//Implies that it is part of the delcared synonym
-	if (type2 != "nth") {
-		arg2Valid = checkRelationshipTable(relation, type2, 2);
+	if (arg2Ent != "nth") {
+		arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
 	}
 	else {
-		if (is_number(type2)) {
-			arg2Valid = checkRelationshipTable(CONSTANT_STRING, type2, 2);
+		if (is_number(arg2Ent)) {
+			arg2Valid = checkRelationshipTable(CONSTANT_STRING, NUMBER_STRING, TWO);
 			if (arg2Valid) {
 				arg2_NUM = true;
 			}
@@ -355,8 +363,8 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 				arg2_NUM = false;
 			}
 		}
-		else if (type2 == UNDER_SCORE_STRING) {
-			arg2Valid = checkRelationshipTable(UNDER_SCORE_STRING, type2, 2);
+		else if (arg2Ent == UNDER_SCORE_STRING) {
+			arg2Valid = checkRelationshipTable(UNDER_SCORE_STRING, WILDCARD_STRING, TWO);
 			if (arg2Valid) {
 				arg2_UNDER = true;
 			}
@@ -364,10 +372,13 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 				arg2_UNDER = false;
 			}
 		}
+		else {
+			arg2Valid = false;
+		}
 	}
 	//If both are valid and true, create the clause
 	if (arg1Valid  && arg2Valid) {
-		if (!createRelClause(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, relation, arg1, arg2)) {
+		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, relation, arg1, arg2, arg1Ent, arg2Ent)) {
 			cout << "Error ending clause to tree";
 			return false;
 		}
@@ -377,87 +388,105 @@ bool ParserQuery::isValidSuchThat(string str, string syn) {
 	}
 	
 }
-bool ParserQuery::createRelClause(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2) {
+
+bool ParserQuery::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2) {
 	if (arg1_NUM == false && arg1_UNDER == false) {
+		//If a match is found create a query element with following parameters (arg1, arg1Type, arg2, arg2Type, rel)
 		if (arg2_NUM == false && arg2_UNDER == false) {
-			//This implies that the clause for arg1 is not a num/under, arg2 is not a num/under
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, arg1, arg2);
+			QueryElement queryElement = QueryElement(arg1, type1, arg2, type2, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == false && arg2_UNDER == true) {
 			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, arg1, WILDCARD_STRING);
+			QueryElement queryElement = QueryElement(arg1, type1, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == true && arg2_UNDER == false) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, CONSTANT_STRING, arg2);
+			QueryElement queryElement = QueryElement(arg1, type1, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	else if (arg1_NUM == true && arg1_UNDER == false) {
 		if (arg2_NUM == false && arg2_UNDER == false) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, CONSTANT_STRING, arg2);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, type2, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == false && arg2_UNDER == true) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, CONSTANT_STRING, UNDER_SCORE_STRING);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == true && arg2_UNDER == false) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, CONSTANT_STRING, CONSTANT_STRING);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 	else if (arg1_NUM == false && arg1_UNDER == true) {
 		if (arg2_NUM == false && arg2_UNDER == false) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, UNDER_SCORE_STRING, arg2);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, type2, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == false && arg2_UNDER == true) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, UNDER_SCORE_STRING, UNDER_SCORE_STRING);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
 		}
 		else if (arg2_NUM == true && arg2_UNDER == false) {
-			Clause toAddClause = Clause(RELATIONSHIP_STRING, relType, UNDER_SCORE_STRING, CONSTANT_STRING);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 }
-bool ParserQuery::addSelectClauseTree(Clause clause) {
-	queryTree.addSelectClause(clause);
-	return true;
-}
-bool ParserQuery::addRelClauseTree(Clause clause) {
-	queryTree.addRelClause(clause);
-}
-bool ParserQuery::addPatternClauseTree(Clause clause) {
-	queryTree.addPatternClause(clause);
-}
-bool ParserQuery::checkRelationshipTable(string str, string type, int idx) {
-	if (relationshipTable.isValidArg(str, type, idx)) {
+
+//This function takes in e.g. str = Follows, type = stmt, idx = 1
+bool ParserQuery::checkRelationshipTable(string rel, string type, int idx) {
+	if (relationshipTable.isValidArg(rel, type, idx)) {
 		return true;
 	}
 	else {
 		return false;
 	}
 }
-string ParserQuery::checkDeclaration(string arg) {
-	for (size_t i = 0; i < synonymAndEntityList.size(); i++) {
-	//	vector<SynonymEntityPair> tempVec = synonymAndEntityList.at(i);
+string ParserQuery::getCorrespondingEntity(string syn) {
+	string reqEntity = "nth";
+	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
-		vector<string> synonymList = tempPair.getSynonymList();
-		size_t tempSize = synonymList.size();
-		for (size_t j = 0; j <tempSize; j++) {
-			if (arg == synonymList.at(j)) {
-				//Since arg1 is part of the declaration, we find its corresponding Entity and return it
-				return synonymAndEntityList.at(i).getEntity();
+		vector<string> tempVec = tempPair.getSynonymList();
+		for (size_t j = ZERO; j < tempVec.size(); j++) {
+			if (tempVec.at(j) == syn) {
+				reqEntity = tempPair.getEntity();
+				return reqEntity;
 			}
 		}
 	}
-	 return "nth";
+	return reqEntity;
 }
-
 bool ParserQuery::is_number(string s) {
 	return s.find_first_not_of("0123456789") == string::npos;
 }
 
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
 bool ParserQuery::isValidSynonym(string syn) {
-	for (size_t i = 0; i < synonymAndEntityList.size(); i++) {
+	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
 		vector<string> tempVec = tempPair.getSynonymList();
-		for (size_t j = 0; j < tempVec.size(); j++) {
+		for (size_t j = ZERO; j < tempVec.size(); j++) {
 			if (changeLowerCase(tempVec.at(j)) ==  changeLowerCase(syn)){
 				return true;
 			}
@@ -469,13 +498,13 @@ bool ParserQuery::isValidSynonym(string syn) {
 vector<string> ParserQuery::split(string str, char symbolSplitWith) {
 	
 	vector<string> result = vector<string>();
-	size_t pos = 0;
+	size_t pos = ZERO;
 	std::string token;
 
 	while ((pos = str.find(symbolSplitWith)) != std::string::npos) {
-		token = str.substr(0, pos);
+		token = str.substr(ZERO, pos);
 		result.push_back(token);
-		str.erase(0, pos + 1);
+		str.erase(ZERO, pos + 1);
 	}
 	return result;
 }
@@ -483,42 +512,42 @@ vector<string> ParserQuery::split(string str, char symbolSplitWith) {
 vector <string> ParserQuery::split(string str, string symbolSplitWith) {
 
 	vector<string> result = vector<string>();
-	size_t pos = 0;
+	size_t pos = ZERO;
 	std::string token;
 
 	while ((pos = str.find(symbolSplitWith)) != std::string::npos) {
-		token = str.substr(0, pos);
+		token = str.substr(ZERO, pos);
 		result.push_back(token);
 		size_t toAdd = symbolSplitWith.length();
-		str.erase(0, pos+toAdd);
+		str.erase(ZERO, pos+toAdd);
 	}
 	return result;
 }
 
-vector<string> ParserQuery::splitSelect(vector<string> vectorToSplit, string strToSplitWith) {
+vector<string> ParserQuery::split(vector<string> vectorToSplit, string strToSplitWith) {
 
 	vector<string> result = vector<string>();
-	size_t pos = 0;
+	size_t pos = ZERO;
 	std::string token;
-	for (size_t i = 0; i < vectorToSplit.size(); i++) {
+	for (size_t i = ZERO; i < vectorToSplit.size(); i++) {
 		while ((pos = vectorToSplit.at(i).find(strToSplitWith)) != std::string::npos) {
-			token = vectorToSplit.at(i).substr(0, pos);
+			token = vectorToSplit.at(i).substr(ZERO, pos);
 			result.push_back(token);
-			vectorToSplit.at(i).erase(0, pos + strToSplitWith.length());
+			vectorToSplit.at(i).erase(ZERO, pos + strToSplitWith.length());
 		}
 	}
 	return result;
 }
 string ParserQuery::removeSymbols(string str, string symbolToRemove) {
 	string toReturn = "";
-	size_t pos = 0;
+	size_t pos = ZERO;
 	std::string token;
 
 	while ((pos = str.find(symbolToRemove)) != std::string::npos) {
-		token = str.substr(0, pos);
+		token = str.substr(ZERO, pos);
 		toReturn += token;
 		size_t toAdd = symbolToRemove.length();
-		str.erase(0, pos + toAdd);
+		str.erase(ZERO, pos + toAdd);
 	}
 	return toReturn;
 }

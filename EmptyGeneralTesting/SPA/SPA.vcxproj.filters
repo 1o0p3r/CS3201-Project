@@ -42,10 +42,10 @@
     <ClCompile Include="RelationshipTable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QueryTree.cpp">
+    <ClCompile Include="QueryStatement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Clause.cpp">
+    <ClCompile Include="QueryElement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -71,10 +71,10 @@
     <ClInclude Include="RelationshipTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QueryTree.h">
+    <ClInclude Include="QueryStatement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Clause.h">
+    <ClInclude Include="QueryElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
