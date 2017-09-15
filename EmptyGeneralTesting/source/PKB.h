@@ -269,7 +269,7 @@ private:
 
 	int getVarIndex(string varName);
 	int getProcIndex(string varName);
-	void setAllConstants(string c);
+	void addConstant(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
 };

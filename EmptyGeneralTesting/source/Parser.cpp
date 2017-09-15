@@ -53,11 +53,9 @@ bool Parse(string fileName) {
 		else {
 
 			if (nextLine[1] == "=" && nextLine.back() == ";") { //assign statements
-				nestLevel++;
 				pkb.setStatementType(lineCounter, 2);
-				isSameLevel = true;
 
-				if (lineCounter != 1) {
+				if (lineCounter != 1 && isSameLevel) {
 					pkb.setFollows(lineCounter - 1, lineCounter);
 				}
 
@@ -80,23 +78,23 @@ bool Parse(string fileName) {
 					}
 
 				}
-			} //end of assign statemnt
+				isSameLevel = true;
 
+			} //end of assign statement
 
 			else {	//while, if statements
 
 				if (nextLine[0] == "if" && nextLine[2] == "then") {
 					nestLevel++;
 					pkb.setStatementType(lineCounter, 3);
-					isSameLevel = false; //??
-
+					isSameLevel = true;
 
 				}
 
 				else if (nextLine[0] == "while" && nextLine[2] == "{") {
 					nestLevel++;
 					pkb.setStatementType(lineCounter, 1);
-					isSameLevel = true; //??
+					isSameLevel = true;
 
 
 				}
