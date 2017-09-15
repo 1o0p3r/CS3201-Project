@@ -119,7 +119,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setModifies(int s, string varName, vector<int> parentStarOfStmt);
+	void setModifies(int s, string varName);
 
 	/**
 	Sets proc to modifies varName. Implicitly set varName to be modifiedBy proc.
