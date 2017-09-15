@@ -59,8 +59,16 @@ vector<string> PKB::getAllVariables() {
 	return result;
 }
 
-void PKB::setAllConstants(string c) {
+void PKB::addConstant(string c) {
 	allConstants.insert(c);
+}
+
+void PKB::addVariable(string v) {
+	getVarIndex(v);
+}
+
+void PKB::addProcedure(string p) {
+	getProcIndex(p);
 }
 
 vector<string> PKB::getAllConstants() {

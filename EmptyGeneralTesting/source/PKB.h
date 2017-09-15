@@ -252,6 +252,12 @@ public:
 	*/
 	vector<int> getAllStmt();
 
+	void addConstant(string c);
+
+	void addVariable(string v);
+
+	void addProcedure(string p);
+
 private:
 	Follow follow;
 	Parent parent;
@@ -269,7 +275,6 @@ private:
 
 	int getVarIndex(string varName);
 	int getProcIndex(string varName);
-	void addConstant(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
 };
