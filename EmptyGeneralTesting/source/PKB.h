@@ -215,11 +215,41 @@ public:
 	*/
 	vector<string> getProcUsedBy(string varName);
 
+	/**
+	Sets the statement type of each line of the program
+
+	@param statementNum statement number of input statement
+	@param type indexed name of statement type
+	@returns void
+	*/
 	void setStatementType(int statementNum, int type);
 
+	/**
+	Gets all statement numbers of While statements
+
+	@returns void
+	*/
 	vector<int> getWhile();
+
+	/**
+	Gets all Assign numbers of While statements
+
+	@returns void
+	*/
 	vector<int> getAssign();
+
+	/**
+	Gets all statement numbers of Is statements
+
+	@returns void
+	*/
 	vector<int> getIf();
+
+	/**
+	Gets all statement numbers in program
+
+	@returns void
+	*/
 	vector<int> getAllStmt();
 
 private:
