@@ -171,7 +171,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setUses(int s, string varName, vector<int> parentStarOfStmt);
+	void setUses(int s, string varName);
 
 	/**
 	Sets proc to uses varName. Implicitly set varName to be UsedBy proc.
