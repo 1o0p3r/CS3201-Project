@@ -1,5 +1,7 @@
 #include "Util.h"
 #include <iostream>
+#include <vector>
+#include <sstream>
 
 string Util::insertBrackets(string results) {
 	//string results = input;
@@ -88,4 +90,14 @@ string Util::insertBrackets(string results) {
 		index++;
 	}
 	return results;
+}
+
+vector<string> Util::splitLine(string s, char delim) {
+	stringstream ss(s);
+	string item;
+	vector<string> tokens;
+	while (getline(ss, item, delim)) {
+		tokens.push_back(item);
+	}
+	return tokens;
 }
