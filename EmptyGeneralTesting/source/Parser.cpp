@@ -21,49 +21,88 @@ bool Parse(string fileName) {
 	string procName;
 
 	int lineCounter = 0;
-	bool isSameLevel = false;
+	bool isSameLevel = false;	//is same nesting level
+	int nestLevel = 0;
 
 	vector<string> firstLine = Util::splitLine(line, ' ');
 
 	if (firstLine[0] != "procedure" && firstLine[2] == "{") {
-		
+
 		return false;
 	}
 
 	else {
-		
+
 		procName = firstLine[1]; //need to validate > does not start with digit
 	}
 
 	while (getline(file, line)) { //read line by line
-		
+
 		lineCounter++;
 		vector<string> nextLine = Util::splitLine(line, ' ');
-		
-		if (nextLine[0] == "else") { // line starts with else, no statement number
-			
+
+		if (nextLine[0] == "else" && nextLine[1] == "{") { // line starts with else, no statement number
+
 			lineCounter--;
 			continue;
+
+//		closing: if (nextLine.back() == "}")
+
 		}
 
 		else {
-			
-			if (nextLine[1] == "=") { //assign statements
-				
+
+			if (nextLine[1] == "=" && nextLine.back() == ";") { //assign statements
+				nestLevel++;
 				pkb.setStatementType(lineCounter, 2);
 				isSameLevel = true;
-				
-				if (lineCounter != 1) {			
+
+				if (lineCounter != 1) {
 					pkb.setFollows(lineCounter - 1, lineCounter);
 				}
 
+				pkb.setModifies(lineCounter, nextLine[0]);
+
 				for (int i = 2; i < nextLine.size(); i++) {
 
-					if (isdigit(nextLine[i])) //if value is a digit, add to constants table
+					if (isdigit(nextLine[i])) { //if value is a digit, add to constants table
+												//code to add to constants table ??
 						return false;
+					}
+
+					else if (isalpha(nextLine[i]) != 0) {	// compile error: no suitable conversion function from std::string to int exists
+						pkb.setUses(lineCounter, nextLine[i]);
+						return true;
+					}
+
+					else {
+						return false;
+					}
+
 				}
 			} //end of assign statemnt
-			return false;
+
+
+			else {	//while, if statements
+
+				if (nextLine[0] == "if" && nextLine[2] == "then") {
+					nestLevel++;
+					pkb.setStatementType(lineCounter, 3);
+					isSameLevel = false; //??
+
+
+				}
+
+				else if (nextLine[0] == "while" && nextLine[2] == "{") {
+					nestLevel++;
+					pkb.setStatementType(lineCounter, 1);
+					isSameLevel = true; //??
+
+
+				}
+
+			}
+
 		}
 	}
 
