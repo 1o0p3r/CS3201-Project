@@ -26,7 +26,17 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="TestAST.cpp">
+=======
+    <ClCompile Include="FollowTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryValidatorTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipTableTest.cpp">
+>>>>>>> origin/preprocessFollow
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

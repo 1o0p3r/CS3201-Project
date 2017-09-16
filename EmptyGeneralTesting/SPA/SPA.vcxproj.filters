@@ -24,6 +24,7 @@
     <ClCompile Include="..\source\PKB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\source\TNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,6 +44,30 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Follow.cpp">
+=======
+    <ClCompile Include="Follow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryPreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SynonymEntityPair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Relationship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryStatement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryValidator.cpp">
+>>>>>>> origin/preprocessFollow
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,6 +75,7 @@
     <ClInclude Include="..\source\PKB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,4 +101,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+=======
+    <ClInclude Include="Follow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryPreprocessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SynonymEntityPair.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Relationship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RelationshipTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryStatement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryValidator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Parser.h">
+      <Filter>Header Files</Filter>
+    </None>
+  </ItemGroup>
+>>>>>>> origin/preprocessFollow
 </Project>
