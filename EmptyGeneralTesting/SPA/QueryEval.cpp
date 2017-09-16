@@ -1,19 +1,19 @@
 #include "QueryEval.h"
 
-static enum selectValue 
+enum selectValue 
 {	undefinedSelect, stmt, assign, _while, variable, constant,
 	prog_line		
 };
 
-static enum suchThatValue
+enum suchThatValue
 {
 	undefinedSuchThat, modifies, uses, parent, parentStar, follows, 
 	followsStar
 };
 
-static enum clauseSelection
+enum clauseSelection
 {
-	nil, clauseArg1, clauseArg2
+	no, yes
 };
 
 static std::map<std::string, selectValue> mapSelectValues;
@@ -23,8 +23,8 @@ QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
 	pkbReadOnly = pkb;
 	qsReadOnly = qs;
-	suchThatClause = true;
-	patternClause = true;
+	hasSuchThatClause = true;
+	hasPatternClause = true;
 	initSelectMap();
 }
 
@@ -71,42 +71,69 @@ void QueryEval::evalQueryElements()
 	int hasSynoSuchThat; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
 	int hasSynPattern;  // 0 = nil, 1 = assign, 2 = arg1, 
 
-	evalQuerySelect();
+	isResultInt = evalQuerySelect();
 	hasSynoSuchThat = evalQuerySuchThat();
 	hasSynPattern = evalQueryPattern();	
+	combineSelectSuchThat(hasSynoSuchThat);
+	resultSelectSuchThatPattern(hasSynPattern);
 
-	switch (hasSynoSuchThat)
-	{
-		case nil:
-			break;
-
-		case clauseArg1:
-			break;
-
-		case clauseArg2:
-			break;
-	}
-
-	//resultSelectSuchThatPattern(result1, result2, opt);
+	//convert final result into a string here.
 }
-void QueryEval::resultSelectSuchThatPattern(vector<string> result1, vector<int> result2, int opt)
+
+void QueryEval::combineSelectSuchThat(int hasSynoSuchThat) // similar code, can probaby refactor into simpler function in iter2
+{
+	if (isResultInt) {
+		if (hasSuchThatClause) //by default it is always true, unless a suchThatClause fails
+		{	
+			int queryChoice = hasSynoSuchThat != 0 ? true : false;
+			switch (queryChoice) //is there a common synonym in suchThatclause
+			{
+			case no:
+				queryAnswerInt = selectResultInt;
+				break;
+			case yes:
+				queryAnswerInt = suchThatAnswerInt;
+				break;
+			}
+		} else {
+			queryAnswerInt = vector<int>(); //to check if c++ requires initialisation to empty vector.
+		}
+	}
+	else {
+		if (hasSuchThatClause) //by default it is always true, unless a suchThatClause fails
+		{
+			int queryChoice = hasSynoSuchThat != 0 ? true : false;
+			switch (queryChoice) //is there a common synonym in suchThatclause
+			{
+			case no:
+				queryAnswerString = selectResultString;
+				break;
+			case yes:
+				queryAnswerString = suchThatAnswerString;
+				break;
+			}
+		}
+	}
+}
+
+void QueryEval::resultSelectSuchThatPattern(int hasSynPattern)
 {
 
 }
 
-void QueryEval::evalQuerySelect()
+int QueryEval::evalQuerySelect()
 {	
 	//ToDo: return 0 or 1 , 0 -> string 1 -> int
-	selectResultString = vector<string>();
-	selectResultInt = vector<int>();
+	//selectResultString = vector<string>(); To confirm c++ doesnt require initialisation.
+	//selectResultInt = vector<int>();
+	int choice = 1;
 
 	comSynonym = selectElement.getSelectSynonym();
 	switch (mapSelectValues[selectElement.getSelectEntity()]) 
 	{
 		case stmt: //stmt
-			//selectResultInt = ??;
-			break;
-		
+			selectResultInt = pkbReadOnly.getAllStmt();
+			break;		
 		case assign: //assign
 			selectResultInt = pkbReadOnly.getAssign();
 			break;
@@ -117,16 +144,19 @@ void QueryEval::evalQuerySelect()
 
 		case variable: //variable
 			selectResultString = pkbReadOnly.getAllVariables();
+			choice = 0;
 			break;
 
 		case constant: //constant
 			selectResultString = pkbReadOnly.getAllConstants();
+			choice = 0;
 			break;
 
 		case prog_line: //prog_line , not in use atm
 			break;
 
 	}
+	return choice;
 }
 
 int QueryEval::evalQueryPattern()
@@ -137,13 +167,14 @@ int QueryEval::evalQueryPattern()
 int QueryEval::evalQuerySuchThat()
 {
 	vector<vector<int>> suchThatResult;
+	vector<vector<string>> suchThatResultString;
 	int argEval; //option to determine which argument to evaluate
 				 //case 0: no common synonym, case 1: arg1 = common synonym, case 2: arg 2 = common synonym
 	
 
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
 	{ 
-		
+		//option 0 : both args = syno, 1 = arg1 syno, 2 = arg2 syno for finding common synonym
 		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1(i)) ? 1 :
 			comSynonym.compare(suchThatElements[i].getSuchThatArg2(i)) ? 2 : 0;
 		string argType1 = suchThatElements[i].getSuchThatArg1Type(i);
@@ -158,18 +189,20 @@ int QueryEval::evalQuerySuchThat()
 			case modifies:
 				switch (comEval)
 				{
-					case 0:
+					case 0: //both synonyms
 						isSuchThatFalse(true);
 						break;
-					case 1:
+					case 1: //arg1 synonym
 						intermediateResultInt = 
 						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2(i));
-						intermediateResultInt.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+						intermediateResultInt.empty() ? isSuchThatFalse(false) : 
+							suchThatResult.push_back(intermediateResultInt);
 						break;
-					case 2:
+					case 2: //arg2 synonym
 						intermediateResultString =
 							pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1(i)));
-						intermediateResultString.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+						intermediateResultString.empty() ? isSuchThatFalse(false) : 
+							suchThatResultString.push_back(intermediateResultString);
 						break;
 				}
 				break;
@@ -182,12 +215,14 @@ int QueryEval::evalQuerySuchThat()
 					case 1:
 						intermediateResultInt =
 							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2(i));
-						intermediateResultInt.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+						intermediateResultInt.empty() ? isSuchThatFalse(false) : 
+							suchThatResult.push_back(intermediateResultInt);
 						break;
 					case 2:
 						intermediateResultString =
 							pkbReadOnly.getUses(stoi(suchThatElements[i].getSuchThatArg1(i)));
-						intermediateResultString.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+						intermediateResultString.empty() ? isSuchThatFalse(false) : 
+							suchThatResultString.push_back(intermediateResultString);
 						break;
 				}
 				break;
@@ -196,7 +231,7 @@ int QueryEval::evalQuerySuchThat()
 					argEval ?
 					parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
 					parentResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
-				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
 				break;
 			case parentStar:
 				suchThatResult.push_back(
@@ -221,6 +256,8 @@ int QueryEval::evalQuerySuchThat()
 				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 		}
+		suchThatAnswerInt = suchThatResult[0]; // to be changed in iter2, since only at most 1 suchThat in iter1
+		suchThatAnswerString = suchThatResultString[0];
 	}
 	return argEval;
 }
@@ -228,8 +265,8 @@ int QueryEval::evalQuerySuchThat()
 void QueryEval::isSuchThatFalse(bool clauseValue)
 {	//ensure that suchThatClauses is false if there exist 1
 	//clause which is false.
-	if (suchThatClause)
-		suchThatClause = clauseValue;
+	if (hasSuchThatClause)
+		hasSuchThatClause = clauseValue;
 }
 
 void QueryEval::findQueryElements() 

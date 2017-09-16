@@ -35,8 +35,9 @@ public:
 	
 	vector<string> runQueryEval();
 	void evalQueryElements();
-	void resultSelectSuchThatPattern(vector<string> result1, vector<int> result2, int opt);
-	void evalQuerySelect();
+	void combineSelectSuchThat(int hasSynoSuchThat);
+	void resultSelectSuchThatPattern(int hasPatternSuchThat);
+	int evalQuerySelect();
 	int evalQueryPattern();
 	void findQueryElements();
 	void setQueryStatement(QueryStatement qs);
@@ -49,18 +50,21 @@ private:
 	PKB pkbReadOnly;
 	string comSynonym;
 	QueryStatement qsReadOnly;
-	bool suchThatClause;
-	bool patternClause;
+	bool hasSuchThatClause;
+	bool hasPatternClause;
+	bool isResultInt;
 
 	QueryElement selectElement;
 	vector<SynonymEntityPair> synonymElements;
 	vector<QueryElement> suchThatElements;
 	vector<QueryElement> patternElements;
-	vector<string> queryAnswer;
+	vector<string> queryAnswerString;
+	vector<int> queryAnswerInt;
 
 	vector<string> selectResultString;// for var and constant
 	vector<int> selectResultInt; //for stmt etc
-
+	vector<string> suchThatAnswerString;
+	vector<int> suchThatAnswerInt;
 
 
 	vector<int> followResult(int s1, int opt);
