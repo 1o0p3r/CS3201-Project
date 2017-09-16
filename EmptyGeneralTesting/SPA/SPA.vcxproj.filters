@@ -27,13 +27,25 @@
     <ClCompile Include="Follow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parent.cpp">
+    <ClCompile Include="QueryPreprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Modify.cpp">
+    <ClCompile Include="SynonymEntityPair.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Use.cpp">
+    <ClCompile Include="Relationship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryStatement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryValidator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,13 +56,25 @@
     <ClInclude Include="Follow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parent.h">
+    <ClInclude Include="QueryPreprocessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Modify.h">
+    <ClInclude Include="SynonymEntityPair.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Use.h">
+    <ClInclude Include="Relationship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RelationshipTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryStatement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryElement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QueryValidator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

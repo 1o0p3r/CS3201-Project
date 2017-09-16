@@ -29,13 +29,10 @@
     <ClCompile Include="FollowTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ParentTest.cpp">
+    <ClCompile Include="QueryValidatorTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModifyTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="UseTest.cpp">
+    <ClCompile Include="RelationshipTableTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

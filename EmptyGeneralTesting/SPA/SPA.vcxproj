@@ -15,16 +15,24 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="Follow.cpp" />
-    <ClCompile Include="Modify.cpp" />
-    <ClCompile Include="Parent.cpp" />
-    <ClCompile Include="Use.cpp" />
+    <ClCompile Include="QueryValidator.cpp" />
+    <ClCompile Include="QueryElement.cpp" />
+    <ClCompile Include="QueryPreprocessor.cpp" />
+    <ClCompile Include="QueryStatement.cpp" />
+    <ClCompile Include="Relationship.cpp" />
+    <ClCompile Include="RelationshipTable.cpp" />
+    <ClCompile Include="SynonymEntityPair.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="Follow.h" />
-    <ClInclude Include="Modify.h" />
-    <ClInclude Include="Parent.h" />
-    <ClInclude Include="Use.h" />
+    <ClInclude Include="QueryValidator.h" />
+    <ClInclude Include="QueryElement.h" />
+    <ClInclude Include="QueryPreprocessor.h" />
+    <ClInclude Include="QueryStatement.h" />
+    <ClInclude Include="Relationship.h" />
+    <ClInclude Include="RelationshipTable.h" />
+    <ClInclude Include="SynonymEntityPair.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Parser.h" />
