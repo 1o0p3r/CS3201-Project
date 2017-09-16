@@ -5,12 +5,12 @@
 RelationshipTable::RelationshipTable() {
 	const int NUM_ONE = 1;
 	const int NUM_TWO = 2;
-	const string MODIFIES_STRING = "modfiies";
-	const string USES_STRING = "uses";
-	const string FOLLOWS_STRING = "follows";
-	const string FOLLOWS_STAR_STRING = "follows*";
-	const string PARENT_STRING = "parent";
-	const string PARENT_STAR_STRING = "parent*";
+	const string MODIFIES_STRING = "Modfiies";
+	const string USES_STRING = "Uses";
+	const string FOLLOWS_STRING = "Follows";
+	const string FOLLOWS_STAR_STRING = "Follows*";
+	const string PARENT_STRING = "Parent";
+	const string PARENT_STAR_STRING = "Parent*";
 
 	//variables to be used to add to relationship table
 	vector<string> modifiesArg1;
@@ -27,42 +27,42 @@ RelationshipTable::RelationshipTable() {
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
 		"string", "number", "constant" };
-	modifiesArg2 = { "variable", "string", "wildCard" };
+	modifiesArg2 = { "variable", "string", "wildcard" };
 	Relationship relationModifies = Relationship(NUM_TWO, modifiesArg1, modifiesArg2);
 	relationshipTable[MODIFIES_STRING] = relationModifies;
 
 	//Add the relationship of Uses to table
 	usesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
 		"string", "number", "constant" };
-	usesArg2 = {"variable", "string", "wildCard"};
+	usesArg2 = {"variable", "string", "wildcard"};
 	Relationship relationUses = Relationship(NUM_TWO, usesArg1, usesArg2);
 	relationshipTable[USES_STRING] = relationUses;
 
 	//Adds the relationship of Follows to table
-	followsArg = { "stmt", "assignment", "while", "if", "constant", "prog_line", "call", "wildcard" };
+	followsArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard" };
 	Relationship relationFollows = Relationship(NUM_TWO, followsArg, followsArg);
 	relationshipTable[FOLLOWS_STRING] = relationFollows;
 
 	//Adds the relationship of Follows* to table
-	followsStarArg = { "stmt", "assignment", "while", "if", "constant", "prog_line", "call", "wildcard" };
+	followsStarArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard" };
 	Relationship relationFollowsStar = Relationship(NUM_TWO, followsStarArg, followsStarArg);
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
 	parentArg1 = { "stmt", "while", "if", "constant", "prog_line" ,"wilcard" };
-	parentArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assignment" };
+	parentArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assign" };
 	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
 	parentStarArg1 = { "stmt", "while", "if", "constant", "prog_line", "wilcard" };
-	parentStarArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assignment" };
+	parentStarArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assign" };
 	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
 }
 
 bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
-	if (argIndex == 1 && isValidArg1(rel,type)) {
+	if (argIndex == 1 && (isValidArg1(rel,type) == true)) {
 		return true;
 	}
 	else if (argIndex == 2 && isValidArg2(rel, type)) {
@@ -73,10 +73,12 @@ bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
 	}
 }
 bool RelationshipTable::isValidArg1(string rel, string typeArg) {
-	if (isRelationshipExists(rel)) {
+	bool dummy = isRelationshipExists(rel);
+	if (dummy == true) {
 		Relationship relationship = relationshipTable.at(rel);
-		vector<string> reqArg1 = relationship.getArg1();
 
+		vector<string> reqArg1 = relationship.getArg1();
+		
 		for (std::vector<string>::iterator it = reqArg1.begin(); it != reqArg1.end(); it++) {
 			if (typeArg == (*it)) {
 				return true;
@@ -87,7 +89,7 @@ bool RelationshipTable::isValidArg1(string rel, string typeArg) {
 	return false;
 }
 bool RelationshipTable::isValidArg2(string rel, string typeArg) {
-	if (isRelationshipExists(rel)) {
+	if (isRelationshipExists(rel) == true) {
 		Relationship relationship = relationshipTable.at(rel);
 		vector<string> reqArg2 = relationship.getArg2();
 
@@ -101,12 +103,15 @@ bool RelationshipTable::isValidArg2(string rel, string typeArg) {
 	return false;
 }
 bool RelationshipTable::isRelationshipExists(string rel) {
-	if (relationshipTable.find(rel) == relationshipTable.end()) {
+	std::unordered_map<std::string, Relationship>::iterator it;
+
+	it = relationshipTable.find(rel);
+
+	if (it != relationshipTable.end()) {
 		return true;
 	}
 	return false;
 }
 bool RelationshipTable::isValidNumArgs(string rel, int numArgs) {
-	
 	return false;
 }

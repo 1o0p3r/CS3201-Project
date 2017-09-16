@@ -1,4 +1,4 @@
-#include "QueryValidator.h"
+﻿#include "QueryValidator.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+#include <algorithm>
 
 const int ZERO = 0;
 const int ONE = 1;
@@ -18,6 +19,7 @@ const char SYMBOL_COMMA = ',';
 const char SYMBOL_LEFT_BRACKET = '(';
 const char SYMBOL_RIGHT_BRACKET = ')';
 
+const string WHITESPACE_STRING = " ";
 const string SYMBOL_SEMI_COLON = ";";
 const string SELECT_STRING = "Select";
 const string COMMENT_STRING = "comment";
@@ -45,10 +47,13 @@ QueryValidator::QueryValidator()
 	//entityList, synonymList needed
 
 	int numClauses = ZERO;
-	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
-		"variable", "constant", "prog_line" };
+
 }
-void QueryValidator::startParsing() {
+
+//This function takes in a string query
+void QueryValidator::startParsing(string str) {
+	/**
+	
 	cout << "Parsing input file" << endl;
 	std::ifstream file("Example.txt");
 	std::string str;
@@ -60,51 +65,51 @@ void QueryValidator::startParsing() {
 			currentString.clear();
 			str.clear();
 			synonymAndEntityList.clear();
+			queryStatement = QueryStatement();	//Make a new query statement after every query is done
+			validDeclaration = true;
+			validQuery = true;
 		}
 		else {
 			parseLine(str, currentString);
 		}
-	}
+	}**/
+	parseInput(str);
 }
-void QueryValidator::parseLine(string str, string currentString) {
 
-	//If currentLine consist of a ; It likely implies that a declaration is being done
-	//So firstly check for the position of
+//With a given str, loop thru to find ;
+bool QueryValidator::parseInput(string str) {
 	if (str.find(SYMBOL_SEMI_COLON)) {
 		size_t pos = ZERO;
 		std::string token;
-		string originalString = str;
+		string originalStr = str;
+		bool valDel = false;
+		bool valQuery = false;
+
+		//While i can find a semicolon
 		while ((pos = str.find(SYMBOL_SEMI_COLON) != std::string::npos)) {
-			token = str.substr(ZERO, pos);	//gets the string up to ;
-			
-			if(!parseEntityAndSynonym(token)) {
-				cout << "Error occured while parsing Entity and Synonym, please key in a valid Entity";
+			token = str.substr(ZERO, pos);
+			if (isEntityAndSynonym(token)) {
+				valDel = true;
 			}
-			//After parsing 1 token, erase the parsed token
 			else {
 				str.erase(ZERO, pos + ONE);
 			}
 		}
-		//Since the last found will be the index of a whitespace, before a select statement is here
-		//Make sure that it is indeed a whitespace first, before proceeding to parse the select clauses
+		//After the loop ends, comes the select query
 		if (str.find(SELECT_STRING)) {
-			//parseSelectClauses(str);
-			parseQueryLine(str);
-		}
-		else {
-			cout << "Syntax is wrong, please key in the proper syntax for query";
+			valQuery = parseQueryLine(str);
 		}
 	}
-	else { 
+	else {
 		cout << "Syntax is wrong, please key in semi colon";
-		exit(ZERO);
+		return false;
 	}
 }
 
 //This function parses the Entity And Synonym and checks for the validity of Entity
-bool QueryValidator::parseEntityAndSynonym(string currentString) {
+bool QueryValidator::isEntityAndSynonym(string currentString) {
 
-	if (currentString.find(SELECT_STRING)) {
+	if (currentString.find(SELECT_STRING) == true) {
 		cout << "Error occured, please check syntax of the query";
 		return false;
 	}
@@ -118,10 +123,18 @@ bool QueryValidator::parseEntityAndSynonym(string currentString) {
 	}
 }
 
-void QueryValidator::parseQueryLine(string str) {
+bool QueryValidator::parseQueryLine(string str) {
 	if (!isValidQueryLine(str)) {
+		validQuery = false;
 		cout << "Invalid queryLine" << endl;
 	}
+	else {
+		return true;
+	}
+}
+
+bool QueryValidator::isValidDeclarationAndQuery() {
+	return (validQuery && validDeclaration);
 }
 //Parse EntityAndSynonym checks for validity of the entitiy by comparing with the validEntitiesList, if its valid, it will proceed to adding the synonym
 bool QueryValidator::checkEntityAndSynonym(string currentString) {
@@ -139,10 +152,11 @@ bool QueryValidator::checkEntityAndSynonym(string currentString) {
 //Returns true if there is a match, else returns false
 bool QueryValidator::isValidEntity(string currentString) {
 	
-	std::vector<string> splitString = split(currentString, SYMBOL_WHITESPACE);
+	//Places the first vector with the unchecked entity, and subsequent vectors with synonyms
+	std::vector<string> splitString = splitBySymbol(currentString, SYMBOL_WHITESPACE);
 	//checks if the entity exists, if so, do parsing on the declarations
-	if (inEntityList(splitString.front())) {
-		if (parseDeclaration(splitString)) {
+	if (inEntityList(splitString.front()) == true) {
+		if (parseDeclaration(splitString) == true) {
 			return true;
 		}
 		else {
@@ -156,10 +170,9 @@ bool QueryValidator::isValidEntity(string currentString) {
 
 //Checks if a given entity is in the EntityTable
 bool QueryValidator::inEntityList(string entity) {
-	vector<string> entityList = validEntities;
 	
-	for (std::size_t i=ZERO; i < entityList.size(); i++) {
-		if (entity == entityList.at(i)) {
+	for (size_t i =ZERO; i < validEntities.size(); i++) {
+		if (entity == validEntities.at(i)) {
 			return true;
 		}
 	}
@@ -176,10 +189,10 @@ bool QueryValidator::parseDeclaration(vector<string> splitString) {
 	for (std::size_t i = ZERO; i < splitString.size(); i++) {
 		synonymsStr += splitString.at(i);
 	}
+	synonymsStr = removeSymbols(synonymsStr, WHITESPACE_STRING);
 	//Split the synonymsStr by comma to obtain relevant synonyms create object SynonymEntityPair and places in the "EntTable"
-	vector<string> synonymsAttached = split(synonymsStr, SYMBOL_COMMA);
-	SynonymEntityPair tempPair = SynonymEntityPair(reqEntity, synonymsAttached);
-	synonymAndEntityList.push_back(tempPair);
+	vector<string> synonymsAttached = splitBySymbol(synonymsStr, SYMBOL_COMMA);
+	synonymAndEntityList.push_back(SynonymEntityPair(reqEntity, synonymsAttached));
 	return true;
 }
 
@@ -189,9 +202,7 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	initialVector.push_back(selectString);
 
 	initialVector = splitStatement(initialVector);
-
 	//After splitting do validation different parts of the vector
-
 	if(isValidSelect(initialVector) && isValidOthers(initialVector)) {
 		return true;
 	}
@@ -206,22 +217,19 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 	std::regex patternRgx(PATTERN_REGEX);
 	
 	if (std::regex_match(str, patternRgx)) {
-		//do my stuff as the syntax matches and i can obtain my string in a hardcode way
-
-		//remove the the string pattern
+		//remove the the string 'pattern'
 		string tempPatternStr = str.substr(8, str.length() - ONE);
 
-		//Obtain the index of left bracket
+		//Obtain the index of first occurence of left bracket
 		int idxLeft = tempPatternStr.find(SYMBOL_LEFT_BRACKET);
 
 		//Create new string to store PatternStr
-		string patternStr = tempPatternStr.substr(idxLeft, tempPatternStr.length() - ONE);
+		string tempArgStr = tempPatternStr.substr(idxLeft, tempPatternStr.length() - ONE);
 		
-		patternStr = removeSymbols(patternStr, SYMBOL_LEFT_BRACKET_STRING);
-		patternStr = removeSymbols(patternStr, SYMBOL_RIGHT_BRACKET_STRING);
+		//Remove all the unncessary whitespace
+		string argStr = removeSymbols(tempPatternStr, WHITESPACE_STRING);
 
-		//Split the string further by comma and space
-		vector<string> splitPattern = split(patternStr, COMMA_WHITESPACE_STRING);
+		vector<string> splitPattern = splitBySymbol(argStr, SYMBOL_COMMA);
 
 		if (splitPattern.size() == ONE) {
 			return false;
@@ -231,6 +239,8 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 
 		string ent = getCorrespondingEntity(syn);
 		addPatternQueryElement(arg1, arg2, ent, syn);
+		
+		return true;
 	}
 	else {
 		return false;
@@ -250,7 +260,8 @@ vector<string> QueryValidator::splitStatement(vector<string> currentVector) {
 bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	//First element of this vector gives the select clause
 	string selectClause = vectorClauses.at(ZERO);
-	vector<string> selectClauseSplit = split(selectClause, SYMBOL_WHITESPACE);
+
+	vector<string> selectClauseSplit = splitBySymbol(selectClause, SYMBOL_WHITESPACE);
 	string syn = selectClauseSplit.at(ONE);
 	vector<string> tempVec;
 	tempVec.push_back(syn);
@@ -259,7 +270,6 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		//I neeed entity and synonym, synonym is now valid and can be used, nw i need toget corresponding entity
 		string ent = getCorrespondingEntity(syn);
 		addSelectQueryElement(ent, syn);
-		
 		return true;
 	}
 	else {
@@ -277,14 +287,17 @@ void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
 }
 bool QueryValidator::isValidOthers(vector<string> vec) {
+	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
 		return true;
 	}
 	else {
 		string select = vec.at(ZERO);
-		vector<string> vecSplit = split(select, SYMBOL_WHITESPACE);
+		vector<string> vecSplit = splitBySymbol(select, SYMBOL_WHITESPACE);
 		
+		//Obtain the synonym
 		string syn = vecSplit.at(ONE);
+
 		for (size_t i = ONE; i < vecSplit.size(); i++) {
 			if (vecSplit.at(i).find(SUCH_THAT_STRING)) {
 				return isValidSuchThat(vecSplit.at(i), syn);
@@ -300,16 +313,32 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 }
 bool QueryValidator::isValidSuchThat(string str, string syn) {
 	//Firstly extract/split till a relation is found
-	string tempString = str.substr(9, str.length()-ONE);
+	string tempString = str.substr(10, str.length()-ONE);
 
-	vector<string> tempVec = split(tempString, SYMBOL_LEFT_BRACKET);
+	//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
+	vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
+	
+	//Obtain the relation Follows
 	string relation = tempVec.at(ZERO);
-	string argsWithoutBracket = tempVec.at(ONE).substr(ONE, tempVec.at(ONE).length() - 2);
-	vector<string> args = split(argsWithoutBracket, COMMA_WHITESPACE_STRING);
+
+	//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
+	string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length()-2);
+
+	//Remove all the whitespace first
+	argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
+
+	//Split them by Comma
+	vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
+	
+	/**
+	for (size_t i = 0; i < args.size(); i++) {
+		args[i] = removeSymbols(args.at(i), WHITESPACE_STRING);
+	}**/
 
 	string arg1 = args.at(ZERO);
 	string arg2 = args.at(ONE);
 
+	//At this pt,
 	string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
 	string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
 	
@@ -377,16 +406,18 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 		}
 	}
 	//If both are valid and true, create the clause
-	if (arg1Valid  && arg2Valid) {
+	if (arg1Valid && arg2Valid) {
 		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, relation, arg1, arg2, arg1Ent, arg2Ent)) {
 			cout << "Error ending clause to tree";
 			return false;
+		}
+		else {
+			return true;
 		}
 	}
 	else {
 		return false;
 	}
-	
 }
 
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2) {
@@ -494,61 +525,56 @@ bool QueryValidator::isValidSynonym(string syn) {
 	}
 	return false;
 }
-//Splits the string into vectors of string with the required symbol and returns a vector of string, mainly for usage of declaration
-vector<string> QueryValidator::split(string str, char symbolSplitWith) {
+//Splits the string into vectors of string with the required symbol and returns a vector of string
+vector<string> QueryValidator::splitBySymbol(string str, char symbolSplitWith) {
 	
 	vector<string> result = vector<string>();
-	size_t pos = ZERO;
 	std::string token;
 
-	while ((pos = str.find(symbolSplitWith)) != std::string::npos) {
-		token = str.substr(ZERO, pos);
+	istringstream f(str);
+	while (getline(f, token, symbolSplitWith)) {
 		result.push_back(token);
-		str.erase(ZERO, pos + 1);
-	}
-	return result;
-}
-
-vector <string> QueryValidator::split(string str, string symbolSplitWith) {
-
-	vector<string> result = vector<string>();
-	size_t pos = ZERO;
-	std::string token;
-
-	while ((pos = str.find(symbolSplitWith)) != std::string::npos) {
-		token = str.substr(ZERO, pos);
-		result.push_back(token);
-		size_t toAdd = symbolSplitWith.length();
-		str.erase(ZERO, pos+toAdd);
 	}
 	return result;
 }
 
 vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToSplitWith) {
+	vector<string> result;
 
-	vector<string> result = vector<string>();
-	size_t pos = ZERO;
-	std::string token;
-	for (size_t i = ZERO; i < vectorToSplit.size(); i++) {
-		while ((pos = vectorToSplit.at(i).find(strToSplitWith)) != std::string::npos) {
-			token = vectorToSplit.at(i).substr(ZERO, pos);
-			result.push_back(token);
-			vectorToSplit.at(i).erase(ZERO, pos + strToSplitWith.length());
+	for (size_t i = 0; i < vectorToSplit.size(); i++) {
+		string curr = vectorToSplit.at(i);
+		size_t pos = curr.find(strToSplitWith);
+		int count = 0;
+		while (pos != std::string::npos) {
+			if (count == 0) {
+				string before = curr.substr(0, pos);
+				result.push_back(before);
+				curr = curr.substr(pos + strToSplitWith.length()+1, curr.length());
+				pos = curr.find(strToSplitWith);
+				count++;
+			}
+			else {
+				string before = curr.substr(0, pos);
+				result.push_back(strToSplitWith + before);
+				curr = curr.substr(pos + strToSplitWith.length()+1, curr.length());
+				pos = curr.find(strToSplitWith);
+				count--;
+			}
+		}
+		if (count == 1) {
+			result.push_back(strToSplitWith + " " + curr);
+			count--;
+		}
+		else {
+			result.push_back(curr);
 		}
 	}
+	//What i need to do: with a given vector
 	return result;
 }
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
-	string toReturn = "";
-	size_t pos = ZERO;
-	std::string token;
-
-	while ((pos = str.find(symbolToRemove)) != std::string::npos) {
-		token = str.substr(ZERO, pos);
-		toReturn += token;
-		size_t toAdd = symbolToRemove.length();
-		str.erase(ZERO, pos + toAdd);
-	}
+	std::regex pattern(symbolToRemove);
+	std::string toReturn = std::regex_replace(str, pattern , "");
 	return toReturn;
 }
 void QueryValidator::setSynonymList(vector<SynonymEntityPair> sList) {

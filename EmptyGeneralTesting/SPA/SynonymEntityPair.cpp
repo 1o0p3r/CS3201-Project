@@ -5,9 +5,6 @@
 using namespace std;
 SynonymEntityPair::SynonymEntityPair(string entityIn, vector<string>synonymIn)
 {
-	vector<string> synonymList;
-	string entity;
-
 	synonymList = synonymIn;
 	entity = entityIn;
 }

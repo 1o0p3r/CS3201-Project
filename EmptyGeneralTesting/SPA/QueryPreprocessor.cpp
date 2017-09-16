@@ -2,12 +2,12 @@
 //
 
 #include "QueryValidator.h"
+#include <string>
+#include "QueryPreprocessor.h"
 
 using namespace std;
-int main()
+QueryPreprocessor::QueryPreprocessor()
 {
 	QueryValidator queryValidator = QueryValidator();
-	queryValidator.startParsing();
-
+	queryValidator.startParsing(str);
 }
-
