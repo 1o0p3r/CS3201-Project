@@ -59,8 +59,16 @@ vector<string> PKB::getAllVariables() {
 	return result;
 }
 
-void PKB::setAllConstants(string c) {
+void PKB::addConstant(string c) {
 	allConstants.insert(c);
+}
+
+void PKB::addVariable(string v) {
+	getVarIndex(v);
+}
+
+void PKB::addProcedure(string p) {
+	getProcIndex(p);
 }
 
 vector<string> PKB::getAllConstants() {
@@ -109,7 +117,7 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
-void PKB::setModifies(int s, string varName, vector<int> parentStarOfStmt) {
+void PKB::setModifies(int s, string varName) {
 	int index = getVarIndex(varName);
 	modify.setModifies(s, index, parent.getParentStar(s));
 }
@@ -158,7 +166,7 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setUses(int s, string varName, vector<int> parentStarOfStmt) {
+void PKB::setUses(int s, string varName) {
 	int index = getVarIndex(varName);
 	use.setUses(s, index, parent.getParentStar(s));
 }

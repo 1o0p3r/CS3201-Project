@@ -119,7 +119,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setModifies(int s, string varName, vector<int> parentStarOfStmt);
+	void setModifies(int s, string varName);
 
 	/**
 	Sets proc to modifies varName. Implicitly set varName to be modifiedBy proc.
@@ -171,7 +171,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setUses(int s, string varName, vector<int> parentStarOfStmt);
+	void setUses(int s, string varName);
 
 	/**
 	Sets proc to uses varName. Implicitly set varName to be UsedBy proc.
@@ -252,6 +252,12 @@ public:
 	*/
 	vector<int> getAllStmt();
 
+	void addConstant(string c);
+
+	void addVariable(string v);
+
+	void addProcedure(string p);
+
 private:
 	Follow follow;
 	Parent parent;
@@ -269,7 +275,6 @@ private:
 
 	int getVarIndex(string varName);
 	int getProcIndex(string varName);
-	void setAllConstants(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
 };
