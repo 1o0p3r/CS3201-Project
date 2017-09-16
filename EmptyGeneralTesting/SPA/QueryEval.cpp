@@ -67,7 +67,7 @@ vector<string> QueryEval::runQueryEval()
 void QueryEval::evalQueryElements()
 {	
 	int hasSynoSuchThat; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
-	int hasSynPattern;  // 0 = nil, 1 = assign, 2 = arg1, 3 = arg2
+	int hasSynPattern;  // 0 = nil, 1 = assign, 2 = arg1, 
 
 	evalQuerySelect();
 	hasSynoSuchThat = evalQuerySuchThat();

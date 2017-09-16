@@ -16,6 +16,20 @@ public:
 	PKB();
 
 	/**
+	Returns all variables in PKB
+
+	@returns vector string of all variables in PKB
+	*/
+	vector<string> getAllVariables();
+
+	/**
+	Returns all constants in PKB
+
+	@returns vector string of all constants in PKB
+	*/
+	vector<string> PKB::getAllConstants();
+
+	/**
 	Sets s2 to follow s1. Meaning: s2 > s1.
 
 	@param s1 the statment before
@@ -98,10 +112,11 @@ public:
 	vector<int> getChildStar(int statementNum);
 
 	/**
-	Sets s to modifies varName. Implicitly set varName to be modifiedBy s.
+	Sets s to modifies varName. Implicitly set varName to be modifiedBy s and sets modifies for container statements.
 
 	@param s statement number of the input statement
 	@param s2 variable the statement modifies
+	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
 	void setModifies(int s, string varName);
@@ -149,10 +164,11 @@ public:
 
 
 	/**
-	Sets s to uses varName. Implicitly set varName to be UsedBy s.
+	Sets s to uses varName. Implicitly set varName to be UsedBy s and sets uses for container statements.
 
 	@param s statement number of the input statement
 	@param s2 variable the statement uses
+	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
 	void setUses(int s, string varName);
@@ -199,6 +215,12 @@ public:
 	*/
 	vector<string> getProcUsedBy(string varName);
 
+	void setStatementType(int statementNum, int type);
+
+	vector<int> getWhile();
+	vector<int> getAssign();
+	vector<int> getIf();
+	vector<int> getAllStmt();
 
 private:
 	Follow follow;
@@ -208,9 +230,17 @@ private:
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
 
-	int PKB::getVarIndex(string varName);
-	int PKB::getProcIndex(string varName);
+	set<string> allVariables;
+	set<string> allConstants;
+
+	int getVarIndex(string varName);
+	int getProcIndex(string varName);
+	void setAllConstants(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
+>>>>>>> origin/PKB
 };
