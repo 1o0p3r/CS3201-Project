@@ -242,5 +242,4 @@ private:
 	void setAllConstants(string c);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
->>>>>>> origin/PKB
 };
