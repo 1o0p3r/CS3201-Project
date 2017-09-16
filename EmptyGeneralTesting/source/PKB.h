@@ -6,10 +6,10 @@
 #include "Use.h"
 
 #include <stdio.h>
-#include<stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <tuple>
 
 using namespace std;
 typedef short PROC;
@@ -34,6 +34,12 @@ public:
 	*/
 	vector<string> PKB::getAllConstants();
 
+	/**
+	Returns all procedures in PKB
+
+	@returns vector string of all procedures in PKB
+	*/
+	vector<string> PKB::getAllProcedures();
 	/**
 	Sets s2 to follow s1. Meaning: s2 > s1.
 
@@ -287,6 +293,7 @@ private:
 
 	set<string> allVariables;
 	set<string> allConstants;
+	set<string> allProcedures;
 
 	int getVarIndex(string varName);
 	int getProcIndex(string varName);
