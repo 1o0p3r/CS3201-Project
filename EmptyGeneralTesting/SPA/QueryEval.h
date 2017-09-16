@@ -34,18 +34,22 @@ public:
 	
 	vector<string> runQueryEval();
 	void evalQueryElements();
+	void resultSelectSuchThatPattern(vector<string> result1, vector<int> result2, int opt);
 	void evalQuerySelect();
+	int evalQueryPattern();
 	void findQueryElements();
 	void setQueryStatement(QueryStatement qs);
 
-	void evalQuerySuchThat();
+	int evalQuerySuchThat();
+
+	void isSuchThatFalse(bool clauseValue);
 
 private:
 	PKB pkbReadOnly;
 	string comSynonym;
 	QueryStatement qsReadOnly;
 	bool suchThatClause;
-
+	bool patternClause;
 
 	QueryElement selectElement;
 	vector<SynonymEntityPair> synonymElements;
@@ -62,8 +66,7 @@ private:
 	vector<int> followStarResult(int s1, int opt);
 	vector<int> parentResult(int s1, int opt);
 	vector<int> parentStarResult(int s1, int opt);
-	vector<int> modifiesResult(int s1, int opt);
-	vector<int> usesResult(string s1, int opt);
+
 };
 
 /* 

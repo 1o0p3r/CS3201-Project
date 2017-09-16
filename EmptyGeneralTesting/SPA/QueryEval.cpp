@@ -11,6 +11,11 @@ static enum suchThatValue
 	followsStar
 };
 
+static enum clauseSelection
+{
+	nil, clauseArg1, clauseArg2
+};
+
 static std::map<std::string, selectValue> mapSelectValues;
 static std::map<std::string, suchThatValue> mapSuchThatValues;
 
@@ -18,7 +23,8 @@ QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
 	pkbReadOnly = pkb;
 	qsReadOnly = qs;
-	
+	suchThatClause = true;
+	patternClause = true;
 	initSelectMap();
 }
 
@@ -59,10 +65,31 @@ vector<string> QueryEval::runQueryEval()
 }
 
 void QueryEval::evalQueryElements()
-{
+{	
+	int hasSynoSuchThat; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
+	int hasSynPattern;  // 0 = nil, 1 = assign, 2 = arg1, 3 = arg2
+
 	evalQuerySelect();
-	evalQuerySuchThat();
-	evalQueryPattern();	
+	hasSynoSuchThat = evalQuerySuchThat();
+	hasSynPattern = evalQueryPattern();	
+
+	switch (hasSynoSuchThat)
+	{
+		case nil:
+			break;
+
+		case clauseArg1:
+			break;
+
+		case clauseArg2:
+			break;
+	}
+
+	//resultSelectSuchThatPattern(result1, result2, opt);
+}
+void QueryEval::resultSelectSuchThatPattern(vector<string> result1, vector<int> result2, int opt)
+{
+
 }
 
 void QueryEval::evalQuerySelect()
@@ -100,15 +127,21 @@ void QueryEval::evalQuerySelect()
 	}
 }
 
-void QueryEval::evalQuerySuchThat()
+int QueryEval::evalQueryPattern()
+{//TODO
+
+}
+
+int QueryEval::evalQuerySuchThat()
 {
 	vector<vector<int>> suchThatResult;
+	int argEval; //option to determine which argument to evaluate
+				 //case 0: no common synonym, case 1: arg1 = common synonym, case 2: arg 2 = common synonym
 	
 
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
 	{ 
-		int argEval; //option to determine which argument to evaluate
-		//case 0: no common synonym, case 1: arg1 = common synonym, case 2: arg 2 = common synonym
+		
 		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1) ? 1 :
 			comSynonym.compare(suchThatElements[i].getSuchThatArg2) ? 2 : 0;
 		string argType1 = suchThatElements[i].getSuchThatArgType1();
@@ -116,7 +149,7 @@ void QueryEval::evalQuerySuchThat()
 		argEval = (argType1.compare("constant"))? 1 : 0;
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
-		suchThatClause = 0;
+		
 
 		switch (mapSuchThatValues[suchThatElements[i].getSuchThatType]) //check with pql, this is meant to be follow etc
 		{
@@ -124,17 +157,17 @@ void QueryEval::evalQuerySuchThat()
 				switch (comEval)
 				{
 					case 0:
-						suchThatClause = true;
+						isSuchThatFalse(true);
 						break;
 					case 1:
 						intermediateResultInt = 
 						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2);
-						suchThatClause = intermediateResultInt.empty ? false : true;
+						intermediateResultInt.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 					case 2:
 						intermediateResultString =
 							pkbReadOnly.getModifies(suchThatElements[i].getSuchThatArg1);
-						suchThatClause = intermediateResultString.empty ? false : true;
+						intermediateResultString.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 				}
 				break;
@@ -142,17 +175,17 @@ void QueryEval::evalQuerySuchThat()
 				switch (comEval)
 				{
 					case 0:
-						suchThatClause = true;
+						isSuchThatFalse(true);
 						break;
 					case 1:
 						intermediateResultInt =
 							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2);
-						suchThatClause = intermediateResultInt.empty ? false : true;
+						intermediateResultInt.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 					case 2:
 						intermediateResultString =
 							pkbReadOnly.getUses(suchThatElements[i].getSuchThatArg1);
-						suchThatClause = intermediateResultString.empty ? false : true;
+						intermediateResultString.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 				}
 				break;
@@ -161,21 +194,21 @@ void QueryEval::evalQuerySuchThat()
 					argEval ?
 					parentResult(suchThatElements[i].getSuchThatArg1(), argEval) :
 					parentResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatClause = suchThatResult.empty ? false : true;
+				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 			case parentStar:
 				suchThatResult.push_back(
 					argEval ?
 					parentStarResult(suchThatElements[i].getSuchThatArg1(), argEval) :
 					parentStarResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatClause = suchThatResult.empty ? false : true;
+				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 			case follows:
 				suchThatResult.push_back( 
 					argEval ? 
 					followResult(suchThatElements[i].getSuchThatArg1(),argEval) :
 					followResult(suchThatElements[i].getSuchThatArg2(),argEval)); 
-				suchThatClause = suchThatResult.empty ? false : true;
+				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
 				break;
 			case followsStar:
@@ -183,10 +216,18 @@ void QueryEval::evalQuerySuchThat()
 					argEval ?
 					followStarResult(suchThatElements[i].getSuchThatArg1(), argEval) :
 					followStarResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatClause = suchThatResult.empty ? false : true;
+				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 		}
 	}
+	return argEval;
+}
+
+void QueryEval::isSuchThatFalse(bool clauseValue)
+{	//ensure that suchThatClauses is false if there exist 1
+	//clause which is false.
+	if (suchThatClause)
+		suchThatClause = clauseValue;
 }
 
 void QueryEval::findQueryElements() 
@@ -276,61 +317,6 @@ vector<int> QueryEval::parentStarResult(int s1, int opt) {
 	}
 	return queryResult;
 }
-
-vector<int> QueryEval::modifiesResult(int s1, int opt) {
-	vector<int> queryResult = vector<int>();
-
-	switch (opt) {
-		//Modifies("1",z)
-		case ASSIGNMOD :
-			queryResult = pkbReadOnly.getModifies(s1);
-			break;
-		
-		//Modifies(s1,"z")
-		case VARMODBY :
-			queryResult = pkbReadOnly.getModifiedBy(s1);
-			break;
-		
-		//Modifies("someProc", z)
-		case PROCMOD :
-			queryResult = pkbReadOnly.getProcModifies(s1);
-			break;
-
-		//Modifies(procedure,"z")
-		case PROCMODBY :
-			queryResult = pkbReadOnly.getProcModifiedBy(s1);
-
-	}
-	return queryResult;
-}
-
-vector<int> QueryEval::usesResult(string s1, int opt) {
-	vector<int> queryResult = vector<int>();
-
-	switch (opt) {
-		//uses("1",z)
-	case ASSIGNMOD:
-		queryResult = pkbReadOnly.getUses(s1);
-		break;
-
-		//uses(s1,"z")
-	case VARMODBY:
-		queryResult = pkbReadOnly.getUsedBy(s1);
-		break;
-
-		//uses("someProc", z)
-	case PROCMOD:
-		queryResult = pkbReadOnly.getProcUses(s1);
-		break;
-
-		//uses(procedure,"z")
-	case PROCMODBY:
-		queryResult = pkbReadOnly.getProcUsedBy(s1);
-
-	}
-	return queryResult;
-}
-
 
 //Credit to stackoverflow deepmax
 vector<string> instersection(vector<string> &v1, vector<string> &v2)
