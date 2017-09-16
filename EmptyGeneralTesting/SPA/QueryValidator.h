@@ -18,10 +18,8 @@ private:
 	RelationshipTable relationshipTable;
 	QueryStatement queryStatement;
 	vector<SynonymEntityPair> synonymAndEntityList; //Has to be refresh after each query
-	bool validDeclaration = true;
-	bool validQuery = true;
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
-		"variable", "constant", "prog_line" };
+		"variable", "constant", "prog_line"};
 
 	string getCorrespondingEntity(string syn);
 
@@ -30,10 +28,9 @@ private:
 	vector<string> declarationString;
 	vector<string> queryString;
 
-
 	void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn);
-	void addPatternQueryElement(string arg1, string arg2, string ent, string syn);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	
 	bool isValidSelect(vector<string> vectorClauses);
@@ -41,6 +38,9 @@ private:
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2);
 	bool is_number(string);
 	bool isValidPattern(string str, string syn);
+	bool isVariableArg1(string arg1);
+	bool isSubstringArg2(string arg2);
+	bool isExactString(string arg2);
 	bool isValidQueryLine(string selectString);
 
 	bool checkEntityAndSynonym(string);
@@ -54,7 +54,6 @@ public:
 	QueryValidator();
 	bool parseInput(string str);
 	bool isEntityAndSynonym(string);
-	bool isValidDeclarationAndQuery();
 	bool isValidSuchThat(string str, string syn);
 	bool isValidEntity(string);
 	int getNumClauses();

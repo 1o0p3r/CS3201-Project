@@ -130,9 +130,12 @@ namespace UnitTesting
 			
 			arg1 = "s";
 		}**/
+
+		//This checks if we get the correct corresponding entity
 		TEST_METHOD(isValidGetCorrespondingEntity) {
 			string arg1Ent;
 			string arg2Ent;
+			string temp = "nth";
 
 		}
 	};

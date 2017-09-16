@@ -26,13 +26,14 @@ QueryElement::QueryElement(string arg1, string arg1Type, string arg2, string arg
 }
 
 //Pattern
-QueryElement::QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, int isPattern)
+QueryElement::QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, string argOneType, string argTwoType)
 {
 	argumentOnePattern = arg1;
 	argumentTwoPattern = arg2;
 	patternEnt = patternEntity;
 	patternSyn = patternSynonym;
-	isPatt = isPattern;
+	patternArg1Type = argOneType;
+	patternArg2Type = argTwoType;
 }
 
 string QueryElement::getSelectEntity()
@@ -79,7 +80,12 @@ string QueryElement::getPatternEntity(int idx)
 {
 	return patternEnt;
 }
-
+string QueryElement::getPatternArg1Type() {
+	return patternArg1Type;
+}
+string QueryElement::getPatternArg2Type() {
+	return patternArg2Type;
+}
 string QueryElement::getPatternSynonym(int idx)
 {
 	return patternSyn;
