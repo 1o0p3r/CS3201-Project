@@ -24,7 +24,16 @@
     <ClCompile Include="..\source\PKB.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Follow.cpp">
+    <ClCompile Include="..\source\TNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Use.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QueryEval.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Parent.cpp">
@@ -33,13 +42,7 @@
     <ClCompile Include="Modify.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Use.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-	<ClCompile Include="Util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QueryEval.cpp">
+    <ClCompile Include="Follow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,27 +50,29 @@
     <ClInclude Include="..\source\PKB.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Follow.h">
+    <ClInclude Include="..\source\TNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parent.h">
+    <ClInclude Include="Follow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Modify.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Use.h">
+    <ClInclude Include="Parent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-	<ClInclude Include="Util.h">
+    <ClInclude Include="Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QueryEval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Parser.h">
+    <ClInclude Include="Use.h">
       <Filter>Header Files</Filter>
-    </None>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
+</Project>
