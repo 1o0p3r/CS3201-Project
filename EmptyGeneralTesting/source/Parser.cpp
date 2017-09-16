@@ -61,7 +61,7 @@ bool Parse(string fileName) {
 				}
 
 				if (nestLevel > 1) {
-					pkb.setParent(Parent.back().c, lineCounter);
+					pkb.setParent(Parent.back(), lineCounter);
 				}
 
 				pkb.setModifies(lineCounter, nextLine[0]);
@@ -100,7 +100,7 @@ bool Parse(string fileName) {
 					}
 
 					if (nestLevel > 1) {
-						pkb.setParent(Parent.back().c, lineCounter);
+						pkb.setParent(Parent.back(), lineCounter);
 					}
 
 					nestLevel++;
@@ -118,7 +118,7 @@ bool Parse(string fileName) {
 					}
 
 					if (nestLevel > 1) {
-						pkb.setParent(Parent.back().c, lineCounter);
+						pkb.setParent(Parent.back(), lineCounter);
 					}
 
 					Parent.push_back(lineCounter);
@@ -139,7 +139,7 @@ bool Parse(string fileName) {
 					pkb.setFollows(lineCounter - 1, lineCounter);
 				}
 				if (nestLevel > 1) {
-					pkb.setParent(Parent.back().c, lineCounter);
+					pkb.setParent(Parent.back(), lineCounter);
 				}
 
 				isSameLevel = false;
