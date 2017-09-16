@@ -21,9 +21,15 @@ enum clauseSelection
 	no, yes
 };
 
+enum patternExpType
+{
+	undefinedExpression, _wildcard, substring, exact
+};
+
 static std::map<std::string, selectValue> mapSelectValues;
 static std::map<std::string, suchThatValue> mapSuchThatValues;
 static std::map<std::string, patternValue> mapPatternValues;
+static std::map<std::string, patternExpType> mapPatternExpType;
 
 QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
@@ -34,7 +40,16 @@ QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 	initSelectMap();
 	initSuchThatMap();
 	initPatternMap();
+	initPatternExpTypeMap();
 }
+
+void QueryEval::initPatternExpTypeMap()
+{
+	mapPatternExpType["wildcard"] = _wildcard;
+	mapPatternExpType["substring"] = substring;
+	mapPatternExpType["exact"] = exact;
+}
+
 void QueryEval::initPatternMap()
 {
 	mapPatternValues["wildcard"] = wildcard;
@@ -82,24 +97,24 @@ vector<string> QueryEval::runQueryEval()
 
 void QueryEval::evalQueryElements()
 {	
-	int hasSynoSuchThat; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
-	int hasSynPattern;  // 0 = nil, 1 = assign, 2 = arg1, 
+	int hasCommonSyno; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
+	int patternSynType;  // 0 = noCommon, 1 = assign, 2 = arg1, to be used with hasPatternClause 
 
 	isResultInt = evalQuerySelect();
-	hasSynoSuchThat = evalQuerySuchThat();
-	hasSynPattern = evalQueryPattern();	
-	combineSelectSuchThat(hasSynoSuchThat);
-	resultSelectSuchThatPattern(hasSynPattern);
+	hasCommonSyno = evalQuerySuchThat();
+	patternSynType = evalQueryPattern();	
+	combineSelectSuchThat(hasCommonSyno);
+	resultSelectSuchThatPattern(patternSynType);
 
 	//convert final result into a string here.
 }
 
-void QueryEval::combineSelectSuchThat(int hasSynoSuchThat) // similar code, can probaby refactor into simpler function in iter2
+void QueryEval::combineSelectSuchThat(int hasCommonSyno) // similar code, can probaby refactor into simpler function in iter2
 {
 	if (isResultInt) {
 		if (hasSuchThatClause) //by default it is always true, unless a suchThatClause fails
 		{	
-			int queryChoice = hasSynoSuchThat != 0 ? true : false;
+			int queryChoice = hasCommonSyno != 0 ? true : false;
 			switch (queryChoice) //is there a common synonym in suchThatclause
 			{
 			case no:
@@ -116,7 +131,7 @@ void QueryEval::combineSelectSuchThat(int hasSynoSuchThat) // similar code, can 
 	else {
 		if (hasSuchThatClause) //by default it is always true, unless a suchThatClause fails
 		{
-			int queryChoice = hasSynoSuchThat != 0 ? true : false;
+			int queryChoice = hasCommonSyno != 0 ? true : false;
 			switch (queryChoice) //is there a common synonym in suchThatclause
 			{
 			case no:
@@ -174,32 +189,93 @@ int QueryEval::evalQuerySelect()
 }
 
 int QueryEval::evalQueryPattern()
-{	
+{	//review code
 	vector<vector<int>> intermediatePatternResultInt;
 	vector<vector<string>> intermediatePatternResultString;
-	int comEval;
+	vector<string> evalVarPatterns;
+	vector<tuple<int, string>> pkbPattern;
+	vector<int> patternVarStmtValues;
+	vector<string> patternVarValues;
+	tuple<vector<int>, vector<string>> singleResult;
+	vector<string> tempVectString;
+	int comEval; // indicates no pattern clause
 	//comSynonym
-	for (int i = 0; i < patternElements.size(); i++)
-	{
+	for (int i = 0; i < patternElements.size(); i++){
 		comEval = comSynonym.compare(patternElements[i].getPatternArg1(i)) ? 2 : //2 = arg1 pattern syno 
 			comSynonym.compare(patternElements[i].getPatternSynonym(i)) ? 1 : 0; //1 = entity syno , 0 = no common syno		
-		switch (comEval)
-		{
+		switch (comEval){
 			case 0: //no common synonym
-				switch (mapPatternValues[patternElements[i].getPatternArg1Type()])
-				{
+				evalVarPatterns = pkbReadOnly.getAllVariables();
+				singleResult = evalSinglePatternResult(evalVarPatterns, patternElements[i]);
+				patternVarStmtValues = get<0>(singleResult);
+				patternVarValues = get<1>(singleResult);
+				if (patternVarStmtValues.empty() && patternVarValues.empty())
+					isPatternFalse(false);
+				break;
+			case 1: //wants stmt numbers
+			case 2: //wants var values
+				switch (mapPatternValues[patternElements[i].getPatternArg1Type()]){ //inefficient, room for impv
 					case wildcard:
 					case _variable:
-
+						evalVarPatterns = pkbReadOnly.getAllVariables();
+						singleResult = evalSinglePatternResult(evalVarPatterns, patternElements[i]);
+						patternVarStmtValues = get<0>(singleResult);
+						patternVarValues = get<1>(singleResult);
 						break;
 					case _string:
+						tempVectString.push_back(patternElements[i].getPatternArg1(0)); //to remove 0 when pql done editing
+						singleResult = evalSinglePatternResult(tempVectString, patternElements[i]);
+						patternVarStmtValues = get<0>(singleResult);
+						patternVarValues = get<1>(singleResult);
 						break;
 				}
-				break;
 		}
+		if(!patternVarValues.empty())
+			intermediatePatternResultString.push_back(patternVarValues);
+		if(!patternVarStmtValues.empty())
+			intermediatePatternResultInt.push_back(patternVarStmtValues);
 	}
-
-	return 0;
+	patternAnswerInt = intermediatePatternResultInt[0];
+	patternAnswerString = intermediatePatternResultString[0]; //to be edited in iter 2, for now only 1 pattern.
+	return comEval;
+}
+tuple<vector<int>,vector<string>> QueryEval::evalSinglePatternResult(vector<string> evalVarPatterns, 
+																		QueryElement patternElements)
+{	
+	vector<int> patternVarStmtValues;
+	vector<string> patternVarValues;
+	patternVarValues = vector<string>();
+	bool varContainsPattern = false;
+	vector<tuple<int, string>> pkbPattern;
+	for (int j = 0; j < evalVarPatterns.size(); j++) {
+		patternVarStmtValues = vector<int>();
+		pkbPattern = pkbReadOnly.getPattern(evalVarPatterns[j]);
+		for (tuple<int, string> evalPattExpression : pkbPattern) {
+			// to check if it is sufficient for 1 variable to satisfy pattern constraint
+			switch (mapPatternExpType[patternElements.getPatternArg2Type()]) {
+			case _wildcard:
+				varContainsPattern = true;
+				patternVarStmtValues.push_back(get<0>(evalPattExpression));
+				break;
+			case substring: //to edit when pql done finishing edit
+				if (get<1>(evalPattExpression).find(patternElements.getPatternArg2(0)) != string::npos) {
+					patternVarStmtValues.push_back(get<0>(evalPattExpression));
+					varContainsPattern = true;
+				}
+				break;
+			case exact:
+				if (get<1>(evalPattExpression).compare(patternElements.getPatternArg2(0)) == 0) {
+					patternVarStmtValues.push_back(get<0>(evalPattExpression));
+					varContainsPattern = true;
+				}
+				break;
+			}
+		}
+		if (varContainsPattern)
+			patternVarValues.push_back(evalVarPatterns[j]);
+	}
+	tuple<vector<int>, vector<string>> answer(patternVarStmtValues, patternVarValues);
+	return answer;
 }
 
 int QueryEval::evalQuerySuchThat()
@@ -307,6 +383,13 @@ void QueryEval::isSuchThatFalse(bool clauseValue)
 		hasSuchThatClause = clauseValue;
 }
 
+void QueryEval::isPatternFalse(bool clauseValue)
+{	//ensure that PatternClauses is false if there exist 1
+	//clause which is false.
+	if (hasPatternClause)
+		hasPatternClause = clauseValue;
+}
+
 void QueryEval::findQueryElements() 
 {
 	selectElement = qsReadOnly.getSelectQueryElement();
@@ -407,3 +490,33 @@ vector<string> instersection(vector<string> &v1, vector<string> &v2)
 
 	return v3;
 }
+
+/* Old Pattern Code Snippet for after evalPatternValues case wildcard,variable
+							for (int j = 0; j < evalVarPatterns.size(); j++) {
+							patternVarStmtValues = vector<int>();
+							pkbPattern = pkbReadOnly.getPattern(evalVarPatterns[j]);
+							for (tuple<int,string> evalPattExpression : pkbPattern ) {
+								// to check if it is sufficient for 1 variable to satisfy pattern constraint
+								switch (mapPatternExpType[patternElements[i].getPatternArg2Type()]) {
+									case _wildcard:
+										varContainsPattern = true;
+										patternVarStmtValues.push_back(get<0>(evalPattExpression));
+									break;
+									case substring:
+										if (get<1>(evalPattExpression).find(patternElements[i].getPatternArg2) != string::npos) {
+											patternVarStmtValues.push_back(get<0>(evalPattExpression));
+											varContainsPattern = true;
+										}
+										break;
+									case exact:
+										if (get<1>(evalPattExpression).compare(patternElements[i].getPatternArg2) == 0) {
+											patternVarStmtValues.push_back(get<0>(evalPattExpression));
+											varContainsPattern = true;
+										}											 										
+										break;
+								}
+							}
+							if(varContainsPattern)
+								patternVarValues.push_back(evalVarPatterns[j]);
+						} 
+*/
