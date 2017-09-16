@@ -5,14 +5,28 @@
 #include "Parent.h"
 #include "Modify.h"
 #include "Use.h"
+#include "Util.h"
 
 #include<stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <set>
+#include <map>
 
 using namespace std;
+
+enum typeValue {
+	undefinedSelect, _while, assign, _if
+};
+
+static std::map<std::string, typeValue> mapTypeValues;
+
+void PKB::initTypeMap() { //to check with pql whether QS uses these strings in the entity as defined here.
+	mapTypeValues["assign"] = assign;
+	mapTypeValues["while"] = _while;
+	mapTypeValues["if"] = _if;
+}
 
 PKB::PKB() {
 	
@@ -23,9 +37,11 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
-
+	vector<vector<tuple<int, string>>> patternTable;
 	set<string> allVariables;
 	set<string> allConstants;
+
+	initTypeMap();
 }
 
 int PKB::getVarIndex(string varName) {
@@ -69,6 +85,18 @@ void PKB::addVariable(string v) {
 
 void PKB::addProcedure(string p) {
 	getProcIndex(p);
+}
+
+void PKB::addPattern(int StatementNum, string leftVariable, string rightExpression) {
+	int varIndex = getVarIndex(leftVariable);
+	tuple<int, string> entry = {StatementNum, Util::insertBrackets(rightExpression) };
+	patternTable.resize(varIndex + 1);
+	patternTable[varIndex].push_back(entry);
+}
+
+vector<tuple<int, string>> PKB::getPattern(string varName) {
+	int varIndex = getVarIndex(varName);
+	return patternTable[varIndex];
 }
 
 vector<string> PKB::getAllConstants() {
@@ -200,16 +228,16 @@ vector<string> PKB::getProcUsedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setStatementType(int statementNum, int type) {
+void PKB::setStatementType(int statementNum, string type) {
 	// 1 = while, 2 = assign, 3 = if
-	switch (type) {
-	case(1): 
+	switch (mapTypeValues[type]) {
+	case _while: 
 		whileTable.push_back(statementNum);
 		break;
-	case(2): 
+	case assign: 
 		assignTable.push_back(statementNum);
 		break;
-	case(3): 
+	case _if: 
 		ifTable.push_back(statementNum);
 		break;
 	default:

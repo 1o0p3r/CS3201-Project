@@ -220,16 +220,57 @@ public:
 	*/
 	vector<string> getProcUsedBy(string varName);
 
-	void setStatementType(int statementNum, int type);
+	void setStatementType(int statementNum, string type);
 
+	/**
+	Gets all the while statements
+	@returns a vector containing ints of all while statements
+	*/
 	vector<int> getWhile();
+	/**
+	Gets all the assign statements
+	@returns a vector containing ints of all while statements
+	*/
 	vector<int> getAssign();
+	/**
+	Gets all the if statements
+	@returns a vector containing ints of all while statements
+	*/
 	vector<int> getIf();
+	/**
+	Gets all the statements
+	@returns a vector containing ints of all while statements
+	*/
 	vector<int> getAllStmt();
 
+	/**
+	Add a Constant to PKB
+	@param c the constant name
+	*/
 	void addConstant(string c);
+	/**
+	Add a Constant to PKB
+	@param v the variable name
+	*/
 	void addVariable(string v);
+	/**
+	Add a Constant to PKB
+	@param p the procedure name
+	*/
 	void addProcedure(string p);
+	/**
+	Adds a pattern to PKB
+	@param StatementNum Statement Number of the expression
+	@param leftVariable the modified variable
+	@param rightExpression the expression on the right side of "="
+	*/
+	void addPattern(int StatementNum, string leftVariable, string rightExpression);
+	/**
+	Gets all the statement number and expressions that appears for a variable
+	@param varNamr name of variable
+	@returns a vector of tuple containing all the (statement number, expression) pairs for the input variable
+	*/
+	vector<tuple<int, string>> getPattern(string varName);
 
 private:
 	Follow follow;
@@ -242,6 +283,7 @@ private:
 	vector<int> whileTable;
 	vector<int> assignTable;
 	vector<int> ifTable;
+	vector<vector<tuple<int, string>>> patternTable;
 
 	set<string> allVariables;
 	set<string> allConstants;
@@ -250,4 +292,6 @@ private:
 	int getProcIndex(string varName);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
+
+	void initTypeMap();
 };
