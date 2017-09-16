@@ -1,13 +1,13 @@
 #include "QueryEval.h"
 
 static enum selectValue 
-{	undefined, stmt, assign, _while, variable, constant,
+{	undefinedSelect, stmt, assign, _while, variable, constant,
 	prog_line		
 };
 
 static enum suchThatValue
 {
-	undefined, modifies, uses, parent, parentStar, follows, 
+	undefinedSuchThat, modifies, uses, parent, parentStar, follows, 
 	followsStar
 };
 
@@ -62,6 +62,8 @@ vector<string> QueryEval::runQueryEval()
 	
 	findQueryElements(); //step 1
 	evalQueryElements(); //step 3
+
+	return vector<string>();
 }
 
 void QueryEval::evalQueryElements()
@@ -129,7 +131,7 @@ void QueryEval::evalQuerySelect()
 
 int QueryEval::evalQueryPattern()
 {//TODO
-
+	return 0;
 }
 
 int QueryEval::evalQuerySuchThat()
@@ -142,16 +144,16 @@ int QueryEval::evalQuerySuchThat()
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
 	{ 
 		
-		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1) ? 1 :
-			comSynonym.compare(suchThatElements[i].getSuchThatArg2) ? 2 : 0;
-		string argType1 = suchThatElements[i].getSuchThatArgType1();
-		string argType2 = suchThatElements[i].getSuchThatArgType2();
-		argEval = (argType1.compare("constant"))? 1 : 0;
+		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1(i)) ? 1 :
+			comSynonym.compare(suchThatElements[i].getSuchThatArg2(i)) ? 2 : 0;
+		string argType1 = suchThatElements[i].getSuchThatArg1Type(i);
+		string argType2 = suchThatElements[i].getSuchThatArg2Type(i);
+		argEval = (argType1.compare("number"))? 1 : 0; //confirm with pql it is number
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
 		
 
-		switch (mapSuchThatValues[suchThatElements[i].getSuchThatType]) //check with pql, this is meant to be follow etc
+		switch (mapSuchThatValues[suchThatElements[i].getSuchThatRel()]) //check with pql, this is meant to be follow etc
 		{
 			case modifies:
 				switch (comEval)
@@ -161,13 +163,13 @@ int QueryEval::evalQuerySuchThat()
 						break;
 					case 1:
 						intermediateResultInt = 
-						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2);
-						intermediateResultInt.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2(i));
+						intermediateResultInt.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 					case 2:
 						intermediateResultString =
-							pkbReadOnly.getModifies(suchThatElements[i].getSuchThatArg1);
-						intermediateResultString.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+							pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1(i)));
+						intermediateResultString.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 				}
 				break;
@@ -179,44 +181,44 @@ int QueryEval::evalQuerySuchThat()
 						break;
 					case 1:
 						intermediateResultInt =
-							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2);
-						intermediateResultInt.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2(i));
+						intermediateResultInt.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 					case 2:
 						intermediateResultString =
-							pkbReadOnly.getUses(suchThatElements[i].getSuchThatArg1);
-						intermediateResultString.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+							pkbReadOnly.getUses(stoi(suchThatElements[i].getSuchThatArg1(i)));
+						intermediateResultString.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 						break;
 				}
 				break;
 			case parent:
 				suchThatResult.push_back(
 					argEval ?
-					parentResult(suchThatElements[i].getSuchThatArg1(), argEval) :
-					parentResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+					parentResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 			case parentStar:
 				suchThatResult.push_back(
 					argEval ?
-					parentStarResult(suchThatElements[i].getSuchThatArg1(), argEval) :
-					parentStarResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+					parentStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 			case follows:
 				suchThatResult.push_back( 
 					argEval ? 
-					followResult(suchThatElements[i].getSuchThatArg1(),argEval) :
-					followResult(suchThatElements[i].getSuchThatArg2(),argEval)); 
-				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					followResult(stoi(suchThatElements[i].getSuchThatArg1(i)),argEval) :
+					followResult(stoi(suchThatElements[i].getSuchThatArg2(i)),argEval)); 
+				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
 				break;
 			case followsStar:
 				suchThatResult.push_back(
 					argEval ?
-					followStarResult(suchThatElements[i].getSuchThatArg1(), argEval) :
-					followStarResult(suchThatElements[i].getSuchThatArg2(), argEval));
-				suchThatResult.empty ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					followStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+					followStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 		}
 	}
@@ -233,7 +235,7 @@ void QueryEval::isSuchThatFalse(bool clauseValue)
 void QueryEval::findQueryElements() 
 {
 	selectElement = qsReadOnly.getSelectQueryElement();
-	suchThatElements = qsReadOnly.getSuchThatQueryElement();
+	suchThatElements = qsReadOnly.getSuchThatQueryElement(); //all String
 	patternElements = qsReadOnly.getPatternQueryElement();
 	synonymElements = qsReadOnly.getSynonymEntityList();
 }

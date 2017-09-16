@@ -8,6 +8,7 @@
 #include <iterator>
 #include <algorithm>
 #include "QueryStatement.h"
+#include "QueryElement.h"
 
 #include <map>
 #include <vector>
