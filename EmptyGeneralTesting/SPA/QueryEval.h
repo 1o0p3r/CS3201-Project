@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Follow.h"
-#include "Parent.h"
-#include "Modify.h"
-#include "Use.h"
 #include "PKB.h"
 #include <iterator>
 #include <algorithm>
@@ -28,6 +24,8 @@ public:
 	static const int PROCUSEBY = 3;
 
 	QueryEval(PKB pkb, QueryStatement qs);
+
+	void initPatternMap();
 
 	void initSelectMap();
 

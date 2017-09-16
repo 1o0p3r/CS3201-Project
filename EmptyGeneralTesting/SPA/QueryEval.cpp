@@ -11,6 +11,11 @@ enum suchThatValue
 	followsStar
 };
 
+enum patternValue
+{
+	undefinedPattern, wildcard, _variable, _string
+};
+
 enum clauseSelection
 {
 	no, yes
@@ -18,6 +23,7 @@ enum clauseSelection
 
 static std::map<std::string, selectValue> mapSelectValues;
 static std::map<std::string, suchThatValue> mapSuchThatValues;
+static std::map<std::string, patternValue> mapPatternValues;
 
 QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
@@ -26,6 +32,14 @@ QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 	hasSuchThatClause = true;
 	hasPatternClause = true;
 	initSelectMap();
+	initSuchThatMap();
+	initPatternMap();
+}
+void QueryEval::initPatternMap()
+{
+	mapPatternValues["wildcard"] = wildcard;
+	mapPatternValues["variable"] = _string;
+	mapPatternValues["synonym"] = _variable;
 }
 
 void QueryEval::initSelectMap()
@@ -118,7 +132,7 @@ void QueryEval::combineSelectSuchThat(int hasSynoSuchThat) // similar code, can 
 
 void QueryEval::resultSelectSuchThatPattern(int hasSynPattern)
 {
-
+	
 }
 
 int QueryEval::evalQuerySelect()
@@ -160,7 +174,31 @@ int QueryEval::evalQuerySelect()
 }
 
 int QueryEval::evalQueryPattern()
-{//TODO
+{	
+	vector<vector<int>> intermediatePatternResultInt;
+	vector<vector<string>> intermediatePatternResultString;
+	int comEval;
+	//comSynonym
+	for (int i = 0; i < patternElements.size(); i++)
+	{
+		comEval = comSynonym.compare(patternElements[i].getPatternArg1(i)) ? 2 : //2 = arg1 pattern syno 
+			comSynonym.compare(patternElements[i].getPatternSynonym(i)) ? 1 : 0; //1 = entity syno , 0 = no common syno		
+		switch (comEval)
+		{
+			case 0: //no common synonym
+				switch (mapPatternValues[patternElements[i].getPatternArg1Type()])
+				{
+					case wildcard:
+					case _variable:
+
+						break;
+					case _string:
+						break;
+				}
+				break;
+		}
+	}
+
 	return 0;
 }
 
@@ -168,8 +206,8 @@ int QueryEval::evalQuerySuchThat()
 {
 	vector<vector<int>> suchThatResult;
 	vector<vector<string>> suchThatResultString;
-	int argEval; //option to determine which argument to evaluate
-				 //case 0: no common synonym, case 1: arg1 = common synonym, case 2: arg 2 = common synonym
+	int argEval; //option to determine which argument to evaluate (s1,s2) 
+				 //case 0: both synos, case 1: arg1 = integer, case 2: arg 2 = integer, case 3: both integer
 	
 
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
