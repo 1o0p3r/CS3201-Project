@@ -282,8 +282,8 @@ int QueryEval::evalQueryPattern()
 
 
 	for (int i = 0; i < patternElements.size(); i++){
-		comEval = comSynonym.compare(patternElements[i].getPatternArg1()) ? 2 : //2 = arg1 pattern syno 
-			comSynonym.compare(patternElements[i].getPatternSynonym()) ? 1 : 0; //1 = entity syno , 0 = no common syno		
+		comEval = (comSynonym ==(patternElements[i].getPatternArg1())) ? 2 : //2 = arg1 pattern syno 
+			(comSynonym == (patternElements[i].getPatternSynonym())) ? 1 : 0; //1 = entity syno , 0 = no common syno		
 		switch (comEval){
 			case 0: //no common synonym
 				evalVarPatterns = pkbReadOnly.getAllVariables();
@@ -347,7 +347,7 @@ tuple<vector<int>,vector<string>> QueryEval::evalSinglePatternResult(vector<stri
 				}
 				break;
 			case exact:
-				if (get<1>(evalPattExpression).compare(patternElements.getPatternArg2()) == 0) {
+				if ((get<1>(evalPattExpression) == (patternElements.getPatternArg2())) == 0) {
 					patternVarStmtValues.push_back(get<0>(evalPattExpression));
 					varContainsPattern = true;
 				}
@@ -373,11 +373,11 @@ int QueryEval::evalQuerySuchThat()
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
 	{ 
 		//option 0 : both args = syno, 1 = arg1 syno, 2 = arg2 syno for finding common synonym
-		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1()) ? 1 :
-			comSynonym.compare(suchThatElements[i].getSuchThatArg2()) ? 2 : 0;
+		int comEval = (comSynonym == (suchThatElements[i].getSuchThatArg1())) ? 1 :
+			(comSynonym == (suchThatElements[i].getSuchThatArg2())) ? 2 : 0;
 		string argType1 = suchThatElements[i].getSuchThatArg1Type();
 		string argType2 = suchThatElements[i].getSuchThatArg2Type();
-		argEval = (argType1.compare("number"))? 1 : 0; //confirm with pql it is number
+		argEval = (argType1 == "number")? 1 : 0; //confirm with pql it is number
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
 		vector<int> tempVect;
@@ -425,7 +425,7 @@ int QueryEval::evalQuerySuchThat()
 				}
 				break;
 			case parent: // if = check for both arguments number
-				if (argType1.compare("number") && argType2.compare("number")) {
+				if ((argType1 == ("number")) && (argType2==("number"))) {
 					parentResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval).front() ==
 						stoi(suchThatElements[i].getSuchThatArg2()) ? 
 						isSuchThatFalse(true) : isSuchThatFalse(false);
@@ -438,7 +438,7 @@ int QueryEval::evalQuerySuchThat()
 				}
 				break;
 			case parentStar:
-				if (argType1.compare("number") && argType2.compare("number")) {
+				if ((argType1 == ("number")) && (argType2==("number"))) {
 					tempVect = parentStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval);
 					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2())) !=
 						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
@@ -452,7 +452,7 @@ int QueryEval::evalQuerySuchThat()
 				}
 				break;
 			case follows:
-				if (argType1.compare("number") && argType2.compare("number")) {
+				if ((argType1==("number")) && (argType2==("number"))) {
 					followResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval).front() ==
 						stoi(suchThatElements[i].getSuchThatArg2()) ?
 						isSuchThatFalse(true) : isSuchThatFalse(false);
@@ -467,16 +467,18 @@ int QueryEval::evalQuerySuchThat()
 				}
 				break;
 			case followsStar:
-				if (argType1.compare("number") && argType2.compare("number")) {
+				if ((argType1==("number")) && (argType2==("number"))) {
 					tempVect = followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval);
 					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2())) !=
 						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
 				}
-				suchThatResult.push_back(
-					argEval ?
-					followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
-					followStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
-				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+				else {
+					suchThatResult.push_back(
+						argEval ?
+						followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
+						followStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
+					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+				}
 				break;
 		}
 		suchThatAnswerInt = suchThatResult[0]; // to be changed in iter2, since only at most 1 suchThat in iter1
