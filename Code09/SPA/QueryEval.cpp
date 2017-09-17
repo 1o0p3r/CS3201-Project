@@ -384,7 +384,8 @@ int QueryEval::evalQuerySuchThat()
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
 		vector<int> tempVect;
-
+		string tempstr = suchThatElements[i].getSuchThatRel();
+		int temp = mapSuchThatValues[suchThatElements[i].getSuchThatRel()];
 		switch (mapSuchThatValues[suchThatElements[i].getSuchThatRel()]) //check with pql, this is meant to be follow etc
 		{
 			case modifies:

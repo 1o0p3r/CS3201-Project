@@ -79,7 +79,7 @@ public:
 		QueryEval qe;
 		vector<string> expected;
 		vector<string> answer;
-		/**
+
 		query = "stmt s; Select s such that Follows(s, 3)";
 		expected = { "None" };
 		q.parseInput(query);
@@ -89,13 +89,11 @@ public:
 		answer = qe.runQueryEval();
 		Assert::IsTrue(expected == answer);
 		
-
 		//Clear the objects that were used
 		q = QueryValidator();
 		qs = QueryStatement();
 		qe = QueryEval();
 		expected = vector<string>();
-		
 
 		query = "stmt s; Select s such that Follows(1, s)";
 		expected = { "2" };
@@ -105,14 +103,13 @@ public:
 		qe.setQueryStatement(qs);
 		answer = qe.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		**/
-		
+
 		//Clear the objects that were used
 		q = QueryValidator();
 		qs = QueryStatement();
 		qe = QueryEval();
 		expected = vector<string>();
-
+		
 		query = "stmt s; Select s such that Follows*(s, 2)";
 		expected = { "1" };
 		q.parseInput(query);
@@ -121,13 +118,12 @@ public:
 		qe.setQueryStatement(qs);
 		answer = qe.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		/**
+		
 		query = "variable v; Select v such that Modifies(a, v)";
 		Assert::IsFalse(q.parseInput(query));
-
-
+		
 		query = "variable v; Select v such that Modifies(2, v)";
-		expected = { "y", "x" };
+		expected = { "x", "y" };
 		q.parseInput(query);
 		qs = q.getQueryStatement();
 		qe.setPKB(pkb);
@@ -140,7 +136,6 @@ public:
 
 		query = "variable v; Select v such that Uses(3，v）";
 		//Assert::IsTrue(q.parseInput(query));
-		**/
 	}
 	};
 }

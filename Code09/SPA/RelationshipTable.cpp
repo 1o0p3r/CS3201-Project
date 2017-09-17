@@ -5,7 +5,7 @@
 RelationshipTable::RelationshipTable() {
 	const int NUM_ONE = 1;
 	const int NUM_TWO = 2;
-	const string MODIFIES_STRING = "Modfiies";
+	const string MODIFIES_STRING = "Modifies";
 	const string USES_STRING = "Uses";
 	const string FOLLOWS_STRING = "Follows";
 	const string FOLLOWS_STAR_STRING = "Follows*";
@@ -62,7 +62,7 @@ RelationshipTable::RelationshipTable() {
 }
 
 bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
-	if (argIndex == 1 && (isValidArg1(rel,type) == true)) {
+	if (argIndex == 1 && (isValidArg1(rel,type))) {
 		return true;
 	}
 	else if (argIndex == 2 && isValidArg2(rel, type)) {
