@@ -9,7 +9,7 @@ class AbstractWrapper {
 public:
   static volatile bool GlobalStop;
   // method for parsing the SIMPLE source
-  virtual void parse(std::string filename) = 0;
+  virtual void Parse(std::string filename) = 0;
   // method for evaluating a query
   virtual void evaluate(std::string query, std::list<std::string>& results) =0;
 };
