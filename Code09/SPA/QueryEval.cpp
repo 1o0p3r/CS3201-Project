@@ -399,7 +399,7 @@ int QueryEval::evalQuerySuchThat()
 					case 1: //arg1 synonym
 						if (suchThatElements[i].getSuchThatArg2Type() != "number") { //arg1 = wildcard or some syno
 							tempVect = pkbReadOnly.getAssign();
-							for (int a; a < tempVect.size(); a++) {
+							for (int a = 0; a < tempVect.size(); a++) {
 								tempStringVect = vector<string>();
 								tempStringVect = pkbReadOnly.getModifies(tempVect[a]);
 								if (!tempStringVect.empty()) {
@@ -418,7 +418,7 @@ int QueryEval::evalQuerySuchThat()
 					case 2: //arg2 synonym
 						if (suchThatElements[i].getSuchThatArg1Type() != "number") { //arg1 = wildcard or some syno
 							tempStringVect = pkbReadOnly.getAllVariables();
-							for (int a; a < tempStringVect.size(); a++) {
+							for (int a = 0; a < tempStringVect.size(); a++) {
 								tempVect = vector<int>();
 								tempVect=pkbReadOnly.getModifiedBy(tempStringVect[a]);
 								if (!tempVect.empty()) {
@@ -428,6 +428,7 @@ int QueryEval::evalQuerySuchThat()
 							intermediateResultString = tempStringVect2;
 						}
 						else {
+							tempStringVect = (pkbReadOnly.getModifies(3)); // pkb error , try 2,3,4, to be remove
 							intermediateResultString =
 								pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1()));
 						}
