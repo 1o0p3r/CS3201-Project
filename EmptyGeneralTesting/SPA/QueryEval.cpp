@@ -36,6 +36,12 @@ static std::map<std::string, suchThatValue> mapSuchThatValues;
 static std::map<std::string, patternValue> mapPatternValues;
 static std::map<std::string, patternExpType> mapPatternExpType;
 
+
+/* call QueryEval qe = queryEval(PKB, QueryStatement) - step 1
+   qe.runQueryEval() - step 2
+   step 2 returns a vector<string> as the answer. 
+   answer is in 1st entry, i.e entry 0.
+ */
 QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
 	pkbReadOnly = pkb;
@@ -83,6 +89,7 @@ void QueryEval::initSuchThatMap()
 
 }
 
+//use this function to run queryEval
 vector<string> QueryEval::runQueryEval()
 {
 //to convert vector<int> into vector<string>
