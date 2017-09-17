@@ -72,7 +72,7 @@ const string CONSTANT_STRING_REGEX = INTEGER_STRING_REGEX;
 
 const string FACTOR_STRING_REGEX = VAR_NAME_REGEX + VERTICAL_LINE + CONSTANT_STRING_REGEX;
 const string EXPRESSION_SPEC_REGEX = "(\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_)";
-const string PATTERN_REGEX = "(pattern\s+([a-zA-Z](\w)*))\s*\(\s*(([a-zA-Z](\w|\#)*)|(\_)|(\"[a-zA-Z](\w|\#)*\")),\s*((\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_))\)";
+//const string PATTERN_REGEX = "(pattern\s+([a-zA-Z](\w)*))\s*\(\s*(([a-zA-Z](\w|\#)*)|(\_)|(\"[a-zA-Z](\w|\#)*\")),\s*((\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_))\)";
 
 
 using namespace std;
