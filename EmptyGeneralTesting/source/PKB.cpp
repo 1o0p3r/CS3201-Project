@@ -7,12 +7,13 @@
 #include "Use.h"
 #include "Util.h"
 
-#include<stdio.h>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <vector>
 #include <set>
 #include <map>
+#include <tuple>
 
 using namespace std;
 
@@ -40,6 +41,7 @@ PKB::PKB() {
 	vector<vector<tuple<int, string>>> patternTable;
 	set<string> allVariables;
 	set<string> allConstants;
+	set<string> allProcedures;
 
 	initTypeMap();
 }
@@ -58,6 +60,8 @@ int PKB::getVarIndex(string varName) {
 }
 
 int PKB::getProcIndex(string procName) {
+
+	allProcedures.insert(procName);
 
 	if (find(procIndexTable.begin(), procIndexTable.end(), procName) != procIndexTable.end())
 		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
@@ -102,6 +106,12 @@ vector<tuple<int, string>> PKB::getPattern(string varName) {
 vector<string> PKB::getAllConstants() {
 	vector<string> result;
 	result.insert(result.end(), allConstants.begin(), allConstants.end());
+	return result;
+}
+
+vector<string> PKB::getAllProcedures() {
+	vector<string> result;
+	result.insert(result.end(), allProcedures.begin(), allProcedures.end());
 	return result;
 }
 
@@ -258,9 +268,14 @@ vector<int> PKB::getIf() {
 }
 
 vector<int> PKB::getAllStmt() {
-	vector<int> result = getWhile();
-	result.insert(result.end(), getAssign().begin(), getAssign().end());
-	result.insert(result.end(), getIf().begin(), getIf().end());
+	vector<int> _while = getWhile();
+	vector<int> assign = getAssign();
+	vector<int> _if = getIf();
+	vector<int> result;
+	result.reserve(_while.size() + assign.size() + _if.size());
+	result.insert(result.end(), _while.begin(), _while.end());
+	result.insert(result.end(), assign.begin(), assign.end());
+	result.insert(result.end(), _if.begin(), _if.end());
 	return result;
 }
 

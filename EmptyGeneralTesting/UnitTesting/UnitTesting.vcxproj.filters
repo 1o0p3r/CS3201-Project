@@ -6,6 +6,7 @@
     <ClCompile Include="RelationshipTableTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestAST.cpp" />
+    <ClCompile Include="PKBTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
