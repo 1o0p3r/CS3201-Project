@@ -1,5 +1,7 @@
 #include "Util.h"
 #include <iostream>
+#include <vector>
+#include <sstream>
 
 string Util::insertBrackets(string results) {
 	//string results = input;
@@ -9,14 +11,16 @@ string Util::insertBrackets(string results) {
 			if (results[index - 1] != ')') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else {
+			}
+			else {
 				int counter = 1;
 				int back = index - 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
 						counter--;
-					} else if (results[back] == ')') {
+					}
+					else if (results[back] == ')') {
 						counter++;
 					}
 				}
@@ -33,40 +37,46 @@ string Util::insertBrackets(string results) {
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else if (results[index - 1] == ')' && results[index + 1] != '(') {
+			}
+			else if (results[index - 1] == ')' && results[index + 1] != '(') {
 				int counter = 1;
 				int back = index - 2;
 				while (counter > 0) {
 					if (results[back] == '(') {
 						counter--;
-					} else if (results[back] == ')') {
+					}
+					else if (results[back] == ')') {
 						counter++;
 					}
 					back--;
 				}
 				results.insert(index + 2, ")");
 				results.insert(back + 1, "(");
-			} else if (results[index + 1] == '(' && results[index - 1] != ')') {
+			}
+			else if (results[index + 1] == '(' && results[index - 1] != ')') {
 				int counter = 1;
 				int front = index + 2;
 				while (counter > 0) {
 					if (results[front] == ')') {
 						counter--;
-					} else if (results[front] == '(') {
+					}
+					else if (results[front] == '(') {
 						counter++;
 					}
 					front++;
 				}
 				results.insert(front - 1, ")");
 				results.insert(index - 1, "(");
-			} else {
+			}
+			else {
 				int counter = 1;
 				int back = index - 2;
 				int front = index + 2;
 				while (counter > 0) {
 					if (results[back] == '(') {
 						counter--;
-					} else if (results[back] == ')') {
+					}
+					else if (results[back] == ')') {
 						counter++;
 					}
 					back--;
@@ -75,7 +85,8 @@ string Util::insertBrackets(string results) {
 				while (counter > 0) {
 					if (results[front] == ')') {
 						counter--;
-					} else if (results[front] == '(') {
+					}
+					else if (results[front] == '(') {
 						counter++;
 					}
 					front++;
@@ -88,4 +99,14 @@ string Util::insertBrackets(string results) {
 		index++;
 	}
 	return results;
+}
+
+vector<string> Util::splitLine(string s, char delim) {
+	stringstream ss(s);
+	string item;
+	vector<string> tokens;
+	while (getline(ss, item, delim)) {
+		tokens.push_back(item);
+	}
+	return tokens;
 }
