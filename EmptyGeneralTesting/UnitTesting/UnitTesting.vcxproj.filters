@@ -5,7 +5,6 @@
     <ClCompile Include="QueryValidatorTest.cpp" />
     <ClCompile Include="RelationshipTableTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="TestAST.cpp" />
     <ClCompile Include="PKBTest.cpp" />
     <ClCompile Include="ParentTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
