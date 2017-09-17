@@ -26,6 +26,11 @@ enum patternExpType
 	undefinedExpression, _wildcard, substring, exact
 };
 
+enum patternSelectSynonymType
+{
+	 noCommon, entity, arg1
+};
+
 static std::map<std::string, selectValue> mapSelectValues;
 static std::map<std::string, suchThatValue> mapSuchThatValues;
 static std::map<std::string, patternValue> mapPatternValues;
@@ -35,8 +40,6 @@ QueryEval::QueryEval(PKB pkb, QueryStatement qs)
 {
 	pkbReadOnly = pkb;
 	qsReadOnly = qs;
-	hasSuchThatClause = true;
-	hasPatternClause = true;
 	initSelectMap();
 	initSuchThatMap();
 	initPatternMap();
@@ -88,13 +91,56 @@ vector<string> QueryEval::runQueryEval()
 //step 3:evalulate each clause individually
 //step 4:get the intersection of the answer if the select synonym is in the clauses
 //step 5:return the answer as a vector<string>.
-	
+	vector<string> queryEvalAns;
+
+	initForNewQs();
 	findQueryElements(); //step 1
 	evalQueryElements(); //step 3
+	queryEvalAns = getQueryAnswer();
 
-	return vector<string>();
+	return queryEvalAns;
 }
 
+//credit to 0x499602D2 from stackoverflow for code
+string QueryEval::intVectToString(vector<int> vec)
+{
+	string str;
+	for (int i = 0; i < vec.size(); ++i) {
+		str += std::to_string(vec[i]);
+		if (i + 1 != vec.size()) { // if the next iteration isn't the last
+			str += ", "; // add a comma (optional)
+		}
+	}
+
+	
+	return str;
+}
+
+vector<string> QueryEval::getQueryAnswer()
+{	
+	string convertVectToString;
+	vector<string> result;
+	vector<string> answer = queryAnswerString;
+	if (isResultInt) {
+		convertVectToString = intVectToString(queryAnswerInt);
+		answer = vector<string>();
+		answer.push_back(convertVectToString);
+	} 
+	return answer;
+}
+void QueryEval::initForNewQs()
+{
+	//reset values for each new QS
+	queryAnswerString = vector<string>();
+	queryAnswerInt = vector<int>();
+	selectResultString = vector<string>();
+	selectResultInt = vector<int>();
+	suchThatAnswerString = vector<string>();
+	suchThatAnswerInt = vector<int>();
+	patternAnswerString = vector<string>();
+	patternAnswerInt = vector<int>();
+
+}
 void QueryEval::evalQueryElements()
 {	
 	int hasCommonSyno; // 0 = nil, 1 = 1st arg, 2 = 2nd arg
@@ -147,7 +193,31 @@ void QueryEval::combineSelectSuchThat(int hasCommonSyno) // similar code, can pr
 
 void QueryEval::resultSelectSuchThatPattern(int hasSynPattern)
 {
-	
+	int commonSynoLocation;
+	vector<int> selectSuchThatPatternInt;
+	vector<string> selectSuchThatPatternString;
+	if (hasPatternClause) //by default it is always true, unless a PatternClause fails
+	{
+		commonSynoLocation = hasSynPattern;
+		switch (commonSynoLocation) //is there a common synonym in suchThatclause
+		{
+		case noCommon:
+			break;
+		case entity: //entity is the common Synonym
+			selectSuchThatPatternInt = intersectionIntVect(queryAnswerInt,
+					patternAnswerInt);
+			queryAnswerInt = selectSuchThatPatternInt;
+			break;
+		case arg1:
+			selectSuchThatPatternString = intersectionStringVect(queryAnswerString,
+					patternAnswerString);
+			queryAnswerString = selectSuchThatPatternString;
+			break;
+			}
+	} else {
+		queryAnswerInt = vector<int>();
+		queryAnswerString = vector<string>();
+	}
 }
 
 int QueryEval::evalQuerySelect()
@@ -392,6 +462,8 @@ void QueryEval::isPatternFalse(bool clauseValue)
 
 void QueryEval::findQueryElements() 
 {
+	hasSuchThatClause = true;
+	hasPatternClause = true;
 	selectElement = qsReadOnly.getSelectQueryElement();
 	suchThatElements = qsReadOnly.getSuchThatQueryElement(); //all String
 	patternElements = qsReadOnly.getPatternQueryElement();
@@ -479,7 +551,7 @@ vector<int> QueryEval::parentStarResult(int s1, int opt) {
 }
 
 //Credit to stackoverflow deepmax
-vector<string> instersection(vector<string> &v1, vector<string> &v2)
+vector<string> QueryEval::intersectionStringVect(vector<string> &v1, vector<string> &v2)
 {
 	vector<string> v3;
 
@@ -490,6 +562,19 @@ vector<string> instersection(vector<string> &v1, vector<string> &v2)
 
 	return v3;
 }
+
+vector<int> QueryEval::intersectionIntVect(vector<int> &v1, vector<int> &v2)
+{
+	vector<int> v3;
+
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+
+	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
+
+	return v3;
+}
+
 
 /* Old Pattern Code Snippet for after evalPatternValues case wildcard,variable
 							for (int j = 0; j < evalVarPatterns.size(); j++) {

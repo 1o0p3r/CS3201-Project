@@ -1,11 +1,12 @@
 #pragma once
 
 #include "PKB.h"
-#include <iterator>
-#include <algorithm>
 #include "QueryStatement.h"
 #include "QueryElement.h"
 
+#include <iterator>
+#include <algorithm>
+#include <sstream>
 #include <map>
 #include <vector>
 #include <string>
@@ -26,14 +27,14 @@ public:
 	QueryEval(PKB pkb, QueryStatement qs);
 
 	void initPatternExpTypeMap();
-
 	void initPatternMap();
-
 	void initSelectMap();
-
 	void initSuchThatMap();
 	
 	vector<string> runQueryEval();
+	string intVectToString(vector<int> vec);
+	vector<string> getQueryAnswer();
+	void initForNewQs();
 	void evalQueryElements();
 	void combineSelectSuchThat(int hasSynoSuchThat);
 	void resultSelectSuchThatPattern(int hasPatternSuchThat);
@@ -79,14 +80,8 @@ private:
 	vector<int> parentResult(int s1, int opt);
 	vector<int> parentStarResult(int s1, int opt);
 
+	vector<string> intersectionStringVect(vector<string>& v1, vector<string>& v2);
+
+	vector<int> intersectionIntVect(vector<int>& v1, vector<int>& v2);
+
 };
-
-/* 
-Getters from querystatement
-QueryStatement();
-QueryElement getSelectQueryElement();
-vector<QueryElement> getSuchThatQueryElement();
-vector<QueryElement> getPatternQueryElement();
-vector<SynonymEntityPair> getSynonymEntityList();
-
-*/
