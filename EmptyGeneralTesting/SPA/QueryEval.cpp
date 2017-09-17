@@ -78,14 +78,12 @@ void QueryEval::initSelectMap()
 
 void QueryEval::initSuchThatMap()
 {// to check with pl whether QS uses these strings (i.e inside the square bracket) in the entity as defined here.
-//	undefined, modifiesS, usesS, parent, parentT, Follows,
-	//	FollowsT
-	mapSuchThatValues["modifies"] = modifies;
-	mapSuchThatValues["uses"] = uses;
-	mapSuchThatValues["parent"] = parent;
-	mapSuchThatValues["parentStar"] = parentStar;
-	mapSuchThatValues["follows"] = follows;
-	mapSuchThatValues["followStar"] = followsStar;
+	mapSuchThatValues["Modifies"] = modifies;
+	mapSuchThatValues["Uses"] = uses;
+	mapSuchThatValues["Parent"] = parent;
+	mapSuchThatValues["Parent*"] = parentStar;
+	mapSuchThatValues["Follows"] = follows;
+	mapSuchThatValues["Follow*"] = followsStar;
 
 }
 
@@ -360,7 +358,7 @@ int QueryEval::evalQuerySuchThat()
 	vector<vector<int>> suchThatResult;
 	vector<vector<string>> suchThatResultString;
 	int argEval; //option to determine which argument to evaluate (s1,s2) 
-				 //case 0: both synos, case 1: arg1 = integer, case 2: arg 2 = integer, case 3: both integer
+				// 1 => arg1 = evaluate arg1 since it is integer, 2=> evalulate arg 2
 	
 
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
@@ -373,14 +371,14 @@ int QueryEval::evalQuerySuchThat()
 		argEval = (argType1.compare("number"))? 1 : 0; //confirm with pql it is number
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
-		
+		vector<int> tempVect;
 
 		switch (mapSuchThatValues[suchThatElements[i].getSuchThatRel()]) //check with pql, this is meant to be follow etc
 		{
 			case modifies:
 				switch (comEval)
 				{
-					case 0: //both synonyms
+					case 0: //both synonyms, 
 						isSuchThatFalse(true);
 						break;
 					case 1: //arg1 synonym
@@ -417,29 +415,54 @@ int QueryEval::evalQuerySuchThat()
 						break;
 				}
 				break;
-			case parent:
-				suchThatResult.push_back(
-					argEval ?
-					parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-					parentResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
-				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
+			case parent: // if = check for both arguments number
+				if (argType1.compare("number") && argType2.compare("number")) {
+					parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval).front() ==
+						stoi(suchThatElements[i].getSuchThatArg2(i)) ? 
+						isSuchThatFalse(true) : isSuchThatFalse(false);
+				} else {
+					suchThatResult.push_back(
+						argEval ?
+						parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+						parentResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
+				}
 				break;
 			case parentStar:
-				suchThatResult.push_back(
-					argEval ?
-					parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-					parentStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
-				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+				if (argType1.compare("number") && argType2.compare("number")) {
+					tempVect = parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval);
+					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2(i))) !=
+						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
+				}
+				else {
+					suchThatResult.push_back(
+						argEval ?
+						parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+						parentStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+				}
 				break;
 			case follows:
-				suchThatResult.push_back( 
-					argEval ? 
-					followResult(stoi(suchThatElements[i].getSuchThatArg1(i)),argEval) :
-					followResult(stoi(suchThatElements[i].getSuchThatArg2(i)),argEval)); 
-				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
-				// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
+				if (argType1.compare("number") && argType2.compare("number")) {
+					followResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval).front() ==
+						stoi(suchThatElements[i].getSuchThatArg2(i)) ?
+						isSuchThatFalse(true) : isSuchThatFalse(false);
+				}
+				else {
+					suchThatResult.push_back(
+						argEval ?
+						followResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
+						followResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
+				}
 				break;
 			case followsStar:
+				if (argType1.compare("number") && argType2.compare("number")) {
+					tempVect = followStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval);
+					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2(i))) !=
+						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
+				}
 				suchThatResult.push_back(
 					argEval ?
 					followStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
