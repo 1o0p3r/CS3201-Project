@@ -88,7 +88,8 @@ public:
 		query = "stmt s; Select s such that Follows(s, 3)";
 		q.parseInput(query);
 		qs = q.getQueryStatement();
-		QueryEval qe = QueryEval(pkb, qs);
+
+	//	QueryEval qe = QueryEval(pkb, qs);
 		vector<string> answer = qe.runQueryEval();
 		expected = { "2" };
 		Assert::IsTrue(expected == answer);

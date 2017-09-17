@@ -15,13 +15,14 @@
 const int ZERO = 0;
 const int ONE = 1;
 const int TWO = 2;
+const int PATTERN_STRING_LENGTH = 7;
 const char SYMBOL_WHITESPACE = ' ';
 const char SYMBOL_COMMA = ',';
 const char SYMBOL_LEFT_BRACKET = '(';
 const char SYMBOL_RIGHT_BRACKET = ')';
-const char INVERTED_COMMA = '"';
+const char INVERTED_COMMA = '\"';
 const char WHITESPACE_CHAR = ' ';
-const char DOUBLE_QUOTATION = '/"';
+const char DOUBLE_QUOTATION = '\"';
 
 const string WHITESPACE_STRING = " ";
 const string SYMBOL_SEMI_COLON = ";";
@@ -71,7 +72,7 @@ const string CONSTANT_STRING_REGEX = INTEGER_STRING_REGEX;
 
 const string FACTOR_STRING_REGEX = VAR_NAME_REGEX + VERTICAL_LINE + CONSTANT_STRING_REGEX;
 const string EXPRESSION_SPEC_REGEX = "(\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_)";
-//const string PATTERN_REGEX = "(pattern\s+([a-zA-Z](\w)*))\s*\(\s*(([a-zA-Z](\w|\#)*)|(\_)|(\"[a-zA-Z](\w|\#)*\")),\s*((\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_))\)";
+const string PATTERN_REGEX = "(pattern\s+([a-zA-Z](\w)*))\s*\(\s*(([a-zA-Z](\w|\#)*)|(\_)|(\"[a-zA-Z](\w|\#)*\")),\s*((\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_))\)";
 
 
 using namespace std;
@@ -241,8 +242,11 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		if (str.at(ZERO) == WHITESPACE_CHAR) {
 			addIdx = ONE;
 		}
-		//remove the the string 'pattern'
-		string tempPatternStr = str.substr(8+addIdx, str.length() - ONE);
+		//remove the the string 'pattern', pattern.length()+ ONE + addIdx + syn.length()
+		
+		int firstIdx = (7 + ONE + addIdx + syn.length());
+		int test = PATTERN_REGEX.length();
+		string tempPatternStr = str.substr(firstIdx, str.length() - ONE);
 
 		//Obtain the index of first occurence of left bracket
 		int idxLeft = tempPatternStr.find(SYMBOL_LEFT_BRACKET);
@@ -253,13 +257,9 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		//Remove all the unncessary whitespace
 		string argStr = removeSymbols(tempPatternStr, WHITESPACE_STRING);
 
-		/*/
 		//Remove all the uneecessary brackets
-		argStr = removeSymbols(argStr, SYMBOL_LEFT_BRACKET_STRING);
-		argStr = removeSymbols(argStr, SYMBOL_RIGHT_BRACKET_STRING);
-		**/
-
-		argStr = argStr.substr(TWO, argStr.length() - 3);
+		//This is applicable now as first letter is assignment
+		argStr = argStr.substr(idxLeft+ONE, argStr.length() - 2);
 		vector<string> splitPattern = splitBySymbol(argStr, SYMBOL_COMMA);
 
 		//This implies no commas are present
@@ -482,15 +482,18 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		vector<string> vecSplit = splitBySymbol(select, SYMBOL_WHITESPACE);
 		//Obtain the synonym
 		string syn = vecSplit.at(ONE);
+		
 		for (size_t k = ONE; k < vec.size(); k++) {
 			if (vec.at(k).at(ZERO) == WHITESPACE_CHAR) {
-				vec.at(k) = vec.at(k).substr(ONE, vec.at(k).length() - 1);
+				//vec.at(k) = vec.at(k).substr(ONE, vec.at(k).length() - 1);
+				vec.at(k).erase(0, 1);
 			}
 			if (vec.at(k).at(vec.at(k).length()-1) == WHITESPACE_CHAR) {
-				
-				vec.at(k) = vec.at(k).substr(ZERO, vec.at(k).length() - 1);
+				vec.at(k).erase(vec.at(k).size() - 1);
+			//	vec.at(k) = vec.at(k).substr(ZERO, vec.at(k).length() - 1);
 			}
 		}
+
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
 				if (!isValidSuchThat(vec.at(i), syn)) {

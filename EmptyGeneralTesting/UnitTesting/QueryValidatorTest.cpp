@@ -8,7 +8,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 const string WHITESPACE__STRING = " ";
 const string COMMA_STRING = ",";
 const char INVERTED_COMMA = '\"';
-
+const string DOUBLE_QUOTATION_STRING = "\"";
 namespace UnitTesting
 {
 	TEST_CLASS(queryValidatorTest)
@@ -18,13 +18,12 @@ namespace UnitTesting
 		{
 			QueryValidator q;
 			string query;
-
+			
 			query = "stmt s; Select s";
 			Assert::IsTrue(q.parseInput(query));
 			
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(q.parseInput(query));
-			
 			
 			query = "while w; assign a; Select w such that Follows(w, a)";
 			Assert::IsTrue(q.parseInput(query));
@@ -72,7 +71,12 @@ namespace UnitTesting
 			Assert::IsTrue(q.removeSymbols(str, WHITESPACE__STRING) == expectedStr);
 			str = " s    ,    w";
 			expectedStr = "s,w";
-			Assert::IsTrue(q.removeSymbols(str, WHITESPACE__STRING) == expectedStr);	
+			Assert::IsTrue(q.removeSymbols(str, WHITESPACE__STRING) == expectedStr);
+
+			str = "\"wewewewe\"";
+			expectedStr = "wewewewe";
+			Assert::IsTrue(q.removeSymbols(str, DOUBLE_QUOTATION_STRING) == expectedStr);
+
 		}
 		TEST_METHOD(isValidSplit) {
 			QueryValidator q;
