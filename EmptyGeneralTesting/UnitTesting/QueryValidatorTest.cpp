@@ -7,13 +7,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 const string WHITESPACE__STRING = " ";
 const string COMMA_STRING = ",";
+const char INVERTED_COMMA = '\"';
+
 namespace UnitTesting
 {
 	TEST_CLASS(queryValidatorTest)
 	{
 	public:
-
-		
 		TEST_METHOD(isValidQuery)
 		{
 			QueryValidator q;
@@ -24,16 +24,23 @@ namespace UnitTesting
 			
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(q.parseInput(query));
-
+			
+			
 			query = "while w; assign a; Select w such that Follows(w, a)";
 			Assert::IsTrue(q.parseInput(query));
-
-			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, ""x"")";
+			
+			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
+			Assert::IsFalse(q.parseInput(query));
+			
+			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsTrue(q.parseInput(query));
-
+			
+			query = "while w; assign a; Select x such that Follows(w, a) pattern a(_, \"x\")";
+			Assert::IsFalse(q.parseInput(query));
+			
 			query = "assign a; Select a pattern a(_, _\"(f - d + b) - l\"_)";
 			Assert::IsTrue(q.parseInput(query));
-
+			
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
@@ -132,6 +139,23 @@ namespace UnitTesting
 			
 			str = "b";
 			Assert::IsFalse(q.is_number(str));
+		}
+		TEST_METHOD(removeDuplicatesWhiteSpaces) {
+			QueryValidator q;
+			string str;
+			string expected;
+
+			str = "This is a      dummy     string";
+			expected = "This is a dummy string";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
+			
+			str = "stmt    s;     while w; Select s such    that Follows(s   ,4)";
+			expected = "stmt s; while w; Select s such that Follows(s ,4)";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
+
+			str = " stmt s;  while  w; Select s such  that  Follows(  s,4) pattern a(_,   \"x\")";
+			expected = " stmt s; while w; Select s such that Follows( s,4) pattern a(_, \"x\")";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
 		}
 	};
 }

@@ -35,7 +35,6 @@ private:
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn);
-	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Integer, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	
@@ -43,12 +42,7 @@ private:
 	bool isValidOthers(vector<string> others);
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2);
 	bool isValidPattern(string str, string syn);
-	bool isVariableArg1(string arg1);
-	bool isWildcard(string arg);
-	bool isSubstringArg2(string arg2);
-	bool isExactString(string arg2);
-	bool isValidQueryLine(string selectString);
-
+	
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
@@ -62,11 +56,18 @@ public:
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str, string syn);
 	bool isValidEntity(string);
-//	int getNumClauses();
-	void startParsing(string str);
 
+	bool isVariableArg1(string arg1);
+	bool isSubstringArg2(string arg2);
+	bool isWildcard(string arg);	
+	bool isExactString(string arg2);
+	bool isValidQueryLine(string selectString);
+	
+	//	int getNumClauses();
+	void startParsing(string str);
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
+	string removeDuplicatesWhiteSpaces(string str);
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
 	bool is_number(string str);
 };
