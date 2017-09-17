@@ -254,16 +254,7 @@ public:
 	@param c the constant name
 	*/
 	void addConstant(string c);
-	/**
-	Add a Constant to PKB
-	@param v the variable name
-	*/
-	void addVariable(string v);
-	/**
-	Add a Constant to PKB
-	@param p the procedure name
-	*/
-	void addProcedure(string p);
+
 	/**
 	Adds a pattern to PKB
 	@param StatementNum Statement Number of the expression
@@ -299,6 +290,8 @@ private:
 	int getProcIndex(string varName);
 	vector<string> convertToVarNames(vector<int> input);
 	vector<string> convertToProcNames(vector<int> input);
+	void addVariable(string v);
+	void addProcedure(string p);
 
 	void initTypeMap();
 };
