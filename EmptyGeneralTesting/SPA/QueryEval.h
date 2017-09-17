@@ -24,9 +24,10 @@ public:
 	static const int PROCMODBY = 3;
 	static const int PROCUSEBY = 3;
 
-	QueryEval(PKB pkb, QueryStatement qs);
+	QueryEval();
 
 	void initPatternExpTypeMap();
+	void setPKB(PKB pkb);
 	void initPatternMap();
 	void initSelectMap();
 	void initSuchThatMap();
