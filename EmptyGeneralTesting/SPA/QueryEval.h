@@ -1,9 +1,5 @@
 #pragma once
 
-#include "Follow.h"
-#include "Parent.h"
-#include "Modify.h"
-#include "Use.h"
 #include "PKB.h"
 #include <iterator>
 #include <algorithm>
@@ -29,6 +25,10 @@ public:
 
 	QueryEval(PKB pkb, QueryStatement qs);
 
+	void initPatternExpTypeMap();
+
+	void initPatternMap();
+
 	void initSelectMap();
 
 	void initSuchThatMap();
@@ -39,12 +39,16 @@ public:
 	void resultSelectSuchThatPattern(int hasPatternSuchThat);
 	int evalQuerySelect();
 	int evalQueryPattern();
+	tuple<vector<int>, vector<string>> evalSinglePatternResult( vector<string> evalVarPatterns, 
+																	QueryElement patternElements);
 	void findQueryElements();
 	void setQueryStatement(QueryStatement qs);
 
 	int evalQuerySuchThat();
 
 	void isSuchThatFalse(bool clauseValue);
+
+	void isPatternFalse(bool clauseValue);
 
 private:
 	PKB pkbReadOnly;
@@ -65,6 +69,9 @@ private:
 	vector<int> selectResultInt; //for stmt etc
 	vector<string> suchThatAnswerString;
 	vector<int> suchThatAnswerInt;
+	vector<string> patternAnswerString;
+	vector<int> patternAnswerInt;
+	
 
 
 	vector<int> followResult(int s1, int opt);
