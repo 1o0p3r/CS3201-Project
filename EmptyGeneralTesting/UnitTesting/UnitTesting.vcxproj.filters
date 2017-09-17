@@ -7,6 +7,10 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestAST.cpp" />
     <ClCompile Include="PKBTest.cpp" />
+    <ClCompile Include="ParentTest.cpp" />
+    <ClCompile Include="ModifyTest.cpp" />
+    <ClCompile Include="UseTest.cpp" />
+    <ClCompile Include="UtilTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
