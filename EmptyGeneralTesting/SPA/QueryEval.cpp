@@ -104,6 +104,7 @@ vector<string> QueryEval::runQueryEval()
 	findQueryElements(); //step 1
 	evalQueryElements(); //step 3
 	queryEvalAns = getQueryAnswer();
+	
 
 	return queryEvalAns;
 }
@@ -133,6 +134,8 @@ vector<string> QueryEval::getQueryAnswer()
 		answer = vector<string>();
 		answer.push_back(convertVectToString);
 	} 
+	if (queryAnswerString.empty())
+		answer = {"None"};
 	return answer;
 }
 void QueryEval::initForNewQs()
@@ -434,7 +437,7 @@ int QueryEval::evalQuerySuchThat()
 						argEval ?
 						parentResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
 						parentResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
-					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
+					suchThatResult[i].empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
 				}
 				break;
 			case parentStar:
@@ -448,7 +451,7 @@ int QueryEval::evalQuerySuchThat()
 						argEval ?
 						parentStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
 						parentStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
-					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					suchThatResult[i].empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				}
 				break;
 			case follows:
@@ -462,7 +465,7 @@ int QueryEval::evalQuerySuchThat()
 						argEval ?
 						followResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
 						followResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
-					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					suchThatResult[i].empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 					// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
 				}
 				break;
@@ -477,12 +480,14 @@ int QueryEval::evalQuerySuchThat()
 						argEval ?
 						followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
 						followStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
-					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
+					suchThatResult[i].empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				}
 				break;
 		}
-		suchThatAnswerInt = suchThatResult[0]; // to be changed in iter2, since only at most 1 suchThat in iter1
-		suchThatAnswerString = suchThatResultString[0];
+		if(!suchThatResult.empty())
+			suchThatAnswerInt = suchThatResult[0]; // to be changed in iter2, since only at most 1 suchThat in iter1
+		if(!suchThatResultString.empty())
+			suchThatAnswerString = suchThatResultString[0];
 	}
 	return argEval;
 }
