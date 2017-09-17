@@ -42,21 +42,37 @@ void Parent::setChildStar(int s1, int s2) {
 }
 
 vector<int> Parent::getChild(int statementNum) {
-	vector<int> result(1);
-	result[0] = parentTable[statementNum];
-	return result;
+	if (parentTable.size() > statementNum) {
+		vector<int> result(1);
+		result[0] = parentTable[statementNum];
+		return result;
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Parent::getParent(int statementNum) {
-	vector<int> result(1);
-	result[0] = childTable[statementNum];
-	return result;
+	if (childTable.size() > statementNum) {
+		vector<int> result(1);
+		result[0] = childTable[statementNum];
+		return result;
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Parent::getChildStar(int statementNum) {
-	return parentStarTable[statementNum];
+	if (parentStarTable.size() > statementNum) {
+		return parentStarTable[statementNum];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Parent::getParentStar(int statementNum) {
-	return childStarTable[statementNum];
+	if (childStarTable.size() > statementNum) {
+		return childStarTable[statementNum];
+	} else {
+		return vector<int>();
+	}
 }

@@ -26,8 +26,8 @@ public:
 	}
 	TEST_METHOD(addProcedure) {
 		PKB pkb;
-		pkb.addProcedure("First");
-		pkb.addProcedure("Second");
+		pkb.setProcModifies("First", "x");
+		pkb.setProcUses("Second", "y");
 		vector<string> results;
 		results.push_back("First");
 		results.push_back("Second");
@@ -36,8 +36,8 @@ public:
 	}
 	TEST_METHOD(addVariable) {
 		PKB pkb;
-		pkb.addVariable("x");
-		pkb.addVariable("y");
+		pkb.setModifies(1, "x");
+		pkb.setUses(2, "y");
 		vector<string> results;
 		results.push_back("x");
 		results.push_back("y");
