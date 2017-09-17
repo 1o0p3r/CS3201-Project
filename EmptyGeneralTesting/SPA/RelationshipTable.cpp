@@ -112,6 +112,3 @@ bool RelationshipTable::isRelationshipExists(string rel) {
 	}
 	return false;
 }
-bool RelationshipTable::isValidNumArgs(string rel, int numArgs) {
-	return false;
-}

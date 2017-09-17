@@ -13,7 +13,6 @@ private:
 public:
 	RelationshipTable();
 	bool isValidArg(string rel, string type, int numArg);
-	bool isValidNumArgs(string rel, int numArgs);
 	bool isRelationshipExists(string rel);
 };
 

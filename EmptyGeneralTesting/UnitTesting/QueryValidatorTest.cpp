@@ -116,27 +116,22 @@ namespace UnitTesting
 			vecStr.clear();
 			expectedVecStr.clear();
 		}
-		/**
-		TEST_METHOD(isValidAddSuchThatQueryElement) {
-			bool arg1_NUM;
-			bool arg1_UNDER;
-			bool arg2_NUM;
-			bool arg2_UNDER;
-			string relType, arg1, arg2, arg1Ent, arg2Ent;
-
-			arg1_NUM = false;	arg1_UNDER = false;
-			arg2_NUM = false;	arg2_UNDER = false;
-			relType = "Follows";
-			
-			arg1 = "s";
-		}**/
-
 		//This checks if we get the correct corresponding entity
-		TEST_METHOD(isValidGetCorrespondingEntity) {
-			string arg1Ent;
-			string arg2Ent;
-			string temp = "nth";
+		TEST_METHOD(is_number) {
+			QueryValidator q;
+			string str;
 
+			str = "123";
+			Assert::IsTrue(q.is_number(str));
+
+			str = "1";
+			Assert::IsTrue(q.is_number(str));
+
+			str = "aaa";
+			Assert::IsFalse(q.is_number(str));
+			
+			str = "b";
+			Assert::IsFalse(q.is_number(str));
 		}
 	};
 }

@@ -18,7 +18,7 @@ private:
 	string patternSyn;
 	string patternArg1Type;
 	string patternArg2Type;
-	int isSubstring;
+	
 public:
 	QueryElement();
 	QueryElement(string entity, string synonym);
@@ -27,17 +27,18 @@ public:
 
 	string getSelectEntity();
 	string getSelectSynonym();
-	string getSuchThatArg1(int idx);
-	string getSuchThatArg2(int idx);
-	string getSuchThatArg1Type(int idx);
-	string getSuchThatArg2Type(int idx);
 
-	string getPatternArg1(int idx);
-	string getPatternArg2(int idx);
-	string getPatternEntity(int idx);
+	string getSuchThatArg1();
+	string getSuchThatArg2();
+	string getSuchThatArg1Type();
+	string getSuchThatArg2Type();
+
+	string getPatternArg1();
+	string getPatternArg2();
+	string getPatternEntity();
+	string getPatternSynonym();
 	string getPatternArg1Type();
 	string getPatternArg2Type();
-	string getPatternSynonym(int idx);
 	string getSuchThatRel();
 };
 

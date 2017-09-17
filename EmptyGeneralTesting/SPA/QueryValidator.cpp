@@ -10,7 +10,7 @@
 #include <sstream>
 #include <regex>
 #include <algorithm>
-#include <Util.h>
+//#include <Util.h>
 
 const int ZERO = 0;
 const int ONE = 1;
@@ -19,6 +19,7 @@ const char SYMBOL_WHITESPACE = ' ';
 const char SYMBOL_COMMA = ',';
 const char SYMBOL_LEFT_BRACKET = '(';
 const char SYMBOL_RIGHT_BRACKET = ')';
+const char INVERTED_COMMA = '"';
 
 const string WHITESPACE_STRING = " ";
 const string SYMBOL_SEMI_COLON = ";";
@@ -46,8 +47,14 @@ const string EXACT_STRING = "exact";
 const string SUBSTRING_STRING = "string";
 const string VARIABLE_STRING = "variable";
 const string SYNONYM_STRING = "synonym";
-
-const char INVERTED_COMMA = '"';
+const string INTEGER_STRING = "integer";
+const string INVALID_STRING = "invalid";
+const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
+const string INVALID_ENTITY_ERROR = "invalid entity";
+const string INVALID_QUERY = "Invalid query";
+const string INVALID_SYNONYM_QUERIED_ERROR = "Invalid synonym queried";
+const string INVALID_ARGUMENT_ERROR = "Invalid argument";
+const string NUMBER_ZERO_TO_NINE = "0123456789";
 
 using namespace std;
 QueryValidator::QueryValidator()
@@ -56,6 +63,10 @@ QueryValidator::QueryValidator()
 
 //This function takes in a string query
 void QueryValidator::startParsing(string str) {
+
+	//Upon taking in a string query, clear the following
+	queryStatement = QueryStatement();
+	synonymAndEntityList = vector<SynonymEntityPair>();
 	parseInput(str);
 }
 
@@ -84,7 +95,7 @@ bool QueryValidator::parseInput(string str) {
 		}
 	}
 	else {
-		cout << "Syntax is wrong, please key in semi colon";
+		cout << WRONG_SYNTAX_ERROR;
 		return false;
 	}
 }
@@ -92,43 +103,26 @@ bool QueryValidator::parseInput(string str) {
 //This function parses the Entity And Synonym and checks for the validity of Entity
 bool QueryValidator::isEntityAndSynonym(string currentString) {
 
-	if (currentString.find(SELECT_STRING) == true) {
-		cout << "Error occured, please check syntax of the query";
-		return false;
+	if (isValidEntity(currentString)) {
+		addSynonymEntityList();
+		return true;
 	}
 	else {
-		if (checkEntityAndSynonym(currentString)) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		cout << INVALID_ENTITY_ERROR;
+		return false;
 	}
 }
-
+//This function adds the synonymEntityList to the QueryStatement to give the query evaluator to use
+void QueryValidator::addSynonymEntityList() {
+	queryStatement.addSynonymEntityList(synonymAndEntityList);
+}
 bool QueryValidator::parseQueryLine(string str) {
 	if (!isValidQueryLine(str)) {
 		//validQuery = false;
-		cout << "Invalid queryLine" << endl;
+		cout << INVALID_QUERY << endl;
 	}
 	else {
 		return true;
-	}
-}
-
-/**
-bool QueryValidator::isValidDeclarationAndQuery() {
-	return (validQuery && validDeclaration);
-}**/
-//Parse EntityAndSynonym checks for validity of the entitiy by comparing with the validEntitiesList, if its valid, it will proceed to adding the synonym
-bool QueryValidator::checkEntityAndSynonym(string currentString) {
-
-	if (isValidEntity(currentString)) {
-		return true;
-	}
-	else {
-		cout << "Invalid Entity entered" << endl;
-		return false;
 	}
 }
 
@@ -225,13 +219,12 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 
 		string arg1 = splitPattern.at(ZERO);
 		string arg2 = splitPattern.at(ONE);
-
 		string ent = getCorrespondingEntity(syn);
-		//Need to do sth more here
-		//To-dos:
-		//Check if each arg contains inverted comma
-		bool variableArg1 = isVariableArg1(arg1);
 
+		bool arg1Variable = isVariableArg1(arg1);
+		bool arg1Wildcard = isWildcard(arg1);
+		bool arg1Synonym = isValidSynonym(arg1);
+		bool arg1Integer = is_number(arg1);
 		//Now removed the inverted commas
 		arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 
@@ -242,7 +235,6 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		if (arg2 == WILDCARD_STRING) {
 			arg2Wildcard = true;
 		}
-
 		if (arg2Wildcard == false) {
 			arg2Substring = isSubstringArg2(arg2);
 			//If arg2 is not a substring, 
@@ -252,8 +244,48 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 				}
 			}
 		}
-	
-		addPatternQueryElement(arg1, arg2, ent, syn, variableArg1, arg2Substring, arg2ExactString, arg2Wildcard);
+		//Clean up for arg1
+		if (arg1Variable) {
+			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
+			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+		}
+		else if (arg1Wildcard) {
+			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
+		}
+		else if(arg1Synonym){
+			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
+		}
+		else if(arg1Integer){
+			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
+		}
+		else {
+			cout << INVALID_ARGUMENT_ERROR;
+			return false;
+		}
+
+		//Clean up for arg2
+		if (arg2Substring) {
+			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
+			arg2 = removeSymbols(arg2, UNDER_SCORE_STRING);
+			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+		}
+		else if (arg2ExactString) {
+			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
+			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+		}
+		else if(arg2Wildcard){
+			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
+		}
+		else {
+			cout << INVALID_ARGUMENT_ERROR;
+			return false;
+		}
+		//The following are needed, dont remove
+
+		//arg1 = insertBrackets(arg1);
+		//arg2 = insertBrackets(arg2);
+
+		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg1Integer, arg2Substring, arg2ExactString, arg2Wildcard);
 		
 		return true;
 	}
@@ -270,6 +302,9 @@ bool QueryValidator::isVariableArg1(string arg1) {
 		return false;
 	}
 }
+bool QueryValidator::isWildcard(string arg) {
+	return (arg == UNDER_SCORE_STRING);
+}
 //This function checks if the given arg2 of pattern is of a substring type i.e. _"x+y"_
 bool QueryValidator::isSubstringArg2(string arg2) {
 	string substringPattern = "_"".+""_";
@@ -278,13 +313,19 @@ bool QueryValidator::isSubstringArg2(string arg2) {
 	
 	return std::regex_match(arg2, sm, pattern);
 }
+//This function takes in an argument(2) and checks if it is an exact string
 bool QueryValidator::isExactString(string arg2) {
 	/**
 	string isExactString("(["'])(?:(?=(\\?))\2.)*?\1");
 
 		std::regex
 	**/
-	return true;
+	if (arg2.at(0) == INVERTED_COMMA  && arg2.at(arg2.length() - 1) == INVERTED_COMMA) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 vector<string> QueryValidator::splitStatement(vector<string> currentVector) {
 	//Split by such that
@@ -312,16 +353,33 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		return true;
 	}
 	else {
-		cout << "Invalid synonym query";
+		cout << INVALID_SYNONYM_QUERIED_ERROR;
 		return false;
 	}
 }
 void QueryValidator::addSelectQueryElement(string ent, string syn) {
 	queryStatement.addSelectQuery(QueryElement(ent, syn));
 }
-void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
+
+//The following function
+void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Integer, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
 	
-	if (arg1Variable) {
+	if (arg1Wildcard) {
+		if (arg2Substring) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, SUBSTRING_STRING));
+		}
+		else if (!arg2Substring && arg2FullString) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, EXACT_STRING));
+		}
+		else if (!arg2Substring && arg2FullString && arg2Wilcard) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, WILDCARD_STRING));
+		}
+		else {
+			//cout << "Error occured";
+			exit(0);
+		}
+	}
+	else if (arg1Variable) {
 		if (arg2Substring) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, SUBSTRING_STRING));
 		}
@@ -332,10 +390,11 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, WILDCARD_STRING));
 		}
 		else {
-			cout << "Error occured";
+			//cout << "Error occured";
+			exit(0);
 		}
 	}
-	else {
+	else if(arg1Synonym){
 		if (arg2Substring) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, SUBSTRING_STRING));
 		}
@@ -346,7 +405,23 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, WILDCARD_STRING));
 		}
 		else {
-			cout << "Error occured";
+			//cout << "Error occured";
+			exit(0);
+		}
+	}
+	else {
+		if (arg2Substring) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, SUBSTRING_STRING));
+		}
+		else if (!arg2Substring && arg2FullString) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, EXACT_STRING));
+		}
+		else if (!arg2Substring && arg2FullString && arg2Wilcard) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, WILDCARD_STRING));
+		}
+		else {
+			//cout << "Error occured";
+			exit(0);
 		}
 	}
 }
@@ -411,7 +486,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	bool arg1_UNDER = false;
 	bool arg2_UNDER = false;
 
-	if (arg1Ent != "nth") {
+	if (arg1Ent != INVALID_STRING) {
 		//Implies that a corresponding entity was obtained
 		arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
 	}
@@ -441,7 +516,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 		}
 	}
 	//Implies that it is part of the delcared synonym
-	if (arg2Ent != "nth") {
+	if (arg2Ent != INVALID_STRING) {
 		arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
 	}
 	else {
@@ -470,7 +545,6 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	//If both are valid and true, create the clause
 	if (arg1Valid && arg2Valid) {
 		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, relation, arg1, arg2, arg1Ent, arg2Ent)) {
-			cout << "Error ending clause to tree";
 			return false;
 		}
 		else {
@@ -557,7 +631,7 @@ bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 	}
 }
 string QueryValidator::getCorrespondingEntity(string syn) {
-	string reqEntity = "nth";
+	string reqEntity = INVALID_STRING;
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
 		vector<string> tempVec = tempPair.getSynonymList();
@@ -571,7 +645,7 @@ string QueryValidator::getCorrespondingEntity(string syn) {
 	return reqEntity;
 }
 bool QueryValidator::is_number(string s) {
-	return s.find_first_not_of("0123456789") == string::npos;
+	return s.find_first_not_of(NUMBER_ZERO_TO_NINE) == string::npos;
 }
 
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
@@ -639,12 +713,12 @@ string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	std::string toReturn = std::regex_replace(str, pattern , "");
 	return toReturn;
 }
-void QueryValidator::setSynonymList(vector<SynonymEntityPair> sList) {
-	this->synonymAndEntityList = sList;
-}
+
+
+/**
 int QueryValidator::getNumClauses() {
 	return this->numClauses;
-}
+}**/
 string QueryValidator::changeLowerCase(string str) {
 	 std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	 return str;
