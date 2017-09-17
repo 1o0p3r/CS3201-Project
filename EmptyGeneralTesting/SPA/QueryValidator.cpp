@@ -705,6 +705,11 @@ bool QueryValidator::is_number(string s) {
 	return s.find_first_not_of(NUMBER_ZERO_TO_NINE) == string::npos;
 }
 
+QueryStatement QueryValidator::getQueryStatement()
+{
+	return queryStatement;
+}
+
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
 bool QueryValidator::isValidSynonym(string syn) {
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {

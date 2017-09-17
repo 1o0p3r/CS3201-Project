@@ -70,4 +70,5 @@ public:
 	string removeDuplicatesWhiteSpaces(string str);
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
 	bool is_number(string str);
+	QueryStatement getQueryStatement();
 };

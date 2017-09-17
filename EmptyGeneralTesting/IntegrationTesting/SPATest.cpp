@@ -1,7 +1,8 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "CppUnitTest.h"
 #include "PKB.h"
-
+#include "QueryValidator.h"
+#include "QueryEval.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting {
@@ -17,9 +18,37 @@ public:
 		2 while x {
 		3 	y = 2;
 		4 	x = x*y+1;}}
+
+		stmt s;
+		Select s such that Follows(s,3)
+
+		stmt s;
+		Select s such that Follows(1,s)
+
+		stmt s;
+		Select s such that Follows*(s,2)
+
+		variable v;
+		Select v such that Modifies (a, v)
+
+		variable v;
+		Select v such that Modifies (2, v)
+
+		variable v;
+		Select v such that Modifies(3, v)
+
+		variable v;
+		Select v such that Uses(3，v）
+
+
 		*/
 
+		/*
+		
+		
+		*/
 		PKB pkb;
+		
 		//line 1
 		pkb.setStatementType(1, "assign");
 		pkb.setModifies(1, "x");
@@ -50,6 +79,37 @@ public:
 		pkb.setProcUses("Main", "y");
 		pkb.addConstant("1");
 		pkb.addPattern(4, "x", "x*y+1");
+
+		QueryValidator q;
+		string query;
+		QueryStatement qs;
+		QueryEval qe = QueryEval(pkb, qs);
+		vector<string> expected;
+
+		query = "stmt s; Select s such that Follows(s, 3)";
+		q.parseInput(query);
+		vector<string> answer = qe.runQueryEval();
+		expected = { "2" };
+		Assert::IsTrue(expected == answer);
+		
+		query = "stmt s; Select s such that Follows(1, s)";
+		//Assert::IsTrue(q.parseInput(query));
+
+		query = "stmt s; Select s such that Follows*(s, 2)";
+		//Assert::IsTrue(q.parseInput(query));
+
+		query = "variable v; Select v such that Modifies(a, v)";
+		//Assert::IsFalse(q.parseInput(query));
+
+		query = "variable v; Select v such that Modifies(2, v)";
+		Assert::IsTrue(q.parseInput(query));
+
+		query = "variable v; Select v such that Modifies(3, v)";
+	//	Assert::IsTrue(q.parseInput(query));
+
+		query = "variable v; Select v such that Uses(3，v）";
+		//Assert::IsTrue(q.parseInput(query));
+		
 	}
 	};
 }
