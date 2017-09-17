@@ -83,7 +83,7 @@ void QueryEval::initSuchThatMap()
 	mapSuchThatValues["Parent"] = parent;
 	mapSuchThatValues["Parent*"] = parentStar;
 	mapSuchThatValues["Follows"] = follows;
-	mapSuchThatValues["Follow*"] = followsStar;
+	mapSuchThatValues["Follows*"] = followsStar;
 
 }
 
@@ -313,7 +313,7 @@ int QueryEval::evalQueryPattern()
 	patternAnswerInt = intermediatePatternResultInt[0];
 	patternAnswerString = intermediatePatternResultString[0]; //to be edited in iter 2, for now only 1 pattern.
 	return comEval;
-}
+};
 tuple<vector<int>,vector<string>> QueryEval::evalSinglePatternResult(vector<string> evalVarPatterns, 
 																		QueryElement patternElements)
 {	
