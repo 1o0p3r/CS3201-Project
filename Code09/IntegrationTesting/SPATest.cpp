@@ -41,7 +41,7 @@ public:
 		Select v such that Uses(3，v)
 
 		variable v; stmt s;
-		Select s such that pattern a(
+		Select s such that pattern a("x",_)
 		*/
 		PKB pkb;
 		
@@ -164,6 +164,14 @@ public:
 		answer = qe.runQueryEval();
 		Assert::IsTrue(expected == answer);
 
+		query = "variable v; stmt s; Select s such that pattern a(\"x\", _)";
+		expected = { "" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qe.setPKB(pkb);
+		qe.setQueryStatement(qs);
+		answer = qe.runQueryEval();
+		Assert::IsTrue(expected == answer);
 
 		/**
 		
