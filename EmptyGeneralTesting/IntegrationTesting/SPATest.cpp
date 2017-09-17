@@ -82,15 +82,13 @@ public:
 
 		QueryValidator q;
 		string query;
-		QueryStatement qs;
-		QueryEval qe = QueryEval();
+		QueryStatement qs;	
+		QueryEval qe;
 		vector<string> expected;
-
 		query = "stmt s; Select s such that Follows(s, 3)";
 		q.parseInput(query);
-		qe.setPKB(pkb);
 		qs = q.getQueryStatement();
-		qe.setQueryStatement(qs);
+		QueryEval qe = QueryEval(pkb, qs);
 		vector<string> answer = qe.runQueryEval();
 		expected = { "2" };
 		Assert::IsTrue(expected == answer);

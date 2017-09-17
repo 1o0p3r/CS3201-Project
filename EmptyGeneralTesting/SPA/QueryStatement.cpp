@@ -3,7 +3,7 @@
 using namespace std;
 QueryStatement::QueryStatement()
 {
-
+	QueryElement selectElement;
 }
 QueryElement QueryStatement::getSelectQueryElement() {
 	return selectElement;
@@ -29,7 +29,5 @@ void QueryStatement::addPatternQuery(QueryElement toAdd) {
 
 void QueryStatement::addSynonymEntityList(vector<SynonymEntityPair> synEntityList)
 {
-	if (!addedSynonymEntityList) {
 		synonymEntityList = synEntityList;
-	}
 }

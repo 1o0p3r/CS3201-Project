@@ -11,7 +11,6 @@ private:
 	vector<QueryElement> suchThatElement;
 	vector<QueryElement> patternElement;
 	vector<SynonymEntityPair> synonymEntityList;
-	bool addedSynonymEntityList = false;
 public:
 	QueryStatement();
 	QueryElement getSelectQueryElement();
