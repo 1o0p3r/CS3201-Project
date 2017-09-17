@@ -10,7 +10,7 @@
 #include <sstream>
 #include <regex>
 #include <algorithm>
-//#include <Util.h>
+#include <Util.h>
 
 const int ZERO = 0;
 const int ONE = 1;
@@ -328,8 +328,8 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		}
 		//The following are needed, dont remove, uses limjie's method
 
-		//arg1 = insertBrackets(arg1);
-		//arg2 = insertBrackets(arg2);
+		arg1 = Util::insertBrackets(arg1);
+		arg2 = Util::insertBrackets(arg2);
 
 		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2Exact, arg2Wildcard);
 		return true;
