@@ -3,7 +3,7 @@
 using namespace std;
 QueryStatement::QueryStatement()
 {
-
+	QueryElement selectElement;
 }
 QueryElement QueryStatement::getSelectQueryElement() {
 	return selectElement;

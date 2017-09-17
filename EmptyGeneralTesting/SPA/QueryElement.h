@@ -7,11 +7,13 @@ class QueryElement
 private:
 	string ent;
 	string syn;
+
 	string argumentOneSuchThat;
 	string argumentTwoSuchThat;
 	string argumentOneTypeSuchThat;
 	string argumentTwoTypeSuchThat;
 	string relSuchThatType;
+
 	string argumentOnePattern;
 	string argumentTwoPattern;
 	string patternEnt;
@@ -32,6 +34,7 @@ public:
 	string getSuchThatArg2();
 	string getSuchThatArg1Type();
 	string getSuchThatArg2Type();
+	string getSuchThatRel();
 
 	string getPatternArg1();
 	string getPatternArg2();
@@ -39,6 +42,6 @@ public:
 	string getPatternSynonym();
 	string getPatternArg1Type();
 	string getPatternArg2Type();
-	string getSuchThatRel();
+
 };
 

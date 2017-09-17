@@ -62,8 +62,7 @@ public:
 	bool isWildcard(string arg);	
 	bool isExactString(string arg2);
 	bool isValidQueryLine(string selectString);
-	
-	//	int getNumClauses();
+
 	void startParsing(string str);
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
