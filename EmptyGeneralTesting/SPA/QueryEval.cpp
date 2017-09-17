@@ -42,10 +42,8 @@ static std::map<std::string, patternExpType> mapPatternExpType;
    step 2 returns a vector<string> as the answer. 
    answer is in 1st entry, i.e entry 0.
  */
-QueryEval::QueryEval(PKB pkb, QueryStatement qs)
+QueryEval::QueryEval()
 {
-	pkbReadOnly = pkb;
-	qsReadOnly = qs;
 	initSelectMap();
 	initSuchThatMap();
 	initPatternMap();
@@ -57,6 +55,10 @@ void QueryEval::initPatternExpTypeMap()
 	mapPatternExpType["wildcard"] = _wildcard;
 	mapPatternExpType["substring"] = substring;
 	mapPatternExpType["exact"] = exact;
+}
+
+void QueryEval::setPKB(PKB pkb) {
+	pkbReadOnly = pkb;
 }
 
 void QueryEval::initPatternMap()
@@ -363,8 +365,9 @@ int QueryEval::evalQuerySuchThat()
 {
 	vector<vector<int>> suchThatResult;
 	vector<vector<string>> suchThatResultString;
-	int argEval; //option to determine which argument to evaluate (s1,s2) 
-				// 1 => arg1 = evaluate arg1 since it is integer, 2=> evalulate arg 2
+	int argEval = 3; //option to determine which argument to evaluate (s1,s2) 
+				// 1 => arg1 = evaluate arg1 since it is integer, 0=> evalulate arg 2
+				// 3 => no such that clause
 	
 
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
