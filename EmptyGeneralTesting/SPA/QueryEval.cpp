@@ -28,7 +28,7 @@ enum patternExpType
 
 enum patternSelectSynonymType
 {
-	 noCommon, entity, arg1
+	 noCommon, entity, arg1, emptyPatternClause
 };
 
 static std::map<std::string, selectValue> mapSelectValues;
@@ -210,15 +210,17 @@ void QueryEval::resultSelectSuchThatPattern(int hasSynPattern)
 			break;
 		case entity: //entity is the common Synonym
 			selectSuchThatPatternInt = intersectionIntVect(queryAnswerInt,
-					patternAnswerInt);
+				patternAnswerInt);
 			queryAnswerInt = selectSuchThatPatternInt;
 			break;
 		case arg1:
 			selectSuchThatPatternString = intersectionStringVect(queryAnswerString,
-					patternAnswerString);
+				patternAnswerString);
 			queryAnswerString = selectSuchThatPatternString;
 			break;
-			}
+		case emptyPatternClause:
+			break;
+			}	
 	} else {
 		queryAnswerInt = vector<int>();
 		queryAnswerString = vector<string>();
@@ -273,8 +275,10 @@ int QueryEval::evalQueryPattern()
 	vector<string> patternVarValues;
 	tuple<vector<int>, vector<string>> singleResult;
 	vector<string> tempVectString;
-	int comEval; // indicates no pattern clause
+	int comEval = 3; // evaluate if common synonym exist
 	//comSynonym
+
+
 	for (int i = 0; i < patternElements.size(); i++){
 		comEval = comSynonym.compare(patternElements[i].getPatternArg1()) ? 2 : //2 = arg1 pattern syno 
 			comSynonym.compare(patternElements[i].getPatternSynonym()) ? 1 : 0; //1 = entity syno , 0 = no common syno		
@@ -310,8 +314,10 @@ int QueryEval::evalQueryPattern()
 		if(!patternVarStmtValues.empty())
 			intermediatePatternResultInt.push_back(patternVarStmtValues);
 	}
-	patternAnswerInt = intermediatePatternResultInt[0];
-	patternAnswerString = intermediatePatternResultString[0]; //to be edited in iter 2, for now only 1 pattern.
+	if (comEval != 3) {
+		patternAnswerInt = intermediatePatternResultInt[0];
+		patternAnswerString = intermediatePatternResultString[0]; //to be edited in iter 2, for now only 1 pattern.
+	}
 	return comEval;
 };
 tuple<vector<int>,vector<string>> QueryEval::evalSinglePatternResult(vector<string> evalVarPatterns, 
