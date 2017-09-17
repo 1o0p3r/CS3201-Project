@@ -38,14 +38,7 @@ public:
 		Select v such that Modifies(3, v)
 
 		variable v;
-		Select v such that Uses(3，v）
-
-
-		*/
-
-		/*
-		
-		
+		Select v such that Uses(3，v)
 		*/
 		PKB pkb;
 		
