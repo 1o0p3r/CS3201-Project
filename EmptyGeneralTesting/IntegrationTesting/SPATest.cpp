@@ -83,6 +83,7 @@ public:
 		QueryValidator q;
 		string query;
 		QueryStatement qs;	
+		QueryEval qe;
 		vector<string> expected;
 		query = "stmt s; Select s such that Follows(s, 3)";
 		q.parseInput(query);
