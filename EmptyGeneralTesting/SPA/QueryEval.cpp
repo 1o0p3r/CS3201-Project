@@ -276,8 +276,8 @@ int QueryEval::evalQueryPattern()
 	int comEval; // indicates no pattern clause
 	//comSynonym
 	for (int i = 0; i < patternElements.size(); i++){
-		comEval = comSynonym.compare(patternElements[i].getPatternArg1(i)) ? 2 : //2 = arg1 pattern syno 
-			comSynonym.compare(patternElements[i].getPatternSynonym(i)) ? 1 : 0; //1 = entity syno , 0 = no common syno		
+		comEval = comSynonym.compare(patternElements[i].getPatternArg1()) ? 2 : //2 = arg1 pattern syno 
+			comSynonym.compare(patternElements[i].getPatternSynonym()) ? 1 : 0; //1 = entity syno , 0 = no common syno		
 		switch (comEval){
 			case 0: //no common synonym
 				evalVarPatterns = pkbReadOnly.getAllVariables();
@@ -298,7 +298,7 @@ int QueryEval::evalQueryPattern()
 						patternVarValues = get<1>(singleResult);
 						break;
 					case _string:
-						tempVectString.push_back(patternElements[i].getPatternArg1(0)); //to remove 0 when pql done editing
+						tempVectString.push_back(patternElements[i].getPatternArg1()); //to remove 0 when pql done editing
 						singleResult = evalSinglePatternResult(tempVectString, patternElements[i]);
 						patternVarStmtValues = get<0>(singleResult);
 						patternVarValues = get<1>(singleResult);
@@ -333,13 +333,13 @@ tuple<vector<int>,vector<string>> QueryEval::evalSinglePatternResult(vector<stri
 				patternVarStmtValues.push_back(get<0>(evalPattExpression));
 				break;
 			case substring: //to edit when pql done finishing edit
-				if (get<1>(evalPattExpression).find(patternElements.getPatternArg2(0)) != string::npos) {
+				if (get<1>(evalPattExpression).find(patternElements.getPatternArg2()) != string::npos) {
 					patternVarStmtValues.push_back(get<0>(evalPattExpression));
 					varContainsPattern = true;
 				}
 				break;
 			case exact:
-				if (get<1>(evalPattExpression).compare(patternElements.getPatternArg2(0)) == 0) {
+				if (get<1>(evalPattExpression).compare(patternElements.getPatternArg2()) == 0) {
 					patternVarStmtValues.push_back(get<0>(evalPattExpression));
 					varContainsPattern = true;
 				}
@@ -364,10 +364,10 @@ int QueryEval::evalQuerySuchThat()
 	for (int i = 0; i < suchThatElements.size(); i++) //evaluate 1 suchThat clause at a time
 	{ 
 		//option 0 : both args = syno, 1 = arg1 syno, 2 = arg2 syno for finding common synonym
-		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1(i)) ? 1 :
-			comSynonym.compare(suchThatElements[i].getSuchThatArg2(i)) ? 2 : 0;
-		string argType1 = suchThatElements[i].getSuchThatArg1Type(i);
-		string argType2 = suchThatElements[i].getSuchThatArg2Type(i);
+		int comEval = comSynonym.compare(suchThatElements[i].getSuchThatArg1()) ? 1 :
+			comSynonym.compare(suchThatElements[i].getSuchThatArg2()) ? 2 : 0;
+		string argType1 = suchThatElements[i].getSuchThatArg1Type();
+		string argType2 = suchThatElements[i].getSuchThatArg2Type();
 		argEval = (argType1.compare("number"))? 1 : 0; //confirm with pql it is number
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
@@ -383,13 +383,13 @@ int QueryEval::evalQuerySuchThat()
 						break;
 					case 1: //arg1 synonym
 						intermediateResultInt = 
-						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2(i));
+						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2());
 						intermediateResultInt.empty() ? isSuchThatFalse(false) : 
 							suchThatResult.push_back(intermediateResultInt);
 						break;
 					case 2: //arg2 synonym
 						intermediateResultString =
-							pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1(i)));
+							pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1()));
 						intermediateResultString.empty() ? isSuchThatFalse(false) : 
 							suchThatResultString.push_back(intermediateResultString);
 						break;
@@ -403,13 +403,13 @@ int QueryEval::evalQuerySuchThat()
 						break;
 					case 1:
 						intermediateResultInt =
-							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2(i));
+							pkbReadOnly.getUsedBy(suchThatElements[i].getSuchThatArg2());
 						intermediateResultInt.empty() ? isSuchThatFalse(false) : 
 							suchThatResult.push_back(intermediateResultInt);
 						break;
 					case 2:
 						intermediateResultString =
-							pkbReadOnly.getUses(stoi(suchThatElements[i].getSuchThatArg1(i)));
+							pkbReadOnly.getUses(stoi(suchThatElements[i].getSuchThatArg1()));
 						intermediateResultString.empty() ? isSuchThatFalse(false) : 
 							suchThatResultString.push_back(intermediateResultString);
 						break;
@@ -417,56 +417,56 @@ int QueryEval::evalQuerySuchThat()
 				break;
 			case parent: // if = check for both arguments number
 				if (argType1.compare("number") && argType2.compare("number")) {
-					parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval).front() ==
-						stoi(suchThatElements[i].getSuchThatArg2(i)) ? 
+					parentResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval).front() ==
+						stoi(suchThatElements[i].getSuchThatArg2()) ? 
 						isSuchThatFalse(true) : isSuchThatFalse(false);
 				} else {
 					suchThatResult.push_back(
 						argEval ?
-						parentResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-						parentResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+						parentResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
+						parentResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
 					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true); //to be fine tune in iter2, need to consider intermediate results
 				}
 				break;
 			case parentStar:
 				if (argType1.compare("number") && argType2.compare("number")) {
-					tempVect = parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval);
-					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2(i))) !=
+					tempVect = parentStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval);
+					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2())) !=
 						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
 				}
 				else {
 					suchThatResult.push_back(
 						argEval ?
-						parentStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-						parentStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+						parentStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
+						parentStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
 					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				}
 				break;
 			case follows:
 				if (argType1.compare("number") && argType2.compare("number")) {
-					followResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval).front() ==
-						stoi(suchThatElements[i].getSuchThatArg2(i)) ?
+					followResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval).front() ==
+						stoi(suchThatElements[i].getSuchThatArg2()) ?
 						isSuchThatFalse(true) : isSuchThatFalse(false);
 				}
 				else {
 					suchThatResult.push_back(
 						argEval ?
-						followResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-						followResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+						followResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
+						followResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
 					suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 					// i = arg1/2 , j = 1 => arg1 -> constant, 0 =>arg2 -> constant
 				}
 				break;
 			case followsStar:
 				if (argType1.compare("number") && argType2.compare("number")) {
-					tempVect = followStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval);
-					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2(i))) !=
+					tempVect = followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval);
+					find(tempVect.begin(), tempVect.end(), stoi(suchThatElements[i].getSuchThatArg2())) !=
 						tempVect.end() ? isSuchThatFalse(true) : isSuchThatFalse(false);
 				}
 				suchThatResult.push_back(
 					argEval ?
-					followStarResult(stoi(suchThatElements[i].getSuchThatArg1(i)), argEval) :
-					followStarResult(stoi(suchThatElements[i].getSuchThatArg2(i)), argEval));
+					followStarResult(stoi(suchThatElements[i].getSuchThatArg1()), argEval) :
+					followStarResult(stoi(suchThatElements[i].getSuchThatArg2()), argEval));
 				suchThatResult.empty() ? isSuchThatFalse(false) : isSuchThatFalse(true);
 				break;
 		}
