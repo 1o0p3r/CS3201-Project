@@ -132,8 +132,10 @@ vector<string> QueryEval::getQueryAnswer()
 	if (isResultInt) {
 		convertVectToString = intVectToString(queryAnswerInt);
 		answer = vector<string>();
-		answer.push_back(convertVectToString);
-	} 
+		if (!convertVectToString.empty()) {
+			answer.push_back(convertVectToString);
+		}
+	}
 	if (answer.empty())
 		answer = {"None"};
 	return answer;
@@ -384,8 +386,7 @@ int QueryEval::evalQuerySuchThat()
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
 		vector<int> tempVect;
-		string tempstr = suchThatElements[i].getSuchThatRel();
-		int temp = mapSuchThatValues[suchThatElements[i].getSuchThatRel()];
+		
 		switch (mapSuchThatValues[suchThatElements[i].getSuchThatRel()]) //check with pql, this is meant to be follow etc
 		{
 			case modifies:

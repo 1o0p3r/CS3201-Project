@@ -73,8 +73,8 @@ bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
 	}
 }
 bool RelationshipTable::isValidArg1(string rel, string typeArg) {
-	bool dummy = isRelationshipExists(rel);
-	if (dummy == true) {
+
+	if (isRelationshipExists(rel)) {
 		Relationship relationship = relationshipTable.at(rel);
 
 		vector<string> reqArg1 = relationship.getArg1();

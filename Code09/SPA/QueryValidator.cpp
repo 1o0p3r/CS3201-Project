@@ -482,7 +482,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		vector<string> vecSplit = splitBySymbol(select, SYMBOL_WHITESPACE);
 		//Obtain the synonym
 		string syn = vecSplit.at(ONE);
-		
+	
 		for (size_t k = ONE; k < vec.size(); k++) {
 			if (vec.at(k).at(ZERO) == WHITESPACE_CHAR) {
 				//vec.at(k) = vec.at(k).substr(ONE, vec.at(k).length() - 1);
@@ -493,7 +493,6 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 			//	vec.at(k) = vec.at(k).substr(ZERO, vec.at(k).length() - 1);
 			}
 		}
-
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
 				if (!isValidSuchThat(vec.at(i), syn)) {
