@@ -132,10 +132,8 @@ vector<string> QueryEval::getQueryAnswer()
 	if (isResultInt) {
 		convertVectToString = intVectToString(queryAnswerInt);
 		answer = vector<string>();
-		if (!convertVectToString.empty()) {
-			answer.push_back(convertVectToString);
-		}
-	}
+		answer.push_back(convertVectToString);
+	} 
 	if (answer.empty())
 		answer = {"None"};
 	return answer;
@@ -386,7 +384,10 @@ int QueryEval::evalQuerySuchThat()
 		vector<string> intermediateResultString;
 		vector<int> intermediateResultInt;
 		vector<int> tempVect;
-		
+		vector<int> tempVect2;
+		vector<string> tempStringVect;
+		vector<string> tempStringVect2;
+
 		switch (mapSuchThatValues[suchThatElements[i].getSuchThatRel()]) //check with pql, this is meant to be follow etc
 		{
 			case modifies:
@@ -396,16 +397,43 @@ int QueryEval::evalQuerySuchThat()
 						isSuchThatFalse(true);
 						break;
 					case 1: //arg1 synonym
-						intermediateResultInt = 
-						pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2());
+						if (suchThatElements[i].getSuchThatArg2Type != "number") { //arg1 = wildcard or some syno
+							tempVect = pkbReadOnly.getAssign();
+							for (int a; a < tempVect.size(); a++) {
+								tempStringVect = vector<string>();
+								tempStringVect = pkbReadOnly.getModifies(tempVect[a]);
+								if (!tempStringVect.empty()) {
+									tempVect2.push_back(tempVect[a]);
+								}
+							}
+							intermediateResultInt = tempVect2;
+						}
+						else {
+							intermediateResultInt =
+								pkbReadOnly.getModifiedBy(suchThatElements[i].getSuchThatArg2());
+						}
 						intermediateResultInt.empty() ? isSuchThatFalse(false) : 
 							suchThatResult.push_back(intermediateResultInt);
 						break;
 					case 2: //arg2 synonym
-						intermediateResultString =
-							pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1()));
-						intermediateResultString.empty() ? isSuchThatFalse(false) : 
-							suchThatResultString.push_back(intermediateResultString);
+						if (suchThatElements[i].getSuchThatArg1Type != "number") { //arg1 = wildcard or some syno
+							tempStringVect = pkbReadOnly.getAllVariables();
+							for (int a; a < tempStringVect.size(); a++) {
+								tempVect = vector<int>();
+								tempVect=pkbReadOnly.getModifiedBy(tempStringVect[a]);
+								if (!tempVect.empty()) {
+									tempStringVect2.push_back(tempStringVect[a]);
+								}
+							}
+							intermediateResultString = tempStringVect2;
+						}
+						else {
+							intermediateResultString =
+								pkbReadOnly.getModifies(stoi(suchThatElements[i].getSuchThatArg1()));
+						}
+						intermediateResultString.empty() ? isSuchThatFalse(false) :
+								suchThatResultString.push_back(intermediateResultString);
+						
 						break;
 				}
 				break;
