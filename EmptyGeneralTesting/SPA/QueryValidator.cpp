@@ -224,7 +224,6 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		bool arg1Variable = isVariableArg1(arg1);
 		bool arg1Wildcard = isWildcard(arg1);
 		bool arg1Synonym = isValidSynonym(arg1);
-		bool arg1Integer = is_number(arg1);
 		//Now removed the inverted commas
 		arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 
@@ -255,9 +254,6 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		else if(arg1Synonym){
 			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
 		}
-		else if(arg1Integer){
-			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
-		}
 		else {
 			cout << INVALID_ARGUMENT_ERROR;
 			return false;
@@ -285,7 +281,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		//arg1 = insertBrackets(arg1);
 		//arg2 = insertBrackets(arg2);
 
-		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg1Integer, arg2Substring, arg2ExactString, arg2Wildcard);
+		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2ExactString, arg2Wildcard);
 		
 		return true;
 	}
@@ -362,7 +358,7 @@ void QueryValidator::addSelectQueryElement(string ent, string syn) {
 }
 
 //The following function
-void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Integer, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
+void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
 	
 	if (arg1Wildcard) {
 		if (arg2Substring) {
@@ -410,19 +406,7 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 		}
 	}
 	else {
-		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, SUBSTRING_STRING));
-		}
-		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, EXACT_STRING));
-		}
-		else if (!arg2Substring && arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, INTEGER_STRING, WILDCARD_STRING));
-		}
-		else {
-			//cout << "Error occured";
-			exit(0);
-		}
+		exit(0);
 	}
 }
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {

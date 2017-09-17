@@ -18,7 +18,12 @@ private:
 	RelationshipTable relationshipTable;
 	QueryStatement queryStatement;
 	vector<SynonymEntityPair> synonymAndEntityList; //Has to be refresh after each query
+	/**
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
+		"variable", "constant", "prog_line"};
+	**/
+	
+	vector<string> validEntities = { "stmt", "assign", "while", 
 		"variable", "constant", "prog_line"};
 
 	string getCorrespondingEntity(string syn);
@@ -31,6 +36,7 @@ private:
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Integer, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	
 	bool isValidSelect(vector<string> vectorClauses);
