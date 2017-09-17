@@ -39,12 +39,12 @@ RelationshipTable::RelationshipTable() {
 	relationshipTable[USES_STRING] = relationUses;
 
 	//Adds the relationship of Follows to table
-	followsArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard" };
+	followsArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard", "number" };
 	Relationship relationFollows = Relationship(NUM_TWO, followsArg, followsArg);
 	relationshipTable[FOLLOWS_STRING] = relationFollows;
 
 	//Adds the relationship of Follows* to table
-	followsStarArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard" };
+	followsStarArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard", "number" };
 	Relationship relationFollowsStar = Relationship(NUM_TWO, followsStarArg, followsStarArg);
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
@@ -110,8 +110,5 @@ bool RelationshipTable::isRelationshipExists(string rel) {
 	if (it != relationshipTable.end()) {
 		return true;
 	}
-	return false;
-}
-bool RelationshipTable::isValidNumArgs(string rel, int numArgs) {
 	return false;
 }

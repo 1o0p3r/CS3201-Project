@@ -26,3 +26,10 @@ void QueryStatement::addSuchThatQuery(QueryElement toAdd) {
 void QueryStatement::addPatternQuery(QueryElement toAdd) {
 	patternElement.push_back(toAdd);
 }
+
+void QueryStatement::addSynonymEntityList(vector<SynonymEntityPair> synEntityList)
+{
+	if (!addedSynonymEntityList) {
+		synonymEntityList = synEntityList;
+	}
+}

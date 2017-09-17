@@ -7,13 +7,13 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 const string WHITESPACE__STRING = " ";
 const string COMMA_STRING = ",";
+const char INVERTED_COMMA = '\"';
+
 namespace UnitTesting
 {
 	TEST_CLASS(queryValidatorTest)
 	{
 	public:
-
-		
 		TEST_METHOD(isValidQuery)
 		{
 			QueryValidator q;
@@ -24,16 +24,23 @@ namespace UnitTesting
 			
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(q.parseInput(query));
-
+			
+			
 			query = "while w; assign a; Select w such that Follows(w, a)";
 			Assert::IsTrue(q.parseInput(query));
-
-			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, ""x"")";
+			
+			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
+			Assert::IsFalse(q.parseInput(query));
+			
+			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsTrue(q.parseInput(query));
-
+			
+			query = "while w; assign a; Select x such that Follows(w, a) pattern a(_, \"x\")";
+			Assert::IsFalse(q.parseInput(query));
+			
 			query = "assign a; Select a pattern a(_, _\"(f - d + b) - l\"_)";
 			Assert::IsTrue(q.parseInput(query));
-
+			
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
@@ -116,27 +123,39 @@ namespace UnitTesting
 			vecStr.clear();
 			expectedVecStr.clear();
 		}
-		/**
-		TEST_METHOD(isValidAddSuchThatQueryElement) {
-			bool arg1_NUM;
-			bool arg1_UNDER;
-			bool arg2_NUM;
-			bool arg2_UNDER;
-			string relType, arg1, arg2, arg1Ent, arg2Ent;
-
-			arg1_NUM = false;	arg1_UNDER = false;
-			arg2_NUM = false;	arg2_UNDER = false;
-			relType = "Follows";
-			
-			arg1 = "s";
-		}**/
-
 		//This checks if we get the correct corresponding entity
-		TEST_METHOD(isValidGetCorrespondingEntity) {
-			string arg1Ent;
-			string arg2Ent;
-			string temp = "nth";
+		TEST_METHOD(is_number) {
+			QueryValidator q;
+			string str;
 
+			str = "123";
+			Assert::IsTrue(q.is_number(str));
+
+			str = "1";
+			Assert::IsTrue(q.is_number(str));
+
+			str = "aaa";
+			Assert::IsFalse(q.is_number(str));
+			
+			str = "b";
+			Assert::IsFalse(q.is_number(str));
+		}
+		TEST_METHOD(removeDuplicatesWhiteSpaces) {
+			QueryValidator q;
+			string str;
+			string expected;
+
+			str = "This is a      dummy     string";
+			expected = "This is a dummy string";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
+			
+			str = "stmt    s;     while w; Select s such    that Follows(s   ,4)";
+			expected = "stmt s; while w; Select s such that Follows(s ,4)";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
+
+			str = " stmt s;  while  w; Select s such  that  Follows(  s,4) pattern a(_,   \"x\")";
+			expected = " stmt s; while w; Select s such that Follows( s,4) pattern a(_, \"x\")";
+			Assert::IsTrue(q.removeDuplicatesWhiteSpaces(str) == expected);
 		}
 	};
 }
