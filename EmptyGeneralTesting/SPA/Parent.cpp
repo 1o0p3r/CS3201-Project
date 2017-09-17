@@ -15,10 +15,11 @@ void Parent::setParent(int s1, int s2) {
 	parentTable[s1] = s2;
 	setChild(s2, s1);
 	setParentStar(s1, s2);
-	int grandparent = getParent(s1)[0];
-	while (grandparent != 0) {
+	vector<int> holder = getParent(s1);
+	while (!holder.empty()) {
+		int grandparent = holder[0];
 		setParentStar(grandparent, s2);
-		grandparent = getParent(grandparent)[0];
+		holder = getParent(grandparent);
 	}
 }
 
@@ -45,7 +46,11 @@ vector<int> Parent::getChild(int statementNum) {
 	if (parentTable.size() > statementNum) {
 		vector<int> result(1);
 		result[0] = parentTable[statementNum];
-		return result;
+		if (result[0] == 0) {
+			return vector<int>();
+		} else {
+			return result;
+		}
 	} else {
 		return vector<int>();
 	}
@@ -55,7 +60,11 @@ vector<int> Parent::getParent(int statementNum) {
 	if (childTable.size() > statementNum) {
 		vector<int> result(1);
 		result[0] = childTable[statementNum];
-		return result;
+		if (result[0] == 0) {
+			return vector<int>();
+		} else {
+			return result;
+		}
 	} else {
 		return vector<int>();
 	}
