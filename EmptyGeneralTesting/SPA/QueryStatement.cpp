@@ -29,7 +29,5 @@ void QueryStatement::addPatternQuery(QueryElement toAdd) {
 
 void QueryStatement::addSynonymEntityList(vector<SynonymEntityPair> synEntityList)
 {
-	if (!addedSynonymEntityList) {
 		synonymEntityList = synEntityList;
-	}
 }
