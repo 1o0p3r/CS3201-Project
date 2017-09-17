@@ -488,7 +488,10 @@ int QueryEval::evalQuerySuchThat()
 			suchThatAnswerInt = suchThatResult[0]; // to be changed in iter2, since only at most 1 suchThat in iter1
 		if(!suchThatResultString.empty())
 			suchThatAnswerString = suchThatResultString[0];
+		if (argEval != 3)
+			argEval = comEval;
 	}
+
 	return argEval;
 }
 
