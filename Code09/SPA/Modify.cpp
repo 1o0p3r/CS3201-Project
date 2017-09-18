@@ -53,28 +53,41 @@ void Modify::setProcModifiedBy(int varName, int procName) {
 }
 
 vector<int> Modify::getModifies(int s) {
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), modifiesTable[s].begin(), modifiesTable[s].end());
-	return result[0];
+	if (modifiesTable.size() > s) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), modifiesTable[s].begin(), modifiesTable[s].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Modify::getModifiedBy(int varName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), modifiesTable[varName].begin(), modifiesTable[varName].end());
-	return result[0];
+	if (modifiedByTable.size() > varName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), modifiesTable[varName].begin(), modifiesTable[varName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Modify::getProcModifies(int procName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), procModifiesTable[procName].begin(), procModifiesTable[procName].end());
-	return result[0];
+	if (procModifiesTable.size() > procName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), procModifiesTable[procName].begin(), procModifiesTable[procName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Modify::getProcModifiedBy(int varName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), procModifiedByTable[varName].begin(), procModifiedByTable[varName].end());
-	return result[0];
+	if (procModifiedByTable.size() > varName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), procModifiedByTable[varName].begin(), procModifiedByTable[varName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }

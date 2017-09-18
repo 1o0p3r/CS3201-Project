@@ -81,29 +81,41 @@ void Use::setProcUsedBy(int varName, int procName) {
 }
 
 vector<int> Use::getUses(int s) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), usesTable[s].begin(), usesTable[s].end());
-	return result[0];
+	if (usesTable.size() > s) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), usesTable[s].begin(), usesTable[s].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Use::getUsedBy(int varName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), usedByTable[varName].begin(), usedByTable[varName].end());
-	return result[0];
+	if (usedByTable.size() > varName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), usedByTable[varName].begin(), usedByTable[varName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Use::getProcUses(int procName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), procUsesTable[procName].begin(), procUsesTable[procName].end());
-	return result[0];
+	if (procUsesTable.size() > procName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), procUsesTable[procName].begin(), procUsesTable[procName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
 
 vector<int> Use::getProcUsedBy(int varName) {
-
-	vector<vector<int>> result(1);
-	result[0].insert(result[0].end(), procUsedByTable[varName].begin(), procUsedByTable[varName].end());
-	return result[0];
+	if (procUsedByTable.size() > varName) {
+		vector<vector<int>> result(1);
+		result[0].insert(result[0].end(), procUsedByTable[varName].begin(), procUsedByTable[varName].end());
+		return result[0];
+	} else {
+		return vector<int>();
+	}
 }
