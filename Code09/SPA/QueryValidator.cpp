@@ -283,7 +283,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		bool arg2Substring = false;
 		bool arg2Exact = false;
 
-		if (arg2 == WILDCARD_STRING) {
+		if (arg2 == UNDER_SCORE_STRING) {
 			arg2Wildcard = true;
 		}
 		if (arg2Wildcard == false) {
