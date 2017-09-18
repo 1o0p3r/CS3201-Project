@@ -69,12 +69,9 @@ bool Parser::Parse(string fileName) {
 			if (nestLevel > 1) {
 				pkb.setParent(Parent.back(), lineCounter);
 			}
-			//assign statement
+//assign statement
 			if (nextLine[1] == "=" && nextLine.back() == ";") {
 				pkb.setStatementType(lineCounter, type2);
-
-
-
 				pkb.setModifies(lineCounter, nextLine[0]);
 
 				for (int i = 2; i < nextLine.size(); i++) {
@@ -83,7 +80,7 @@ bool Parser::Parse(string fileName) {
 						pkb.addConstant(nextLine[i]);
 					}
 
-					else if (isalpha(nextLine[i][0])) {	// compile error: no suitable conversion function from std::string to int exists
+					else if (isalpha(nextLine[i][0])) {
 						pkb.addVariable(nextLine[i]);
 						pkb.setUses(lineCounter, nextLine[i]);
 						return true;
@@ -97,9 +94,9 @@ bool Parser::Parse(string fileName) {
 
 				isSameLevel = true;
 			}
-			//end of assign statement
+//end of assign statement
 
-			//while, if, closing statements
+//while, if, closing statements
 			else {
 				//if
 				if (nextLine[0] == "if" && nextLine[2] == "then") {
