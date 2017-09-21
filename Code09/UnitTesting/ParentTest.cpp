@@ -20,6 +20,9 @@ public:
 		actual.push_back(3);
 		Assert::AreEqual(actual[0], parent.getChildStar(1)[0]);
 		Assert::AreEqual(actual[1], parent.getChildStar(1)[1]);
+
+		parent.setParent(1, 4);
+		Assert::IsTrue(parent.getChild(1) == vector<int>{2, 4});
 	}
 	};
 }

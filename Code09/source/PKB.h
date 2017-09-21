@@ -99,7 +99,7 @@ public:
 	vector<int> getParent(int statementNum);
 	
 	/**
-	Gets the statment number that is the child of the input statement.
+	Gets the statment number that is the immediate child of the input statement.
 
 	@param statementNum the statement number of the input statement
 	@returns A vector containing one int value, the statement number which is the child of the input statement
@@ -150,7 +150,7 @@ public:
 	vector<string> getModifies(int s);
 
 	/**
-	Gets the statements modified by variable varName
+	Gets the statements that modifies variable varName
 
 	@param varName variable being modified by input statements
 	@returns a vector containing integers of statement numbers that modified the variable varName

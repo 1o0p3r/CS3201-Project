@@ -1,5 +1,6 @@
 #include "Util.h"
 #include <iostream>
+#include <algorithm>
 
 string Util::insertBrackets(string results) {
 	//string results = input;
@@ -95,7 +96,70 @@ vector<string> Util::splitLine(string s, char delim) {
 	string item;
 	vector<string> tokens;
 	while (getline(ss, item, delim)) {
-		tokens.push_back(item);
+		if (item.size() != 0) {
+			tokens.push_back(item);
+		}
 	}
 	return tokens;
+}
+
+static inline bool isNotAlNum(char c) {
+	return !isalnum(c);
+}
+
+bool Util::isValidName(string s) {
+	if (isalpha(s[0])) {
+		return find_if(s.begin(), s.end(), isNotAlNum) == s.end();
+	} else {
+		return false;
+	}
+}
+
+bool Util::isOperand(string s) {
+	if (s == "+" || s == "-" || s == "*") {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+static inline bool isNotDigit(char c) {
+	return !isdigit(c);
+}
+
+bool Util::isNumber(string s) {
+	return find_if(s.begin(), s.end(), isNotDigit) == s.end();
+}
+
+string Util::trim(string s) {
+	size_t p = s.find_first_not_of(" \t");
+	s.erase(0, p);
+	p = s.find_last_not_of(" \t");
+	if (string::npos != p) {
+		s.erase(p + 1);
+	}
+	return s;
+}
+
+string Util::getExpression(vector<string> sList) {
+	int front = 0;
+	int back = sList.size() - 1;
+	while (sList[front] != "=") {
+		front++;
+	}
+	while (sList[back].back() != ';') {
+		back--;
+	}
+	front++;
+	if (sList[back].size() == 1) {
+		back--;
+	} else {
+		sList[back] = sList[back].substr(0, sList[back].size() - 1);
+	}
+	string s = "";
+	while (front <= back) {
+		s.append(sList[front]);
+		front++;
+	}
+	return s;
 }

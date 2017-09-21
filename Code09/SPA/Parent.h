@@ -45,7 +45,7 @@ public:
 	vector<int> getChildStar(int statementNum);
 
 private:
-	vector<int> parentTable;
+	vector<vector<int>> parentTable;
 	vector<int> childTable;
 	vector<vector<int>> parentStarTable;
 	vector<vector<int>> childStarTable;

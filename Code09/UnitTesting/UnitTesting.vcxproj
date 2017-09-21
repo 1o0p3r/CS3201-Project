@@ -165,6 +165,7 @@
     <ClCompile Include="FollowTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
     <ClCompile Include="ParentTest.cpp" />
+    <ClCompile Include="ParserTest.cpp" />
     <ClCompile Include="PKBTest.cpp" />
     <ClCompile Include="QueryValidatorTest.cpp" />
     <ClCompile Include="RelationshipTableTest.cpp" />

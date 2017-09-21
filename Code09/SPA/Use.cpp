@@ -33,7 +33,7 @@ void Use::setUses(int s, int varName) {
 		throw new invalid_argument("Statement Number must be more than 0.");
 	}
 
-	if (s > usesTable.size())
+	if (s >= usesTable.size())
 		usesTable.resize(s + 1);
 
 	usesTable[s].insert(varName);
@@ -42,7 +42,7 @@ void Use::setUses(int s, int varName) {
 
 void Use::setUsedBy(int varName, int s) {
 
-	if ((varName + 1) > usedByTable.size()) {
+	if (varName >= usedByTable.size()) {
 
 		usedByTable.resize(varName + 1);
 		usedByTable[varName].insert(s);
@@ -56,7 +56,7 @@ void Use::setUsedBy(int varName, int s) {
 
 void Use::setProcUses(int procName, int varName) {
 
-	if ((procName + 1) > procUsesTable.size()) {
+	if ((procName) >= procUsesTable.size()) {
 
 		procUsesTable.resize(procName + 1);
 		procUsesTable[procName].insert(varName);
@@ -71,7 +71,7 @@ void Use::setProcUses(int procName, int varName) {
 
 void Use::setProcUsedBy(int varName, int procName) {
 
-	if ((varName + 1) > procUsedByTable.size()) {
+	if (varName >= procUsedByTable.size()) {
 		procUsedByTable.resize(varName + 1);
 		procUsedByTable[varName].insert(procName);
 	}
