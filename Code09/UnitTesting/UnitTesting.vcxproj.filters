@@ -10,6 +10,7 @@
     <ClCompile Include="ModifyTest.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
+    <ClCompile Include="ParserTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

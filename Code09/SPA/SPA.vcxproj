@@ -23,12 +23,12 @@
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="Follow.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
-    <ClInclude Include="Parser.h" />
     <ClInclude Include="QueryEval.h" />
     <ClInclude Include="Use.h" />
     <ClInclude Include="Util.h" />

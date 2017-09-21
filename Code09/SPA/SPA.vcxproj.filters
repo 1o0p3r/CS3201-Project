@@ -25,7 +25,6 @@
     <ClInclude Include="Follow.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
-    <ClInclude Include="Parser.h" />
     <ClInclude Include="QueryEval.h" />
     <ClInclude Include="Use.h" />
     <ClInclude Include="Util.h" />
@@ -36,6 +35,7 @@
     <ClInclude Include="Relationship.h" />
     <ClInclude Include="RelationshipTable.h" />
     <ClInclude Include="SynonymEntityPair.h" />
+    <ClInclude Include="..\source\Parser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
@@ -65,10 +65,5 @@
     <ClInclude Include="QueryValidator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Parser.h">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
