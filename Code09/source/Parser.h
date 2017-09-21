@@ -1,3 +1,6 @@
 #pragma once
+
+#include "PKB.h"
+
 using namespace std;
-int Parse();
+bool Parse(string filename, PKB& pkb);
