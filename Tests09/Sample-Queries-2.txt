@@ -1,0 +1,75 @@
+1 - comment
+while w;
+Select w such that Parent(w, 7)
+3
+5000
+2 - comment
+assign a;
+Select a such that Parent*(2, a)
+4, 5, 6, 7, 9, 10
+5000
+3 - comment
+if a; stmt b;
+Select a such that Parent*(2,b)
+8
+5000
+4 - comment
+stmt s;
+Select s such that Follows(8, s)
+11
+5000
+5 - comment
+stmt c;
+Select c such that Follows*(1, c)
+2, 5
+5000
+6 - comment
+stmt a;
+Select a such that Follows(a, 9)
+None
+5000
+7 - comment
+stmt s;
+Select s such that Modifies(s, "i")
+2, 7
+5000
+8 - comment
+variable n;
+Select n such that Modifies( 1, n)
+x
+5000
+9 - comment
+assign a; variable b; while i;
+Select i such that Modifies(a, b)
+3
+5000
+10 - comment
+variable v;
+Select v such that Uses("Second", v)
+i, x, y, z
+5000
+11 - comment
+stmt s;
+Select s such that Uses(s, "i")
+7, 11
+5000
+1­2 - comment
+assign ifs; variable v; assign a;
+Select v such that Uses(ifs, v) pattern a(_, _"x+1"_)
+9
+5000
+13 - comment
+assign w; variable v;
+Select w such that Modifies(w, v) pattern w(_," 2*y ") 
+None
+5000
+14 - comment
+assign a;
+Select a pattern a("z", _"x+i")
+None
+5000
+15 - comment
+assign a;
+Select a pattern a(_, _"x + 1"_)
+9
+5000

@@ -1,0 +1,35 @@
+1 - comment
+stmt s;
+Select s such that Follows(s,3)
+none
+5000
+2 - comment
+stmt s;
+Select s such that Follows(1,s)
+2
+5000
+3 - comment
+stmt s;
+Select s such that Follows*(s,2)
+1
+5000
+4 - comment
+variable v;
+Select v such that Modifies (a, v)
+12
+5000
+5 - comment
+variable v;
+Select v such that Modifies (2, v)
+x, y
+5000
+6 - comment
+variable v;
+Select v such that Modifies(3, v)
+y
+5000
+7 - comment
+variable v;
+Select v such that Uses(3，v）
+x, y
+5000

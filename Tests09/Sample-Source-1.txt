@@ -1,0 +1,37 @@
+procedure Pikachu {
+	a = 10;
+	b = 2*a;
+	c = b-2;
+	if a then {
+		while b {
+			d = c+a;
+			j = i*10*d;
+			a = a-1;}
+			while a {
+				e = j*d;}}
+	else {
+			k = c*a;
+			m = k-a;
+			while b{
+				x=i*10;
+				if x then {
+					y = x+m;
+					i = i*t-5;
+					j = j*(k+4);
+					if c then {
+						m = x+a*y+5;}
+					else{
+						y = x-y-j;}
+					while a{
+						e = j*d;}
+					m = a*x;
+					y = y+10;}
+				else{ 
+					j = a+c; }
+				k = k-m;}
+			t = a+y;}}
+			
+			
+			
+			
+			

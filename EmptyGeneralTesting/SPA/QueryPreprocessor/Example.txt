@@ -1,2 +1,0 @@
-stmt s;
-Select s such that Follows(s,4);
