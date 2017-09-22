@@ -31,7 +31,7 @@ namespace UnitTesting
 			Assert::AreEqual(modify.getProcModifiedBy(1)[0], 1);
 		}
 
-		TEST_METHOD(parentRemovesDuplicateVar) { //values are significant in parent set
+		TEST_METHOD(parentModifiesRemovesDuplicateVar) { //values are significant in parent set
 
 			Modify modify;
 			vector<int> parentStar;
@@ -44,7 +44,7 @@ namespace UnitTesting
 			Assert::IsTrue(modify.getModifiedBy(2).size() == 3); //var modified by 3 stmts
 		}
 
-		TEST_METHOD(procTablesAddCorrectly) { //values are significant in proc set
+		TEST_METHOD(procModifiesTablesAddCorrectly) { //values are significant in proc set
 
 			Modify modify;
 
@@ -56,7 +56,7 @@ namespace UnitTesting
 			Assert::IsTrue(modify.getProcModifies(2).size() == 1);
 		}
 
-		TEST_METHOD(checkSizeAndBoundaryAreCorrect) { 
+		TEST_METHOD(checkModifiesSizeAndBoundaryAreCorrect) { 
 
 			Modify modify;
 			Assert::AreEqual(modify.getModifies(0) == vector<int>(), true); 
