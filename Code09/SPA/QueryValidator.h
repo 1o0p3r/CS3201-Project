@@ -52,6 +52,10 @@ private:
 
 public:
 	QueryValidator();
+	bool isValidDeclarationRegex(string str);
+	bool isValidSuchThatRegex(string str);
+	bool isValidPatternRegex(string str);
+	bool isValidSelectInitialRegex(string str);
 	bool parseInput(string str);
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str, string syn);
@@ -62,12 +66,17 @@ public:
 	bool isWildcard(string arg);	
 	bool isExactString(string arg2);
 	bool isValidQueryLine(string selectString);
-
+	bool is_number(string str);
+	
 	void startParsing(string str);
+	
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
 	string removeDuplicatesWhiteSpaces(string str);
+	string trim(string str);
+	string trimPatternArgs(string str);
+	
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
-	bool is_number(string str);
+
 	QueryStatement getQueryStatement();
 };

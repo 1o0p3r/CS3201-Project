@@ -25,7 +25,7 @@ const char WHITESPACE_CHAR = ' ';
 const char DOUBLE_QUOTATION = '\"';
 
 const string WHITESPACE_STRING = " ";
-const string SYMBOL_SEMI_COLON = ";";
+const string SYMBOL_SEMI_COLON_STRING = ";";
 const string SELECT_STRING = "Select";
 const string COMMENT_STRING = "comment";
 const string SUCH_THAT_STRING = "such that";
@@ -58,28 +58,63 @@ const string INVALID_QUERY = "Invalid query";
 const string INVALID_SYNONYM_QUERIED_ERROR = "Invalid synonym queried";
 const string INVALID_ARGUMENT_ERROR = "Invalid argument";
 const string NUMBER_ZERO_TO_NINE = "0123456789";
-const string VERTICAL_LINE = "|";
+const string OR = "|";
 
-const string IDENT_STRING_REGEX = "[a-zA-Z](\w|\#)*";
-const string SYNONYM_STRING_REGEX = IDENT_STRING_REGEX;
-const string STMTREF_STRING_REGEX = "([a-zA-Z](\w|\#)*)|\_|\d+";
-const string ENTREF_STRING_REGEX = "([a-zA-Z](\w|\#)*)|\_|\"([a-zA-Z](\w|\#)*)\"";
-const string NAME_STRING_REGEX = "[a-zA-Z](\w)*";
-const string INTEGER_STRING_REGEX = "\d+";
+const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
+const string INTEGER_STRING_REGEX = "\\d+";
+const string CONSTANT_STRING_REGEX = "\\d+";
+const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
+const string IDENT_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
+const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
+const string STMTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)";
+const string ENTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")";
+const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
+const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line)";
+const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
+const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 
-const string VAR_NAME_REGEX = NAME_STRING_REGEX;
-const string CONSTANT_STRING_REGEX = INTEGER_STRING_REGEX;
+const string MODIFIES_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string USES_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string PARENT_STRING_REGEX = "Parent\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+const string PARENTT_STRING_REGEX = "Parent\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+const string FOLLOWS_STRING_REGEX = "Follows\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+const string FOLLOWST_STRING_REGEX = "Follows\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+const string RELREF_STRING_REGEX = "(" + MODIFIES_STRING_REGEX + OR + USES_STRING_REGEX + OR
++ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + ")";
 
-const string FACTOR_STRING_REGEX = VAR_NAME_REGEX + VERTICAL_LINE + CONSTANT_STRING_REGEX;
-const string EXPRESSION_SPEC_REGEX = "(\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_)";
-//const string PATTERN_REGEX = "(pattern\s+([a-zA-Z](\w)*))\s*\(\s*(([a-zA-Z](\w|\#)*)|(\_)|(\"[a-zA-Z](\w|\#)*\")),\s*((\_\"(([a-zA-Z](\w)*)|(\d+))\"\_)|(\"(([a-zA-Z](\w)*)|(\d+))\")|(\_))\)";
+const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
+const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + "a\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
 
-
+//Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
 using namespace std;
 QueryValidator::QueryValidator()
 {
 }
 
+//Takes in a string and check if it matches the declaration regex
+//Returns true if matches, else false
+bool QueryValidator::isValidDeclarationRegex(string str) {
+//	std::smatch base_match;
+	regex declareRegex("((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*)\\;");
+	return regex_match(str, declareRegex);
+}
+//Takes in a string and checks if it matches the such that regex
+//Retunrs true if matches, else false
+bool QueryValidator::isValidSuchThatRegex(string str) {
+	regex suchThatRegex(SUCH_THAT_CL_REGEX);
+	return regex_match(str, suchThatRegex);
+}
+//Takes in a string and checks if it matches the pattern regex
+//Returns true if matches, else false
+bool QueryValidator::isValidPatternRegex(string str) {
+	regex patternRegex(PATTERN_CL_REGEX);
+	return regex_match(str, patternRegex);
+}
+bool QueryValidator::isValidSelectInitialRegex(string str) {
+	regex patternRegex(SELECT_INITIAL_REGEX);
+	return regex_match(str, patternRegex);
+}
 //This function takes in a string query
 void QueryValidator::startParsing(string str) {
 
@@ -93,7 +128,7 @@ void QueryValidator::startParsing(string str) {
 bool QueryValidator::parseInput(string str) {
 	str = removeDuplicatesWhiteSpaces(str);
 
-	if (str.find(SYMBOL_SEMI_COLON)) {
+	if (str.find(SYMBOL_SEMI_COLON_STRING)) {
 		bool valQuery = false;
 		
 		size_t pos;
@@ -101,10 +136,14 @@ bool QueryValidator::parseInput(string str) {
 		bool valDel = false;
 
 		//While i can find a semicolon
-		while ((pos = str.find(SYMBOL_SEMI_COLON) != std::string::npos)) {
-		//while (pos != std::string::npos) {
-			pos = str.find(SYMBOL_SEMI_COLON);
+		while ((pos = str.find(SYMBOL_SEMI_COLON_STRING) != std::string::npos)) {
+			pos = str.find(SYMBOL_SEMI_COLON_STRING);
 			token = str.substr(ZERO, pos);
+			string toCheck = token + SYMBOL_SEMI_COLON_STRING;
+			toCheck = trim(toCheck);
+			if (!isValidDeclarationRegex(toCheck)) {
+				return false;
+			}
 			if (isEntityAndSynonym(token)) {
 				valDel = true;
 			}
@@ -113,16 +152,6 @@ bool QueryValidator::parseInput(string str) {
 			}
 			str.erase(ZERO, pos + ONE);
 		}
-		/**
-		std::size_t found = str.find_first_of(SYMBOL_SEMI_COLON);
-		string token;
-		while (found != std::string::npos) {
-			token = str.substr(ZERO, found);
-			if (!isEntityAndSynonym(token)) {
-				return false;
-			}
-			str.erase(ZERO, found + ONE);
-		}**/
 		//After the loop ends, comes the select query
 		if (str.find(SELECT_STRING)) {
 			valQuery = parseQueryLine(str);
@@ -172,8 +201,10 @@ bool QueryValidator::parseQueryLine(string str) {
 bool QueryValidator::isValidEntity(string currentString) {
 	
 	if (currentString.at(0) == WHITESPACE_CHAR) {
-		currentString = currentString.substr(ONE, currentString.length() - 1);
+	//	currentString = currentString.substr(ONE, currentString.length() - 1);
+		currentString = trim(currentString);
 	}
+	
 	//Places the first vector with the unchecked entity, and subsequent vectors with synonyms
 	std::vector<string> splitString = splitBySymbol(currentString, SYMBOL_WHITESPACE);
 	//checks if the entity exists, if so, do parsing on the declarations
@@ -207,6 +238,7 @@ bool QueryValidator::parseDeclaration(vector<string> splitString) {
 	string reqEntity = splitString.front();
 	splitString.erase(splitString.begin());
 	string synonymsStr;
+
 	//Adds back the rest of the string into 1 string
 	for (std::size_t i = ZERO; i < splitString.size(); i++) {
 		synonymsStr += splitString.at(i);
@@ -233,39 +265,27 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 
 	}
 }
+
+string QueryValidator::trimPatternArgs(string str) {
+	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);
+	str = str.substr(idxLeft+ONE, str.length() - idxLeft - TWO);
+	str = removeSymbols(str,WHITESPACE_STRING);
+	return str;
+}
 //For now this funcction assumes that pattern is of valid syntax
 bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
-//	if (std::regex_match(str, patternRgx)) {
-		int addIdx = ZERO;
-		if (str.at(ZERO) == WHITESPACE_CHAR) {
-			addIdx = ONE;
-		}
-		//remove the the string 'pattern', pattern.length()+ ONE + addIdx + syn.length()
-		
-		int firstIdx = (7 + ONE + addIdx + syn.length());
-		int test = PATTERN_REGEX.length();
-		string tempPatternStr = str.substr(firstIdx, str.length() - ONE);
-
-		//Obtain the index of first occurence of left bracket
-		int idxLeft = tempPatternStr.find(SYMBOL_LEFT_BRACKET);
-
-		//Create new string to store PatternStr
-		string tempArgStr = tempPatternStr.substr(idxLeft, tempPatternStr.length() - ONE);
-		
-		//Remove all the unncessary whitespace
-		string argStr = removeSymbols(tempPatternStr, WHITESPACE_STRING);
-
-		//Remove all the uneecessary brackets
-		//This is applicable now as first letter is assignment
-		argStr = argStr.substr(idxLeft+ONE, argStr.length() - 2);
+	str = trim(str);
+	str = str.substr(8, str.length() - 1);
+	str = removeSymbols(str, WHITESPACE_STRING);
+	str = PATTERN_STRING + WHITESPACE_STRING + str;
+	if (!isValidPatternRegex(str)) {
+		return false;
+	}
+	else {
+		string argStr = trimPatternArgs(str);
 		vector<string> splitPattern = splitBySymbol(argStr, SYMBOL_COMMA);
-
-		//This implies no commas are present
-		if (splitPattern.size() == ONE) {
-			return false;
-		}
 
 		string arg1 = splitPattern.at(ZERO);
 		string arg2 = splitPattern.at(ONE);
@@ -277,7 +297,6 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 
 		//Now removed the inverted commas
 		arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-
 		//For arg2, first check if its just a wildcard
 		bool arg2Wildcard = false;
 		bool arg2Substring = false;
@@ -301,14 +320,13 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		else if (arg1Wildcard) {
 			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
 		}
-		else if(arg1Synonym){
+		else if (arg1Synonym) {
 			arg1 = removeSymbols(arg1, WHITESPACE_STRING);
 		}
 		else {
 			cout << INVALID_ARGUMENT_ERROR;
 			return false;
 		}
-
 		//Clean up for arg2
 		if (arg2Substring) {
 			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
@@ -317,9 +335,9 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		}
 		else if (arg2Exact) {
 			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
-			arg2 = arg2.substr(1, arg2.length() - 2);
+			arg2 = arg2.substr(ONE, arg2.length() - 2);
 		}
-		else if(arg2Wildcard){
+		else if (arg2Wildcard) {
 			arg2 = removeSymbols(arg2, WHITESPACE_STRING);
 		}
 		else {
@@ -327,18 +345,14 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 			return false;
 		}
 		//The following are needed, dont remove, uses limjie's method
-
 		arg1 = Util::insertBrackets(arg1);
 		arg2 = Util::insertBrackets(arg2);
 
 		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2Exact, arg2Wildcard);
 		return true;
-//		return true;
-//	}
-//	else {
-//		return false;
-//	}
+	}
 }
+
 //This funtion checks if the given arg 1 of pattern is a variable type
 bool QueryValidator::isVariableArg1(string arg1) {
 	if (arg1.at(ZERO) ==DOUBLE_QUOTATION   && arg1.at(arg1.length() - 1) == DOUBLE_QUOTATION) {
@@ -390,9 +404,15 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	string selectClause = vectorClauses.at(ZERO);
 
 	int toAdd = ZERO;
+	/*
 	if (selectClause.at(0) == WHITESPACE_CHAR) {
 		selectClause = selectClause.substr(ONE, selectClause.length() - 1);
+	}*/
+	selectClause = trim(selectClause);
+	if (!isValidSelectInitialRegex(selectClause)) {
+		return false;
 	}
+
 	vector<string> selectClauseSplit = splitBySymbol(selectClause, SYMBOL_WHITESPACE);
 	string syn = selectClauseSplit.at(ONE);
 	vector<string> tempVec;
@@ -469,29 +489,24 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
 }
+
+//isValid others currently accepts such that and pattern clause
 bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
 		return true;
 	}
 	else {
-		string select = vec.at(ZERO);
-		if (select.at(ZERO) == WHITESPACE_CHAR) {
-			select = select.substr(ONE, select.length() - 1);
-		}
-		vector<string> vecSplit = splitBySymbol(select, SYMBOL_WHITESPACE);
+		string selectStr = vec.at(ZERO);
+		selectStr = trim(selectStr);
+		vector<string> vecSplit = splitBySymbol(selectStr, SYMBOL_WHITESPACE);
 		//Obtain the synonym
 		string syn = vecSplit.at(ONE);
 	
+		//loop through every string to check if the first index and last index is a whitespace
+		//If so, remove them
 		for (size_t k = ONE; k < vec.size(); k++) {
-			if (vec.at(k).at(ZERO) == WHITESPACE_CHAR) {
-				//vec.at(k) = vec.at(k).substr(ONE, vec.at(k).length() - 1);
-				vec.at(k).erase(0, 1);
-			}
-			if (vec.at(k).at(vec.at(k).length()-1) == WHITESPACE_CHAR) {
-				vec.at(k).erase(vec.at(k).size() - 1);
-			//	vec.at(k) = vec.at(k).substr(ZERO, vec.at(k).length() - 1);
-			}
+			trim(vec.at(k));
 		}
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
@@ -510,11 +525,11 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 }
 bool QueryValidator::isValidSuchThat(string str, string syn) {
 	int toAdd = ZERO;
-	if (str.at(0) == WHITESPACE_CHAR) {
-		toAdd = ONE;
-	}
+	
+	//Remove the additional leading and trailing whitespace
+	str = trim(str);
 	//Firstly extract/split till a relation is found
-	string tempString = str.substr(10+toAdd, str.length()-ONE);
+	string tempString = str.substr(10, str.length()-ONE);
 
 	//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
 	vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
@@ -785,7 +800,9 @@ string QueryValidator::removeDuplicatesWhiteSpaces(string str) {
 	return str;
 }
 
-
+string QueryValidator::trim(string str) {
+	return regex_replace(str, regex("^ +| +$|( ) +"), "$1");
+}
 /**
 int QueryValidator::getNumClauses() {
 	return this->numClauses;
