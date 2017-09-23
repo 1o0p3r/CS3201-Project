@@ -26,37 +26,37 @@ RelationshipTable::RelationshipTable() {
 
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
-		"string", "number", "constant" };
+		"string", "number" };
 	modifiesArg2 = { "variable", "string", "wildcard" };
 	Relationship relationModifies = Relationship(NUM_TWO, modifiesArg1, modifiesArg2);
 	relationshipTable[MODIFIES_STRING] = relationModifies;
 
 	//Add the relationship of Uses to table
 	usesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
-		"string", "number", "constant" };
+		"string", "number"};
 	usesArg2 = {"variable", "string", "wildcard"};
 	Relationship relationUses = Relationship(NUM_TWO, usesArg1, usesArg2);
 	relationshipTable[USES_STRING] = relationUses;
 
 	//Adds the relationship of Follows to table
-	followsArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard", "number" };
+	followsArg = { "stmt", "assign", "while", "if", "prog_line", "call", "wildcard", "number" };
 	Relationship relationFollows = Relationship(NUM_TWO, followsArg, followsArg);
 	relationshipTable[FOLLOWS_STRING] = relationFollows;
 
 	//Adds the relationship of Follows* to table
-	followsStarArg = { "stmt", "assign", "while", "if", "constant", "prog_line", "call", "wildcard", "number" };
+	followsStarArg = { "stmt", "assign", "while", "if", "prog_line", "call", "wildcard", "number" };
 	Relationship relationFollowsStar = Relationship(NUM_TWO, followsStarArg, followsStarArg);
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
-	parentArg1 = { "stmt", "while", "if", "constant", "prog_line" ,"wilcard" };
-	parentArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assign" };
+	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wilcard" };
+	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign" };
 	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
-	parentStarArg1 = { "stmt", "while", "if", "constant", "prog_line", "wilcard" };
-	parentStarArg2 = { "stmt", "while", "if", "constant", "wildcard", "prog_line", "call", "assign" };
+	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wilcard" };
+	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign" };
 	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
 }

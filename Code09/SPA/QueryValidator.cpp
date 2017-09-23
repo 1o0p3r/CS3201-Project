@@ -72,6 +72,7 @@ const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)
 const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line)";
 const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
 const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
+const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 
 const string MODIFIES_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string USES_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
@@ -91,33 +92,8 @@ using namespace std;
 QueryValidator::QueryValidator()
 {
 }
-
-//Takes in a string and check if it matches the declaration regex
-//Returns true if matches, else false
-bool QueryValidator::isValidDeclarationRegex(string str) {
-//	std::smatch base_match;
-	regex declareRegex("((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*)\\;");
-	return regex_match(str, declareRegex);
-}
-//Takes in a string and checks if it matches the such that regex
-//Retunrs true if matches, else false
-bool QueryValidator::isValidSuchThatRegex(string str) {
-	regex suchThatRegex(SUCH_THAT_CL_REGEX);
-	return regex_match(str, suchThatRegex);
-}
-//Takes in a string and checks if it matches the pattern regex
-//Returns true if matches, else false
-bool QueryValidator::isValidPatternRegex(string str) {
-	regex patternRegex(PATTERN_CL_REGEX);
-	return regex_match(str, patternRegex);
-}
-bool QueryValidator::isValidSelectInitialRegex(string str) {
-	regex patternRegex(SELECT_INITIAL_REGEX);
-	return regex_match(str, patternRegex);
-}
 //This function takes in a string query
 void QueryValidator::startParsing(string str) {
-
 	//Upon taking in a string query, clear the following
 	queryStatement = QueryStatement();
 	synonymAndEntityList = vector<SynonymEntityPair>();
@@ -129,13 +105,10 @@ bool QueryValidator::parseInput(string str) {
 	str = removeDuplicatesWhiteSpaces(str);
 
 	if (str.find(SYMBOL_SEMI_COLON_STRING)) {
-		bool valQuery = false;
-		
+		bool valQuery = false;	
 		size_t pos;
 		std::string token;
-		bool valDel = false;
 
-		//While i can find a semicolon
 		while ((pos = str.find(SYMBOL_SEMI_COLON_STRING) != std::string::npos)) {
 			pos = str.find(SYMBOL_SEMI_COLON_STRING);
 			token = str.substr(ZERO, pos);
@@ -144,23 +117,17 @@ bool QueryValidator::parseInput(string str) {
 			if (!isValidDeclarationRegex(toCheck)) {
 				return false;
 			}
-			if (isEntityAndSynonym(token)) {
-				valDel = true;
-			}
-			else {
+			if (!isEntityAndSynonym(token)) {
 				return false;
 			}
 			str.erase(ZERO, pos + ONE);
 		}
 		//After the loop ends, comes the select query
 		if (str.find(SELECT_STRING)) {
-			valQuery = parseQueryLine(str);
-			if (valQuery == true) {
-				return true;
-			}
-			else {
-				return false;
-			}
+			return parseQueryLine(str);
+		}
+		else {
+			return false;
 		}
 	}
 	else {
@@ -171,7 +138,6 @@ bool QueryValidator::parseInput(string str) {
 
 //This function parses the Entity And Synonym and checks for the validity of Entity
 bool QueryValidator::isEntityAndSynonym(string currentString) {
-
 	if (isValidEntity(currentString)) {
 		addSynonymEntityList();
 		return true;
@@ -187,7 +153,6 @@ void QueryValidator::addSynonymEntityList() {
 }
 bool QueryValidator::parseQueryLine(string str) {
 	if (!isValidQueryLine(str)) {
-		//validQuery = false;
 		cout << INVALID_QUERY << endl;
 		return false;
 	}
@@ -199,17 +164,12 @@ bool QueryValidator::parseQueryLine(string str) {
 //This function checks for the validity of the declaration by comparing with the the entityList given
 //Returns true if there is a match, else returns false
 bool QueryValidator::isValidEntity(string currentString) {
-	
-	if (currentString.at(0) == WHITESPACE_CHAR) {
-	//	currentString = currentString.substr(ONE, currentString.length() - 1);
-		currentString = trim(currentString);
-	}
-	
+	currentString = trim(currentString);
 	//Places the first vector with the unchecked entity, and subsequent vectors with synonyms
 	std::vector<string> splitString = splitBySymbol(currentString, SYMBOL_WHITESPACE);
 	//checks if the entity exists, if so, do parsing on the declarations
-	if (inEntityList(splitString.front()) == true) {
-		if (parseDeclaration(splitString) == true) {
+	if (inEntityList(splitString.front())) {
+		if (parseDeclaration(splitString)) {
 			return true;
 		}
 		else {
@@ -266,12 +226,6 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	}
 }
 
-string QueryValidator::trimPatternArgs(string str) {
-	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);
-	str = str.substr(idxLeft+ONE, str.length() - idxLeft - TWO);
-	str = removeSymbols(str,WHITESPACE_STRING);
-	return str;
-}
 //For now this funcction assumes that pattern is of valid syntax
 bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
@@ -355,7 +309,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 
 //This funtion checks if the given arg 1 of pattern is a variable type
 bool QueryValidator::isVariableArg1(string arg1) {
-	if (arg1.at(ZERO) ==DOUBLE_QUOTATION   && arg1.at(arg1.length() - 1) == DOUBLE_QUOTATION) {
+	if (arg1.at(ZERO) == DOUBLE_QUOTATION   && arg1.at(arg1.length() - 1) == DOUBLE_QUOTATION) {
 		return true;
 	}
 	else {
@@ -375,12 +329,6 @@ bool QueryValidator::isSubstringArg2(string arg2) {
 }
 //This function takes in an argument(2) and checks if it is an exact string
 bool QueryValidator::isExactString(string arg2) {
-	/**
-	string isExactString("(["'])(?:(?=(\\?))\2.)*?\1");
-
-		std::regex
-	**/
-	
 	if ((arg2.at(0) == DOUBLE_QUOTATION)  && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
 		return true;
 	}
@@ -404,10 +352,6 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	string selectClause = vectorClauses.at(ZERO);
 
 	int toAdd = ZERO;
-	/*
-	if (selectClause.at(0) == WHITESPACE_CHAR) {
-		selectClause = selectClause.substr(ONE, selectClause.length() - 1);
-	}*/
 	selectClause = trim(selectClause);
 	if (!isValidSelectInitialRegex(selectClause)) {
 		return false;
@@ -534,7 +478,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
 	vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
 	
-	//Obtain the relation Follows
+	//Obtain the relation e.g. Follows
 	string relation = tempVec.at(ZERO);
 
 	//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
@@ -559,6 +503,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	bool arg2_NUM = false;
 	bool arg1_UNDER = false;
 	bool arg2_UNDER = false;
+	bool arg2_VARIABLE = false;
 
 	if (arg1Ent != INVALID_STRING) {
 		//Implies that a corresponding entity was obtained
@@ -604,12 +549,21 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 			}
 		}
 		else if (arg2 == UNDER_SCORE_STRING) {
-			arg2Valid = checkRelationshipTable(relation, UNDER_SCORE_STRING, TWO);
+			arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
 			if (arg2Valid) {
 				arg2_UNDER = true;
 			}
 			else {
 				arg2_UNDER = false;
+			}
+		}
+		else if (isVariable(arg2)) {
+			arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
+			if (arg2Valid) {
+				arg2_VARIABLE = true;
+			}
+			else {
+				arg2_VARIABLE = false;
 			}
 		}
 		else {
@@ -618,7 +572,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	}
 	//If both are valid and true, create the clause
 	if (arg1Valid && arg2Valid) {
-		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, relation, arg1, arg2, arg1Ent, arg2Ent)) {
+		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
 			return false;
 		}
 		else {
@@ -630,22 +584,29 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	}
 }
 
-bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2) {
+bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2) {
 	if (arg1_NUM == false && arg1_UNDER == false) {
 		//If a match is found create a query element with following parameters (arg1, arg1Type, arg2, arg2Type, rel)
-		if (arg2_NUM == false && arg2_UNDER == false) {
+		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
 			QueryElement queryElement = QueryElement(arg1, type1, arg2, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == false && arg2_UNDER == true) {
+		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == false) {
 			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
 			QueryElement queryElement = QueryElement(arg1, type1, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == true && arg2_UNDER == false) {
+		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == false) {
 			QueryElement queryElement = QueryElement(arg1, type1, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		
+		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
+	//		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(arg1, type1, arg2, VARIABLE_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
@@ -654,18 +615,24 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		}
 	}
 	else if (arg1_NUM == true && arg1_UNDER == false) {
-		if (arg2_NUM == false && arg2_UNDER == false) {
+		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == false && arg2_UNDER == true) {
+		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == false) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == true && arg2_UNDER == false) {
+		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == false) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
+//			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, VARIABLE_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
@@ -674,24 +641,33 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		}
 	}
 	else if (arg1_NUM == false && arg1_UNDER == true) {
-		if (arg2_NUM == false && arg2_UNDER == false) {
+		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == false && arg2_UNDER == true) {
+		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == true) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == true && arg2_UNDER == false) {
+		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == true) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, NUMBER_STRING, relType);
+			addSuchThatQueryElement(queryElement);
+			return true;
+		}
+		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
+	//		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, VARIABLE_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
 		else {
 			return false;
 		}
+	}
+	else {
+		return false;
 	}
 }
 
@@ -721,7 +697,6 @@ string QueryValidator::getCorrespondingEntity(string syn) {
 bool QueryValidator::is_number(string s) {
 	return s.find_first_not_of(NUMBER_ZERO_TO_NINE) == string::npos;
 }
-
 QueryStatement QueryValidator::getQueryStatement()
 {
 	return queryStatement;
@@ -784,7 +759,6 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 			result.push_back(curr);
 		}
 	}
-	//What i need to do: with a given vector
 	return result;
 }
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
@@ -810,4 +784,36 @@ int QueryValidator::getNumClauses() {
 string QueryValidator::changeLowerCase(string str) {
 	 std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	 return str;
+}
+//Takes in a string and check if it matches the declaration regex
+//Returns true if matches, else false
+bool QueryValidator::isValidDeclarationRegex(string str) {
+	regex declareRegex("((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*)\\;");
+	return regex_match(str, declareRegex);
+}
+//Takes in a string and checks if it matches the such that regex
+//Retunrs true if matches, else false
+bool QueryValidator::isValidSuchThatRegex(string str) {
+	regex suchThatRegex(SUCH_THAT_CL_REGEX);
+	return regex_match(str, suchThatRegex);
+}
+//Takes in a string and checks if it matches the pattern regex
+//Returns true if matches, else false
+bool QueryValidator::isValidPatternRegex(string str) {
+	regex patternRegex(PATTERN_CL_REGEX);
+	return regex_match(str, patternRegex);
+}
+bool QueryValidator::isValidSelectInitialRegex(string str) {
+	regex patternRegex(SELECT_INITIAL_REGEX);
+	return regex_match(str, patternRegex);
+}
+bool QueryValidator::isVariable(string str) {
+	regex patternRegex(VARIABLE_STRING_REGEX);
+	return regex_match(str, patternRegex);
+}
+string QueryValidator::trimPatternArgs(string str) {
+	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);
+	str = str.substr(idxLeft + ONE, str.length() - idxLeft - TWO);
+	str = removeSymbols(str, WHITESPACE_STRING);
+	return str;
 }
