@@ -18,6 +18,12 @@ enum parentArgCase
 	wildInt, wildSyn, wildWild
 };
 
+enum usesArgCase
+{
+	intString, intSyn_, intWild_, synString, synSyn_, synWild_,
+	wildString, wildSyn_, wildWild_
+};
+
 enum parentSynType
 {
 	undefinedType, stmt, _while, _if, prog_line
@@ -453,7 +459,7 @@ void QueryAnalyzer::solveUses(QueryElement suchThatClause) {
 }
 void QueryAnalyzer::solveUsesProc(QueryElement suchThatClause) {
 	//TODO: implement in iteration ?
-}
+} 
 void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 	/*  arg1 , arg2  = case
 	integer, literalstring = 0
@@ -466,15 +472,136 @@ void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 	wildcard, synonym = 7
 	wildcard, wildcard = 8
 	*/
+	string arg1 = suchThatClause.getSuchThatArg1();
+	string arg2 = suchThatClause.getSuchThatArg2();
 	string arg1Type = suchThatClause.getSuchThatArg1Type();
 	string arg2Type = suchThatClause.getSuchThatArg2Type();
 
-	int scenario;
+	int scenario = 0;
 	if (arg1Type == "synonym") { scenario += 3; }
 	else if (arg1Type == WILDCARD) { scenario += 6; }
 	if (arg2Type == "synonym") { scenario += 1; }
 	else if (arg2Type == WILDCARD) { scenario += 2; }
+	
+	switch (scenario) {
+		case intString:
+			validateUses(arg1, arg2,scenario);
+			break;
+		case intSyn:
+			toAddSynVect(arg1, arg2, scenario);
+			break;
+		case intWild:
+			validateUses(arg1, arg2, scenario);
+		case synString:
+			break;
+		case synSyn_:
+			break;
+		case synWild_:
+			break;
+		case wildString:
+			validateUses(arg1, arg2, scenario);
+			break;
+		case wildSyn_:
+			break;
+		case wildWild_:
+			validateUses(arg1, arg2, scenario);
+			break;
+	}
+}
+void QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
+	vector<string> resultArg1Param = pkbReadOnly.getUses(stoi(arg1));
+	switch (scenario) {
+		case intString:
+			if (find(resultArg1Param.begin(), resultArg1Param.end(), arg2) 
+				== resultArg1Param.end())
+				hasSTClause = false;
+			break;
+		case intWild_:
+			if (pkbReadOnly.getUses(stoi(arg1)).empty())
+				hasSTClause = false;
+			break;
+		case wildString:
+			if (pkbReadOnly.getUsedBy(arg2).empty())
+				hasSTClause = false;
+			break;
+		case wildWild_:
+			if (pkbReadOnly.getAssign().empty() && pkbReadOnly.getIf().empty() 
+				&& pkbReadOnly.getWhile().empty())
+				hasSTClause = false;
+			break;
+	}
+}
+vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int scenario) {
+	vector<string> pkbUsesResultString;
+	vector<int> pkbUsesResultInt;
+	vector<string> vectorToAdd;
+	vector<vector<string>> usesResult;
+	vector<string> candidates;
+	vector<int> candidatesInt;
+	vector<int> allIf = pkbReadOnly.getIf();
+	vector<int> allWhile = pkbReadOnly.getWhile();
+	vector<int> allAssign = pkbReadOnly.getAssign();
+	unordered_set<string> shortlisted;
 
+	switch (scenario) {
+		case intSyn:
+			pkbUsesResultString = pkbReadOnly.getUses(stoi(arg1));
+			if (pkbUsesResultString.empty()) {
+				hasSTClause = false;
+			}
+			else {
+				pkbUsesResultString.push_back(arg2);
+				usesResult.push_back(pkbUsesResultString);
+			}
+			break;
+		case synString:
+			pkbUsesResultInt = pkbReadOnly.getUsedBy(arg2);
+			if (pkbUsesResultInt.empty()) {
+				hasSTClause = false;
+			} else {
+				for (int candidate : pkbUsesResultInt)
+					vectorToAdd.push_back(to_string(candidate));
+				vectorToAdd.push_back(arg1);
+				usesResult.push_back(vectorToAdd);
+			}
+		case synSyn_:
+			break;
+		case synWild_:
+			candidates = pkbReadOnly.getAllVariables();
+			for (string interviewee : candidates) {
+				pkbUsesResultInt = pkbReadOnly.getUsedBy(interviewee);
+				for (int shortlistedInterviewee : pkbUsesResultInt) {
+					shortlisted.insert(to_string(shortlistedInterviewee));
+				}
+			}
+			if (!shortlisted.empty()) {
+				vectorToAdd.assign(shortlisted.begin(), shortlisted.end());
+				vectorToAdd.push_back(arg1);
+				usesResult.push_back(vectorToAdd);
+			} else {
+				hasSTClause = false;
+			}
+			break;
+		case wildSyn_:
+			candidatesInt.reserve(allIf.size() + allWhile.size() + allAssign.size());
+			candidatesInt = pkbReadOnly.getAssign();
+			candidatesInt.insert(candidatesInt.end(), allIf.begin(), allIf.end());
+			candidatesInt.insert(candidatesInt.end(), allWhile.begin(), allWhile.end());
+			for (int interviewee : candidatesInt) {
+				pkbUsesResultString = pkbReadOnly.getUses(interviewee);
+				for (string shortlistedInterviewee : pkbUsesResultString) {
+					shortlisted.insert(shortlistedInterviewee);
+				}
+			}
+			if (!shortlisted.empty()) {
+				vectorToAdd.assign(shortlisted.begin(), shortlisted.end());
+				vectorToAdd.push_back(arg2);
+				usesResult.push_back(vectorToAdd);
+			} else {
+				hasSTClause = false;
+			}
+			break;
+	}
 }
 vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 	int scenario;
@@ -486,7 +613,7 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 	vector<string> parentSubResult;
 	tuple<vector<string>,vector<string>> parentSubResultTuple;
 	vector<vector<string>> parentResult;
-	
+	//need to consider entity type(i.e if statement etc)
 	/*  arg1 , arg2  = case
 		integer, integer = 0
 		integer, synonym = 1

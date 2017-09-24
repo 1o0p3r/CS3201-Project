@@ -39,6 +39,7 @@ private:
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(string selectEntity);
 	void solveSTClause();
+	
 	void insertSTResult(vector<vector<string>> stResult);
 	
 	void insertArg1Arg2CommonSynTable(vector<vector<string>> stResult);
@@ -54,6 +55,12 @@ private:
 	void insertNoCommonSynToTable(vector<vector<string>> stResult, 
 			int tableIndex, bool hasArg2);
 	
+	void solveUses(QueryElement suchThatClause);
+	void solveUsesProc(QueryElement suchThatClause);
+	void solveUsesStmt(QueryElement suchThatClause);
+	
+	void validateUses(string arg1, string arg2, int scenario);
+	vector<vector<string>> toAddSynVect(string arg1, string arg2, int scenario);
 
 	vector<vector<string>> solveParent(QueryElement suchThatClause);
 	void isParent(string arg1, string arg2);
