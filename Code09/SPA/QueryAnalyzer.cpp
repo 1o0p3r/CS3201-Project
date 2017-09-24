@@ -1,0 +1,764 @@
+#include "QueryAnalyzer.h"
+
+enum selectValue
+{
+	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
+	prog_lineSelect
+};
+
+enum suchThatValue
+{
+	undefinedSuchThat, modifies, uses, parent, parentStar, follows,
+	followsStar
+};
+
+enum parentArgCase
+{
+	intInt, intSyn, intWild, synInt, synSyn, synWild, 
+	wildInt, wildSyn, wildWild
+};
+
+enum parentSynType
+{
+	undefinedType, stmt, _while, _if, prog_line
+};
+
+enum mergeCase
+{
+	arg1Found, bothSynFound, noSynFound, arg2Found
+};
+
+static std::map<std::string, selectValue> mapSelectValues;
+static map<string, suchThatValue> mapSuchThatValues;
+static map<string, parentSynType> mapParentSynTypeValues;
+void QueryAnalyzer::initSelectMap()
+{ //to check with pql whether QS uses these strings in the entity as defined here.
+	mapSelectValues["stmt"] = stmtSelect;
+	mapSelectValues["assign"] = assignSelect;
+	mapSelectValues["while"] =  whileSelect;
+	mapSelectValues["variable"] = variableSelect;
+	mapSelectValues["constant"] = constantSelect;
+	mapSelectValues["prog_line"] = prog_lineSelect;
+}
+
+void QueryAnalyzer::initSuchThatMap()
+{// to check with pl whether QS uses these strings (i.e inside the square bracket) in the entity as defined here.
+	mapSuchThatValues["Modifies"] = modifies;
+	mapSuchThatValues["Uses"] = uses;
+	mapSuchThatValues["Parent"] = parent;
+	mapSuchThatValues["Parent*"] = parentStar;
+	mapSuchThatValues["Follows"] = follows;
+	mapSuchThatValues["Follows*"] = followsStar;
+
+}
+
+void QueryAnalyzer::initParentSynTypeMap() {
+	mapParentSynTypeValues["stmt"] = stmt;
+	mapParentSynTypeValues["while"] = _while;
+	mapParentSynTypeValues["if"] = _if;
+	mapParentSynTypeValues["prog_line"] = prog_line;
+}
+
+const string WILDCARD = "wildcard";
+const int ARGONE = 0;
+const int ARGTWO = 1;
+const int TABLEPOS = 0;
+const int SYNPOS = 1;
+const int VECINTERSECTION = 0;
+const int TTMINDEX = 1;
+const int STRINDEX = 2;
+const int SAMETABLE = 0;
+const int TWO_DISJOINT_TABLE = 1;
+
+QueryAnalyzer::QueryAnalyzer() {
+	initSelectMap();
+	initSuchThatMap();
+	initParentSynTypeMap();
+}
+
+void QueryAnalyzer::setPKB(PKB pkb) {
+	pkbReadOnly = pkb;
+}
+
+void QueryAnalyzer::setQS(QueryStatement qs){
+	qsReadOnly = qs;
+}
+
+vector<string> QueryAnalyzer::runQueryEval() {
+	vector<string> result;
+	synTableMap = unordered_map<string, tuple<int, int>>();
+	hasSTClause = true;
+	hasPatternClause = true;
+	findQueryElements();
+	solveSTClause();
+	result = analyzeClauseResults();
+	return result;
+}
+
+
+
+void QueryAnalyzer::findQueryElements() {
+	selectElement = qsReadOnly.getSelectQueryElement();
+	stElements = qsReadOnly.getSuchThatQueryElement(); 
+	patternElements = qsReadOnly.getPatternQueryElement();
+}
+
+vector<string> QueryAnalyzer::analyzeClauseResults() {
+	vector<string> answer;
+	string selectSyn = selectElement.getSelectSynonym();
+	auto search = synTableMap.find(selectSyn);
+	if (search != synTableMap.end()) {
+		answer = mergedQueryTable.at(get<ARGONE>(search->second))
+				.at(get<ARGTWO>(search->second));
+	} else {
+		answer = analyzeSelect(selectElement.getSelectEntity());
+	}
+	return answer;
+}
+
+vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
+	vector<int> selectResultInt;
+	vector<string> answer;
+
+	switch (mapSelectValues[selectElement.getSelectEntity()]) {
+	case stmtSelect: //stmt
+		selectResultInt = pkbReadOnly.getAllStmt();
+		break;
+	case assignSelect: //assign
+		selectResultInt = pkbReadOnly.getAssign();
+		break;
+
+	case whileSelect: //while
+		selectResultInt = pkbReadOnly.getWhile();
+		break;
+
+	case variableSelect: //variable
+		answer = pkbReadOnly.getAllVariables();
+		break;
+
+	case constantSelect: //constant
+		answer = pkbReadOnly.getAllConstants();
+		break;
+
+	case prog_lineSelect: //prog_line , not in use atm
+		break;
+	}
+	if (!selectResultInt.empty())
+		for (int i : selectResultInt)
+			answer.push_back(to_string(selectResultInt.at(i)));
+	return answer;
+}
+
+
+void QueryAnalyzer::solveSTClause() {
+	string stClauseType;
+	vector<vector<string>> stResult;
+	int evaluateSTRelation;
+	for (QueryElement stClause : stElements) {
+		stClauseType = stClause.getSuchThatRel();
+		evaluateSTRelation = mapSuchThatValues[stClauseType];
+		switch (evaluateSTRelation) {
+			case modifies:
+				break;
+			case uses:
+				solveUses(stClause);
+				break;
+			case parent: 
+				stResult = solveParent(stClause);
+				if(!stResult.empty())
+					insertSTResult(stResult);
+				break;
+			case parentStar:
+				break;
+			case follows:
+				break;
+			case followsStar:
+				break;
+		}
+	}
+}
+
+void QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
+	/*		  arg1, arg2
+	 *case 0: hasSyn, noSyn -> arg2 present
+	 *case 1: hasSyn, hasSyn 
+	 *case 2: noSyn, noSyn
+	 *case 3: noSyn, hasSyn
+	 * 
+	 */
+	string arg1;
+	string arg2;
+	int tableIndex;
+	int scenario = 0;
+	bool hasArg2 = false;
+	if (stResult.size() > 1)
+		hasArg2 = true;
+	if (synTableMap.find(stResult[ARGONE].back()) == synTableMap.end()) { //element not found
+		scenario += 2;
+	}
+	if(hasArg2)
+		if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
+			scenario += 1;
+	}
+	tableIndex = mergedQueryTable.size();
+	switch (scenario) {
+		case arg1Found:
+			insertArg1CommonSynTable(stResult, hasArg2);
+			break;
+		case bothSynFound:
+			insertArg1Arg2CommonSynTable(stResult);
+			break;
+		case noSynFound:
+			insertNoCommonSynToTable(stResult, tableIndex, hasArg2);
+			break;
+		case arg2Found:
+			insertArg2CommonSynTable(stResult, hasArg2);
+			break;
+	}	 
+}
+
+void QueryAnalyzer::insertArg1Arg2CommonSynTable(vector<vector<string>> stResult) {
+	int scenario;
+	string arg1;
+	string arg2;
+	arg1 = stResult[ARGONE].back();
+	arg2 = stResult[ARGTWO].back();
+	auto searchSynLocation1 = synTableMap.find(arg1);
+	auto searchSynLocation2 = synTableMap.find(arg2);
+	tuple<int, int> tableLocation1 = searchSynLocation1->second;
+	tuple<int, int> tableLocation2 = searchSynLocation2->second;
+	vector<vector<string>> tableToMerge1 = mergedQueryTable.at(get<ARGONE>(tableLocation1));
+	vector<vector<string>> tableToMerge2 = mergedQueryTable.at(get<ARGONE>(tableLocation2));
+	//case arg1arg2 from same table, arg1arg2 not from same table
+	scenario = (get<ARGONE>(tableLocation1) == get<ARGONE>(tableLocation2)) ? 
+			SAMETABLE : TWO_DISJOINT_TABLE;
+	switch (scenario) {
+		case SAMETABLE:
+			merge2DVectorTwoSyno(tableToMerge1, stResult, tableLocation1, tableLocation2);
+			break;
+		case TWO_DISJOINT_TABLE:
+			merge2DVectorDisjointTable(tableToMerge1, tableToMerge2, stResult, 
+				tableLocation1, tableLocation2);
+			break;
+	}
+}
+
+void QueryAnalyzer::merge2DVectorTwoSyno(vector<vector<string>> tableToMerge1, 
+		vector<vector<string>> stResult, tuple<int, int> tableLocation1, tuple<int, int> tableLocation2) {
+
+	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
+	vector<vector<string>> mergedResult;
+	vector<vector<string>> mergedBothResult;
+	//remove non-intersect elements in table based on arg1
+	vectWithIndexLookup = stringVectIntersect(tableToMerge1.at(get<ARGTWO>(tableLocation1)),
+			stResult.at(ARGONE));
+	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
+	for (auto synValues : tableToMerge1) {
+		vector<string> synCommonIndex;
+		for (auto chosenIndex : commonResultIndexTTM) {
+			synCommonIndex.push_back(synValues.at(chosenIndex));
+		}
+		mergedResult.push_back(synCommonIndex);
+	}
+
+	vectWithIndexLookup = stringVectIntersect(mergedResult.at(get<ARGTWO>(tableLocation2)), 
+			stResult.at(ARGTWO));
+	commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
+	for (auto synValues : mergedResult) {
+		vector<string> synCommonIndex;
+		for (auto chosenIndex : commonResultIndexTTM) {
+			synCommonIndex.push_back(synValues.at(chosenIndex));
+		}
+		mergedBothResult.push_back(synCommonIndex);
+	}
+	//re-map synonym table
+	for (int i = 0; i < mergedBothResult.size(); i++) {
+		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
+	}
+	//remove synonym located at end of each vector
+	for (vector<string> toRemoveElement : mergedBothResult) {
+		toRemoveElement.pop_back();
+	}
+
+	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
+}
+
+void QueryAnalyzer::merge2DVectorDisjointTable(vector<vector<string>> tableToMerge1, 
+		vector<vector<string>> tableToMerge2, vector<vector<string>> stResult, 
+		tuple<int, int> tableLocation1, tuple<int, int> tableLocation2) {
+	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
+	vector<vector<string>> mergedResult;
+	vector<string> synCommonIndex;
+	vector<vector<string>> mergedBothResult;
+	vectWithIndexLookup = stringVectIntersect(tableToMerge1.at(get<ARGTWO>(tableLocation1)),
+		stResult.at(ARGONE));
+	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
+	vector<int> stResultIndex = get<STRINDEX>(vectWithIndexLookup);
+	for (auto synValues : tableToMerge1) {
+		synCommonIndex = vector<string>();
+		for (auto chosenIndex : commonResultIndexTTM) {
+			synCommonIndex.push_back(synValues.at(chosenIndex));
+		}
+		mergedResult.push_back(synCommonIndex);
+	}
+	synCommonIndex = vector<string>();
+	for (auto chosenIndex : stResultIndex) {
+		synCommonIndex.push_back(stResult.at(ARGTWO).at(chosenIndex));
+	}
+	mergedResult.push_back(synCommonIndex);
+	
+	//begin merge on 2nd synonym
+	vectWithIndexLookup = stringVectIntersect(tableToMerge2.at(get<ARGTWO>(tableLocation2)),
+		mergedResult.back());
+	commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
+	stResultIndex = get<STRINDEX>(vectWithIndexLookup);
+	for (auto synValues : tableToMerge2) {
+		synCommonIndex = vector<string>();
+		for (auto chosenIndex : commonResultIndexTTM) {
+			synCommonIndex.push_back(synValues.at(chosenIndex));
+		}
+		mergedBothResult.push_back(synCommonIndex);
+	}
+	for (auto synValues : mergedResult) {
+		if (synValues != mergedResult.back()) {
+			synCommonIndex = vector<string>();
+			for (auto chosenIndex : stResultIndex) {
+				synCommonIndex.push_back(stResult.at(ARGTWO).at(chosenIndex));
+			}
+			mergedBothResult.push_back(synCommonIndex);
+		}
+	}
+	//re-map synonym table
+	for (int i = 0; i < mergedBothResult.size(); i++) {
+		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
+	}
+	//remove synonym located at end of each vector
+	for (vector<string> toRemoveElement : mergedBothResult) {
+		toRemoveElement.pop_back();
+	}
+
+	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
+	mergedQueryTable.erase(mergedQueryTable.begin() + get<ARGONE>(tableLocation2));
+}
+
+void QueryAnalyzer::insertArg1CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
+	//arg1 common, arg2 not common implies intersect on arg1
+	string arg1;
+	arg1 = stResult[ARGONE].back();
+	auto searchSynLocation = synTableMap.find(arg1);
+	tuple<int,int> tableLocation = searchSynLocation->second;
+	vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
+	merge2DVector(tableToMerge, stResult, tableLocation, ARGONE, hasArg2);
+}
+
+void QueryAnalyzer::insertArg2CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
+	string arg2; //intersect on arg2
+	arg2 = stResult[ARGTWO].back();
+	auto searchSynLocation = synTableMap.find(arg2);
+	tuple<int, int> tableLocation = searchSynLocation->second;
+	vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
+	merge2DVector(tableToMerge, stResult, tableLocation, ARGTWO, hasArg2); 
+}
+
+void QueryAnalyzer::merge2DVector(vector<vector<string>> tableToMerge, vector<vector<string>> stResult, 
+	 tuple<int,int> tableLocation, int option, bool hasArg2) {
+	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
+	vector<vector<string>> mergedResult;
+	vector<string> synCommonIndex;
+	vectWithIndexLookup = stringVectIntersect(tableToMerge.at(get<ARGTWO>(tableLocation)), 
+			stResult.at(option));
+	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
+	vector<int> stResultIndex = get<STRINDEX>(vectWithIndexLookup);
+	for (auto synValues : tableToMerge) {
+		synCommonIndex = vector<string>();
+		for (auto chosenIndex : commonResultIndexTTM) {
+			synCommonIndex.push_back(synValues.at(chosenIndex));
+		}		
+		mergedResult.push_back(synCommonIndex);
+	}
+	synCommonIndex = vector<string>();
+	int otherArg = (option == ARGONE) ? ARGTWO : ARGONE;
+	if (hasArg2) {
+		for (auto chosenIndex : stResultIndex) {
+			synCommonIndex.push_back(stResult.at(otherArg).at(chosenIndex));
+		}
+		mergedResult.push_back(synCommonIndex);
+	}
+	
+	//re-map synonym table
+	for (int i = 0; i < mergedResult.size();i++) {
+		synTableMap[mergedResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation),i);
+	}
+	//remove synonym located at end of each vector
+	for (vector<string> toRemoveElement : mergedResult) {
+		toRemoveElement.pop_back();
+	}
+	
+	mergedQueryTable.at(get<ARGONE>(tableLocation)) = mergedResult;
+}
+
+tuple<vector<string>,vector<int>,vector<int>> QueryAnalyzer::
+		stringVectIntersect(vector<string> v1, vector<string> v2) {
+	vector<string> v3;
+	vector<string> preSortV1 = v1; 
+	vector<string> preSortV2 = v2;
+	unordered_map<string, int> mapValueV1;
+	unordered_map<string, int> mapValueV2;
+	vector<int> commonV1Index;
+	vector<int> commonV2Index;
+	//map value of vector to index for lookup during merging
+	for (int i = 0; i<preSortV1.size(); i++) { 
+		mapValueV1.insert({ preSortV1.at(i),i });
+	}
+	for (int j = 0; j < preSortV2.size(); j++) {
+		mapValueV2.insert({ preSortV2.at(j),j });
+	}
+
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+
+	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
+	for (string commonValue : v3) {
+		commonV1Index.push_back(mapValueV1.find(commonValue)->second);
+		commonV2Index.push_back(mapValueV2.find(commonValue)->second);
+	}
+
+	return make_tuple(v3,commonV1Index,commonV2Index);
+}
+
+void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult, 
+		int tableIndex, bool hasArg2) {
+	string arg1;
+	string arg2;
+	arg1 = stResult[ARGONE].back();
+	stResult[ARGONE].pop_back();
+	synTableMap.insert({ arg1, make_tuple(tableIndex, ARGONE) });
+	if (hasArg2) {
+		arg2 = stResult[ARGTWO].back();
+		stResult[ARGTWO].pop_back();
+		synTableMap.insert({ arg2, make_tuple(tableIndex, ARGTWO) });
+	}
+	mergedQueryTable.push_back(stResult);
+}
+void QueryAnalyzer::solveUses(QueryElement suchThatClause) {
+	/* arg1, arg2  = case
+	 * stmtVersion = syn, wildcard, integer 9 cases, syn , literalstring, wilcard
+	 * procVersion = syn, wildcard, literalString, integer 12 cases	
+	 */
+	string arg1Type = suchThatClause.getSuchThatArg1Type();
+	if (arg1Type == "procedure" || arg1Type == "call")
+		solveUsesProc(suchThatClause);
+	else
+		solveUsesStmt(suchThatClause);
+}
+void QueryAnalyzer::solveUsesProc(QueryElement suchThatClause) {
+	//TODO: implement in iteration ?
+}
+void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
+	/*  arg1 , arg2  = case
+	integer, literalstring = 0
+	integer, synonym = 1
+	integer, wildcard = 2
+	synonym, literalstring = 3
+	synonym, synonym = 4
+	synonym, wildcard = 5
+	wildcard, literalstring = 6
+	wildcard, synonym = 7
+	wildcard, wildcard = 8
+	*/
+	string arg1Type = suchThatClause.getSuchThatArg1Type();
+	string arg2Type = suchThatClause.getSuchThatArg2Type();
+
+	int scenario;
+	if (arg1Type == "synonym") { scenario += 3; }
+	else if (arg1Type == WILDCARD) { scenario += 6; }
+	if (arg2Type == "synonym") { scenario += 1; }
+	else if (arg2Type == WILDCARD) { scenario += 2; }
+
+}
+vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
+	int scenario;
+	bool hasParent;
+	string arg1 = typeParent.getSuchThatArg1();
+	string arg1Type = typeParent.getSuchThatArg1Type();
+	string arg2 = typeParent.getSuchThatArg2();
+	string arg2Type = typeParent.getSuchThatArg2Type();	
+	vector<string> parentSubResult;
+	tuple<vector<string>,vector<string>> parentSubResultTuple;
+	vector<vector<string>> parentResult;
+	
+	/*  arg1 , arg2  = case
+		integer, integer = 0
+		integer, synonym = 1
+		integer, wildcard = 2
+		synonym, integer = 3
+		synonym, synonym = 4
+		synonym, wildcard = 5
+		wildcard, integer = 6
+		wildcard, synonym = 7
+		wildcard, wildcard = 8
+	*/
+	scenario = 0; //base case
+	if (arg1Type == "synonym") { scenario += 3; }
+	else if (arg1Type == WILDCARD) { scenario += 6; }
+	if (arg2Type == "synonym") { scenario += 1; }
+	else if (arg2Type == WILDCARD) { scenario += 2; }
+
+	switch (scenario) {
+	case intInt:
+		isParent(arg1, arg2);
+		break;
+	case intSyn:
+		parentSubResult = evalParentIntSyn(arg1, arg2);
+		if(!parentSubResult.empty())
+			parentResult.push_back(parentSubResult);
+		break;
+	case intWild:
+		hasChildOfArg1(arg1);
+		break;
+	case synInt:
+		parentSubResult = hasParentOfArg2(arg2); 
+		if (!parentSubResult.empty())
+			parentResult.push_back(parentSubResult);
+		break;
+	case synSyn:
+		parentSubResultTuple = evalParentSynSyn(arg1, arg2, arg1Type, arg2Type); 
+		if (!((get<ARGONE>(parentSubResultTuple)).empty()) && !((get<ARGTWO>(parentSubResultTuple)).empty())) {
+			parentResult.push_back(get<ARGONE>(parentSubResultTuple));
+			parentResult.push_back(get<ARGTWO>(parentSubResultTuple));
+		}
+		break;
+	case synWild:
+		parentSubResult = evalParentSynWild(arg1, arg1Type);
+		if (!parentSubResult.empty())
+			parentResult.push_back(parentSubResult);
+		break;
+	case wildInt:
+		hasParentForArg2(arg2);
+		break;
+	case wildSyn:
+		parentSubResult = evalParentWildSyn(arg2, arg2Type);
+		if (!parentSubResult.empty())
+			parentResult.push_back(parentSubResult);
+		break;
+	case wildWild:
+		hasParentStmts();
+		break;
+	}
+	return parentResult;
+}
+
+void QueryAnalyzer::isParent(string arg1, string arg2) {
+	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+	//if arg1 is not a parent of arg2
+	if (!(find(childOfArg1.begin(), childOfArg1.end(), stoi(arg2)) != childOfArg1.end()))
+		hasSTClause = false;
+}
+
+vector<string> QueryAnalyzer::evalParentIntSyn(string arg1, string arg2) {
+	vector<string> parentIntSyn;
+	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+	if (!childOfArg1.empty()) {
+		for (int child : childOfArg1)
+			parentIntSyn.push_back(to_string(child));
+		parentIntSyn.push_back(arg2); //store the synonym at last index of the vector for identification
+	}
+	else {
+		hasSTClause = false;
+	}
+	return parentIntSyn;
+}
+
+void QueryAnalyzer::hasChildOfArg1(string arg1) {
+	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+	if (childOfArg1.empty())
+		hasSTClause = false;
+}
+
+vector<string> QueryAnalyzer::hasParentOfArg2(string arg2) {
+	vector<string> parentSynInt;
+	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
+	if (!parentOfArg2.empty()) {
+		for (int parent : parentOfArg2)
+			parentSynInt.push_back(to_string(parent));
+		parentSynInt.push_back(arg2); //store the synonym at last index of the vector for identification
+	}
+	else {
+		hasSTClause = false;
+	}
+	return parentSynInt;
+}
+
+tuple<vector<string>, vector<string>> QueryAnalyzer::evalParentSynSyn(string arg1, string arg2,
+		string arg1Type, string arg2Type) {
+	//possible type of synonym = stmt, while, if , prog_line
+	int arg1Entity = mapParentSynTypeValues[arg1Type];
+	int arg2Entity = mapParentSynTypeValues[arg2Type];
+	vector<int> allWhiles = pkbReadOnly.getWhile();
+	vector<int> allIfs = pkbReadOnly.getIf();
+	vector<int> allStmt;
+	vector<tuple<string,string>> result;
+	vector<int> arg1Candidates;
+	vector<int> arg2Candidates;
+	vector<string> arg1Result;
+	vector<string> arg2Result;
+	
+	//setting values for allstmt
+	allStmt.reserve(allWhiles.size() + allIfs.size());
+	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
+	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
+	
+	
+	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity);
+	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity);
+	result = evalParStmt(arg1Candidates, arg2Candidates); //vector<string,string>
+
+	if (!result.empty()) {
+		for (tuple<string, string> candidates : result) {
+			arg1Result.push_back(get<ARGONE>(candidates));
+			arg2Result.push_back(get<ARGTWO>(candidates));
+		}
+		arg1Result.push_back(arg1); //put synonym identifier at the back of vector
+		arg2Result.push_back(arg2);
+		return make_tuple(arg1Result, arg2Result);
+	}
+	else{
+		return tuple<vector<string>, vector<string>>();
+	}
+}
+
+vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candidates, vector<int> arg2Candidates) {
+	vector<int> childCandidates;
+	vector<int> parentCandidates;
+	vector<tuple<string, string>> evalArg1Results;
+	vector<tuple<string, string>> evalArg2Results;
+	vector<tuple<string, string>> evalResults;
+	for (int candidate : arg1Candidates) {
+		childCandidates = pkbReadOnly.getChild(candidate);
+		if (!childCandidates.empty()) {
+			for (int parentOfCandidates : childCandidates)
+				evalArg1Results.push_back(make_tuple(to_string(parentOfCandidates), to_string(candidate)));		
+		}
+	}
+	
+	for (int candidate : arg2Candidates) {
+		parentCandidates = pkbReadOnly.getParent(candidate);
+		if (!childCandidates.empty()) {
+			for (int childOfCandidates : parentCandidates)
+				evalArg2Results.push_back(make_tuple(to_string(childOfCandidates), to_string(candidate)));
+		}
+	}
+	evalResults = intersectionTupleInt(evalArg1Results, evalArg2Results);
+	if (evalResults.empty())
+		hasSTClause = false;
+	return evalResults;
+}
+
+vector<int> QueryAnalyzer::setCandidateValues(vector<int> allStmt, vector<int> allWhile, 
+		vector<int> allIf, int arg1Entity) {
+	switch (arg1Entity){
+		case stmt:
+			return allStmt;
+		case _while:
+			return allWhile;
+		case _if:
+			return allIf;
+	}
+	return vector<int>();
+}
+
+//careful , to review pointer &
+vector<tuple<string, string>> QueryAnalyzer::intersectionTupleInt(vector<tuple<string,string>> &arg1Candidates,
+	vector<tuple<string,string>> &arg2Candidates) {
+	vector<tuple<string,string>> chosenCandidates;
+	sort(arg1Candidates.begin(), arg1Candidates.end());
+	sort(arg2Candidates.begin(), arg2Candidates.end());
+	set_intersection(arg1Candidates.begin(), arg1Candidates.end(), arg2Candidates.begin(), 
+			arg2Candidates.end(), back_inserter(chosenCandidates));
+	
+	return chosenCandidates;
+}
+
+vector<string> QueryAnalyzer::evalParentSynWild(string arg1, string arg1Type)
+{
+	int arg1Entity = mapParentSynTypeValues[arg1Type];
+	vector<int> allWhiles = pkbReadOnly.getWhile();
+	vector<int> allIfs = pkbReadOnly.getIf();
+	vector<int> allStmt;
+	vector<int> arg1Candidates;
+	vector<string> result;
+
+	//setting values for allstmt
+	allStmt.reserve(allWhiles.size() + allIfs.size());
+	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
+	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
+
+	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity);
+	result = evalParArg1Stmt(arg1Candidates, arg1); 
+	return result;
+}
+
+vector<string> QueryAnalyzer::evalParArg1Stmt(vector<int> arg1Candidates, string arg1)
+{	vector<int> childCandidates;
+	vector<string> evalArg1Results;
+	for (int candidate : arg1Candidates) {
+		childCandidates = pkbReadOnly.getChild(candidate);
+		if (!childCandidates.empty()) {
+			evalArg1Results.push_back(to_string(candidate));
+		}
+	}
+	if (evalArg1Results.empty())
+		hasSTClause = false;
+	else
+		evalArg1Results.push_back(arg1); //add synonym as identifier at the back of vector
+	return evalArg1Results;
+}
+
+vector<string> QueryAnalyzer::evalParentWildSyn(string arg2, string arg2Type) {
+	int arg2Entity = mapParentSynTypeValues[arg2Type];
+	vector<int> allWhiles = pkbReadOnly.getWhile();
+	vector<int> allIfs = pkbReadOnly.getIf();
+	vector<int> allStmt;
+	vector<int> arg2Candidates;
+	vector<string> result;
+
+	//setting values for allstmt
+	allStmt.reserve(allWhiles.size() + allIfs.size());
+	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
+	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
+
+	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity);
+	result = evalParArg2Stmt(arg2Candidates, arg2);
+	return result;
+}
+
+vector<string> QueryAnalyzer::evalParArg2Stmt(vector<int> arg2Candidates, string arg2) {
+	vector<int> parentCandidates;
+	vector<string> evalArg2Results;
+	for (int candidate : arg2Candidates) {
+		parentCandidates = pkbReadOnly.getParent(candidate);
+		if (!parentCandidates.empty()) {
+			evalArg2Results.push_back(to_string(candidate));
+		}
+	}
+	if (evalArg2Results.empty())
+		hasSTClause = false;
+	else
+		evalArg2Results.push_back(arg2); //add synonym identifier at back of vector
+	return evalArg2Results;
+}
+
+void QueryAnalyzer::hasParentForArg2(string arg2) {
+	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
+	if (parentOfArg2.empty())
+		hasSTClause = false;
+
+}
+
+void QueryAnalyzer::hasParentStmts() {
+	vector<int> allWhiles = pkbReadOnly.getWhile();
+	vector<int> allIfs = pkbReadOnly.getIf();
+	if (allWhiles.empty() && allIfs.empty())
+		hasSTClause = false;
+}
+
