@@ -16,12 +16,12 @@ namespace UnitTesting
 			string rel;
 			string type;
 			int idx;
-
+		
 			rel = "Follows";
 			type = "stmt";
 			idx = 1;
 			Assert::IsTrue(relationshipTable.isValidArg(rel, type, idx));
-
+			
 			rel = "Follows*";
 			type = "stmt";
 			idx = 1;
@@ -31,12 +31,12 @@ namespace UnitTesting
 			type = "stmt";
 			idx = 1;
 			Assert::IsFalse(relationshipTable.isValidArg(rel, type, idx));
-	
+			
 			rel = "Follows*";
 			type = "stmtlist";
 			idx = 1;
 			Assert::IsFalse(relationshipTable.isValidArg(rel, type, idx));
-
+			
 			rel = "Uses";
 			type = "while";
 			idx = 1;
@@ -45,8 +45,8 @@ namespace UnitTesting
 			rel = "Uses";
 			type = "constant";
 			idx = 1;
-			Assert::IsTrue(relationshipTable.isValidArg(rel, type, idx));
-
+			Assert::IsFalse(relationshipTable.isValidArg(rel, type, idx));
+			
 			rel = "Uses";
 			type = "wildcard";
 			idx = 1;
@@ -66,6 +66,7 @@ namespace UnitTesting
 			type = "procedure";
 			idx = 1;
 			Assert::IsFalse(relationshipTable.isValidArg(rel, type, idx));
+			
 		}
 	};
 }

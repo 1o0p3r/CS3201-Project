@@ -37,6 +37,7 @@ private:
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, string arg1Ent, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	
@@ -80,6 +81,5 @@ public:
 	string trimPatternArgs(string str);
 	
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
-
 	QueryStatement getQueryStatement();
 };

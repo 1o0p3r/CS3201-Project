@@ -59,6 +59,7 @@ const string INVALID_SYNONYM_QUERIED_ERROR = "Invalid synonym queried";
 const string INVALID_ARGUMENT_ERROR = "Invalid argument";
 const string NUMBER_ZERO_TO_NINE = "0123456789";
 const string OR = "|";
+const string EMPTY_STRING = "empty";
 
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
@@ -299,8 +300,17 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 			return false;
 		}
 		//The following are needed, dont remove, uses limjie's method
-		arg1 = Util::insertBrackets(arg1);
-		arg2 = Util::insertBrackets(arg2);
+		//Arg 1 can be either a synonym, wildcard or variable, i only insert brackets when it is a variable
+		/**
+		if (arg1Variable) {
+			arg1 = Util::insertBrackets(arg1);
+		}**/
+
+		//Arg2 can be a substring, exactstring or a wildcard
+		//Insert brackets only when arg2 is a substring or exact string
+		if(arg2Substring|| arg2Exact) {
+			arg2 = Util::insertBrackets(arg2);
+		}
 
 		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2Exact, arg2Wildcard);
 		return true;
@@ -381,6 +391,7 @@ void QueryValidator::addSelectQueryElement(string ent, string syn) {
 //The following function
 void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
 	
+	//Implies that arg1 is wildcard i.e. _
 	if (arg1Wildcard) {
 		if (arg2Substring) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, SUBSTRING_STRING));
@@ -557,6 +568,7 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 				arg2_UNDER = false;
 			}
 		}
+		//Implies arg 2 is sth like "x"
 		else if (isVariable(arg2)) {
 			arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
 			if (arg2Valid) {
@@ -585,28 +597,32 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 }
 
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2) {
+	
+	//Implies that arg1 is a synonym
 	if (arg1_NUM == false && arg1_UNDER == false) {
-		//If a match is found create a query element with following parameters (arg1, arg1Type, arg2, arg2Type, rel)
+		//Implies that arg2 is also a synonym
 		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(arg1, type1, arg2, type2, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, type1, arg2, SYNONYM_STRING, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies that arg1 is synonym, arg2 is a wildcard
 		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == false) {
 			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
-			QueryElement queryElement = QueryElement(arg1, type1, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, type1, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies that arg1 is synonym, arg 2 is an integer i.e. number
 		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(arg1, type1, arg2, NUMBER_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, type1, arg2, NUMBER_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		
+		//Implies that arg1 is synonym, arg2 is a variable
 		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
-	//		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, type1, arg2, VARIABLE_STRING, relType);
+			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, type1, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
@@ -614,25 +630,30 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return false;
 		}
 	}
+	//Implies that arg1 is a num
 	else if (arg1_NUM == true && arg1_UNDER == false) {
+		//Implies that arg1 is a number and arg2 is a synonym
 		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, type2, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies that arg1 is a number and arg2 is a wildcard i.e underscore
 		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies that arg1 is a number and arg2 is a number
 		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, NUMBER_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies taht arg1 is a number and arg2 is a variable type i.e. "IDENT"
 		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
-//			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, arg2, VARIABLE_STRING, relType);
+			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
@@ -640,25 +661,30 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return false;
 		}
 	}
+	//Implies that arg1 is a wildcard i.e. underscore
 	else if (arg1_NUM == false && arg1_UNDER == true) {
-		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, type2, relType);
+		//Implies taht arg1 is a wildcard and arg 2 is a synonym
+		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING , arg2, SYNONYM_STRING, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == true) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, relType);
+		//Implies that arg1 is a wild card and arg 2 is a wildcard
+		else if (arg2_NUM == false && arg2_UNDER == true && arg2_VARIABLE == false) {
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
-		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == true) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, NUMBER_STRING, relType);
+		//Implies that arg1 is a wildcard and arg2 is a number i.e. integer
+		else if (arg2_NUM == true && arg2_UNDER == false && arg2_VARIABLE == false) {
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
+		//Implies that arg1 is a wildcard and arg2 is a variable i.e. "IDENT"
 		else if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == true) {
-	//		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, arg2, VARIABLE_STRING, relType);
+			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}

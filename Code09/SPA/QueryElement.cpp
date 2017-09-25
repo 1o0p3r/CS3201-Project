@@ -15,12 +15,14 @@ QueryElement::QueryElement(string entity, string synonym)
 }
 
 //Such that
-QueryElement::QueryElement(string arg1, string arg1Type, string arg2, string arg2Type, string rel)
+QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel)
 {
 	argumentOneSuchThat = arg1;
 	argumentOneTypeSuchThat = arg1Type;
+	argumentOneEntitySuchThat = arg1Entity;
 	argumentTwoSuchThat = arg2;
 	argumentTwoTypeSuchThat = arg2Type;
+	argumentTwoEntitySuchThat = arg2Entity;
 	relSuchThatType = rel;
 
 }
@@ -61,9 +63,19 @@ string QueryElement::getSuchThatArg1Type()
 	return argumentOneTypeSuchThat;
 }
 
+string QueryElement::getSuchThatArg1Entity()
+{
+	return argumentOneEntitySuchThat;
+}
+
 string QueryElement::getSuchThatArg2Type()
 {
 	return argumentTwoTypeSuchThat;
+}
+
+string QueryElement::getSuchThatArg2Entity()
+{
+	return argumentTwoEntitySuchThat;
 }
 
 string QueryElement::getPatternArg1()
@@ -80,16 +92,19 @@ string QueryElement::getPatternEntity()
 {
 	return patternEnt;
 }
-string QueryElement::getPatternArg1Type() {
+string QueryElement::getPatternArg1Type() 
+{
 	return patternArg1Type;
 }
-string QueryElement::getPatternArg2Type() {
+string QueryElement::getPatternArg2Type() 
+{
 	return patternArg2Type;
 }
 string QueryElement::getPatternSynonym()
 {
 	return patternSyn;
 }
-string QueryElement :: getSuchThatRel() {
+string QueryElement :: getSuchThatRel() 
+{
 	return relSuchThatType;
 }
