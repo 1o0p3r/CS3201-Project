@@ -70,10 +70,10 @@ public:
 	vector<vector<string>> toAddUsesSynVect(string arg1, string arg2, int scenario);
 
 	vector<vector<string>> solveParent(QueryElement suchThatClause);
-	void isParent(string arg1, string arg2);
+	bool isParent(string arg1, string arg2);
 	vector<string> evalParentIntSyn(string arg1, string arg2);
-	void hasChildOfArg1(string arg1);
-	vector<string> hasParentOfArg2(string arg2);
+	bool hasChildOfArg1(string arg1);
+	vector<string> hasParentOfArg2(string arg1, string arg2);
 	tuple<vector<string>, vector<string>> evalParentSynSyn(string arg1, string arg2, string arg1Type, 
 			string arg2Type, string arg1EntityType, string arg2EntityType);
 	vector<tuple<string,string>> evalParStmt(vector<int> arg1Candidates, vector<int> arg2Candidates);
@@ -85,7 +85,7 @@ public:
 	vector<string> evalParArg1Stmt(vector<int> arg1Candidates, string arg1);
 	vector<string> evalParentWildSyn(string arg2, string arg2Type);
 	vector<string> evalParArg2Stmt(vector<int> arg2Candidates, string arg2);
-	void hasParentForArg2(string arg2);
-	void hasParentStmts();
+	bool hasParentForArg2(string arg2);
+	bool hasParentStmts();
 };
 

@@ -108,6 +108,10 @@ QueryAnalyzer::QueryAnalyzer() {
 	initParentSynTypeMap();
 	initPatternValueMap();
 	initMapPatternExpType();
+	vector<string> result;
+	synTableMap = unordered_map<string, tuple<int, int>>();
+	hasSTClause = true;
+	hasPatternClause = true;
 }
 
 void QueryAnalyzer::setPKB(PKB pkb) {
@@ -822,7 +826,7 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 		hasChildOfArg1(arg1);
 		break;
 	case synInt:
-		parentSubResult = hasParentOfArg2(arg2); 
+		parentSubResult = hasParentOfArg2(arg1,arg2); 
 		if (!parentSubResult.empty())
 			parentResult.push_back(parentSubResult);
 		break;
@@ -834,7 +838,7 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 		}
 		break;
 	case synWild:
-		parentSubResult = evalParentSynWild(arg1, arg1Type);
+		parentSubResult = evalParentSynWild(arg1, arg1Entity);
 		if (!parentSubResult.empty())
 			parentResult.push_back(parentSubResult);
 		break;
@@ -842,7 +846,7 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 		hasParentForArg2(arg2);
 		break;
 	case wildSyn:
-		parentSubResult = evalParentWildSyn(arg2, arg2Type);
+		parentSubResult = evalParentWildSyn(arg2, arg2Entity);
 		if (!parentSubResult.empty())
 			parentResult.push_back(parentSubResult);
 		break;
@@ -853,11 +857,12 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 	return parentResult;
 }
 
-void QueryAnalyzer::isParent(string arg1, string arg2) {
+bool QueryAnalyzer::isParent(string arg1, string arg2) {
 	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
 	//if arg1 is not a parent of arg2
 	if (!(find(childOfArg1.begin(), childOfArg1.end(), stoi(arg2)) != childOfArg1.end()))
 		hasSTClause = false;
+	return hasSTClause;
 }
 
 vector<string> QueryAnalyzer::evalParentIntSyn(string arg1, string arg2) {
@@ -874,19 +879,20 @@ vector<string> QueryAnalyzer::evalParentIntSyn(string arg1, string arg2) {
 	return parentIntSyn;
 }
 
-void QueryAnalyzer::hasChildOfArg1(string arg1) {
+bool QueryAnalyzer::hasChildOfArg1(string arg1) {
 	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
 	if (childOfArg1.empty())
 		hasSTClause = false;
+	return hasSTClause;
 }
 
-vector<string> QueryAnalyzer::hasParentOfArg2(string arg2) {
+vector<string> QueryAnalyzer::hasParentOfArg2(string arg1,string arg2) {
 	vector<string> parentSynInt;
 	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
 	if (!parentOfArg2.empty()) {
 		for (int parent : parentOfArg2)
 			parentSynInt.push_back(to_string(parent));
-		parentSynInt.push_back(arg2); //store the synonym at last index of the vector for identification
+		parentSynInt.push_back(arg1); //store the synonym at last index of the vector for identification
 	}
 	else {
 		hasSTClause = false;
@@ -937,7 +943,8 @@ tuple<vector<string>, vector<string>> QueryAnalyzer::evalParentSynSyn(string arg
 	}
 }
 
-vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candidates, vector<int> arg2Candidates) {
+vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candidates, 
+		vector<int> arg2Candidates) {
 	vector<int> childCandidates;
 	vector<int> parentCandidates;
 	vector<tuple<string, string>> evalArg1Results;
@@ -946,16 +953,16 @@ vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candida
 	for (int candidate : arg1Candidates) {
 		childCandidates = pkbReadOnly.getChild(candidate);
 		if (!childCandidates.empty()) {
-			for (int parentOfCandidates : childCandidates)
-				evalArg1Results.push_back(make_tuple(to_string(candidate), to_string(parentOfCandidates)));
+			for (int children : childCandidates)
+				evalArg1Results.push_back(make_tuple(to_string(candidate), to_string(children)));
 		}
 	}
 	
 	for (int candidate : arg2Candidates) {
 		parentCandidates = pkbReadOnly.getParent(candidate);
 		if (!childCandidates.empty()) {
-			for (int childOfCandidates : parentCandidates)
-				evalArg2Results.push_back(make_tuple(to_string(childOfCandidates), to_string(candidate)));
+			for (int parents : parentCandidates)
+				evalArg2Results.push_back(make_tuple(to_string(parents), to_string(candidate)));
 		}
 	}
 	evalResults = intersectionTupleInt(evalArg1Results, evalArg2Results);
@@ -1072,17 +1079,18 @@ vector<string> QueryAnalyzer::evalParArg2Stmt(vector<int> arg2Candidates, string
 	return evalArg2Results;
 }
 
-void QueryAnalyzer::hasParentForArg2(string arg2) {
+bool QueryAnalyzer::hasParentForArg2(string arg2) {
 	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
 	if (parentOfArg2.empty())
 		hasSTClause = false;
-
+	return hasSTClause;
 }
 
-void QueryAnalyzer::hasParentStmts() {
+bool QueryAnalyzer::hasParentStmts() {
 	vector<int> allWhiles = pkbReadOnly.getWhile();
 	vector<int> allIfs = pkbReadOnly.getIf();
 	if (allWhiles.empty() && allIfs.empty())
 		hasSTClause = false;
+	return hasSTClause;
 }
 
