@@ -14,6 +14,7 @@ using namespace std;
 #define WHILE "while"
 #define IF "if"
 #define ASSIGN "assign"
+#define PROCEDURE "procedure"
 
 bool Parse(string fileName, PKB& pkb) {
 
@@ -24,7 +25,7 @@ bool Parse(string fileName, PKB& pkb) {
 	int lineCounter = 0;
 	bool isSameLevel = false;	//is same nesting level
 	bool isNewContainer = true;
-	int nestLevel = 1;
+	int nestLevel = 0;
 	int prevFollow;
 
 	getline(file, line);
@@ -34,27 +35,32 @@ bool Parse(string fileName, PKB& pkb) {
 	vector<int> Parent(1);
 
 	//detect procedure
-	if (firstLine[0] != "procedure" && firstLine[2] != "{" && !Util::isValidName(firstLine[1])) {
+	if (firstLine[0] != PROCEDURE && firstLine[2] != "{" && !Util::isValidName(firstLine[1])) {
 		return false;
 	} else {
 		procName = firstLine[1];
+		nestLevel++;
 	}
 	while (getline(file, line)) { //read line by line
 		lineCounter++;
 		vector<string> nextLine = Util::splitLine(Util::trim(line), ' ');
-		if (nextLine[0] == "else" && nextLine[1] == "{") { // line starts with else, no statement number
+		if (nextLine.size() == 0) {
 			lineCounter--;
+		} else if (nextLine[0] == "else" && nextLine[1] == "{") {
+			lineCounter--;
+			nestLevel++;
+			Parent.push_back(prevFollow);
 			isNewContainer = true;
-		} else if (nextLine.size() == 0) {
-			lineCounter--;
-		} else if (nextLine[0] == "procedure") {
-			if (!Util::isValidName(nextLine[1]) || nextLine[1] != "{" || nestLevel != 0) {
+		} else if (nextLine[0] == PROCEDURE) {
+			if (!Util::isValidName(nextLine[1]) || nextLine[2] != "{" || nestLevel != 0 || Parent.size() != 0) {
 				return false;
 			} else {
+				Parent.push_back(0);
 				procName = nextLine[1];
 				lineCounter--;
 				isNewContainer = true;
 				isSameLevel = false;
+				nestLevel++;
 			}
 		} else {
 			if (!isNewContainer) {
@@ -112,6 +118,15 @@ bool Parse(string fileName, PKB& pkb) {
 				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
+			} else if (nextLine[0] == "call") {
+				if (nextLine[1].back() != ';') {
+					return false;
+				} else {
+					//TODO call pkb.setcall()
+					string proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
+					isSameLevel = true;
+					isNewContainer = false;
+				}
 			} else {
 				return false;
 			}

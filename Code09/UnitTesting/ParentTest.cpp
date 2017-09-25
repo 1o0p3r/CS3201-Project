@@ -15,11 +15,9 @@ public:
 		Assert::AreEqual(1, parent.getParent(2)[0]);
 
 		parent.setParent(2, 3);
-		vector<int> actual;
-		actual.push_back(2);
-		actual.push_back(3);
-		Assert::AreEqual(actual[0], parent.getChildStar(1)[0]);
-		Assert::AreEqual(actual[1], parent.getChildStar(1)[1]);
+		vector<int> actual = {2, 3};
+		Assert::IsTrue(actual == parent.getChildStar(1));
+		Assert::IsTrue(parent.getParentStar(3) == vector<int>{2, 1});
 
 		parent.setParent(1, 4);
 		Assert::IsTrue(parent.getChild(1) == vector<int>{2, 4});
