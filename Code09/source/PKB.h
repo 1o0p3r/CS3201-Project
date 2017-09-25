@@ -41,13 +41,13 @@ public:
 	*/
 	vector<string> PKB::getAllProcedures();
 	/**
-	Sets s2 to follow s1. Meaning: s2 > s1.
+	Sets statementNum2 to follow statementNum1. Meaning: statementNum2 > statementNum1.
 
-	@param s1 the statment before
-	@param s2 the statement after
+	@param statementNum1 the statment before
+	@param statementNum2 the statement after
 	@returns void
 	*/
-	void setFollows(int s1, int s2);
+	void setFollows(int statementNum1, int statementNum2);
 
 	/**
 	Gets the statment number that follows the input statement.
@@ -82,13 +82,13 @@ public:
 	vector<int> getFollowedByStar(int statementNum);
 
 	/**
-	Sets s1 to be the parent of s2. Meaning: s2 > s1.
+	Sets statementNum1 to be the parent of statementNum2. Meaning: statementNum2 > statementNum1.
 
-	@param s1 the parent statment
-	@param s2 the child statement
+	@param statementNum1 the parent statment
+	@param statementNum2 the child statement
 	@returns void
 	*/
-	void setParent(int s1, int s2);
+	void setParent(int statementNum1, int statementNum2);
 
 	/**
 	Gets the statment number that is the parent of the input statement.
@@ -130,7 +130,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setModifies(int s, string varName);
+	void setModifies(int statementNum, string varName);
 
 	/**
 	Sets proc to modifies varName. Implicitly set varName to be modifiedBy proc.
@@ -147,7 +147,7 @@ public:
 	@param s statement number of the input statement 
 	@returns a vector containing strings the names of the variables the input statement modifies
 	*/
-	vector<string> getModifies(int s);
+	vector<string> getModifies(int statementNum);
 
 	/**
 	Gets the statements that modifies variable varName
@@ -182,7 +182,7 @@ public:
 	@param parentsOfstmt parent statements of input statements
 	@returns void
 	*/
-	void setUses(int s, string varName);
+	void setUses(int statementNum, string varName);
 
 	/**
 	Sets proc to uses varName. Implicitly set varName to be UsedBy proc.
@@ -200,7 +200,7 @@ public:
 	@param s statement number of the input statement
 	@returns a vector containing strings the names of the variables the input statement uses
 	*/
-	vector<string> getUses(int s);
+	vector<string> getUses(int statementNum);
 
 	/**
 	Gets the statements used by variable varName
@@ -261,7 +261,7 @@ public:
 	@param leftVariable the modified variable
 	@param rightExpression the expression on the right side of "="
 	*/
-	void addPattern(int StatementNum, string leftVariable, string rightExpression);
+	void addPattern(int statementNum, string leftVariable, string rightExpression);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable

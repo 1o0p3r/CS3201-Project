@@ -10,15 +10,15 @@ Use::Use() {
 	vector<set<int>> procUsedByTable;
 }
 
-void Use::setUses(int s, int varName, vector<int> parentStarOfStmt) {
+void Use::setUses(int statementNum, int varName, vector<int> parentStarOfStmt) {
 
-	if (s <= 0) {
+	if (statementNum <= 0) {
 
 		throw new invalid_argument("Statement Number must be more than 0.");
 	}
 
-	setUses(s, varName);
-	setUsedBy(varName, s);
+	setUses(statementNum, varName);
+	setUsedBy(varName, statementNum);
 
 	if (parentStarOfStmt.size() != 0)
 		for (int i = 0; i < parentStarOfStmt.size(); i++) {
@@ -26,31 +26,31 @@ void Use::setUses(int s, int varName, vector<int> parentStarOfStmt) {
 		}
 }
 
-void Use::setUses(int s, int varName) {
+void Use::setUses(int statementNum, int varName) {
 
-	if (s <= 0) {
+	if (statementNum <= 0) {
 
 		throw new invalid_argument("Statement Number must be more than 0.");
 	}
 
-	if (s >= usesTable.size())
-		usesTable.resize(s + 1);
+	if (statementNum >= usesTable.size())
+		usesTable.resize(statementNum + 1);
 
-	usesTable[s].insert(varName);
-	setUsedBy(varName, s);
+	usesTable[statementNum].insert(varName);
+	setUsedBy(varName, statementNum);
 }
 
-void Use::setUsedBy(int varName, int s) {
+void Use::setUsedBy(int varName, int statementNum) {
 
 	if (varName >= usedByTable.size()) {
 
 		usedByTable.resize(varName + 1);
-		usedByTable[varName].insert(s);
+		usedByTable[varName].insert(statementNum);
 	}
 
 	else {
 
-		usedByTable[varName].insert(s);
+		usedByTable[varName].insert(statementNum);
 	}
 }
 
@@ -80,10 +80,10 @@ void Use::setProcUsedBy(int varName, int procName) {
 	}
 }
 
-vector<int> Use::getUses(int s) {
-	if (usesTable.size() > s) {
+vector<int> Use::getUses(int statementNum) {
+	if (usesTable.size() > statementNum) {
 		vector<vector<int>> result(1);
-		result[0].insert(result[0].end(), usesTable[s].begin(), usesTable[s].end());
+		result[0].insert(result[0].end(), usesTable[statementNum].begin(), usesTable[statementNum].end());
 		return result[0];
 	} else {
 		return vector<int>();
