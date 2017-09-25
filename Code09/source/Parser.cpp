@@ -45,6 +45,17 @@ bool Parse(string fileName, PKB& pkb) {
 		if (nextLine[0] == "else" && nextLine[1] == "{") { // line starts with else, no statement number
 			lineCounter--;
 			isNewContainer = true;
+		} else if (nextLine.size() == 0) {
+			lineCounter--;
+		} else if (nextLine[0] == "procedure") {
+			if (!Util::isValidName(nextLine[1]) || nextLine[1] != "{" || nestLevel != 0) {
+				return false;
+			} else {
+				procName = nextLine[1];
+				lineCounter--;
+				isNewContainer = true;
+				isSameLevel = false;
+			}
 		} else {
 			if (!isNewContainer) {
 				if (isSameLevel) {
