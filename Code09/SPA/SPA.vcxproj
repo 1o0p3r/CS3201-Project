@@ -18,6 +18,7 @@
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="Parent.cpp" />
+    <ClCompile Include="QueryAnalyzer.cpp" />
     <ClCompile Include="QueryEval.cpp" />
     <ClCompile Include="Use.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -29,6 +30,7 @@
     <ClInclude Include="Follow.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
+    <ClInclude Include="QueryAnalyzer.h" />
     <ClInclude Include="QueryEval.h" />
     <ClInclude Include="Use.h" />
     <ClInclude Include="Util.h" />
