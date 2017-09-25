@@ -4,6 +4,7 @@
 #include "PKB.h"
 #include "QueryValidator.h"
 #include "QueryEval.h"
+#include "QueryAnalyzer.h"
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace IntegrationTesting {

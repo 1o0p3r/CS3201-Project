@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 using namespace std;
 
 class QueryAnalyzer
@@ -20,7 +21,7 @@ public:
 	void setPKB(PKB pkb);
 	void setQS(QueryStatement qs);
 	vector<string> runQueryEval();
-private:
+//private:
 	QueryStatement qsReadOnly;
 	QueryElement selectElement;
 	vector<QueryElement> stElements;

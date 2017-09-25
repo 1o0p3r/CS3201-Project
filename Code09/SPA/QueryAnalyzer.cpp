@@ -34,9 +34,27 @@ enum mergeCase
 	arg1Found, bothSynFound, noSynFound, arg2Found
 };
 
-static std::map<std::string, selectValue> mapSelectValues;
+enum patternValues
+{
+	assign_, while_, if_
+};
+
+enum patternExpType
+{
+	undefinedExpression, exact, substring, _wildcard_
+};
+static map<string, patternExpType> mapPatternExpType;
+static map<string, selectValue> mapSelectValues;
 static map<string, suchThatValue> mapSuchThatValues;
 static map<string, parentSynType> mapParentSynTypeValues;
+static map<string, patternValues> mapPatternValues;
+
+void QueryAnalyzer::initMapPatternExpType() {
+	mapPatternExpType["exact"] = exact;
+	mapPatternExpType["substring"] = substring;
+	mapPatternExpType["wildcard"] = _wildcard_;
+}
+
 void QueryAnalyzer::initSelectMap()
 { //to check with pql whether QS uses these strings in the entity as defined here.
 	mapSelectValues["stmt"] = stmtSelect;
@@ -65,6 +83,13 @@ void QueryAnalyzer::initParentSynTypeMap() {
 	mapParentSynTypeValues["prog_line"] = prog_line;
 }
 
+void QueryAnalyzer::initPatternValueMap() {
+	mapPatternValues["assign"] = assign_;
+	mapPatternValues["while"] = while_;
+	mapPatternValues["if"] = if_;
+}
+
+const string SYNONYM = "synonym";
 const string WILDCARD = "wildcard";
 const int ARGONE = 0;
 const int ARGTWO = 1;
@@ -80,6 +105,8 @@ QueryAnalyzer::QueryAnalyzer() {
 	initSelectMap();
 	initSuchThatMap();
 	initParentSynTypeMap();
+	initPatternValueMap();
+	initMapPatternExpType();
 }
 
 void QueryAnalyzer::setPKB(PKB pkb) {
@@ -183,6 +210,131 @@ void QueryAnalyzer::solveSTClause() {
 		}
 	}
 }
+
+void QueryAnalyzer::solvePatternClause() {
+	string patternClauseType;
+	vector<vector<string>> patternResult;
+	int evaluatePatternRelation;
+	for (QueryElement patternClause : patternElements) {
+		patternClauseType = patternClause.getPatternEntity();
+		evaluatePatternRelation = mapPatternValues[patternClauseType];
+		switch (evaluatePatternRelation) {
+			case assign_:
+				patternResult = solveAssignPattern(patternClause);
+				break;
+			case while_:
+				break;
+			case if_:
+				break;
+		}
+		if (!patternResult.empty())
+			insertSTResult(patternResult);
+	}
+}
+
+vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
+	string patSyn = patternClause.getPatternSynonym();
+	string arg1 = patternClause.getPatternArg1();
+	string arg1Type = patternClause.getPatternArg1Type();
+	string patExp = patternClause.getPatternArg2();
+	string patType = patternClause.getPatternArg2Type();
+	tuple<vector<string>, vector<string>> evaluatedPatResult;
+	vector<string> validatedPatResult;
+	vector<vector<string>> patternAssignResult;
+	if (arg1Type == SYNONYM) {
+		evaluatedPatResult = solvePatAssignSyn(arg1, patExp, patType, patSyn);
+		if (!get<ARGONE>(evaluatedPatResult).empty()) {
+			patternAssignResult.push_back(get<ARGONE>(evaluatedPatResult));
+			patternAssignResult.push_back(get<ARGTWO>(evaluatedPatResult));
+		}
+	} else {
+		validatedPatResult = validatedPatAssignSyn(arg1, patExp, patType, patSyn);
+		if (!validatedPatResult.empty())
+			patternAssignResult.push_back(validatedPatResult);
+	}
+	return patternAssignResult;
+}
+
+tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
+		string patExp, string patType, string patSyn) {
+	vector<tuple<int, string>> pkbPatResult;
+	bool containsPattern = false;
+	vector<string> entityVector;
+	vector<string> variableVector;
+	for (string candidates : pkbReadOnly.getAllVariables()) {
+		pkbPatResult = pkbReadOnly.getPattern(candidates);
+		for (tuple<int, string> evalPattExpression : pkbPatResult) {
+			switch (mapPatternExpType[patType]) {
+				case _wildcard_:
+					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+					variableVector.push_back(candidates);
+					containsPattern = true;
+				break;
+			case substring: 
+				if (get<1>(evalPattExpression).find(patExp) != string::npos) {
+					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+					variableVector.push_back(candidates);
+					containsPattern = true;
+				}
+				break;
+			case exact:
+				if (get<1>(evalPattExpression) == patExp) {
+					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+					variableVector.push_back(candidates);
+					containsPattern = true;
+				}
+				break;
+			}
+		}
+	}
+	if (containsPattern) {
+		entityVector.push_back(patSyn);
+		variableVector.push_back(arg1);
+	}
+	return make_tuple(entityVector, variableVector);
+}
+
+vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp, 
+		string patType, string patSyn) {
+	vector<tuple<int, string>> pkbPatResult;
+	bool containsPattern = false;
+	vector<string> entityVector;
+	unordered_set<string> shortlisted; // for removing duplicates
+	vector<string> listOfCandidates;
+	if (arg1 == WILDCARD) 
+		listOfCandidates = pkbReadOnly.getAllVariables();
+	else
+		listOfCandidates.push_back(arg1);
+	for (string candidates : listOfCandidates) {
+		pkbPatResult = pkbReadOnly.getPattern(candidates);
+		for (tuple<int, string> evalPattExpression : pkbPatResult) {
+			switch (mapPatternExpType[patType]) {
+				case _wildcard_:
+					shortlisted.insert(to_string(get<0>(evalPattExpression)));
+					containsPattern = true;
+					break;
+				case substring:
+					if (get<1>(evalPattExpression).find(patExp) != string::npos) {
+						shortlisted.insert(to_string(get<0>(evalPattExpression)));
+						containsPattern = true;
+					}
+					break;
+				case exact:
+					if (get<1>(evalPattExpression) == patExp) {
+						shortlisted.insert(to_string(get<0>(evalPattExpression)));
+						containsPattern = true;
+					}
+					break;
+			}
+		}
+	}
+	if (!shortlisted.empty()) { //removing duplicates
+		entityVector.assign(shortlisted.begin(), shortlisted.end());
+		entityVector.push_back(patSyn);
+	}
+	return entityVector;
+}
+
 
 void QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
 	/*		  arg1, arg2
@@ -488,20 +640,24 @@ void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 			validateUses(arg1, arg2,scenario);
 			break;
 		case intSyn:
-			toAddSynVect(arg1, arg2, scenario);
+			toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case intWild:
 			validateUses(arg1, arg2, scenario);
 		case synString:
+			toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case synSyn_:
+			toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case synWild_:
+			toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case wildString:
 			validateUses(arg1, arg2, scenario);
 			break;
 		case wildSyn_:
+			toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case wildWild_:
 			validateUses(arg1, arg2, scenario);
@@ -531,10 +687,11 @@ void QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
 			break;
 	}
 }
-vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int scenario) {
+vector<vector<string>> QueryAnalyzer::toAddUsesSynVect(string arg1, string arg2, int scenario) {
 	vector<string> pkbUsesResultString;
 	vector<int> pkbUsesResultInt;
 	vector<string> vectorToAdd;
+	vector<string> vectorToAdd2;
 	vector<vector<string>> usesResult;
 	vector<string> candidates;
 	vector<int> candidatesInt;
@@ -542,6 +699,7 @@ vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int
 	vector<int> allWhile = pkbReadOnly.getWhile();
 	vector<int> allAssign = pkbReadOnly.getAssign();
 	unordered_set<string> shortlisted;
+
 
 	switch (scenario) {
 		case intSyn:
@@ -564,7 +722,23 @@ vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int
 				vectorToAdd.push_back(arg1);
 				usesResult.push_back(vectorToAdd);
 			}
-		case synSyn_:
+		case synSyn_: //how to solve pairing (1,"a"), (1,"x")
+			candidates = pkbReadOnly.getAllVariables();
+			for (string interviewee : candidates) {
+				pkbUsesResultInt = pkbReadOnly.getUsedBy(interviewee);
+				for (int shortlistedInterviewee : pkbUsesResultInt) {
+					vectorToAdd.push_back(to_string(shortlistedInterviewee));
+					vectorToAdd2.push_back(interviewee);
+				}
+			}
+			if(vectorToAdd.empty())
+				hasSTClause = false;
+			else {
+				vectorToAdd.push_back(arg1);
+				vectorToAdd2.push_back(arg2);
+				usesResult.push_back(vectorToAdd);
+				usesResult.push_back(vectorToAdd2);
+			}
 			break;
 		case synWild_:
 			candidates = pkbReadOnly.getAllVariables();
@@ -574,7 +748,7 @@ vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int
 					shortlisted.insert(to_string(shortlistedInterviewee));
 				}
 			}
-			if (!shortlisted.empty()) {
+			if (!shortlisted.empty()) { //removing duplicates
 				vectorToAdd.assign(shortlisted.begin(), shortlisted.end());
 				vectorToAdd.push_back(arg1);
 				usesResult.push_back(vectorToAdd);
@@ -602,6 +776,7 @@ vector<vector<string>> QueryAnalyzer::toAddSynVect(string arg1, string arg2, int
 			}
 			break;
 	}
+	return usesResult;
 }
 vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 	int scenario;
