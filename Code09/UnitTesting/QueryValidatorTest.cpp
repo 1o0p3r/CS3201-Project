@@ -25,7 +25,7 @@ namespace UnitTesting
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(q.parseInput(query));
 			
-			query = "while w; assign a; Select w such that Follows(w, a)";
+			query = "   while w   ; assign a   ; Select w such that Follows(w, a)  ";
 			Assert::IsTrue(q.parseInput(query));
 			
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
@@ -37,9 +37,41 @@ namespace UnitTesting
 			query = "while w; assign a; Select x such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsFalse(q.parseInput(query));
 			
-		//	query = "assign a; Select a pattern a(_, _\"(f - d + b) - l\"_)";
-	//		Assert::IsTrue(q.parseInput(query));
+			query = "while w; assign a; Select w such that Follows(\"w\", a) pattern a(_, \"x\")";
+			Assert::IsFalse(q.parseInput(query));
+
+			query = "prog_line pl, p#; constant c; Select c such that Follows(c,_)";
+			Assert::IsFalse(q.parseInput(query));
+
+			query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
+			Assert::IsFalse(q.parseInput(query));
+
+			query = "assign a; prog_line pl, p#; constant c, d; Select p# such that Follows(a,_)";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "assign a; Select a pattern a(_, _\"f - d + b - l\"_)";
+			Assert::IsTrue(q.parseInput(query));
 			
+			query = "variable v1,v#; assign a1,a#; constant d; Select v1 such that Modifies(6,v1)";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,v1)";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\")";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(_, \"x\")";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(_, _\"x\")";
+			Assert::IsFalse(q.parseInput(query));
+			
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(\"y\", \"x\")";
+			Assert::IsTrue(q.parseInput(query));
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(v1, \"x\")";
+			Assert::IsTrue(q.parseInput(query));
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
@@ -49,7 +81,6 @@ namespace UnitTesting
 			str = "stmt s";
 			Assert::IsTrue(q.isEntityAndSynonym(str));
 
-			
 			str = "while w";
 			Assert::IsTrue(q.isEntityAndSynonym(str));
 
@@ -68,7 +99,6 @@ namespace UnitTesting
 
 			str = "s, w";
 			expectedStr = "s,w";
-			//Assert::AreEqual(q.removeSymbols(str, " "), "s,w");
 			Assert::IsTrue(q.removeSymbols(str, WHITESPACE__STRING) == expectedStr);
 			str = " s    ,    w";
 			expectedStr = "s,w";

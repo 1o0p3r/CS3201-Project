@@ -18,7 +18,9 @@ private:
 	RelationshipTable relationshipTable;
 	QueryStatement queryStatement;
 	vector<SynonymEntityPair> synonymAndEntityList; //Has to be refresh after each query
-	/**
+	
+	//The following is reserved for future iterations												
+	/** 
 	vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
 		"variable", "constant", "prog_line"};
 	**/
@@ -35,12 +37,12 @@ private:
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, string arg1Ent, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	
 	bool isValidSelect(vector<string> vectorClauses);
 	bool isValidOthers(vector<string> others);
-	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, string relType, string arg1, string arg2, string type1, string type2);
 	bool isValidPattern(string str, string syn);
 	
 	bool isValidSynonym(string syn);
@@ -56,9 +58,11 @@ public:
 	bool isValidSuchThatRegex(string str);
 	bool isValidPatternRegex(string str);
 	bool isValidSelectInitialRegex(string str);
+	bool isVariable(string str);
 	bool parseInput(string str);
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str, string syn);
+	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2);
 	bool isValidEntity(string);
 
 	bool isVariableArg1(string arg1);
@@ -77,6 +81,5 @@ public:
 	string trimPatternArgs(string str);
 	
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
-
 	QueryStatement getQueryStatement();
 };

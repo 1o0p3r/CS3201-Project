@@ -11,7 +11,9 @@ private:
 	string argumentOneSuchThat;
 	string argumentTwoSuchThat;
 	string argumentOneTypeSuchThat;
+	string argumentOneEntitySuchThat;
 	string argumentTwoTypeSuchThat;
+	string argumentTwoEntitySuchThat;
 	string relSuchThatType;
 
 	string argumentOnePattern;
@@ -24,7 +26,7 @@ private:
 public:
 	QueryElement();
 	QueryElement(string entity, string synonym);
-	QueryElement(string arg1, string arg1Type, string arg2, string arg2Type, string rel); //suchThat
+	QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel); // such that
 	QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern
 
 	string getSelectEntity();
@@ -33,7 +35,9 @@ public:
 	string getSuchThatArg1();
 	string getSuchThatArg2();
 	string getSuchThatArg1Type();
+	string getSuchThatArg1Entity();
 	string getSuchThatArg2Type();
+	string getSuchThatArg2Entity();
 	string getSuchThatRel();
 
 	string getPatternArg1();
