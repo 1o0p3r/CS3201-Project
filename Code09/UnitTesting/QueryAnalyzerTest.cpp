@@ -15,14 +15,15 @@ public:
 		pkb.setStatementType(2, "assign");
 		pkb.setStatementType(3, "assign");
 		pkb.setParent(1, 3);
+		pkb.setParent(1, 2);
 
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
 	
-		QueryElement a( "b", "synonym" , "a", "synonym", "Parent");
+		QueryElement a( "b", "synonym" ,"while", "a", "synonym","assign", "Parent");
 		qa.setPKB(pkb);
 		result = qa.solveParent(a);
-		hardcode = { {"1", "b"}, {"3","a" } };
+		hardcode = { {"1", "b"}, {"2","3","a" } };
 		Assert::AreEqual(result[0][0] , hardcode[0][0]);
 		Assert::AreEqual(result.size(), hardcode.size());
 		Assert::AreEqual(result[0].size(), hardcode[0].size());

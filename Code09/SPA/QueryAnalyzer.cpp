@@ -26,7 +26,7 @@ enum usesArgCase
 
 enum parentSynType
 {
-	undefinedType, stmt, _while, _if, prog_line
+	undefinedType, stmt, _while, _if, _assign, prog_line
 };
 
 enum mergeCase
@@ -80,6 +80,7 @@ void QueryAnalyzer::initParentSynTypeMap() {
 	mapParentSynTypeValues["stmt"] = stmt;
 	mapParentSynTypeValues["while"] = _while;
 	mapParentSynTypeValues["if"] = _if;
+	mapParentSynTypeValues["assign"] = _assign;
 	mapParentSynTypeValues["prog_line"] = prog_line;
 }
 
@@ -781,8 +782,10 @@ vector<vector<string>> QueryAnalyzer::toAddUsesSynVect(string arg1, string arg2,
 vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 	int scenario;
 	bool hasParent;
+	string arg1Entity = typeParent.getSuchThatArg1Entity();
 	string arg1 = typeParent.getSuchThatArg1();
 	string arg1Type = typeParent.getSuchThatArg1Type();
+	string arg2Entity = typeParent.getSuchThatArg2Entity();
 	string arg2 = typeParent.getSuchThatArg2();
 	string arg2Type = typeParent.getSuchThatArg2Type();	
 	vector<string> parentSubResult;
@@ -824,7 +827,7 @@ vector<vector<string>> QueryAnalyzer::solveParent(QueryElement typeParent) {
 			parentResult.push_back(parentSubResult);
 		break;
 	case synSyn:
-		parentSubResultTuple = evalParentSynSyn(arg1, arg2, arg1Type, arg2Type); 
+		parentSubResultTuple = evalParentSynSyn(arg1, arg2, arg1Type, arg2Type, arg1Entity, arg2Entity); 
 		if (!((get<ARGONE>(parentSubResultTuple)).empty()) && !((get<ARGTWO>(parentSubResultTuple)).empty())) {
 			parentResult.push_back(get<ARGONE>(parentSubResultTuple));
 			parentResult.push_back(get<ARGTWO>(parentSubResultTuple));
@@ -892,13 +895,15 @@ vector<string> QueryAnalyzer::hasParentOfArg2(string arg2) {
 }
 
 tuple<vector<string>, vector<string>> QueryAnalyzer::evalParentSynSyn(string arg1, string arg2,
-		string arg1Type, string arg2Type) {
+		string arg1Type, string arg2Type, string arg1EntityType, string arg2EntityType) {
 	//possible type of synonym = stmt, while, if , prog_line
-	int arg1Entity = mapParentSynTypeValues[arg1Type];
-	int arg2Entity = mapParentSynTypeValues[arg2Type];
+	int arg1Entity = mapParentSynTypeValues[arg1EntityType];
+	int arg2Entity = mapParentSynTypeValues[arg2EntityType];
 	vector<int> allWhiles = pkbReadOnly.getWhile();
 	vector<int> allIfs = pkbReadOnly.getIf();
 	vector<int> allStmt;
+	vector<int> allStmtChild;
+	vector<int> allAssign = pkbReadOnly.getAssign();
 	vector<tuple<string,string>> result;
 	vector<int> arg1Candidates;
 	vector<int> arg2Candidates;
@@ -910,9 +915,12 @@ tuple<vector<string>, vector<string>> QueryAnalyzer::evalParentSynSyn(string arg
 	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
 	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
 	
-	
-	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity);
-	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity);
+	allStmtChild.reserve(allStmt.size() + allAssign.size());
+	allStmtChild.insert(allStmtChild.end(), allStmt.begin(), allStmt.end());
+	allStmtChild.insert(allStmtChild.end(), allAssign.begin(), allAssign.end());
+
+	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity, allAssign);
+	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity, allAssign);
 	result = evalParStmt(arg1Candidates, arg2Candidates); //vector<string,string>
 
 	if (!result.empty()) {
@@ -939,7 +947,7 @@ vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candida
 		childCandidates = pkbReadOnly.getChild(candidate);
 		if (!childCandidates.empty()) {
 			for (int parentOfCandidates : childCandidates)
-				evalArg1Results.push_back(make_tuple(to_string(parentOfCandidates), to_string(candidate)));		
+				evalArg1Results.push_back(make_tuple(to_string(candidate), to_string(parentOfCandidates)));
 		}
 	}
 	
@@ -957,16 +965,23 @@ vector<tuple<string, string>> QueryAnalyzer::evalParStmt(vector<int> arg1Candida
 }
 
 vector<int> QueryAnalyzer::setCandidateValues(vector<int> allStmt, vector<int> allWhile, 
-		vector<int> allIf, int arg1Entity) {
+		vector<int> allIf, int arg1Entity, vector<int> allAssign) {
+	vector<int> result;
 	switch (arg1Entity){
 		case stmt:
-			return allStmt;
+			result = allStmt;
+			break;
 		case _while:
-			return allWhile;
+			result = allWhile;
+			break;
 		case _if:
-			return allIf;
+			result = allIf;
+			break;
+		case _assign:
+			result = allAssign;
+			break;
 	}
-	return vector<int>();
+	return result;
 }
 
 //careful , to review pointer &
@@ -988,14 +1003,15 @@ vector<string> QueryAnalyzer::evalParentSynWild(string arg1, string arg1Type)
 	vector<int> allIfs = pkbReadOnly.getIf();
 	vector<int> allStmt;
 	vector<int> arg1Candidates;
+	vector<int> allAssign = pkbReadOnly.getAssign();
 	vector<string> result;
 
 	//setting values for allstmt
 	allStmt.reserve(allWhiles.size() + allIfs.size());
 	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
 	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
-
-	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity);
+	
+	arg1Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg1Entity, allAssign);
 	result = evalParArg1Stmt(arg1Candidates, arg1); 
 	return result;
 }
@@ -1023,13 +1039,19 @@ vector<string> QueryAnalyzer::evalParentWildSyn(string arg2, string arg2Type) {
 	vector<int> allStmt;
 	vector<int> arg2Candidates;
 	vector<string> result;
+	vector<int> allStmtChild;
+	vector<int> allAssign = pkbReadOnly.getAssign();
 
 	//setting values for allstmt
 	allStmt.reserve(allWhiles.size() + allIfs.size());
 	allStmt.insert(allStmt.end(), allWhiles.begin(), allWhiles.end());
 	allStmt.insert(allStmt.end(), allIfs.begin(), allIfs.end());
 
-	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity);
+	allStmtChild.reserve(allStmt.size() + allAssign.size());
+	allStmtChild.insert(allStmtChild.end(), allStmt.begin(), allStmt.end());
+	allStmtChild.insert(allStmtChild.end(), allAssign.begin(), allAssign.end());
+
+	arg2Candidates = setCandidateValues(allStmt, allWhiles, allIfs, arg2Entity, allAssign);
 	result = evalParArg2Stmt(arg2Candidates, arg2);
 	return result;
 }

@@ -32,15 +32,22 @@ public:
 	bool hasSTClause;
 	bool hasPatternClause;
 
+	void initMapPatternExpType();
 	void initSelectMap();
 	void initSuchThatMap();
 	void initParentSynTypeMap();
+	void initPatternValueMap();
 
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(string selectEntity);
 	void solveSTClause();
-	
+	void solvePatternClause();
+	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
+	tuple<vector<string>, vector<string>> solvePatAssignSyn(string arg1, 
+			string patExp, string patType, string patSyn);
+	vector<string> validatedPatAssignSyn(string arg1, string patExp,
+			string patType, string patSyn);
 	void insertSTResult(vector<vector<string>> stResult);
 	
 	void insertArg1Arg2CommonSynTable(vector<vector<string>> stResult);
@@ -59,20 +66,19 @@ public:
 	void solveUses(QueryElement suchThatClause);
 	void solveUsesProc(QueryElement suchThatClause);
 	void solveUsesStmt(QueryElement suchThatClause);
-	
 	void validateUses(string arg1, string arg2, int scenario);
-	vector<vector<string>> toAddSynVect(string arg1, string arg2, int scenario);
+	vector<vector<string>> toAddUsesSynVect(string arg1, string arg2, int scenario);
 
 	vector<vector<string>> solveParent(QueryElement suchThatClause);
 	void isParent(string arg1, string arg2);
 	vector<string> evalParentIntSyn(string arg1, string arg2);
 	void hasChildOfArg1(string arg1);
 	vector<string> hasParentOfArg2(string arg2);
-	tuple<vector<string>, vector<string>> evalParentSynSyn(string arg1, string arg2, string arg1Type,
-				string arg2Type);
+	tuple<vector<string>, vector<string>> evalParentSynSyn(string arg1, string arg2, string arg1Type, 
+			string arg2Type, string arg1EntityType, string arg2EntityType);
 	vector<tuple<string,string>> evalParStmt(vector<int> arg1Candidates, vector<int> arg2Candidates);
-	vector<int> setCandidateValues(vector<int> allStmt,vector<int> allWhiles, 
-		vector<int> allIfs, int arg1Entity);
+	vector<int> setCandidateValues(vector<int> allStmt, vector<int> allWhile, vector<int> allIf,
+			int arg1Entity, vector<int> allAssign);
 	vector<tuple<string, string>> intersectionTupleInt(vector<tuple<string, string>> &arg1Candidates, 
 			vector<tuple<string, string>>& arg2Candidates);
 	vector<string> evalParentSynWild(string arg1, string arg1Type);
