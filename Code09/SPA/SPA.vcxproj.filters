@@ -18,6 +18,7 @@
     <ClCompile Include="Relationship.cpp" />
     <ClCompile Include="RelationshipTable.cpp" />
     <ClCompile Include="SynonymEntityPair.cpp" />
+    <ClCompile Include="Calls.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
@@ -36,6 +37,7 @@
     <ClInclude Include="RelationshipTable.h" />
     <ClInclude Include="SynonymEntityPair.h" />
     <ClInclude Include="..\source\Parser.h" />
+    <ClInclude Include="Calls.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">
