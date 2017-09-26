@@ -65,7 +65,7 @@ public:
 	
 	void solveUses(QueryElement suchThatClause);
 	void solveUsesProc(QueryElement suchThatClause);
-	void solveUsesStmt(QueryElement suchThatClause);
+	vector<vector<string>> solveUsesStmt(QueryElement suchThatClause);
 	void validateUses(string arg1, string arg2, int scenario);
 	vector<vector<string>> toAddUsesSynVect(string arg1, string arg2, int scenario);
 

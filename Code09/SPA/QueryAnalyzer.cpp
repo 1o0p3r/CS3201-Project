@@ -129,6 +129,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	hasPatternClause = true;
 	findQueryElements();
 	solveSTClause();
+	solvePatternClause();
 	result = analyzeClauseResults();
 	return result;
 }
@@ -617,7 +618,7 @@ void QueryAnalyzer::solveUses(QueryElement suchThatClause) {
 void QueryAnalyzer::solveUsesProc(QueryElement suchThatClause) {
 	//TODO: implement in iteration ?
 } 
-void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
+vector<vector<string>> QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 	/*  arg1 , arg2  = case
 	integer, literalstring = 0
 	integer, synonym = 1
@@ -633,6 +634,7 @@ void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 	string arg2 = suchThatClause.getSuchThatArg2();
 	string arg1Type = suchThatClause.getSuchThatArg1Type();
 	string arg2Type = suchThatClause.getSuchThatArg2Type();
+	vector<vector<string>> usesResultStmt;
 
 	int scenario = 0;
 	if (arg1Type == "synonym") { scenario += 3; }
@@ -645,29 +647,30 @@ void QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause) {
 			validateUses(arg1, arg2,scenario);
 			break;
 		case intSyn:
-			toAddUsesSynVect(arg1, arg2, scenario);
+			usesResultStmt = toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case intWild:
 			validateUses(arg1, arg2, scenario);
 		case synString:
-			toAddUsesSynVect(arg1, arg2, scenario);
+			usesResultStmt = toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case synSyn_:
-			toAddUsesSynVect(arg1, arg2, scenario);
+			usesResultStmt =  toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case synWild_:
-			toAddUsesSynVect(arg1, arg2, scenario);
+			usesResultStmt = toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case wildString:
 			validateUses(arg1, arg2, scenario);
 			break;
 		case wildSyn_:
-			toAddUsesSynVect(arg1, arg2, scenario);
+			usesResultStmt = toAddUsesSynVect(arg1, arg2, scenario);
 			break;
 		case wildWild_:
 			validateUses(arg1, arg2, scenario);
 			break;
 	}
+	return usesResultStmt;
 }
 void QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
 	vector<string> resultArg1Param = pkbReadOnly.getUses(stoi(arg1));

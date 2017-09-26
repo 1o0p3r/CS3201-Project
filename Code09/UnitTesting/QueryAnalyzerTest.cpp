@@ -82,7 +82,70 @@ public:
 		qa.setPKB(pkb);
 		hasParent = qa.hasParentStmts();
 		Assert::IsTrue(hasParent);
-	}	
+	}
+	TEST_METHOD(solveUses) {
+		PKB pkb;
+		QueryAnalyzer qa;
+		pkb.setParent(1, 3);
+		pkb.setStatementType(1, "while");
+		pkb.setStatementType(2, "assign");
+		pkb.setStatementType(3, "assign");
+		pkb.setUses(1, "x");
+		pkb.setUses(2, "y");
+		pkb.setUses(2, "c");
+		pkb.setUses(1, "y");
+		pkb.setUses(1, "c");
+		
+		pkb.setUses(3, "c");
+		pkb.setUses(3, "x");
+		
+
+		vector<vector<string>> result;
+		vector<vector<string>> hardcode;
+
+		/*
+		integer, literalstring = 0
+			integer, synonym = 1
+			integer, wildcard = 2
+			synonym, literalstring = 3
+			synonym, synonym = 4
+			synonym, wildcard = 5
+			wildcard, literalstring = 6
+			wildcard, synonym = 7
+			wildcard, wildcard = 8
+			*/
+		//synsyn, getUsedBy(Var) use this order eg (1,c) (2,c) etc
+		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
+		qa.setPKB(pkb);
+		result = qa.solveUsesStmt(synSyn);
+		hardcode = { { "1","2","3","1","3","1","2", "a" },{ "c","c","c","x","x","y","y","b" } }; // to remove when pkb done, bug at line 948
+		for (int i = 0; i < result.size(); i++) {
+			for (int j = 0; j < result[i].size(); j++) {
+				Assert::AreEqual(result[i][j], hardcode[i][j]);
+			}
+		}
+		Assert::AreEqual(result.size(), hardcode.size());
+		Assert::AreEqual(result[0].size(), hardcode[0].size());
+		
+		QueryElement synString("a", "synonym", "while", "c", "variable", "assign", "Uses");
+		qa.setPKB(pkb);
+		result = qa.solveUsesStmt(synString);
+		hardcode = { { "1","2","3", "a" } };
+		
+		QueryElement synWild("a", "synonym", "while", "_", "wildcard", "assign", "Uses");
+		qa.setPKB(pkb);
+		result = qa.solveUsesStmt(synWild);
+		hardcode = { { "1","2","3", "a" } };
+		
+	}
+	TEST_METHOD(solvePattern) {
+
+	}
+	TEST_METHOD(solveClauses) {
+
+	}
+	
+
 	
 	
 	};
