@@ -31,7 +31,7 @@ enum parentSynType
 
 enum mergeCase
 {
-	arg1Found, bothSynFound, noSynFound, arg2Found
+	bothSynFound, arg1Found, arg2Found, noSynFound
 };
 
 enum patternValues
@@ -189,7 +189,7 @@ vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
 }
 
 
-void QueryAnalyzer::solveSTClause() {
+vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	string stClauseType;
 	vector<vector<string>> stResult;
 	int evaluateSTRelation;
@@ -200,7 +200,9 @@ void QueryAnalyzer::solveSTClause() {
 			case modifies:
 				break;
 			case uses:
-				solveUses(stClause);
+				stResult = solveUses(stClause);
+				if (!stResult.empty())
+					insertSTResult(stResult);
 				break;
 			case parent: 
 				stResult = solveParent(stClause);
@@ -215,6 +217,7 @@ void QueryAnalyzer::solveSTClause() {
 				break;
 		}
 	}
+	return mergedQueryTable;
 }
 
 void QueryAnalyzer::solvePatternClause() {
@@ -342,12 +345,12 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 }
 
 
-void QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
+vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
 	/*		  arg1, arg2
-	 *case 0: hasSyn, noSyn -> arg2 present
-	 *case 1: hasSyn, hasSyn 
-	 *case 2: noSyn, noSyn
-	 *case 3: noSyn, hasSyn
+	 *case 0: hasSyn, hasSyn
+	 *case 1: hasSyn, noSyn -> arg2 present 
+	 *case 2: noSyn, hasSyn
+	 *case 3: noSyn, noSyn
 	 * 
 	 */
 	string arg1;
@@ -366,19 +369,20 @@ void QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
 	}
 	tableIndex = mergedQueryTable.size();
 	switch (scenario) {
-		case arg1Found:
-			insertArg1CommonSynTable(stResult, hasArg2);
-			break;
 		case bothSynFound:
 			insertArg1Arg2CommonSynTable(stResult);
+			break;
+		case arg1Found:
+			addSingleCommonSynTable(stResult,stResult[ARGONE].back(),ARGONE);
+			break;
+		case arg2Found:
+			addSingleCommonSynTable(stResult, stResult[ARGTWO].back(), ARGTWO); 
 			break;
 		case noSynFound:
 			insertNoCommonSynToTable(stResult, tableIndex, hasArg2);
 			break;
-		case arg2Found:
-			insertArg2CommonSynTable(stResult, hasArg2);
-			break;
 	}	 
+	return mergedQueryTable;
 }
 
 void QueryAnalyzer::insertArg1Arg2CommonSynTable(vector<vector<string>> stResult) {
@@ -505,14 +509,15 @@ void QueryAnalyzer::merge2DVectorDisjointTable(vector<vector<string>> tableToMer
 	mergedQueryTable.erase(mergedQueryTable.begin() + get<ARGONE>(tableLocation2));
 }
 
-void QueryAnalyzer::insertArg1CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
+void QueryAnalyzer::addSingleCommonSynTable(vector<vector<string>> stResult, string arg, int clauseJoinIndex) {
 	//arg1 common, arg2 not common implies intersect on arg1
-	string arg1;
-	arg1 = stResult[ARGONE].back();
-	auto searchSynLocation = synTableMap.find(arg1);
+
+	int clauseTableExists = -1;
+	auto searchSynLocation = synTableMap.find(arg);
 	tuple<int,int> tableLocation = searchSynLocation->second;
 	vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
-	merge2DVector(tableToMerge, stResult, tableLocation, ARGONE, hasArg2);
+	vector<vector<string>> result = hashJoin(tableToMerge, get<ARGTWO>(tableLocation),
+		stResult, clauseJoinIndex, get<ARGONE>(tableLocation), clauseTableExists);
 }
 
 void QueryAnalyzer::insertArg2CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
@@ -604,16 +609,18 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 	}
 	mergedQueryTable.push_back(stResult);
 }
-void QueryAnalyzer::solveUses(QueryElement suchThatClause) {
+vector<vector<string>> QueryAnalyzer::solveUses(QueryElement suchThatClause) {
 	/* arg1, arg2  = case
 	 * stmtVersion = syn, wildcard, integer 9 cases, syn , literalstring, wilcard
 	 * procVersion = syn, wildcard, literalString, integer 12 cases	
 	 */
+	vector<vector<string>> usesResult;
 	string arg1Type = suchThatClause.getSuchThatArg1Type();
 	if (arg1Type == "procedure" || arg1Type == "call")
 		solveUsesProc(suchThatClause);
 	else
-		solveUsesStmt(suchThatClause);
+		usesResult = solveUsesStmt(suchThatClause);
+	return usesResult;
 }
 void QueryAnalyzer::solveUsesProc(QueryElement suchThatClause) {
 	//TODO: implement in iteration ?
@@ -1098,5 +1105,60 @@ bool QueryAnalyzer::hasParentStmts() {
 	if (allWhiles.empty() && allIfs.empty())
 		hasSTClause = false;
 	return hasSTClause;
+}
+
+vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnalyzerTable, 
+	int qaJoinIndex, vector<vector<string>> clauseTable, int clausetableJoinIndex, int qaTableLoc, int clauseTableLoc) {
+	multimap<string, int> valueToClauseRowIndexMap;
+	typedef multimap<string, int>::iterator MMAPIterator;
+	pair<MMAPIterator, MMAPIterator> commonValueIterator;
+	vector<vector<string>> hashJoinTable;
+	vector<string> addToTable;
+	
+	// A | B       A | C
+	// 1   2       3   5
+	// 1   4       1   6
+	// 2   3       4   7
+	// 3   1       
+
+	//hash   value of clause (key) to  row indices in multimap
+	for (int row = 0; row < clauseTable[0].size(); row++) {
+		valueToClauseRowIndexMap.insert(make_pair(clauseTable[clausetableJoinIndex][row],row));
+	}
+	for (int col = 0; col < queryAnalyzerTable.size(); col++) {
+		addToTable = vector<string>();
+		for (int row = 0; row < queryAnalyzerTable[ARGONE].size(); row++) { //all vectors have equal length,hence any valid vector size works
+			commonValueIterator = valueToClauseRowIndexMap.equal_range(queryAnalyzerTable[qaJoinIndex][row]);
+			for (MMAPIterator it = commonValueIterator.first; it != commonValueIterator.second; it++) {
+				addToTable.push_back(queryAnalyzerTable[col][row]);
+			}
+		}	
+		hashJoinTable.push_back(addToTable);
+	}
+	for (int col = 0; col < clauseTable.size(); col++) {
+		if (col == clausetableJoinIndex)
+			continue;
+		addToTable = vector<string>();
+		for (int row = 0; row < queryAnalyzerTable[ARGONE].size(); row++) { //all vectors have equal length,hence any valid vector size works
+			commonValueIterator = valueToClauseRowIndexMap.equal_range(queryAnalyzerTable[qaJoinIndex][row]);
+			for (MMAPIterator it = commonValueIterator.first; it != commonValueIterator.second; it++) {
+				addToTable.push_back(clauseTable[col][it->second]);
+			}
+		}
+		hashJoinTable.push_back(addToTable);
+	}
+
+	//re-map synonym table
+	for (int i = 0; i < hashJoinTable.size(); i++) {
+		synTableMap[hashJoinTable.at(i).back()] = make_tuple(qaTableLoc, i);
+	}
+
+	if (clauseTableLoc != -1) { //table is existing
+		mergedQueryTable.erase(mergedQueryTable.begin() + clauseTableLoc);
+	}
+
+	mergedQueryTable.at(qaTableLoc) = hashJoinTable;
+
+	return hashJoinTable;
 }
 

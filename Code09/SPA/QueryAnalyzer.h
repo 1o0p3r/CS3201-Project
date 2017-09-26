@@ -41,21 +41,21 @@ public:
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(string selectEntity);
-	void solveSTClause();
+	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
 	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
 	tuple<vector<string>, vector<string>> solvePatAssignSyn(string arg1, 
 			string patExp, string patType, string patSyn);
 	vector<string> validatedPatAssignSyn(string arg1, string patExp,
 			string patType, string patSyn);
-	void insertSTResult(vector<vector<string>> stResult);
+	vector<vector<vector<string>>> insertSTResult(vector<vector<string>> stResult);
 	
 	void insertArg1Arg2CommonSynTable(vector<vector<string>> stResult);
 	void merge2DVectorTwoSyno(vector<vector<string>> tableToMerge1, 
 			vector<vector<string>> stResult, tuple<int,int> tableLocation1, tuple<int,int> tableLocation2);
 	void merge2DVectorDisjointTable(vector<vector<string>> tableToMerge1, vector<vector<string>> tableToMerge2,
 		vector<vector<string>> stResult, tuple<int, int> tableLocation1, tuple<int, int> tableLocation2);
-	void insertArg1CommonSynTable(vector<vector<string>>stResult, bool hasArg2);
+	void addSingleCommonSynTable(vector<vector<string>> stResult, string arg, int clauseJoinIndex);
 	void insertArg2CommonSynTable(vector<vector<string>>stResult, bool hasArg2);
 	void merge2DVector(vector<vector<string>> tableToMerge, vector<vector<string>> stResult, 
 		 tuple<int,int> tableLocation, int option, bool hasArg2);
@@ -63,7 +63,7 @@ public:
 	void insertNoCommonSynToTable(vector<vector<string>> stResult, 
 			int tableIndex, bool hasArg2);
 	
-	void solveUses(QueryElement suchThatClause);
+	vector<vector<string>> solveUses(QueryElement suchThatClause);
 	void solveUsesProc(QueryElement suchThatClause);
 	vector<vector<string>> solveUsesStmt(QueryElement suchThatClause);
 	bool validateUses(string arg1, string arg2, int scenario);
@@ -87,5 +87,7 @@ public:
 	vector<string> evalParArg2Stmt(vector<int> arg2Candidates, string arg2);
 	bool hasParentForArg2(string arg2);
 	bool hasParentStmts();
+	vector<vector<string>> hashJoin(vector<vector<string>> queryAnalyzerTable, int qaJoinIndex, 
+			vector<vector<string>> clauseTable, int clausetableJoinIndex, int qaTableLoc1, int qaTableLoc2);
 };
 
