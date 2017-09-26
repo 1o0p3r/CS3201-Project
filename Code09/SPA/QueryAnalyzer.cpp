@@ -672,10 +672,12 @@ vector<vector<string>> QueryAnalyzer::solveUsesStmt(QueryElement suchThatClause)
 	}
 	return usesResultStmt;
 }
-void QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
-	vector<string> resultArg1Param = pkbReadOnly.getUses(stoi(arg1));
+bool QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
+	vector<string> resultArg1Param;
+
 	switch (scenario) {
 		case intString:
+			resultArg1Param = pkbReadOnly.getUses(stoi(arg1));
 			if (find(resultArg1Param.begin(), resultArg1Param.end(), arg2) 
 				== resultArg1Param.end())
 				hasSTClause = false;
@@ -694,6 +696,7 @@ void QueryAnalyzer::validateUses(string arg1, string arg2, int scenario) {
 				hasSTClause = false;
 			break;
 	}
+	return hasSTClause; // for debugging
 }
 vector<vector<string>> QueryAnalyzer::toAddUsesSynVect(string arg1, string arg2, int scenario) {
 	vector<string> pkbUsesResultString;

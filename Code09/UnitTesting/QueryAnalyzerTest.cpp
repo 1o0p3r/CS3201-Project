@@ -10,7 +10,6 @@ public:
 	TEST_METHOD(solveParent) {
 		PKB pkb;
 		QueryAnalyzer qa;
-		pkb.setParent(1, 3);
 		pkb.setStatementType(1, "while");
 		pkb.setStatementType(2, "assign");
 		pkb.setStatementType(3, "assign");
@@ -102,7 +101,7 @@ public:
 
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
-
+		bool hasUses;
 		/*
 		integer, literalstring = 0
 			integer, synonym = 1
@@ -114,6 +113,25 @@ public:
 			wildcard, synonym = 7
 			wildcard, wildcard = 8
 			*/
+		
+		QueryElement intString("1", "number", "while", "x", "variable", "assign", "Uses");
+		qa.setPKB(pkb);
+		hasUses = qa.validateUses("1", "x",0); //0 = intString
+		Assert::IsTrue(hasUses);
+
+		QueryElement intSyn("2", "number", "while", "k", "synonym", "assign", "Uses");
+		qa.setPKB(pkb);
+		result = qa.solveUsesStmt(intSyn);
+		hardcode = { {"y","c", "k" } };
+		for (int j = 0; j < result[0].size(); j++) {
+			Assert::AreEqual(result[0][j], hardcode[0][j]);
+		}
+
+		QueryElement intWild("1", "number", "while", "_", "wildcard", "assign", "Uses");
+		qa.setPKB(pkb);
+		hasUses = qa.validateUses("1", "wildcard", 3); //3 = intWild
+		Assert::IsTrue(hasUses);
+		
 		//synsyn, getUsedBy(Var) use this order eg (1,c) (2,c) etc
 		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
 		qa.setPKB(pkb);
@@ -131,12 +149,35 @@ public:
 		qa.setPKB(pkb);
 		result = qa.solveUsesStmt(synString);
 		hardcode = { { "1","2","3", "a" } };
-		
+		for (int j = 0; j < result[0].size(); j++) {
+			Assert::AreEqual(result[0][j], hardcode[0][j]);
+		}
+
 		QueryElement synWild("a", "synonym", "while", "_", "wildcard", "assign", "Uses");
 		qa.setPKB(pkb);
 		result = qa.solveUsesStmt(synWild);
 		hardcode = { { "1","2","3", "a" } };
-		
+		for (int j = 0; j < result[0].size(); j++) {
+			Assert::AreEqual(result[0][j], hardcode[0][j]);
+		}
+
+		QueryElement wildString("_", "wildcard", "while", "x", "string", "assign", "Uses");
+		qa.setPKB(pkb);
+		hasUses = qa.validateUses("wildcard", "x", 6); //6 = wildString
+		Assert::IsTrue(hasUses);
+
+		QueryElement wildSyn("_", "wildcard", "while", "a", "synonym", "assign", "Uses");
+		qa.setPKB(pkb);
+		result = qa.solveUsesStmt(wildSyn);
+		hardcode = { { "y","c","x", "a" } };
+		for (int j = 0; j < result[0].size(); j++) {
+			Assert::AreEqual(result[0][j], hardcode[0][j]);
+		}
+
+		QueryElement wildWild("_", "wildcard", "while", "_", "wildcard", "assign", "Uses");
+		qa.setPKB(pkb);
+		hasUses = qa.validateUses("wildcard", "wildcard", 8); //8 = wildwild
+		Assert::IsTrue(hasUses);
 	}
 	TEST_METHOD(solvePattern) {
 
