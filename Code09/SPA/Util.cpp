@@ -2,7 +2,13 @@
 #include <iostream>
 #include <algorithm>
 
-string Util::insertBrackets(string results) {
+string Util::insertBrackets(string input) {
+	string results;
+	for each (char c in input) {
+		if (!isspace(c)) {
+			results.push_back(c);
+		}
+	}
 	//string results = input;
 	int index = 0;
 	while (index < results.size()) {

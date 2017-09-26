@@ -10,7 +10,7 @@ namespace UnitTesting {
 	TEST_CLASS(UtilTest) {
 	public:
 		TEST_METHOD(insertBrackets) {
-			string test1 = "x*y*h*f";
+			string test1 = "x * y * h * f";
 			string results = Util::insertBrackets(test1);
 			Assert::AreEqual(string("(((x*y)*h)*f)"), results);
 			string test2 = "x*y*h+f*g";
