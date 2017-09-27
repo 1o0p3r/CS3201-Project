@@ -4,6 +4,8 @@
 #include "QueryElement.h"
 #include "suchThatAnalyzer.h"
 #include "FollowsAnalyzer.h"
+#include "ParentStarAnalyzer.h"
+#include "FollowsStarAnalyzer.h"
 
 #include <iterator>
 #include <algorithm>

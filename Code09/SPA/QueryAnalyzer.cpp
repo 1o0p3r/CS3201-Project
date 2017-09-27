@@ -236,6 +236,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 					insertSTResult(stResult);
 				break;
 			case parentStar:
+				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClause();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case follows:
 				clauseResult = FollowsAnalyzer(stClause, pkbReadOnly).solveClause();
@@ -243,6 +246,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
+				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClause();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 		}
 	}
