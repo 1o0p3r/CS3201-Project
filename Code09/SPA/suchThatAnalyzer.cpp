@@ -1,4 +1,4 @@
-#include "suchThatAnalyzer.h"
+#include "SuchThatAnalyzer.h"
 
 const string WILDCARD = "wildcard";
 
@@ -14,11 +14,11 @@ suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb)
 	stEntity = stClause.getSuchThatRel();
 	arg1 = stClause.getSuchThatArg1();
 	arg1Entity = stClause.getSuchThatArg1Entity();
-	arg1Type = stClause.getPatternArg1Type();
+	arg1Type = stClause.getSuchThatArg1Type();
 	
 	arg2 = stClause.getSuchThatArg2();
 	arg2Entity = stClause.getSuchThatArg2Entity();
-	arg2Type = stClause.getPatternArg2Type();
+	arg2Type = stClause.getSuchThatArg2Type();
 
 	hasSuchThatClause = true;
 }

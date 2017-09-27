@@ -30,14 +30,14 @@ protected:
 	
 	bool checkClauseTrue(string arg1, string arg2, int scenarioArg1Arg2);
 	tuple<bool,vector<vector<string>>> addClauseTable(string arg1, string arg2, int scenario);
-	tuple<bool, vector<vector<string>>> addArgTwoResult(string arg1);
-	tuple<bool, vector<vector<string>>> addArgOneResult(string arg2);
-	tuple<bool, vector<vector<string>>> addBothSynResult(string arg1, string arg2);
+	virtual tuple<bool, vector<vector<string>>> addArgTwoResult(string arg1);
+	virtual tuple<bool, vector<vector<string>>> addArgOneResult(string arg2);
+	virtual tuple<bool, vector<vector<string>>> addBothSynResult(string arg1, string arg2);
 	
-	bool checkClauseBothVariables(string arg1, string arg2);
-	bool checkClauseVariableWild(string arg1);
-	bool checkClauseWildVariable(string arg2);
-	bool checkClauseBothWild();
+	virtual bool checkClauseBothVariables(string arg1, string arg2);
+	virtual bool checkClauseVariableWild(string arg1);
+	virtual bool checkClauseWildVariable(string arg2);
+	virtual bool checkClauseBothWild();
 
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
