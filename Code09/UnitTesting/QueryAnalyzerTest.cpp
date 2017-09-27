@@ -179,7 +179,40 @@ public:
 		Assert::IsTrue(hasUses);
 	}
 	TEST_METHOD(solvePattern) {
+		PKB pkb;
+		QueryAnalyzer qa;
+		pkb.setStatementType(1, "while");
+		pkb.setStatementType(2, "assign");
+		pkb.setStatementType(3, "assign");
+		pkb.setUses(1, "x");
+		pkb.setUses(2, "y");
+		pkb.setUses(2, "c");
+		pkb.setUses(1, "y");
+		pkb.setUses(1, "c");
+		pkb.setUses(3, "c");
+		pkb.setUses(3, "x");
+		pkb.setParent(1, 3);
+		pkb.setParent(1, 2);
+		vector<vector<string>> clauseResult;
+		vector<string> hardcode;
+		vector<vector<vector<string>>> mergedResult;
+		QueryStatement qs;
+		vector<string> answer;
+		//* implies selected
+		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
+		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
+		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
+		// { { "1","1", "a" },{ "2","3","d" } };
+		QueryElement sel("while", "a");
 
+		qa.setPKB(pkb);
+
+		qs.addSuchThatQuery(synSyn);
+		qs.addSuchThatQuery(a);
+		qs.addSelectQuery(sel);
+		qa.setQS(qs);
+		qa.findQueryElements();
+		mergedResult = qa.solveSTClause();
 	}
 	TEST_METHOD(solveClauses) {
 		PKB pkb;
@@ -248,6 +281,47 @@ public:
 				}
 			}
 		}
+
+	}
+	TEST_METHOD(solveSelectUses) {
+		PKB pkb;
+		QueryAnalyzer qa;
+		pkb.setStatementType(1, "while");
+		pkb.setStatementType(2, "assign");
+		pkb.setStatementType(3, "assign");
+		pkb.setUses(1, "x");
+		pkb.setUses(2, "y");
+		pkb.setUses(2, "c");
+		pkb.setUses(1, "y");
+		pkb.setUses(1, "c");
+		pkb.setUses(3, "c");
+		pkb.setUses(3, "x");
+		pkb.setParent(1, 3);
+		pkb.setParent(1, 2);
+		vector<vector<string>> clauseResult;
+		vector<string> hardcode;
+		vector<vector<vector<string>>> mergedResult;
+		QueryStatement qs;
+		vector<string> answer;
+		//* implies selected
+		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
+		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
+		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
+		// { { "1","1", "a" },{ "2","3","d" } };
+		QueryElement sel("assign", "m");
+
+		qa.setPKB(pkb);
+
+		qs.addSuchThatQuery(synSyn);
+		qs.addSuchThatQuery(a);
+		qs.addSelectQuery(sel);
+		qa.setQS(qs);
+		qa.findQueryElements();
+		mergedResult = qa.solveSTClause();
+		answer = qa.analyzeClauseResults();
+		hardcode = { "1" };
+		Assert::AreEqual(hardcode[0], answer[0]);
+
 
 	}
 

@@ -182,12 +182,34 @@ vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
 	case prog_lineSelect: //prog_line , not in use atm
 		break;
 	}
+	
+	
+
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
-			answer.push_back(to_string(selectResultInt.at(i)));
+			answer.push_back(to_string(i));
+	if (answer.empty())
+		answer = { "none" };
+	else
+		answer = removeVectDuplicates(answer);
+	
 	return answer;
 }
 
+vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
+	unordered_set<string> shortlisted;
+	vector<string> answer;
+	for (string entry : selectClause) {
+		shortlisted.insert(entry);
+	}
+
+	if (!shortlisted.empty()) { //removing duplicates and sort
+		answer.assign(shortlisted.begin(), shortlisted.end());
+		sort(answer.begin(), answer.end());
+	}
+
+	return answer;
+}
 
 vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	string stClauseType;

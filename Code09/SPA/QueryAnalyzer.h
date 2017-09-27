@@ -41,6 +41,7 @@ public:
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(string selectEntity);
+	vector<string> removeVectDuplicates(vector<string> selectClause);
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
 	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
