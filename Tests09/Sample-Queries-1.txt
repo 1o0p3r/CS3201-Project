@@ -1,27 +1,27 @@
 1 - comment
 while w;
 Select w such that Parent(w, 7)
-None
+5
 5000
 2 - comment
 stmt s;
 Select s such that Follows(8, s)
-9
+None
 5000
 3 - comment
 assign a;
-Select a such that Parent*(33, a)
-None
+Select a such that Parent*(5, a)
+6, 7, 8, 10
 5000
 4 - comment
 stmt c;
 Select c such that Follows*(1, c)
-2, 3
+2, 3, 4
 5000
 5 - comment
 stmt s;
 Select s such that Modifies(s, "i")
-20
+17
 5000
 6 - comment
 variable v;
@@ -31,12 +31,12 @@ None
 7 - comment
 stmt s;
 Select s such that Uses(s, "i")
-6, 7, 9, 15, 16, 17, 19
+7, 14, 17
 5000
 8 - comment
 constant c; assign q; variable c;
 Select c such that Uses(q, c)
-1, 2, 4, 5, 10
+1, 2, 3, 6, 7, 8, 10, 11, 12, 14, 16, 17, 18, 20, 21, 23, 24, 25, 26, 27, 28
 5000
 9 - comment
 variable n;
@@ -46,17 +46,17 @@ a
 10 - comment
 assign a; variable b; while i;
 Select i such that Modifies(a, b)
-7, 11, 15, 24
+5, 13, 22
 5000
 11 - comment
 stmt a;
 Select a such that Follows(a, 9)
-8
+5
 5000
 12 - comment
 stmt b; stmt c;
-Select b such that Follows(b, 35)
-None
+Select b such that Follows(b, 27)
+15
 5000
 13 - comment
 assign a;
@@ -70,8 +70,8 @@ None
 5000
 15 - comment
 assign a;
-Select a pattern a(_, " 3  +  2 ")
-None
+Select a pattern a(_, " k  +  4 ")
+18
 5000
 16 - comment
 assign w; variable v;
@@ -80,8 +80,8 @@ None
 5000
 17 - comment
 assign ifs; variable v; assign a;
-Select v such that Uses(ifs, v) pattern a(_, _"x+1"_)
-None
+Select v such that Uses(ifs, v) pattern a(_, " k- m")
+k
 5000
 18 - comment
 assign p;  stmt s1; stmt s2; assign a;
@@ -95,8 +95,8 @@ None
 5000
 20 - comment
 assign n; stmt s; assign k;
-Select s such that Follows(16, n) and pattern k(_,_"x+7"_) 
-None
+Select s such that Follows(16, n) and pattern k(_,_"i*t"_) 
+17
 5000
 21 - comment
 stmt n; assign a; 
@@ -106,50 +106,40 @@ Select n such that Follows(1, n) and pattern a(_,_"2*a"_)
 22 - comment
 assign ifs; variable v; assign a; variable z
 Select v such that Uses(ifs, z) pattern a(_, _"c*a"_)
-13
+11
 5000
 23 - comment
-call c; assign a1, a2;
-Select BOOLEAN such that Follows*(_, c) and Affects(a1, a2) and Uses(a2, _)
-true
+stmt k; stmt u;
+Select k such that Parent (0,u)
+None
 5000
 24 - comment
 assign w; variable v;
-Select w such that Modifies(w, v) pattern w(_,"_i*t_") 
-19
+Select w such that Modifies(w, v) pattern w(_,"_a * y_") 
+20
 5000
 25 - comment
-stmt ifs; assign a1, a2; variable v1, v2;
-Select a1 such that Parent(a1, ifs) pattern a1(_, "a*x")
-26
-5000
-26 - comment
-assign a;
-Select a such that Parent*(a, 2)
-1
-5000
-27 - comment
-if a; stmt b;
-Select a such that Parent*(2,b)
-6, 17, 21
-5000
-28 - comment
-if a; stmt b;
-Select a such that Follows*(b,2)
-6, 17, 21
-5000
-29 - comment
-stmt a; stmt c;
-Select a such that Follows*(36,c)
-None
-5000
-30 - comment
 stmt a; stmt c;
 Select a such that Parent(36,c)
 None
 5000
-31 - comment
-stmt k; stmt u;
-Select k such that Parent (0,u)
+26 - comment
+assign a;
+Select a such that Parent*(a, 2)
+None
+5000
+27 - comment
+if a; stmt b;
+Select a such that Parent*(a,b)
+4, 15, 19
+5000
+28 - comment
+if a; stmt b;
+Select a such that Follows*(b,2)
+4, 15, 19
+5000
+29 - comment
+stmt a; stmt c;
+Select a such that Follows*(36,c)
 None
 5000
