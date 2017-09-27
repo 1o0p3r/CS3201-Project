@@ -149,6 +149,7 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	if (search != synTableMap.end()) {
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
 				.at(get<ARGTWO>(search->second));
+		answer = removeVectDuplicates(answer);
 	} else {
 		answer = analyzeSelect(selectElement.getSelectEntity());
 	}

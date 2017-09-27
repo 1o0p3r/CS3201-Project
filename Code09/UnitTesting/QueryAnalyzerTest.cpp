@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "QueryAnalyzer.h"
+#include "Util.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -181,6 +182,12 @@ public:
 	TEST_METHOD(solvePattern) {
 		PKB pkb;
 		QueryAnalyzer qa;
+		/* while x {
+			z = 8+y*c-3;
+			s = 4*c-x;
+		   }
+		*/
+
 		pkb.setStatementType(1, "while");
 		pkb.setStatementType(2, "assign");
 		pkb.setStatementType(3, "assign");
@@ -193,6 +200,10 @@ public:
 		pkb.setUses(3, "x");
 		pkb.setParent(1, 3);
 		pkb.setParent(1, 2);
+		pkb.setModifies(3, "x");
+		pkb.setModifies(2, "z");
+		pkb.addPattern(3, "x", "4*c-x");
+		pkb.addPattern(2,"z",Util::insertBrackets(" 8+ y*c - 3"));
 		vector<vector<string>> clauseResult;
 		vector<string> hardcode;
 		vector<vector<vector<string>>> mergedResult;
@@ -201,18 +212,31 @@ public:
 		//* implies selected
 		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
-		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
+		QueryElement a("d", "synonym", "while", "a", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("while", "a");
+		QueryElement sel("assign", "a");
+		
+		QueryElement pat1("v", Util::insertBrackets("4*c-x"), "assign", "a", "synonym", "exact");
+		// pattern a(v,"4*c-x")
+		//	QueryElement(string arg1, string arg2, string patternEntity, 
+		//		string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern
 
 		qa.setPKB(pkb);
 
 		qs.addSuchThatQuery(synSyn);
 		qs.addSuchThatQuery(a);
 		qs.addSelectQuery(sel);
+		qs.addPatternQuery(pat1);
 		qa.setQS(qs);
-		qa.findQueryElements();
+		answer = qa.runQueryEval();
+	/*	qa.findQueryElements();
 		mergedResult = qa.solveSTClause();
+		qa.solvePatternClause();
+		answer = qa.analyzeClauseResults(); */
+		
+		hardcode = { "3" };
+		Assert::AreEqual(hardcode.size(), answer.size());
+		Assert::AreEqual(hardcode[0], answer[0]);
 	}
 	TEST_METHOD(solveClauses) {
 		PKB pkb;
@@ -298,6 +322,7 @@ public:
 		pkb.setUses(3, "x");
 		pkb.setParent(1, 3);
 		pkb.setParent(1, 2);
+
 		vector<vector<string>> clauseResult;
 		vector<string> hardcode;
 		vector<vector<vector<string>>> mergedResult;
@@ -308,7 +333,7 @@ public:
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("assign", "m");
+		QueryElement sel("while", "a");
 
 		qa.setPKB(pkb);
 
