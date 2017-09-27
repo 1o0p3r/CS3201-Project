@@ -298,5 +298,12 @@ namespace UnitTesting
 			expectedStr = "s,_\"x+y\"_";
 			Assert::IsTrue(q.trimPatternArgs(str) == expectedStr);
 		}
+		TEST_METHOD(isValidModifiesP) {
+			QueryValidator q;
+			string str;
+
+			str = "Modifies(\"x\",\"y\")";
+			Assert::IsTrue(q.isValidModifiesP(str));
+		}
 	};
 }

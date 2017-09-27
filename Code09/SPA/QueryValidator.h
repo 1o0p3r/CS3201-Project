@@ -59,6 +59,7 @@ public:
 	bool isValidSelectInitialRegex(string str);
 	bool isVariable(string str);
 	bool parseInput(string str);
+	bool isValidModifiesP(string str);
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str, string syn);
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2);

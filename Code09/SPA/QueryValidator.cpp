@@ -71,6 +71,7 @@ const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
 const string IDENT_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string STMTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)";
+const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
 const string ENTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")";
 const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
 const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line)";
@@ -78,17 +79,26 @@ const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|pr
 const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 
-const string MODIFIES_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string USES_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string MODIFIESS_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string USESS_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string MODIFIESP_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string USESP_STRING_REGEX = "Uses\\s*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string PARENT_STRING_REGEX = "Parent\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string PARENTT_STRING_REGEX = "Parent\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string FOLLOWS_STRING_REGEX = "Follows\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string FOLLOWST_STRING_REGEX = "Follows\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string RELREF_STRING_REGEX = "(" + MODIFIES_STRING_REGEX + OR + USES_STRING_REGEX + OR
-+ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + ")";
+const string CALLS_STRING_REGEX = "";
+const string CALLST_STRING_REGEX = "";
+const string NEXT_STRING_REGEX = "Next\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+const string NEXTT_STRING_REGEX = "Next\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
+
+const string RELREF_STRING_REGEX = "(" + MODIFIESS_STRING_REGEX + OR + USESS_STRING_REGEX + OR
++ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + OR + NEXT_STRING_REGEX
++ OR + NEXTT_STRING_REGEX + OR + CALLS_STRING_REGEX + OR + CALLST_STRING_REGEX + OR + MODIFIESP_STRING_REGEX + OR + USESP_STRING_REGEX + ")";
 
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
-const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
+"([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
 
 //Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
@@ -140,6 +150,11 @@ bool QueryValidator::parseInput(string str) {
 	}
 }
 
+//To be deleted 
+bool QueryValidator::isValidModifiesP(string str) {
+	regex modifiesPRegex(MODIFIESP_STRING_REGEX);
+	return regex_match(str, modifiesPRegex);
+}
 //This function parses the Entity And Synonym and checks for the validity of Entity
 bool QueryValidator::isEntityAndSynonym(string currentString) {
 	if (isValidEntity(currentString)) {
