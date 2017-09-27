@@ -60,6 +60,9 @@ const string INVALID_ARGUMENT_ERROR = "Invalid argument";
 const string NUMBER_ZERO_TO_NINE = "0123456789";
 const string OR = "|";
 const string EMPTY_STRING = "empty";
+const string ASSIGN_STRING = "assign";
+const string WHILE_STRING = "while";
+const string IF_STRING = "if";
 
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
@@ -85,7 +88,7 @@ const string RELREF_STRING_REGEX = "(" + MODIFIES_STRING_REGEX + OR + USES_STRIN
 + PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + ")";
 
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
-const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + "a\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
 
 //Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
@@ -227,15 +230,32 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	}
 }
 
+bool QueryValidator::isValidSynDesignEntity(string synPattern) {
+	string entPattern = getCorrespondingEntity(synPattern);
+	
+	if (entPattern == ASSIGN_STRING) {
+		return true;
+	}
+	else if ((entPattern == WHILE_STRING) || (entPattern == IF_STRING)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
 //For now this funcction assumes that pattern is of valid syntax
+
 bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
 	str = trim(str);
 	str = str.substr(8, str.length() - 1);
+	int idxLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
+	string synDesignEnt = str.substr(0, idxLeftBracket);
 	str = removeSymbols(str, WHITESPACE_STRING);
 	str = PATTERN_STRING + WHITESPACE_STRING + str;
-	if (!isValidPatternRegex(str)) {
+
+	if (!isValidPatternRegex(str) || !isValidSynDesignEntity(synDesignEnt)) {
 		return false;
 	}
 	else {
