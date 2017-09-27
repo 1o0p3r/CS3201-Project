@@ -463,6 +463,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		for (size_t k = ONE; k < vec.size(); k++) {
 			trim(vec.at(k));
 		}
+		vector<string> temp = vec;
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
 				if (!isValidSuchThat(vec.at(i), syn)) {
@@ -483,6 +484,10 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	
 	//Remove the additional leading and trailing whitespace
 	str = trim(str);
+
+	if (!isValidSuchThatRegex(str)) {
+		return false;
+	}
 	//Firstly extract/split till a relation is found
 	string tempString = str.substr(10, str.length()-ONE);
 
