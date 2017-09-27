@@ -2,7 +2,8 @@
 #include "PKB.h"
 #include "QueryStatement.h"
 #include "QueryElement.h"
-#include <FollowsAnalyzer.h>
+#include "suchThatAnalyzer.h"
+#include "FollowsAnalyzer.h"
 
 #include <iterator>
 #include <algorithm>
