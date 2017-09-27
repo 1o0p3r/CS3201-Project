@@ -235,6 +235,7 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 			case parentStar:
 				break;
 			case follows:
+				stResult = FollowsAnalyzer(stClause).solveFollows();
 				break;
 			case followsStar:
 				break;

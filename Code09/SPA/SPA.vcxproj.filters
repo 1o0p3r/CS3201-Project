@@ -19,6 +19,8 @@
     <ClCompile Include="RelationshipTable.cpp" />
     <ClCompile Include="SynonymEntityPair.cpp" />
     <ClCompile Include="QueryAnalyzer.cpp" />
+    <ClCompile Include="FollowsAnalyzer.cpp" />
+    <ClCompile Include="suchThatAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
@@ -38,6 +40,8 @@
     <ClInclude Include="SynonymEntityPair.h" />
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="QueryAnalyzer.h" />
+    <ClInclude Include="FollowsAnalyzer.h" />
+    <ClInclude Include="suchThatAnalyzer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">

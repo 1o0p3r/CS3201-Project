@@ -2,6 +2,7 @@
 #include "PKB.h"
 #include "QueryStatement.h"
 #include "QueryElement.h"
+#include <FollowsAnalyzer.h>
 
 #include <iterator>
 #include <algorithm>
@@ -11,6 +12,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+
 using namespace std;
 
 class QueryAnalyzer
