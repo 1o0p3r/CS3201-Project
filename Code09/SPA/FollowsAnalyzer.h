@@ -9,7 +9,7 @@ public:
 	{
 	}
 
-private:
+protected:
 	tuple<bool, vector<vector<string>>> addArgTwoResult(string arg1) override;
 	tuple<bool, vector<vector<string>>> addArgOneResult(string arg2) override;
 	tuple<bool, vector<vector<string>>> addBothSynResult(string arg1, string arg2) override;

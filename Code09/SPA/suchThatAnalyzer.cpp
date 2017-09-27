@@ -93,7 +93,7 @@ bool suchThatAnalyzer::checkClauseTrue(string arg1, string arg2, int scenarioArg
 	case varWild:
 		boolResult = checkClauseVariableWild(arg1);
 		break;
-	case wildSyn:
+	case wildVar:
 		boolResult = checkClauseWildVariable(arg2);
 		break;
 	case wildWild:
