@@ -20,6 +20,7 @@
     <ClCompile Include="FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="Parent.cpp" />
+    <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="QueryAnalyzer.cpp" />
     <ClCompile Include="QueryEval.cpp" />
     <ClCompile Include="SuchThatAnalyzer.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="FollowsStarAnalyzer.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
+    <ClInclude Include="ParentStarAnalyzer.h" />
     <ClInclude Include="QueryAnalyzer.h" />
     <ClInclude Include="QueryEval.h" />
     <ClInclude Include="SuchThatAnalyzer.h" />
