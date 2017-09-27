@@ -12,6 +12,7 @@
     <ClCompile Include="UtilTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
     <ClCompile Include="QueryAnalyzerTest.cpp" />
+    <ClCompile Include="FollowsAnalyzerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

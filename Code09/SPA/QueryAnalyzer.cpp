@@ -101,6 +101,8 @@ const int TTMINDEX = 1;
 const int STRINDEX = 2;
 const int SAMETABLE = 0;
 const int TWO_DISJOINT_TABLE = 1;
+const int VECTRESULT = 1;
+const int BOOLRESULT = 0;
 
 QueryAnalyzer::QueryAnalyzer() {
 	initSelectMap();
@@ -215,6 +217,7 @@ vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) 
 vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	string stClauseType;
 	vector<vector<string>> stResult;
+	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
 	for (QueryElement stClause : stElements) {
 		stClauseType = stClause.getSuchThatRel();
@@ -235,7 +238,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 			case parentStar:
 				break;
 			case follows:
-				stResult = FollowsAnalyzer(stClause).solveFollows();
+				clauseResult = FollowsAnalyzer(stClause, pkbReadOnly).solveClause();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
 				break;

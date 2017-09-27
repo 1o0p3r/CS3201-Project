@@ -17,11 +17,13 @@
     <ClCompile Include="..\source\TNode.cpp" />
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="FollowsAnalyzer.cpp" />
+    <ClCompile Include="FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Modify.cpp" />
     <ClCompile Include="Parent.cpp" />
+    <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="QueryAnalyzer.cpp" />
     <ClCompile Include="QueryEval.cpp" />
-    <ClCompile Include="suchThatAnalyzer.cpp" />
+    <ClCompile Include="SuchThatAnalyzer.cpp" />
     <ClCompile Include="Use.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -31,11 +33,13 @@
     <ClInclude Include="..\source\TNode.h" />
     <ClInclude Include="Follow.h" />
     <ClInclude Include="FollowsAnalyzer.h" />
+    <ClInclude Include="FollowsStarAnalyzer.h" />
     <ClInclude Include="Modify.h" />
     <ClInclude Include="Parent.h" />
+    <ClInclude Include="ParentStarAnalyzer.h" />
     <ClInclude Include="QueryAnalyzer.h" />
     <ClInclude Include="QueryEval.h" />
-    <ClInclude Include="suchThatAnalyzer.h" />
+    <ClInclude Include="SuchThatAnalyzer.h" />
     <ClInclude Include="Use.h" />
     <ClInclude Include="Util.h" />
     <ClCompile Include="QueryValidator.cpp" />
