@@ -81,8 +81,8 @@ RelationshipTable::RelationshipTable() {
 	//Since Next and Next*
 	nextStarArg1 = nextArg1;
 	nextStarArg2 = nextArg2;
-	Relationship relationNext = Relationship(NUM_TWO, nextStarArg1, nextStarArg2);
-	relationshipTable[NEXT_STAR_STRING] = relationNext;
+	Relationship relationNextStar = Relationship(NUM_TWO, nextStarArg1, nextStarArg2);
+	relationshipTable[NEXT_STAR_STRING] = relationNextStar;
 
 	//Adds the relationship of Calls to table
 	callsArg1 = { "procedure", "string", "wildcard" };
