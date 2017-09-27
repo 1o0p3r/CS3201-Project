@@ -25,15 +25,16 @@ void Calls::setCalls(int procName1, int procName2) {
 	if (callsTable.size() <= procName1) {
 		callsTable.resize(procName1 + 1);
 	}
+	
 	callsTable[procName1].push_back(procName2);
-	setCalledBy(procName2, procName1);
-	setCallsStar(procName1);
-	setCalledByStar(procName1);
+	setCalledBy(procName1, procName2);
+	setCallsStar(procName1, procName2);
+	setCalledByStar(procName1, procName2);
 
-	checkIfRecursive;
+	//checkIfRecursive();
 }
 
-void Calls::setCalledBy(int procName2, int procName1) {
+void Calls::setCalledBy(int procName1, int procName2) {
 
 	if (calledByTable.size() <= procName2) {
 		calledByTable.resize(procName2 + 1);
@@ -41,16 +42,32 @@ void Calls::setCalledBy(int procName2, int procName1) {
 	calledByTable[procName2].push_back(procName1);
 }
 
-void Calls::setCallsStar(int procName) {
+void Calls::setCallsStar(int procName1, int procName2) {
 
-	vector<int> procCalledBy = getCalledBy(procName);
-	callsTable[procName].insert(callsTable[procName].begin(), procCalledBy.begin(), procCalledBy.end());
+	if (callsStarTable.size() <= procName1) {
+		callsStarTable.resize(procName1 + 1);
+	}
+
+	callsStarTable[procName1].push_back(procName2);
+	vector<int> procCalledBy = getCalledBy(procName1);
+
+	for (int i = 0; i < procCalledBy.size(); i++) {
+		callsStarTable[procCalledBy[i]].push_back(procName2);
+	}
 }
 
-void Calls::setCalledByStar(int procName) {
+void Calls::setCalledByStar(int procName1, int procName2) {
 
-	vector<int> procCalls = getCalls(procName);
-	calledByTable[procName].insert(calledByTable[procName].begin(), procCalls.begin(), procCalls.end());
+	if (calledByStarTable.size() <= procName2) {
+		calledByStarTable.resize(procName2 + 1);
+	}
+
+	calledByStarTable[procName2].push_back(procName1);
+	vector<int> procCalledBy = getCalledBy(procName1);
+
+	for (int i = 0; i < procCalledBy.size(); i++) {
+		calledByStarTable[procName2].push_back(procCalledBy[i]);
+	}
 }
 
 vector<int> Calls::getCalls(int procName) {
@@ -101,49 +118,10 @@ void Calls::checkIfRecursive() {
 
 	set<int> setTable;
 
-	for (int i = 0; i < callsTable.size(); i++) {
-		setTable.insert(callsTable[i].begin(), callsTable[i].end());
-		
-		if (callsTable.size() == setTable.size()) {
-			isRecursive = false;
-		}
-		else {
-			isRecursive = true;
-			throw new invalid_argument("Procedure calls itself. Program is recursive");
-		}
-		setTable.clear();
-	}
-
-	for (int i = 0; i < calledByTable.size(); i++) {
-		setTable.insert(calledByTable[i].begin(), calledByTable[i].end());
-
-		if (calledByTable.size() == setTable.size()) {
-			isRecursive = false;
-		}
-		else {
-			isRecursive = true;
-			throw new invalid_argument("Procedure calls itself. Program is recursive");
-		}
-		setTable.clear();
-	}
-
 	for (int i = 0; i < callsStarTable.size(); i++) {
 		setTable.insert(callsStarTable[i].begin(), callsStarTable[i].end());
 
 		if (callsStarTable.size() == setTable.size()) {
-			isRecursive = false;
-		}
-		else {
-			isRecursive = true;
-			throw new invalid_argument("Procedure calls itself. Program is recursive");
-		}
-		setTable.clear();
-	}
-
-	for (int i = 0; i < calledByStarTable.size(); i++) {
-		setTable.insert(calledByStarTable[i].begin(), calledByStarTable[i].end());
-
-		if (calledByStarTable.size() == setTable.size()) {
 			isRecursive = false;
 		}
 		else {

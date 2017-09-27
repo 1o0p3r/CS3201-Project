@@ -24,9 +24,9 @@ private:
 
 	bool isRecursive;
 
-	void setCallsStar(int procName);
-	void setCalledBy(int procName2, int procName1);
-	void setCalledByStar(int procName);
+	void setCallsStar(int procName1, int procName2);
+	void setCalledBy(int procName1, int procName2);
+	void setCalledByStar(int procName1, int procName2);
 
 	void checkIfRecursive();
 	
