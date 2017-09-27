@@ -1,8 +1,6 @@
 #include "suchThatAnalyzer.h"
 
 const string WILDCARD = "wildcard";
-const int BOOLVAL = 0;
-const int RESULT = 1;
 
 enum clauseCases 
 {
