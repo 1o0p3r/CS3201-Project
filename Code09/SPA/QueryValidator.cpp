@@ -264,7 +264,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 
 		string arg1 = splitPattern.at(ZERO);
 		string arg2 = splitPattern.at(ONE);
-		string ent = getCorrespondingEntity(syn);
+		string ent = getCorrespondingEntity(synDesignEnt);
 
 		bool arg1Variable = isVariableArg1(arg1);
 		bool arg1Wildcard = isWildcard(arg1);
@@ -332,7 +332,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 			arg2 = Util::insertBrackets(arg2);
 		}
 
-		addPatternQueryElement(arg1, arg2, ent, syn, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2Exact, arg2Wildcard);
+		addPatternQueryElement(arg1, arg2, ent, synDesignEnt, arg1Variable, arg1Wildcard, arg1Synonym, arg2Substring, arg2Exact, arg2Wildcard);
 		return true;
 	}
 }
