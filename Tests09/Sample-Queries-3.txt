@@ -1,0 +1,75 @@
+1 - comment
+stmt s;
+Select s such that Follows(s,3)
+4
+5000
+2 - comment
+stmt s;
+Select s such that Follows(1,s)
+2
+5000
+3 - comment
+stmt s;
+Select s such that Follows*(s,2)
+1
+5000
+4 - comment
+variable v; assign a;
+Select v such that Modifies (a, v)
+1, 3, 4
+5000
+5 - comment
+variable v;
+Select v such that Modifies (2, v)
+x, y
+5000
+6 - comment
+variable v;
+Select v such that Modifies(3, v)
+y
+5000
+7 - comment
+variable v;
+Select v such that Uses(3，v）
+None
+5000
+8 - comment
+variable v;
+Select v such that Uses(4，v）
+x, y
+5000
+9 - comment
+variable v; assign a;
+Select a such that Uses(a，y）
+4
+5000
+10 - comment
+assign a;
+Select a such that Parent(a，3）
+None
+5000
+11 - comment
+stmt a;
+Select a such that Parent(a，3）
+2
+5000
+12 - comment
+stmt a;
+Select a such that Parent*(a，4）
+2
+5000
+13 - comment
+stmt s; assign a;
+Select a such that Parent*(s，4）pattern(_, "x*y+ 1")
+4
+5000
+14 - comment
+stmt s; assign a;
+Select a such that Follows(s，4）pattern(_, _"y+ 1")
+None
+5000
+15 - comment
+stmt s; assign a;
+Select a such that Modifies(a，_）pattern("x", _)
+1
+5000

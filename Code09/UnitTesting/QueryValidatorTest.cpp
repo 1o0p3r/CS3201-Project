@@ -31,6 +31,9 @@ namespace UnitTesting
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
 			Assert::IsFalse(q.parseInput(query));
 			
+			query = "assign a; Select a pattern b#(_, _\"f - d + b - l\"_)";
+			Assert::IsFalse(q.parseInput(query));
+
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsTrue(q.parseInput(query));
 			
@@ -39,7 +42,7 @@ namespace UnitTesting
 			
 			query = "while w; assign a; Select w such that Follows(\"w\", a) pattern a(_, \"x\")";
 			Assert::IsFalse(q.parseInput(query));
-
+			
 			query = "prog_line pl, p#; constant c; Select c such that Follows(c,_)";
 			Assert::IsFalse(q.parseInput(query));
 
@@ -72,6 +75,7 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(v1, \"x\")";
 			Assert::IsTrue(q.parseInput(query));
+			
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
