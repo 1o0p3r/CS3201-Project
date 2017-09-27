@@ -11,6 +11,10 @@ RelationshipTable::RelationshipTable() {
 	const string FOLLOWS_STAR_STRING = "Follows*";
 	const string PARENT_STRING = "Parent";
 	const string PARENT_STAR_STRING = "Parent*";
+	const string NEXT_STRING = "Next";
+	const string CALLS_STRING = "Calls";
+	const string NEXT_STAR_STRING = "Next*";
+	const string CALLS_STAR_STRING = "Calls*";
 
 	//variables to be used to add to relationship table
 	vector<string> modifiesArg1;
@@ -23,6 +27,14 @@ RelationshipTable::RelationshipTable() {
 	vector<string> parentArg2;
 	vector<string> parentStarArg1;
 	vector<string> parentStarArg2;
+	vector<string> nextArg1;
+	vector<string> nextArg2;
+	vector<string> nextStarArg1;
+	vector<string> nextStarArg2;
+	vector<string> callsArg1;
+	vector<string> callsArg2;
+	vector<string> callsStarArg1;
+	vector<string> callsStarArg2;
 
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
@@ -49,16 +61,40 @@ RelationshipTable::RelationshipTable() {
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
-	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wilcard" };
-	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign" };
+	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wilcard", "number" };
+	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
-	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wilcard" };
-	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign" };
+	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wilcard", "number" };
+	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
+
+	//Adds the relationship of Next to table
+	nextArg1 = { "stmt", "assign", "while", "if", "call", "prog_line", "number", "wildcard" };
+	nextArg2 = { "stmt", "assign", "while", "if", "call", "prog_line", "number", "wildcard" };
+	Relationship relationNext = Relationship(NUM_TWO, nextArg1, nextArg2);
+	relationshipTable[NEXT_STRING] = relationNext;
+
+	//Since Next and Next*
+	nextStarArg1 = nextArg1;
+	nextStarArg2 = nextArg2;
+	Relationship relationNext = Relationship(NUM_TWO, nextStarArg1, nextStarArg2);
+	relationshipTable[NEXT_STAR_STRING] = relationNext;
+
+	//Adds the relationship of Calls to table
+	callsArg1 = { "procedure", "string", "wildcard" };
+	callsArg2 = { "procedure", "string", "wildcard" };
+	Relationship relationCalls = Relationship(NUM_TWO, callsArg1, callsArg2);
+	relationshipTable[CALLS_STRING] = relationCalls;
+
+	callsStarArg1 = callsArg1;
+	callsStarArg2 = callsArg2;
+	Relationship relationCallsStar = Relationship(NUM_TWO, callsStarArg1, callsStarArg2);
+	relationshipTable[CALLS_STAR_STRING] = relationCallsStar;
+
 }
 
 bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
