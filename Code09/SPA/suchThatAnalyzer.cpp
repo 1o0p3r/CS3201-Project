@@ -119,7 +119,7 @@ tuple<bool, vector<vector<string>>> suchThatAnalyzer::addClauseTable(string arg1
 		clauseResult = addBothSynResult(arg1, arg2);
 		break;
 	case synWild:
-		clauseResult = addArgOneResult(arg1);
+		clauseResult = addArgOneResult(arg2);
 		break;
 	case wildSyn:
 		clauseResult = addArgTwoResult(arg1);
@@ -171,4 +171,19 @@ bool suchThatAnalyzer::checkClauseBothWild()
 {
 	//overwrite this method in child class
 	return false;
+}
+
+vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
+	unordered_set<string> shortlisted;
+	vector<string> answer;
+	for (string entry : clauseResult) {
+		shortlisted.insert(entry);
+	}
+
+	if (!shortlisted.empty()) { //removing duplicates and sort
+		answer.assign(shortlisted.begin(), shortlisted.end());
+		sort(answer.begin(), answer.end());
+	}
+
+	return answer;
 }

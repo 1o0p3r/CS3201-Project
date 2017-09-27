@@ -23,6 +23,7 @@ public:
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
 		//intint
+		
 		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Follows");
 		
 		qs.addSuchThatQuery(wildWild);
@@ -51,6 +52,53 @@ public:
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intInt, pkb).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
+
+		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "Follows");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(intSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsAnalyzer(intSyn, pkb).solveClause();
+		hardcode = { {"3"} };
+		Assert::IsTrue(get<0>(clauseResult));
+		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
+
+		QueryElement synInt("a", "synonym", "assign", "3", "integer", "assign", "Follows");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synInt);
+		qa.setQS(qs);
+		clauseResult = FollowsAnalyzer(synInt, pkb).solveClause();
+		hardcode = { { "2" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
+
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Follows");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsAnalyzer(synSyn, pkb).solveClause();
+		hardcode = { { "2" },{"3"} };
+		Assert::IsTrue(get<0>(clauseResult));
+		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
+		Assert::AreEqual(hardcode[1][0], get<1>(clauseResult)[1][0]);
+		
+		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "Follows");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synWild);
+		qa.setQS(qs);
+		clauseResult = FollowsAnalyzer(synWild, pkb).solveClause();
+		hardcode = { { "2" }};
+		Assert::IsTrue(get<0>(clauseResult));
+		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
+
+		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "Follows");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(wildSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsAnalyzer(wildSyn, pkb).solveClause();
+		hardcode = { { "3" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
+
 
 	}
 

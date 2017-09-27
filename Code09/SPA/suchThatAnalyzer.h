@@ -39,6 +39,8 @@ protected:
 	virtual bool checkClauseWildVariable(string arg2);
 	virtual bool checkClauseBothWild();
 
+	vector<string> removeDuplicates(vector<string> clauseResult);
+
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
 	tuple<bool,vector<vector<string>>> solveClause();
