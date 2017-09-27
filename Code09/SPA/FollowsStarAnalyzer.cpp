@@ -62,7 +62,6 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgOneResult(string 
 tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addBothSynResult(string arg1, string arg2)
 {
 	bool hasFollowsStar = true;
-	int candidateFollower;
 	vector<int> vecOfCandidates;
 	vector<int> pkbFollowsStar;
 	vector<string> pkbResultForArg1;
