@@ -99,7 +99,7 @@ const string RELREF_STRING_REGEX = "(" + MODIFIESS_STRING_REGEX + OR + USESS_STR
 + OR + NEXT_STRING_REGEX + OR + NEXTT_STRING_REGEX + OR  + CALLS_STRING_REGEX + OR + CALLST_STRING_REGEX + OR
 + MODIFIESP_STRING_REGEX + OR + USESP_STRING_REGEX + ")";
 
-const string RELCOND_STRING_REGEX = RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string RELCOND_STRING_REGEX = RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 const string ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+"  + RELCOND_STRING_REGEX;
 
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
@@ -520,11 +520,11 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		return true;
 	}
 }
+
+//This method extracts all the relationship involed in the such that clauses and returns them in a vector
 vector<string> QueryValidator::extractSuchThatClauses(string str) {
 	regex suchThatRelRegex(RELREF_STRING_REGEX);
 	smatch m;
-	//sregex_iterator iter(str.begin(), str.end(), suchThatRelRegex);
-	//sregex_iterator end;
 	string temp;
 	vector<string> toReturnVec;
 
@@ -545,116 +545,124 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 	if (!isValidSuchThatRegex(str)) {
 		return false;
 	}
-	//Firstly extract/split till a relation is found
-	string tempString = str.substr(10, str.length()-ONE);
-
-	//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
-	vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
-	
-	//Obtain the relation e.g. Follows
-	string relation = tempVec.at(ZERO);
-
-	//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
-	string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length()-1);
-
-	//Remove all the whitespace first
-	argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
-
-	//Split them by Comma
-	vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
-
-	string arg1 = args.at(ZERO);
-	string arg2 = args.at(ONE);
-
-	//At this pt,
-	string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
-	string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
-	
-	bool arg1Valid = false;
-	bool arg2Valid = false;
-	bool arg1_NUM = false;
-	bool arg2_NUM = false;
-	bool arg1_UNDER = false;
-	bool arg2_UNDER = false;
-	bool arg2_VARIABLE = false;
-
-	if (arg1Ent != INVALID_STRING) {
-		//Implies that a corresponding entity was obtained
-		arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
-	}
 	else {
-		//If no correspond entity was obtained, try to check if it is a number or wildcard
-		if (is_number(arg1)) {
-			//If exists in table and part of declared relationship, create a clause and add it to query tree
-			arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
-			if (arg1Valid) {
-				arg1_NUM = true;
+		vector<string> suchThatRelVec = extractSuchThatClauses(str);
+		for (int idx = 0; idx < suchThatRelVec.size(); idx++) {
+			/** The following is no longer needed as we already haf sth like Follows(s,4)
+			//Firstly extract/split till a relation is found
+			string tempString = str.substr(10, str.length() - ONE);
+			*/
+			string tempString = suchThatRelVec.at(idx);
+
+			//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
+			vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
+
+			//Obtain the relation e.g. Follows
+			string relation = tempVec.at(ZERO);
+
+			//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
+			string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length() - 1);
+
+			//Remove all the whitespace first
+			argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
+
+			//Split them by Comma
+			vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
+
+			string arg1 = args.at(ZERO);
+			string arg2 = args.at(ONE);
+
+			//At this pt,
+			string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
+			string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
+
+			bool arg1Valid = false;
+			bool arg2Valid = false;
+			bool arg1_NUM = false;
+			bool arg2_NUM = false;
+			bool arg1_UNDER = false;
+			bool arg2_UNDER = false;
+			bool arg2_VARIABLE = false;
+
+			if (arg1Ent != INVALID_STRING) {
+				//Implies that a corresponding entity was obtained
+				arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
 			}
 			else {
-				arg1_NUM = false;
+				//If no correspond entity was obtained, try to check if it is a number or wildcard
+				if (is_number(arg1)) {
+					//If exists in table and part of declared relationship, create a clause and add it to query tree
+					arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
+					if (arg1Valid) {
+						arg1_NUM = true;
+					}
+					else {
+						arg1_NUM = false;
+					}
+				}
+				else if (arg1 == UNDER_SCORE_STRING) {
+					arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
+					if (arg1Valid) {
+						arg1_UNDER = true;
+					}
+					else {
+						arg1_UNDER = false;
+					}
+				}
+				else {
+					arg1Valid = false;
+				}
 			}
-		}
-		else if (arg1 == UNDER_SCORE_STRING) {
-			arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
-			if (arg1Valid) {
-				arg1_UNDER = true;
-			}
-			else {
-				arg1_UNDER = false;
-			}
-		}
-		else {
-			arg1Valid = false;
-		}
-	}
-	//Implies that it is part of the delcared synonym
-	if (arg2Ent != INVALID_STRING) {
-		arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
-	}
-	else {
-		if (is_number(arg2)) {
-			arg2Valid = checkRelationshipTable(relation, NUMBER_STRING, TWO);
-			if (arg2Valid) {
-				arg2_NUM = true;
-			}
-			else {
-				arg2_NUM = false;
-			}
-		}
-		else if (arg2 == UNDER_SCORE_STRING) {
-			arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
-			if (arg2Valid) {
-				arg2_UNDER = true;
+			//Implies that it is part of the delcared synonym
+			if (arg2Ent != INVALID_STRING) {
+				arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
 			}
 			else {
-				arg2_UNDER = false;
+				if (is_number(arg2)) {
+					arg2Valid = checkRelationshipTable(relation, NUMBER_STRING, TWO);
+					if (arg2Valid) {
+						arg2_NUM = true;
+					}
+					else {
+						arg2_NUM = false;
+					}
+				}
+				else if (arg2 == UNDER_SCORE_STRING) {
+					arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
+					if (arg2Valid) {
+						arg2_UNDER = true;
+					}
+					else {
+						arg2_UNDER = false;
+					}
+				}
+				//Implies arg 2 is sth like "x"
+				else if (isVariable(arg2)) {
+					arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
+					if (arg2Valid) {
+						arg2_VARIABLE = true;
+					}
+					else {
+						arg2_VARIABLE = false;
+					}
+				}
+				else {
+					arg2Valid = false;
+				}
 			}
-		}
-		//Implies arg 2 is sth like "x"
-		else if (isVariable(arg2)) {
-			arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
-			if (arg2Valid) {
-				arg2_VARIABLE = true;
+			//If both are valid and true, create the clause
+			if (arg1Valid && arg2Valid) {
+				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 			else {
-				arg2_VARIABLE = false;
+				return false;
 			}
 		}
-		else {
-			arg2Valid = false;
-		}
-	}
-	//If both are valid and true, create the clause
-	if (arg1Valid && arg2Valid) {
-		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-	else {
-		return false;
 	}
 }
 
@@ -882,7 +890,7 @@ bool QueryValidator::isValidDeclarationRegex(string str) {
 //Takes in a string and checks if it matches the such that regex
 //Retunrs true if matches, else false
 bool QueryValidator::isValidSuchThatRegex(string str) {
-	regex suchThatRegex(SUCH_THAT_CL_REGEX);
+	regex suchThatRegex(ITR2_SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
 }
 //Takes in a string and checks if it matches the pattern regex

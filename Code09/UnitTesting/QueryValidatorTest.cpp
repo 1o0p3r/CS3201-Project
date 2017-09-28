@@ -247,6 +247,32 @@ namespace UnitTesting
 			str = "such that Follows* (_,_   )";
 			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
+			str = "such that Next(5,n)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Next*(5,_)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Next(\"Second\", n)";
+			Assert::IsFalse(q.isValidSuchThatRegex(str));
+
+			str = "such that Calls(p,_)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Calls*(p,q)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Calls*(p, \"Third\") and Modifies(p, \"i\")";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Follows*(_, _) and Parent*(3,_)and Next(s,_)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Follows*(1, a) and Parent*(3,_)and Next(s,_)and Calls(p,_)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Next(s,_) and Calls*(p, \"Third\")and Parent*(_, 4) and Modifies(_, 4)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 		}
 
 		TEST_METHOD(isValidSelectInitialRegex) {
