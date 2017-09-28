@@ -525,29 +525,15 @@ vector<string> QueryValidator::extractSuchThatClauses(string str) {
 	smatch m;
 	//sregex_iterator iter(str.begin(), str.end(), suchThatRelRegex);
 	//sregex_iterator end;
-	
-	
-	
+	string temp;
 	vector<string> toReturnVec;
-	/**
+
 	while (regex_search(str, m, suchThatRelRegex)) {
-		for (auto x : m) {
-			toReturnVec.push_back(x);
-			str = m.suffix().str();
-		}
-	}**/
-	/**
-	while (iter != end)
-	{
-		for (unsigned i = 0; i < iter->size(); ++i)
-		{
-			//std::cout << "the " << i + 1 << "th match" << ": " << (*iter)[i] << std::endl;
-			toReturnVec.push_back((*iter)[i]);
-		}
-		++iter;
-	}**/
-
-
+		std::cout << m[0] << std::endl;
+		temp = m[0];
+		toReturnVec.push_back(temp);
+		str = m.suffix().str();
+	}
 	return toReturnVec;
 }
 bool QueryValidator::isValidSuchThat(string str, string syn) {

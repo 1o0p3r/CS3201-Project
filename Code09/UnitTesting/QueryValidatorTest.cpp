@@ -235,14 +235,17 @@ namespace UnitTesting
 			str = "such that Follows(\"s#\",4)";
 			Assert::IsFalse(q.isValidSuchThatRegex(str));
 
-//			str = "such that Modifies(\"s\",\"a\")";
-//			Assert::IsFalse(q.isValidSuchThatRegex(str));
+			str = "such that Modifies(\"s\",\"a\")";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
-//			str = "such that Parent*(s#,    4)";
-//			Assert::IsTrue(q.isValidSuchThatRegex(str));
+			str = "such that Parent*(s#,    4)";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
-//			str = "such that Follows*(_,_   )";
-//			Assert::IsTrue(q.isValidSuchThatRegex(str));
+			str = "such that Follows*(_,_   )";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
+
+			str = "such that Follows* (_,_   )";
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
 		}
 
