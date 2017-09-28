@@ -23,3 +23,10 @@ Modify QueryElement to have 2 getters i.e. getSuchThatArg1Ent() and getSuchThatA
 
 Class RelationshipTable:
 Modify RelationshipTable to have different valid design entities
+
+class QueryEvalator:
+Obsolete
+
+class QueryAnalyzer:
+re-vamped and modularised QE
+the new evaluator
