@@ -6,6 +6,7 @@
 #include "FollowsAnalyzer.h"
 #include "ParentStarAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
+#include "ModifiesAnalyzer.h"
 
 #include <iterator>
 #include <algorithm>
@@ -33,6 +34,7 @@ public:
 	vector<QueryElement> patternElements;
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
+
 	PKB pkbReadOnly;
 	bool hasSTClause;
 	bool hasPatternClause;

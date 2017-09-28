@@ -15,6 +15,7 @@
     <ClCompile Include="FollowsAnalyzerTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
+    <ClCompile Include="ModifiesAnalyzerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

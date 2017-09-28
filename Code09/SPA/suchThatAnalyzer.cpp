@@ -41,6 +41,7 @@ tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClause()
 tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClauseProc()
 {
 	//to be implemented in iter2
+	return tuple<bool, vector<vector<string>>>();
 }
 
 tuple<bool,vector<vector<string>>> suchThatAnalyzer::solveClauseStmt() 

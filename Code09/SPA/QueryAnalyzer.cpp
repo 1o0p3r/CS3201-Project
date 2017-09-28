@@ -31,7 +31,7 @@ enum parentSynType
 
 enum mergeCase
 {
-	bothSynFound, arg1Found, arg2Found, noSynFound
+	 oneResultArg1Found, oneResultArg1Missing, bothSynFound, arg1Found, arg2Found, noSynFound
 };
 
 enum patternValues
@@ -127,6 +127,7 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 vector<string> QueryAnalyzer::runQueryEval() {
 	vector<string> result;
 	synTableMap = unordered_map<string, tuple<int, int>>();
+	mergedQueryTable = vector<vector<vector<string>>>();
 	hasSTClause = true;
 	hasPatternClause = true;
 	findQueryElements();
@@ -146,6 +147,9 @@ void QueryAnalyzer::findQueryElements() {
 
 vector<string> QueryAnalyzer::analyzeClauseResults() {
 	vector<string> answer;
+	if (!hasSTClause || !hasPatternClause)
+		return{ "None" };
+
 	string selectSyn = selectElement.getSelectSynonym();
 	auto search = synTableMap.find(selectSyn);
 	if (search != synTableMap.end()) {
@@ -185,23 +189,20 @@ vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
 	case prog_lineSelect: //prog_line , not in use atm
 		break;
 	}
-	
-	
-
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
 	if (answer.empty())
-		answer = { "none" };
-	else
-		answer = removeVectDuplicates(answer);
-	
+		answer = { "None" };
+
 	return answer;
 }
 
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
 	unordered_set<string> shortlisted;
 	vector<string> answer;
+
+	selectClause.pop_back(); // remove synonym indicator
 	for (string entry : selectClause) {
 		shortlisted.insert(entry);
 	}
@@ -224,16 +225,15 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
 		switch (evaluateSTRelation) {
 			case modifies:
+				clauseResult = ModifiesAnalyzer(stClause, pkbReadOnly).solveClause();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
 				stResult = solveUses(stClause);
-				if (!stResult.empty())
-					insertSTResult(stResult);
 				break;
 			case parent: 
 				stResult = solveParent(stClause);
-				if(!stResult.empty())
-					insertSTResult(stResult);
 				break;
 			case parentStar:
 				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
@@ -251,6 +251,8 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 		}
+		if (!stResult.empty())
+			insertSTResult(stResult);
 	}
 	return mergedQueryTable;
 }
@@ -382,28 +384,40 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 
 vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
 	/*		  arg1, arg2
-	 *case 0: hasSyn, hasSyn
-	 *case 1: hasSyn, noSyn -> arg2 present 
-	 *case 2: noSyn, hasSyn
-	 *case 3: noSyn, noSyn
-	 * 
+	 *case 0: hasSyn
+	 *case 1: noSyn
+	 *case 2: hasSyn, hasSyn
+	 *case 3: hasSyn, noSyn -> arg2 present 
+	 *case 4: noSyn, hasSyn
+	 *case 5: noSyn, noSyn
 	 */
 	string arg1;
 	string arg2;
 	int tableIndex;
+	auto iteratorMapFindArg1 = synTableMap.find(stResult[ARGONE].back());
 	int scenario = 0;
 	bool hasArg2 = false;
-	if (stResult.size() > 1)
-		hasArg2 = true;
-	if (synTableMap.find(stResult[ARGONE].back()) == synTableMap.end()) { //element not found
-		scenario += 2;
-	}
-	if(hasArg2)
-		if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
+	
+	if (iteratorMapFindArg1 == synTableMap.end()) { //element not found
+		if (stResult.size() > 1) {
+			scenario += 4;
+			if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
+				scenario += 1;
+			}
+		}
+		else {
 			scenario += 1;
+		}
 	}
+	//oneResultArg1Found, oneResultArg1Missing, bothSynFound, arg1Found, arg2Found, noSynFound
 	tableIndex = mergedQueryTable.size();
 	switch (scenario) {
+		case oneResultArg1Found:
+			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE);
+			break;
+		case oneResultArg1Missing:
+			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE); //TODO
+			break;
 		case bothSynFound:
 			insertArg1Arg2CommonSynTable(stResult);
 			break;
@@ -478,10 +492,6 @@ void QueryAnalyzer::merge2DVectorTwoSyno(vector<vector<string>> tableToMerge1,
 	for (int i = 0; i < mergedBothResult.size(); i++) {
 		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
 	}
-	//remove synonym located at end of each vector
-	for (vector<string> toRemoveElement : mergedBothResult) {
-		toRemoveElement.pop_back();
-	}
 
 	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
 }
@@ -535,10 +545,6 @@ void QueryAnalyzer::merge2DVectorDisjointTable(vector<vector<string>> tableToMer
 	for (int i = 0; i < mergedBothResult.size(); i++) {
 		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
 	}
-	//remove synonym located at end of each vector
-	for (vector<string> toRemoveElement : mergedBothResult) {
-		toRemoveElement.pop_back();
-	}
 
 	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
 	mergedQueryTable.erase(mergedQueryTable.begin() + get<ARGONE>(tableLocation2));
@@ -549,10 +555,21 @@ void QueryAnalyzer::addSingleCommonSynTable(vector<vector<string>> stResult, str
 
 	int clauseTableExists = -1;
 	auto searchSynLocation = synTableMap.find(arg);
-	tuple<int,int> tableLocation = searchSynLocation->second;
-	vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
-	vector<vector<string>> result = hashJoin(tableToMerge, get<ARGTWO>(tableLocation),
-		stResult, clauseJoinIndex, get<ARGONE>(tableLocation), clauseTableExists);
+	if (searchSynLocation == synTableMap.end()) { //cant find arg
+		synTableMap.insert(make_pair(arg, make_tuple(mergedQueryTable.size(), ARGONE)));	//re-map synonym table
+		mergedQueryTable.push_back(stResult);
+	}
+	else {
+		tuple<int, int> tableLocation = searchSynLocation->second;
+		vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
+		vector<vector<string>> result = hashJoin(tableToMerge, get<ARGTWO>(tableLocation),
+			stResult, clauseJoinIndex, get<ARGONE>(tableLocation), clauseTableExists);
+		if (result.empty()) {
+			hasSTClause = false;
+			hasPatternClause = false;
+		}
+			
+	}
 }
 
 void QueryAnalyzer::insertArg2CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
@@ -594,9 +611,6 @@ void QueryAnalyzer::merge2DVector(vector<vector<string>> tableToMerge, vector<ve
 		synTableMap[mergedResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation),i);
 	}
 	//remove synonym located at end of each vector
-	for (vector<string> toRemoveElement : mergedResult) {
-		toRemoveElement.pop_back();
-	}
 	
 	mergedQueryTable.at(get<ARGONE>(tableLocation)) = mergedResult;
 }
@@ -635,11 +649,9 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 	string arg1;
 	string arg2;
 	arg1 = stResult[ARGONE].back();
-	stResult[ARGONE].pop_back();
 	synTableMap.insert({ arg1, make_tuple(tableIndex, ARGONE) });
 	if (hasArg2) {
 		arg2 = stResult[ARGTWO].back();
-		stResult[ARGTWO].pop_back();
 		synTableMap.insert({ arg2, make_tuple(tableIndex, ARGTWO) });
 	}
 	mergedQueryTable.push_back(stResult);
@@ -1149,6 +1161,7 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 	pair<MMAPIterator, MMAPIterator> commonValueIterator;
 	vector<vector<string>> hashJoinTable;
 	vector<string> addToTable;
+	vector<string> hashKeys;
 	
 	// A | B       A | C
 	// 1   2       3   5
@@ -1168,7 +1181,10 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 				addToTable.push_back(queryAnalyzerTable[col][row]);
 			}
 		}	
-		hashJoinTable.push_back(addToTable);
+		if (!addToTable.empty()) {
+			hashJoinTable.push_back(addToTable);
+		
+		}
 	}
 	for (int col = 0; col < clauseTable.size(); col++) {
 		if (col == clausetableJoinIndex)
@@ -1180,20 +1196,20 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 				addToTable.push_back(clauseTable[col][it->second]);
 			}
 		}
-		hashJoinTable.push_back(addToTable);
+		if(!addToTable.empty())
+			hashJoinTable.push_back(addToTable);
 	}
 
-	//re-map synonym table
-	for (int i = 0; i < hashJoinTable.size(); i++) {
-		synTableMap[hashJoinTable.at(i).back()] = make_tuple(qaTableLoc, i);
-	}
-
-	if (clauseTableLoc != -1) { //table is existing
-		mergedQueryTable.erase(mergedQueryTable.begin() + clauseTableLoc);
-	}
-
-	mergedQueryTable.at(qaTableLoc) = hashJoinTable;
-
+	if (!hashJoinTable.empty()) {
+		//re-map synonym table
+		for (int i = 0; i < hashJoinTable.size(); i++) {
+			synTableMap[hashJoinTable.at(i).back()] = make_tuple(qaTableLoc, i);
+		}
+		if (clauseTableLoc != -1) { //table is existing
+			mergedQueryTable.erase(mergedQueryTable.begin() + clauseTableLoc);
+		}
+		mergedQueryTable.at(qaTableLoc) = hashJoinTable;
+	}  
 	return hashJoinTable;
 }
 
