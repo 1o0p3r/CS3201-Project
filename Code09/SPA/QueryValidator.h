@@ -82,5 +82,6 @@ public:
 	string trimPatternArgs(string str);
 	
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
+	vector<string> extractSuchThatClauses(string str);
 	QueryStatement getQueryStatement();
 };

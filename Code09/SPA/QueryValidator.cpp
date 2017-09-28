@@ -8,7 +8,6 @@
 #include <regex>
 #include <fstream>
 #include <sstream>
-#include <regex>
 #include <algorithm>
 #include <Util.h>
 
@@ -63,6 +62,8 @@ const string EMPTY_STRING = "empty";
 const string ASSIGN_STRING = "assign";
 const string WHILE_STRING = "while";
 const string IF_STRING = "if";
+const string AND_STRING = "and";
+const string ASTERIK = "*";
 
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
@@ -82,19 +83,24 @@ const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 const string MODIFIESS_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string USESS_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string MODIFIESP_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string USESP_STRING_REGEX = "Uses\\s*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string USESP_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string PARENT_STRING_REGEX = "Parent\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string PARENTT_STRING_REGEX = "Parent\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string FOLLOWS_STRING_REGEX = "Follows\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string FOLLOWST_STRING_REGEX = "Follows\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string CALLS_STRING_REGEX = "";
-const string CALLST_STRING_REGEX = "";
+
+const string CALLS_STRING_REGEX = "Calls\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
+const string CALLST_STRING_REGEX = "Calls\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string NEXT_STRING_REGEX = "Next\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 const string NEXTT_STRING_REGEX = "Next\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
 
 const string RELREF_STRING_REGEX = "(" + MODIFIESS_STRING_REGEX + OR + USESS_STRING_REGEX + OR
-+ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + OR + NEXT_STRING_REGEX
-+ OR + NEXTT_STRING_REGEX + OR + CALLS_STRING_REGEX + OR + CALLST_STRING_REGEX + OR + MODIFIESP_STRING_REGEX + OR + USESP_STRING_REGEX + ")";
++ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX 
++ OR + NEXT_STRING_REGEX + OR + NEXTT_STRING_REGEX + OR  + CALLS_STRING_REGEX + OR + CALLST_STRING_REGEX + OR
++ MODIFIESP_STRING_REGEX + OR + USESP_STRING_REGEX + ")";
+
+const string RELCOND_STRING_REGEX = RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+"  + RELCOND_STRING_REGEX;
 
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
@@ -513,6 +519,36 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		}
 		return true;
 	}
+}
+vector<string> QueryValidator::extractSuchThatClauses(string str) {
+	regex suchThatRelRegex(RELREF_STRING_REGEX);
+	smatch m;
+	//sregex_iterator iter(str.begin(), str.end(), suchThatRelRegex);
+	//sregex_iterator end;
+	
+	
+	
+	vector<string> toReturnVec;
+	/**
+	while (regex_search(str, m, suchThatRelRegex)) {
+		for (auto x : m) {
+			toReturnVec.push_back(x);
+			str = m.suffix().str();
+		}
+	}**/
+	/**
+	while (iter != end)
+	{
+		for (unsigned i = 0; i < iter->size(); ++i)
+		{
+			//std::cout << "the " << i + 1 << "th match" << ": " << (*iter)[i] << std::endl;
+			toReturnVec.push_back((*iter)[i]);
+		}
+		++iter;
+	}**/
+
+
+	return toReturnVec;
 }
 bool QueryValidator::isValidSuchThat(string str, string syn) {
 	int toAdd = ZERO;

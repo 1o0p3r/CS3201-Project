@@ -235,14 +235,14 @@ namespace UnitTesting
 			str = "such that Follows(\"s#\",4)";
 			Assert::IsFalse(q.isValidSuchThatRegex(str));
 
-			str = "such that Modifies(\"s\",\"a\")";
-			Assert::IsFalse(q.isValidSuchThatRegex(str));
+//			str = "such that Modifies(\"s\",\"a\")";
+//			Assert::IsFalse(q.isValidSuchThatRegex(str));
 
-			str = "such that Parent*(s#,    4)";
-			Assert::IsTrue(q.isValidSuchThatRegex(str));
+//			str = "such that Parent*(s#,    4)";
+//			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
-			str = "such that Follows*(_,_   )";
-			Assert::IsTrue(q.isValidSuchThatRegex(str));
+//			str = "such that Follows*(_,_   )";
+//			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
 		}
 
@@ -304,6 +304,15 @@ namespace UnitTesting
 
 			str = "Modifies(\"x\",\"y\")";
 			Assert::IsTrue(q.isValidModifiesP(str));
+		}
+		TEST_METHOD(extractSuchThatClauses) {
+			QueryValidator q;
+			string str;
+			vector<string> expectedVec;
+
+			str = "such that Modifies(\"x\",\"y\") and Parent*(3,_)";
+			expectedVec = { "Modifies(\"x\",\"y\")", "Parent*(3,_)" };
+			Assert::IsTrue(q.extractSuchThatClauses(str) == expectedVec);
 		}
 	};
 }
