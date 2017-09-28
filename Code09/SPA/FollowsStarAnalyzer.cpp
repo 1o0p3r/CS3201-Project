@@ -23,7 +23,7 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgTwoResult(string 
 		hasFollowsStar = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
-		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
+		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		followsStarResult.push_back(pkbResult);
 	}
 
@@ -52,7 +52,7 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgOneResult(string 
 		hasFollowsStar = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
-		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
+		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		followsStarResult.push_back(pkbResult);
 	}
 

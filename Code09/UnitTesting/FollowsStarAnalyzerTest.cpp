@@ -1,0 +1,146 @@
+#include "stdafx.h"
+#include "CppUnitTest.h"
+#include "QueryAnalyzer.h"
+#include "Util.h"
+
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+namespace UnitTesting {
+	TEST_CLASS(QueryAnalyzerTest) {
+public:
+	TEST_METHOD(solveFollowsStarAnalyzer) {
+		PKB pkb;
+		QueryAnalyzer qa;
+		QueryStatement qs;
+		tuple<bool, vector<vector<string>>> clauseResult;
+		pkb.setStatementType(1, "while");
+		pkb.setStatementType(2, "assign");
+		pkb.setStatementType(3, "assign");
+		pkb.setStatementType(4, "while");
+		pkb.setStatementType(5, "assign");
+		pkb.setStatementType(6, "while");
+		pkb.setStatementType(7, "assign");
+		pkb.setParent(1, 2);
+		pkb.setParent(1, 3);
+		pkb.setParent(1, 4);
+		pkb.setParent(4, 5);
+		pkb.setParent(4, 6);
+		pkb.setParent(6, 7);
+
+		pkb.setFollows(2, 3);
+		pkb.setFollows(3, 4);
+		pkb.setFollows(5, 6);
+		qa.setPKB(pkb);
+		vector<vector<string>> result;
+		vector<vector<string>> hardcode;
+		//intint
+		/*
+		1.while {
+		2.  assign
+		3.  assign
+		4.	while
+		5.		assign
+		6.		while
+		7.			assign
+		}
+		*/
+
+
+		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "FollowsStar");
+
+		qs.addSuchThatQuery(wildWild);
+		qa.setQS(qs);
+
+		clauseResult = FollowsStarAnalyzer(wildWild, pkb).solveClause();
+		Assert::IsTrue(get<0>(clauseResult));
+
+		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(wildInt);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(wildInt, pkb).solveClause();
+		Assert::IsTrue(get<0>(clauseResult));
+
+		QueryElement intWild("2", "int", "assign", "_", "wildcard", "", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(intWild);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(intWild, pkb).solveClause();
+		Assert::IsTrue(get<0>(clauseResult));
+
+		QueryElement intInt("2", "int", "assign", "6", "int", "", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(intInt);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(intInt, pkb).solveClause();
+		Assert::IsFalse(get<0>(clauseResult));
+
+		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(intSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(intSyn, pkb).solveClause();
+		hardcode = { { "3","4","a" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		for (int i = 0; i < get<1>(clauseResult).size(); i++)
+			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
+			}
+
+
+		QueryElement synInt("a", "synonym", "assign", "4", "integer", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synInt);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(synInt, pkb).solveClause();
+		hardcode = { { "2","3","a" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		for (int i = 0; i < get<1>(clauseResult).size(); i++)
+			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
+			}
+
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(synSyn, pkb).solveClause();
+		hardcode = { { "2","2","3","5","a" },
+		{ "3","4","4","6","b" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		for (int i = 0; i < get<1>(clauseResult).size(); i++)
+			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
+			}
+
+
+		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(synWild);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(synWild, pkb).solveClause();
+		hardcode = { { "2","3","5","a" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		for (int i = 0; i < get<1>(clauseResult).size(); i++)
+			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
+			}
+
+
+		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "FollowsStar");
+		qs = QueryStatement();
+		qs.addSuchThatQuery(wildSyn);
+		qa.setQS(qs);
+		clauseResult = FollowsStarAnalyzer(wildSyn, pkb).solveClause();
+		hardcode = { { "3","4","6","a" } };
+		Assert::IsTrue(get<0>(clauseResult));
+		for (int i = 0; i < get<1>(clauseResult).size(); i++)
+			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
+			}
+
+
+	}
+
+	};
+}

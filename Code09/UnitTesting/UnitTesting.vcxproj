@@ -163,8 +163,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FollowsAnalyzerTest.cpp" />
+    <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
     <ClCompile Include="FollowTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
+    <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="ParentTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
     <ClCompile Include="PKBTest.cpp" />
