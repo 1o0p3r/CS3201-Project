@@ -43,6 +43,8 @@ protected:
 
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
-	tuple<bool,vector<vector<string>>> solveClause();
+	tuple<bool, vector<vector<string>>> solveClause();
+	tuple<bool, vector<vector<string>>> solveClauseProc();
+	tuple<bool,vector<vector<string>>> solveClauseStmt();
 };
 

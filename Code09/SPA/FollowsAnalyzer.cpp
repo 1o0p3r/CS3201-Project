@@ -22,7 +22,7 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgTwoResult(string arg1
 	if (pkbResult.empty())
 		hasFollows = false;
 	else {
-		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
+		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		followsResult.push_back(pkbResult);
 	}
 
@@ -49,7 +49,7 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgOneResult(string arg2
 		if (pkbResult.empty())
 		hasFollows = false;
 	else {
-		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
+		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		followsResult.push_back(pkbResult);
 	}
 

@@ -23,6 +23,7 @@
     <ClCompile Include="FollowsAnalyzer.cpp" />
     <ClCompile Include="FollowsStarAnalyzer.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
+    <ClCompile Include="ModifiesAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
@@ -46,6 +47,7 @@
     <ClInclude Include="FollowsAnalyzer.h" />
     <ClInclude Include="FollowsStarAnalyzer.h" />
     <ClInclude Include="ParentStarAnalyzer.h" />
+    <ClInclude Include="ModifiesAnalyzer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">

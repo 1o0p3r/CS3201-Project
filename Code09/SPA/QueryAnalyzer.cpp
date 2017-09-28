@@ -236,17 +236,17 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 					insertSTResult(stResult);
 				break;
 			case parentStar:
-				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClause();
+				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case follows:
-				clauseResult = FollowsAnalyzer(stClause, pkbReadOnly).solveClause();
+				clauseResult = FollowsAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
-				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClause();
+				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;

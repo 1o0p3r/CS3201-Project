@@ -23,7 +23,27 @@ suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb)
 	hasSuchThatClause = true;
 }
 
-tuple<bool,vector<vector<string>>> suchThatAnalyzer::solveClause() 
+tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClause()
+{
+	/* arg1, arg2  = case
+	* stmtVersion = syn, wildcard, var 9 cases, syn , var, wilcard
+	* procVersion = syn, wildcard, varInt, varString 12 cases
+	*/
+	tuple<bool,vector<vector<string>>> stResult;
+	if (arg1Type == "procedure" || arg1Type == "call")
+		stResult = solveClauseProc();
+	else
+		stResult = solveClauseStmt();
+	return stResult;
+
+}
+
+tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClauseProc()
+{
+	//to be implemented in iter2
+}
+
+tuple<bool,vector<vector<string>>> suchThatAnalyzer::solveClauseStmt() 
 {	/*Cases
 	Arg1 Arg2
 	int int
