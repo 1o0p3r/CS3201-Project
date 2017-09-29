@@ -135,7 +135,7 @@ vector<string> QueryEval::getQueryAnswer()
 		answer.push_back(convertVectToString);
 	} 
 	if (answer.empty())
-		answer = {"None"};
+		answer = {"none"};
 	return answer;
 }
 void QueryEval::initForNewQs()

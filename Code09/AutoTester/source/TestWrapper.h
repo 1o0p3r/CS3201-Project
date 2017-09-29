@@ -9,7 +9,7 @@
 #include "AbstractWrapper.h"
 #include "PKB.h"
 #include "QueryValidator.h"
-#include "QueryEval.h"
+#include "QueryAnalyzer.h"
 
 class TestWrapper : public AbstractWrapper {
  public:
@@ -27,8 +27,8 @@ class TestWrapper : public AbstractWrapper {
 
 private:
 	PKB pkb;
-	QueryValidator q;
-	QueryEval qe;
+	QueryValidator validator;
+	QueryAnalyzer analyzer;
 };
 
 #endif

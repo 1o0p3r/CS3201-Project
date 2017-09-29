@@ -2,7 +2,8 @@
 #include "Parser.h"
 #include "PKB.h"
 #include "QueryValidator.h"
-#include "QueryEval.h"
+#include "QueryAnalyzer.h"
+#include "Util.h"
 
 // implementation code of WrapperFactory - do NOT modify the next 5 lines
 AbstractWrapper* WrapperFactory::wrapper = 0;
@@ -18,25 +19,30 @@ TestWrapper::TestWrapper() {
 	// create any objects here as instance variables of this class
 	// as well as any initialization required for your spa program
 	PKB pkb;
-	QueryValidator q;
-	QueryEval qe;
+	QueryValidator validator;
+	QueryAnalyzer analyzer;
 }
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
 	Parse(filename, pkb);
-	qe.setPKB(pkb);
+	analyzer.setPKB(pkb);
 }
 
 // method to evaluating a query
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
 	// call your evaluator to evaluate the query here
 	  // ...code to evaluate query...
-	q.parseInput(query);
-	QueryStatement qs = q.getQueryStatement();
-	qe.setQueryStatement(qs);
-	vector<string> ans = qe.runQueryEval();
-	results.push_back(ans[0]);
+	if (!validator.parseInput(query)) {
+		results.push_back("none");
+	} else {
+		QueryStatement statement = validator.getQueryStatement();
+		analyzer.setQS(statement);
+		vector<string> ans = analyzer.runQueryEval();
+		for each (string s in ans) {
+			results.push_back(s);
+		}
+	}
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.
 }
