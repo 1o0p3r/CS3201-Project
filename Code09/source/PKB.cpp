@@ -91,9 +91,9 @@ void PKB::addProcedure(string p) {
 	getProcIndex(p);
 }
 
-void PKB::addPattern(int StatementNum, string leftVariable, string rightExpression) {
+void PKB::addPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
-	tuple<int, string> entry = {StatementNum, Util::insertBrackets(rightExpression) };
+	tuple<int, string> entry = { statementNum, Util::insertBrackets(rightExpression) };
 	patternTable.resize(varIndex + 1);
 	patternTable[varIndex].push_back(entry);
 }
@@ -115,8 +115,8 @@ vector<string> PKB::getAllProcedures() {
 	return result;
 }
 
-void PKB::setFollows(int s1, int s2) {
-	follow.setFollows(s1, s2);
+void PKB::setFollows(int statementNum1, int statementNum2) {
+	follow.setFollows(statementNum1, statementNum2);
 }
 
 vector<int> PKB::getFollows(int statementNum) {
@@ -135,8 +135,8 @@ vector<int> PKB::getFollowedByStar(int statementNum) {
 	return follow.getFollowedByStar(statementNum);
 }
 
-void PKB::setParent(int s1, int s2) {
-	parent.setParent(s1, s2);
+void PKB::setParent(int statementNum1, int statementNum2) {
+	parent.setParent(statementNum1, statementNum2);
 }
 
 vector<int> PKB::getParent(int statementNum) {
@@ -155,10 +155,10 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
-void PKB::setModifies(int s, string varName) {
+void PKB::setModifies(int statementNum, string varName) {
 	addVariable(varName);
 	int index = getVarIndex(varName);
-	modify.setModifies(s, index, parent.getParentStar(s));
+	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcModifies(string procName, string varName) {
@@ -185,8 +185,8 @@ vector<string> PKB::convertToProcNames(vector<int> input) {
 	return results;
 }
 
-vector<string> PKB::getModifies(int s) {
-	vector<int> results = modify.getModifies(s);
+vector<string> PKB::getModifies(int statementNum) {
+	vector<int> results = modify.getModifies(statementNum);
 	return convertToVarNames(results);
 }
 
@@ -207,10 +207,10 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setUses(int s, string varName) {
+void PKB::setUses(int statementNum, string varName) {
 	addVariable(varName);
 	int index = getVarIndex(varName);
-	use.setUses(s, index, parent.getParentStar(s));
+	use.setUses(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcUses(string procName, string varName) {
@@ -221,8 +221,8 @@ void PKB::setProcUses(string procName, string varName) {
 	use.setProcUses(procIndex, varIndex);
 }
 
-vector<string> PKB::getUses(int s) {
-	vector<int> results = use.getUses(s);
+vector<string> PKB::getUses(int statementNum) {
+	vector<int> results = use.getUses(statementNum);
 	return convertToVarNames(results);
 }
 

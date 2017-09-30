@@ -162,8 +162,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClCompile Include="FollowsAnalyzerTest.cpp" />
     <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
+=======
+    <ClCompile Include="CallsTest.cpp" />
+>>>>>>> PKB
     <ClCompile Include="FollowTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />

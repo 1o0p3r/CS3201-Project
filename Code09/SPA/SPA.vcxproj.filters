@@ -18,12 +18,16 @@
     <ClCompile Include="Relationship.cpp" />
     <ClCompile Include="RelationshipTable.cpp" />
     <ClCompile Include="SynonymEntityPair.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="QueryAnalyzer.cpp" />
     <ClCompile Include="SuchThatAnalyzer.cpp" />
     <ClCompile Include="FollowsAnalyzer.cpp" />
     <ClCompile Include="FollowsStarAnalyzer.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="ModifiesAnalyzer.cpp" />
+=======
+    <ClCompile Include="Calls.cpp" />
+>>>>>>> PKB
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h" />
@@ -42,12 +46,16 @@
     <ClInclude Include="RelationshipTable.h" />
     <ClInclude Include="SynonymEntityPair.h" />
     <ClInclude Include="..\source\Parser.h" />
+<<<<<<< HEAD
     <ClInclude Include="QueryAnalyzer.h" />
     <ClInclude Include="SuchThatAnalyzer.h" />
     <ClInclude Include="FollowsAnalyzer.h" />
     <ClInclude Include="FollowsStarAnalyzer.h" />
     <ClInclude Include="ParentStarAnalyzer.h" />
     <ClInclude Include="ModifiesAnalyzer.h" />
+=======
+    <ClInclude Include="Calls.h" />
+>>>>>>> PKB
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\PKB.h">

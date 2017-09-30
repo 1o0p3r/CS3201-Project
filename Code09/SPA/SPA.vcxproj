@@ -15,6 +15,7 @@
     <ClCompile Include="..\source\Parser.cpp" />
     <ClCompile Include="..\source\PKB.cpp" />
     <ClCompile Include="..\source\TNode.cpp" />
+    <ClCompile Include="Calls.cpp" />
     <ClCompile Include="Follow.cpp" />
     <ClCompile Include="FollowsAnalyzer.cpp" />
     <ClCompile Include="FollowsStarAnalyzer.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="..\source\Parser.h" />
     <ClInclude Include="..\source\PKB.h" />
     <ClInclude Include="..\source\TNode.h" />
+    <ClInclude Include="Calls.h" />
     <ClInclude Include="Follow.h" />
     <ClInclude Include="FollowsAnalyzer.h" />
     <ClInclude Include="FollowsStarAnalyzer.h" />

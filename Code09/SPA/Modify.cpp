@@ -10,15 +10,15 @@ Modify::Modify() {
 	vector<set<int>> procModifiedByTable;
 } 
 
-void Modify::setModifies(int s, int varName, vector<int> parentStarOfStmt) {
+void Modify::setModifies(int statementNum, int varName, vector<int> parentStarOfStmt) {
 
-	if (s <= 0) { 
+	if (statementNum <= 0) {
 
 		throw new invalid_argument("Statement Number must be more than 0.");
 	}
 
-	setModifies(s, varName);
-	setModifiedBy(varName, s);
+	setModifies(statementNum, varName);
+	setModifiedBy(varName, statementNum);
 
 	if (parentStarOfStmt.size() != 0)
 		for (int i = 0; i < parentStarOfStmt.size(); i++) {
@@ -26,22 +26,22 @@ void Modify::setModifies(int s, int varName, vector<int> parentStarOfStmt) {
 	}
 }
 
-void Modify::setModifies(int s, int varName) {
-	if (s <= 0) {
+void Modify::setModifies(int statementNum, int varName) {
+	if (statementNum <= 0) {
 		throw new invalid_argument("Statement Number must be more than 0.");
 	}
-	if (modifiesTable.size() <= s) {
-		modifiesTable.resize(s + 1);
+	if (modifiesTable.size() <= statementNum) {
+		modifiesTable.resize(statementNum + 1);
 	}
-	modifiesTable[s].insert(varName);
-	setModifiedBy(varName, s);
+	modifiesTable[statementNum].insert(varName);
+	setModifiedBy(varName, statementNum);
 }
 
-void Modify::setModifiedBy(int varName, int s) {
-	if (modifiedByTable.size() <= s) {
+void Modify::setModifiedBy(int varName, int statementNum) {
+	if (modifiedByTable.size() <= statementNum) {
 		modifiedByTable.resize(varName + 1);
 	}
-	modifiedByTable[varName].insert(s);
+	modifiedByTable[varName].insert(statementNum);
 }
 
 void Modify::setProcModifies(int procName, int varName) {
@@ -59,10 +59,10 @@ void Modify::setProcModifiedBy(int varName, int procName) {
 	procModifiedByTable[varName].insert(procName);
 }
 
-vector<int> Modify::getModifies(int s) {
-	if (modifiesTable.size() > s) {
+vector<int> Modify::getModifies(int statementNum) {
+	if (modifiesTable.size() > statementNum) {
 		vector<int> result;
-		result.insert(result.end(), modifiesTable[s].begin(), modifiesTable[s].end());
+		result.insert(result.end(), modifiesTable[statementNum].begin(), modifiesTable[statementNum].end());
 		return result;
 	} else {
 		return vector<int>();

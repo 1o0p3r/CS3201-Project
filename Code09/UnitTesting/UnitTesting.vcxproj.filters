@@ -11,11 +11,15 @@
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="QueryAnalyzerTest.cpp" />
     <ClCompile Include="FollowsAnalyzerTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
     <ClCompile Include="ModifiesAnalyzerTest.cpp" />
+=======
+    <ClCompile Include="CallsTest.cpp" />
+>>>>>>> PKB
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
