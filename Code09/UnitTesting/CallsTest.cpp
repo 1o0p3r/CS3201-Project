@@ -3,6 +3,7 @@
 #include "Calls.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+using namespace std;
 
 namespace UnitTesting
 {
@@ -26,8 +27,12 @@ namespace UnitTesting
 
 		TEST_METHOD(setCallsIncorrectly) {
 
-			Calls call;
-
+			Assert::ExpectException<invalid_argument> ([&] {
+				int a = 1;
+				int b = 1;
+				if (a == b)
+					throw invalid_argument("Procedure calls itself. Program is recursive");
+			});
 		}
 
 	};
