@@ -37,9 +37,7 @@ const string PARENT_STAR_STRING = "Parent";
 const string MODIFIES_STRING = "Modifies";
 const string USES_STRING = "Uses";
 const string CALLS_STRING = "Calls";
-const string CALLS_STAR_STRING = "Calls*";
 const string NEXT_STRING = "Next";
-const string NEXT_STAR_STRING = "Next*";
 const string UNDER_SCORE_STRING = "_";
 const string WILDCARD_STRING = "wildcard";
 const string CONSTANT_STRING = "constant";
@@ -75,54 +73,64 @@ const string CONSTANT_STRING_REGEX = "\\d+";
 const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
 const string IDENT_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
-const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))";
+const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
 const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
-const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))";
+const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))"; //Nth wrg here either
 const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
 const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line)";
 const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
 const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 
-const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_MODIFIESS_STRING_REGEX = MODIFIES_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_MODIFIESS_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_USESS_STRING_REGEX = USES_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_USESP_STRING_REGEX = USES_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_USESP_STRING_REGEX = USES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_USESS_STRING_REGEX = USES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_PARENT_STRING_REGEX = PARENT_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ STMTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_PARENTT_STRING_REGEX = PARENT_STRING + "\\*\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ STMTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_CALLS_STRING_REGEX = CALLS_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_CALLST_STRING_REGEX = CALLS_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_FOLLOWS_STRING_REGEX = FOLLOWS_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ STMTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_FOLLOWST_STRING_REGEX = FOLLOWS_STRING + "\\*\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ STMTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_PARENT_STRING_REGEX = PARENT_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_PARENTT_STRING_REGEX = PARENT_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_CALLS_STRING_REGEX = CALLS_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_CALLST_STRING_REGEX = CALLS_STRING + "\\*\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ ENTREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_FOLLOWS_STRING_REGEX = FOLLOWS_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_FOLLOWST_STRING_REGEX = FOLLOWS_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_NEXT_STRING_REGEX = NEXT_STRING + "\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + LINEREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ LINEREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
-const string TEMP_NEXTT_STRING_REGEX = NEXT_STRING + "\\*\\(" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + LINEREF_STRING_REGEX + "\\s*" + "," + "\\s*"
-+ LINEREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + "\\)";
+const string TEMP_NEXT_STRING_REGEX = NEXT_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_NEXTT_STRING_REGEX = NEXT_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
+const string TEMP_RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + TEMP_MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING 
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_PARENTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_PARENT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_FOLLOWS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_FOLLOWST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_NEXT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_NEXTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_CALLS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_CALLST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_MODIFIESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_RELREF_STRING_REGEX = "(" + TEMP_MODIFIESS_STRING_REGEX + OR + TEMP_USESS_STRING_REGEX + OR
-+ TEMP_PARENTT_STRING_REGEX + OR + TEMP_PARENT_STRING_REGEX + OR + TEMP_FOLLOWS_STRING_REGEX + OR + TEMP_FOLLOWST_STRING_REGEX
-+ OR + TEMP_NEXT_STRING_REGEX + OR + TEMP_NEXTT_STRING_REGEX + OR + TEMP_CALLS_STRING_REGEX + OR + TEMP_CALLST_STRING_REGEX + OR
-+ TEMP_MODIFIESP_STRING_REGEX + OR + TEMP_USESP_STRING_REGEX + ")";
-
-const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+//const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
 
+/**
 const string MODIFIESS_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string USESS_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
 const string MODIFIESP_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
@@ -146,6 +154,7 @@ const string RELCOND_STRING_REGEX = RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_B
 const string ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+"  + RELCOND_STRING_REGEX;
 
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
+**/
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
@@ -201,7 +210,7 @@ bool QueryValidator::parseInput(string str) {
 
 //To be deleted 
 bool QueryValidator::isValidModifiesP(string str) {
-	regex modifiesPRegex(MODIFIESP_STRING_REGEX);
+	regex modifiesPRegex(TEMP_MODIFIESP_STRING_REGEX);
 	return regex_match(str, modifiesPRegex);
 }
 //This function parses the Entity And Synonym and checks for the validity of Entity
@@ -566,7 +575,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 
 //This method extracts all the relationship involed in the such that clauses and returns them in a vector
 vector<string> QueryValidator::extractSuchThatClauses(string str) {
-	regex suchThatRelRegex(RELREF_STRING_REGEX);
+	regex suchThatRelRegex(TEMP_RELREF_STRING_REGEX);
 	smatch m;
 	string temp;
 	vector<string> toReturnVec;
