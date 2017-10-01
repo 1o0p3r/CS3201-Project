@@ -5,6 +5,7 @@
 #include "Parent.h"
 #include "Modify.h"
 #include "Use.h"
+#include "Calls.h"
 #include "Util.h"
 
 #include <stdio.h>
@@ -35,6 +36,7 @@ PKB::PKB() {
 	Parent parent;
 	Modify modify;
 	Use use;
+	Calls call;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
@@ -241,6 +243,34 @@ vector<string> PKB::getProcUses(string procName) {
 vector<string> PKB::getProcUsedBy(string varName) {
 	int index = getVarIndex(varName);
 	vector<int> results = use.getProcUsedBy(index);
+	return convertToProcNames(results);
+}
+
+void PKB::setCalls(string procName1, string procName2) {
+	addProcedure(procName1);
+	addProcedure(procName2);
+	int index1 = getProcIndex(procName1);
+	int index2 = getProcIndex(procName2);
+	call.setCalls(index1, index2);
+}
+
+vector<string> PKB::getCalls(int procName) {
+	vector<int> results = call.getCalls(procName);
+	return convertToProcNames(results);
+}
+
+vector<string> PKB::getCalledBy(int procName) {
+	vector<int> results = call.getCalledBy(procName);
+	return convertToProcNames(results);
+}
+
+vector<string> PKB::getCallsStar(int procName) {
+	vector<int> results = call.getCallsStar(procName);
+	return convertToProcNames(results);
+}
+
+vector<string> PKB::getCalledByStar(int procName) {
+	vector<int> results = call.getCalls(procName);
 	return convertToProcNames(results);
 }
 
