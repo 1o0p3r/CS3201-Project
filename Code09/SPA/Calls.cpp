@@ -116,18 +116,16 @@ vector<int> Calls::getCalledByStar(int procName) {
 
 void Calls::checkIfRecursive() {
 
-	set<int> setTable;
-
 	for (int i = 0; i < callsStarTable.size(); i++) {
-		setTable.insert(callsStarTable[i].begin(), callsStarTable[i].end());
+		if (find(callsStarTable[i].begin(), callsStarTable[i].end(), i) != callsStarTable[i].end()) {
 
-		if (callsStarTable.size() == setTable.size()) {
-			isRecursive = false;
-		}
-		else {
 			isRecursive = true;
 			throw new invalid_argument("Procedure calls itself. Program is recursive");
 		}
-		setTable.clear();
+
+		else {
+			
+			isRecursive = false;
+		}
 	}
 }
