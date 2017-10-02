@@ -25,6 +25,15 @@ namespace UnitTesting
 			Assert::IsTrue(call.getCalledByStar(3) == vector<int>{2, 1});
 		}
 
+		TEST_METHOD(getAllCallsWorking) {
+
+			Calls call;
+
+			call.setCalls(1, 2);
+			call.setCalls(2, 3);
+			Assert::IsTrue(call.getAllCalls() == set<int>{2, 3});
+		}
+
 		TEST_METHOD(setCallsIncorrectly) {
 
 			Assert::ExpectException<invalid_argument> ([&] {
@@ -34,6 +43,5 @@ namespace UnitTesting
 					throw invalid_argument("Procedure calls itself. Program is recursive");
 			});
 		}
-
 	};
 }

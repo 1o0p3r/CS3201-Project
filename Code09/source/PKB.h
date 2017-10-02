@@ -275,16 +275,31 @@ public:
 	@returns a vector containing ints of all while statements
 	*/
 	vector<int> getWhile();
+
 	/**
 	Gets all the assign statements
-	@returns a vector containing ints of all while statements
+	@returns a vector containing ints of all assign statements
 	*/
 	vector<int> getAssign();
+
 	/**
 	Gets all the if statements
-	@returns a vector containing ints of all while statements
+	@returns a vector containing ints of all if statements
 	*/
 	vector<int> getIf();
+
+	/**
+	Gets all the call statements
+	@returns a vector containing ints of all call statements
+	*/
+	vector<int> getCall();
+
+	/**
+	Gets all procedures that was called by another procedure
+	@returns a vector containing procedure names of all called procedures
+	*/
+	vector<string> PKB::getAllCalls();
+
 	/**
 	Gets all the statements
 	@returns a vector containing ints of all while statements
@@ -323,6 +338,7 @@ private:
 	vector<int> whileTable;
 	vector<int> assignTable;
 	vector<int> ifTable;
+	vector<int> callTable;
 	vector<vector<tuple<int, string>>> patternTable;
 
 	set<string> allVariables;

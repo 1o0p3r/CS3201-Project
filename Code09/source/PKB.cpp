@@ -19,7 +19,7 @@
 using namespace std;
 
 enum typeValue {
-	undefinedSelect, _while, assign, _if
+	undefinedSelect, _while, assign, _if, _call
 };
 
 static std::map<std::string, typeValue> mapTypeValues;
@@ -28,6 +28,7 @@ void PKB::initTypeMap() { //to check with pql whether QS uses these strings in t
 	mapTypeValues["assign"] = assign;
 	mapTypeValues["while"] = _while;
 	mapTypeValues["if"] = _if;
+	mapTypeValues["call"] = _call;
 }
 
 PKB::PKB() {
@@ -275,7 +276,7 @@ vector<string> PKB::getCalledByStar(int procName) {
 }
 
 void PKB::setStatementType(int statementNum, string type) {
-	// 1 = while, 2 = assign, 3 = if
+	// 1 = while, 2 = assign, 3 = if, 4 = call
 	switch (mapTypeValues[type]) {
 	case _while: 
 		whileTable.push_back(statementNum);
@@ -285,6 +286,9 @@ void PKB::setStatementType(int statementNum, string type) {
 		break;
 	case _if: 
 		ifTable.push_back(statementNum);
+		break;
+	case _call:
+		callTable.push_back(statementNum);
 		break;
 	default:
 		break;
@@ -301,6 +305,17 @@ vector<int> PKB::getAssign() {
 
 vector<int> PKB::getIf() {
 	return ifTable;
+}
+
+vector<int> PKB::getCall() {
+	return callTable;
+}
+
+vector<string> PKB::getAllCalls() {
+	set<int> setOfAllCalls = call.getAllCalls();
+	vector<int> results;
+	results.insert(results.end(), setOfAllCalls.begin(), setOfAllCalls.end());
+	return convertToProcNames(results);
 }
 
 vector<int> PKB::getAllStmt() {

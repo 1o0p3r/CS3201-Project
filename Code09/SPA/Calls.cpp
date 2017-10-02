@@ -1,6 +1,5 @@
 #include "Calls.h"
 #include <set>
-#include <string>
 #include <algorithm>
 
 using namespace std;
@@ -11,6 +10,7 @@ Calls::Calls() {
 	vector<vector<int>> calledByTable;
 	vector<vector<int>> callsStarTable;
 	vector<vector<int>> calledByStarTable;
+	set<int> allCallsTable;
 
 	bool isRecursive = false;
 }
@@ -30,8 +30,9 @@ void Calls::setCalls(int procName1, int procName2) {
 	setCalledBy(procName1, procName2);
 	setCallsStar(procName1, procName2);
 	setCalledByStar(procName1, procName2);
+	allCallsTable.insert(procName2);
 
-	//checkIfRecursive();
+	checkIfRecursive();
 }
 
 void Calls::setCalledBy(int procName1, int procName2) {
@@ -112,6 +113,11 @@ vector<int> Calls::getCalledByStar(int procName) {
 	else {
 		return vector<int>();
 	}
+}
+
+set<int> Calls::getAllCalls() {
+
+	return allCallsTable;
 }
 
 void Calls::checkIfRecursive() {
