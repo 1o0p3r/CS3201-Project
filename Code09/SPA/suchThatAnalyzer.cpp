@@ -30,18 +30,9 @@ tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClause()
 	* procVersion = syn, wildcard, varInt, varString 12 cases
 	*/
 	tuple<bool,vector<vector<string>>> stResult;
-	if (arg1Type == "procedure" || arg1Type == "call")
-		stResult = solveClauseProc();
-	else
-		stResult = solveClauseStmt();
+	stResult = solveClauseStmt();
 	return stResult;
 
-}
-
-tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClauseProc()
-{
-	//to be implemented in iter2
-	return tuple<bool, vector<vector<string>>>();
 }
 
 tuple<bool,vector<vector<string>>> suchThatAnalyzer::solveClauseStmt() 
