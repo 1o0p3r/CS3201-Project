@@ -125,11 +125,6 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResultProc(string
 	vector<string> pkbModifies;
 	vector<vector<string>> modifiesResult;
 	
-	//semantic errors
-	if (arg1 == WILDCARD_SYMBOL)
-		return make_tuple(false, vector<vector<string>>());
-	else
-		return;
 	// TO BE DONE ON TUESDAY
 
 	return tuple<bool, vector<vector<string>>>();

@@ -10,7 +10,7 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgTwoResult(string arg1)
 	vector<vector<string>> callsResult;
 
 	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getCall();
+		vecOfCandidates = pkbReadOnly.getAllCalls();
 	else
 		vecOfCandidates.push_back(arg1);
 	for (string candidates : vecOfCandidates) {
@@ -39,7 +39,7 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgOneResult(string arg2)
 	vector<vector<string>> callsResult;
 
 	if (arg2 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getCall();
+		vecOfCandidates = pkbReadOnly.getAllCalls();
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
@@ -68,7 +68,7 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addBothSynResult(string arg1,
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> callsResult;
 
-	vecOfCandidates = pkbReadOnly.getCall();
+	vecOfCandidates = pkbReadOnly.getAllCalls();
 	for (string candidates : vecOfCandidates) {
 		pkbCalls = pkbReadOnly.getCalls(candidates);
 		for (string candidatesChosen : pkbCalls) {
@@ -108,8 +108,8 @@ bool CallsAnalyzer::checkClauseWildVariable(string arg2)
 bool CallsAnalyzer::checkClauseBothWild()
 {
 	int minCallStmts = 1;
-	vector<int> allCalls = pkbReadOnly.getCall();
-	if (allCalls.size() < minCallStmts)
+	int allCalls = pkbReadOnly.getAllCalls().size();
+	if (allCalls < minCallStmts)
 		hasSuchThatClause = false;
 	return hasSuchThatClause;
 }

@@ -243,7 +243,7 @@ public:
 	@returns a vector containing strings the names of the procedures it directly calls
 	*/
 	vector<string> getCalls(int procName);
-
+	vector<string> getCalls(string procName); //@niev remove when done
 	/**
 	Gets the procedures that the input procedure is called by
 
@@ -251,7 +251,7 @@ public:
 	@returns a vector containing strings the names of the procedures the input procedure is called by
 	*/
 	vector<string> getCalledBy(int procName);
-
+	vector<string> getCalledBy(string procName); // @niev remove when done
 	/**
 	Gets the procedures called by input procedure directly and indirectly
 

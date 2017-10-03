@@ -260,9 +260,19 @@ vector<string> PKB::getCalls(int procName) {
 	return convertToProcNames(results);
 }
 
+vector<string> PKB::getCalls(string procName)
+{
+	return vector<string>();
+}
+
 vector<string> PKB::getCalledBy(int procName) {
 	vector<int> results = call.getCalledBy(procName);
 	return convertToProcNames(results);
+}
+
+vector<string> PKB::getCalledBy(string procName)
+{
+	return vector<string>();
 }
 
 vector<string> PKB::getCallsStar(int procName) {
