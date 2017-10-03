@@ -130,31 +130,6 @@ const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_
 //const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
 
-/**
-const string MODIFIESS_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string USESS_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string MODIFIESP_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string USESP_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string PARENT_STRING_REGEX = "Parent\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string PARENTT_STRING_REGEX = "Parent\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string FOLLOWS_STRING_REGEX = "Follows\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string FOLLOWST_STRING_REGEX = "Follows\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-
-const string CALLS_STRING_REGEX = "Calls\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string CALLST_STRING_REGEX = "Calls\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string NEXT_STRING_REGEX = "Next\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string NEXTT_STRING_REGEX = "Next\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-
-const string RELREF_STRING_REGEX = "(" + MODIFIESS_STRING_REGEX + OR + USESS_STRING_REGEX + OR
-+ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX 
-+ OR + NEXT_STRING_REGEX + OR + NEXTT_STRING_REGEX + OR  + CALLS_STRING_REGEX + OR + CALLST_STRING_REGEX + OR
-+ MODIFIESP_STRING_REGEX + OR + USESP_STRING_REGEX + ")";
-
-const string RELCOND_STRING_REGEX = RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
-const string ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+"  + RELCOND_STRING_REGEX;
-
-const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
-**/
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
@@ -322,6 +297,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
 	str = trim(str);
+	//str is now a(...,...)
 	str = str.substr(8, str.length() - 1);
 	int idxLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
 	string synDesignEnt = str.substr(0, idxLeftBracket);
