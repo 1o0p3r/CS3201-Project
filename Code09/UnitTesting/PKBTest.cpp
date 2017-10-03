@@ -67,5 +67,16 @@ public:
 		Assert::IsTrue(pkb.getProcModifiedBy("y") == vector<string>{"first", "second"});
 	}
 
+	TEST_METHOD(setProcUsesForMultiplePrcs) {
+		PKB pkb;
+		pkb.setProcUses("first", "x");
+		pkb.setProcUses("first", "y");
+		pkb.setCalls("first", "second");
+		pkb.setProcUses("second", "z");
+
+		vector<string> results;
+		Assert::IsTrue(pkb.getProcUses("first") == vector<string>{"x", "y", "z"});
+		Assert::IsTrue(pkb.getProcUsedBy("z") == vector<string>{"first", "second"});
+	}
 	};
 }

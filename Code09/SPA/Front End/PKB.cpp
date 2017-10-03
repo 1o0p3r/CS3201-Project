@@ -240,8 +240,29 @@ void PKB::setUses(int statementNum, string varName) {
 void PKB::setProcUses(string procName, string varName) {
 	addVariable(varName);
 	addProcedure(procName);
-	int varIndex = getVarIndex(varName);
 	int procIndex = getProcIndex(procName);
+	int varIndex = getVarIndex(varName);
+
+	vector<string> procIsCalledBy = getCalledBy(procName);
+
+	int currProcIndex;
+	int currVarIndex;
+
+	for (int i = 0; i < procIsCalledBy.size(); i++) {
+		currProcIndex = getProcIndex(procIsCalledBy[i]);
+		use.setProcUses(currProcIndex, varIndex);
+	}
+
+	vector<string> procIsCalling = getCalls(procName);
+	vector<string> variablesUsed;
+	for (int i = 0; i < procIsCalling.size(); i++) {
+		variablesUsed = getProcUses(procIsCalling[i]);
+		for (int j = 0; j < variablesUsed.size(); j++) {
+			currVarIndex = getVarIndex(variablesUsed[j]);
+			use.setProcUses(procIndex, currVarIndex);
+		}
+
+	}
 	use.setProcUses(procIndex, varIndex);
 }
 
