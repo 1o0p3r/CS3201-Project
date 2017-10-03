@@ -255,33 +255,27 @@ void PKB::setCalls(string procName1, string procName2) {
 	call.setCalls(index1, index2);
 }
 
-vector<string> PKB::getCalls(int procName) {
-	vector<int> results = call.getCalls(procName);
+vector<string> PKB::getCalls(string procName) {
+	int procNameIndex = getProcIndex(procName);
+	vector<int> results = call.getCalls(procNameIndex);
 	return convertToProcNames(results);
 }
 
-vector<string> PKB::getCalls(string procName)
-{
-	return vector<string>();
-}
-
-vector<string> PKB::getCalledBy(int procName) {
-	vector<int> results = call.getCalledBy(procName);
+vector<string> PKB::getCalledBy(string procName) {
+	int procNameIndex = getProcIndex(procName);
+	vector<int> results = call.getCalledBy(procNameIndex);
 	return convertToProcNames(results);
 }
 
-vector<string> PKB::getCalledBy(string procName)
-{
-	return vector<string>();
-}
-
-vector<string> PKB::getCallsStar(int procName) {
-	vector<int> results = call.getCallsStar(procName);
+vector<string> PKB::getCallsStar(string procName) {
+	int procNameIndex = getProcIndex(procName);
+	vector<int> results = call.getCallsStar(procNameIndex);
 	return convertToProcNames(results);
 }
 
-vector<string> PKB::getCalledByStar(int procName) {
-	vector<int> results = call.getCalls(procName);
+vector<string> PKB::getCalledByStar(string procName) {
+	int procNameIndex = getProcIndex(procName);
+	vector<int> results = call.getCalls(procNameIndex);
 	return convertToProcNames(results);
 }
 
