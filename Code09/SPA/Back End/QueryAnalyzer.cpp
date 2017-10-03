@@ -449,103 +449,10 @@ void QueryAnalyzer::insertArg1Arg2CommonSynTable(vector<vector<string>> stResult
 			SAMETABLE : TWO_DISJOINT_TABLE;
 	switch (scenario) {
 		case SAMETABLE:
-			merge2DVectorTwoSyno(tableToMerge1, stResult, tableLocation1, tableLocation2);
 			break;
 		case TWO_DISJOINT_TABLE:
-			merge2DVectorDisjointTable(tableToMerge1, tableToMerge2, stResult, 
-				tableLocation1, tableLocation2);
 			break;
 	}
-}
-
-void QueryAnalyzer::merge2DVectorTwoSyno(vector<vector<string>> tableToMerge1, 
-		vector<vector<string>> stResult, tuple<int, int> tableLocation1, tuple<int, int> tableLocation2) {
-
-	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
-	vector<vector<string>> mergedResult;
-	vector<vector<string>> mergedBothResult;
-	//remove non-intersect elements in table based on arg1
-	vectWithIndexLookup = stringVectIntersect(tableToMerge1.at(get<ARGTWO>(tableLocation1)),
-			stResult.at(ARGONE));
-	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
-	for (auto synValues : tableToMerge1) {
-		vector<string> synCommonIndex;
-		for (auto chosenIndex : commonResultIndexTTM) {
-			synCommonIndex.push_back(synValues.at(chosenIndex));
-		}
-		mergedResult.push_back(synCommonIndex);
-	}
-
-	vectWithIndexLookup = stringVectIntersect(mergedResult.at(get<ARGTWO>(tableLocation2)), 
-			stResult.at(ARGTWO));
-	commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
-	for (auto synValues : mergedResult) {
-		vector<string> synCommonIndex;
-		for (auto chosenIndex : commonResultIndexTTM) {
-			synCommonIndex.push_back(synValues.at(chosenIndex));
-		}
-		mergedBothResult.push_back(synCommonIndex);
-	}
-	//re-map synonym table
-	for (int i = 0; i < mergedBothResult.size(); i++) {
-		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
-	}
-
-	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
-}
-
-void QueryAnalyzer::merge2DVectorDisjointTable(vector<vector<string>> tableToMerge1, 
-		vector<vector<string>> tableToMerge2, vector<vector<string>> stResult, 
-		tuple<int, int> tableLocation1, tuple<int, int> tableLocation2) {
-	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
-	vector<vector<string>> mergedResult;
-	vector<string> synCommonIndex;
-	vector<vector<string>> mergedBothResult;
-	vectWithIndexLookup = stringVectIntersect(tableToMerge1.at(get<ARGTWO>(tableLocation1)),
-		stResult.at(ARGONE));
-	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
-	vector<int> stResultIndex = get<STRINDEX>(vectWithIndexLookup);
-	for (auto synValues : tableToMerge1) {
-		synCommonIndex = vector<string>();
-		for (auto chosenIndex : commonResultIndexTTM) {
-			synCommonIndex.push_back(synValues.at(chosenIndex));
-		}
-		mergedResult.push_back(synCommonIndex);
-	}
-	synCommonIndex = vector<string>();
-	for (auto chosenIndex : stResultIndex) {
-		synCommonIndex.push_back(stResult.at(ARGTWO).at(chosenIndex));
-	}
-	mergedResult.push_back(synCommonIndex);
-	
-	//begin merge on 2nd synonym
-	vectWithIndexLookup = stringVectIntersect(tableToMerge2.at(get<ARGTWO>(tableLocation2)),
-		mergedResult.back());
-	commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
-	stResultIndex = get<STRINDEX>(vectWithIndexLookup);
-	for (auto synValues : tableToMerge2) {
-		synCommonIndex = vector<string>();
-		for (auto chosenIndex : commonResultIndexTTM) {
-			synCommonIndex.push_back(synValues.at(chosenIndex));
-		}
-		mergedBothResult.push_back(synCommonIndex);
-	}
-	for (auto synValues : mergedResult) {
-		if (synValues != mergedResult.back()) {
-			synCommonIndex = vector<string>();
-			for (auto chosenIndex : stResultIndex) {
-				synCommonIndex.push_back(stResult.at(ARGTWO).at(chosenIndex));
-			}
-			mergedBothResult.push_back(synCommonIndex);
-		}
-	}
-	//re-map synonym table
-	for (int i = 0; i < mergedBothResult.size(); i++) {
-		synTableMap[mergedBothResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation1), i);
-	}
-
-	mergedQueryTable.at(get<ARGONE>(tableLocation1)) = mergedBothResult;
-	mergedQueryTable.erase(mergedQueryTable.begin() + get<ARGONE>(tableLocation2));
 }
 
 void QueryAnalyzer::addSingleCommonSynTable(vector<vector<string>> stResult, string arg, int clauseJoinIndex) {
@@ -568,78 +475,6 @@ void QueryAnalyzer::addSingleCommonSynTable(vector<vector<string>> stResult, str
 		}
 			
 	}
-}
-
-void QueryAnalyzer::insertArg2CommonSynTable(vector<vector<string>> stResult, bool hasArg2) {
-	string arg2; //intersect on arg2
-	arg2 = stResult[ARGTWO].back();
-	auto searchSynLocation = synTableMap.find(arg2);
-	tuple<int, int> tableLocation = searchSynLocation->second;
-	vector<vector<string>> tableToMerge = mergedQueryTable.at(get<ARGONE>(tableLocation));
-	merge2DVector(tableToMerge, stResult, tableLocation, ARGTWO, hasArg2); 
-}
-
-void QueryAnalyzer::merge2DVector(vector<vector<string>> tableToMerge, vector<vector<string>> stResult, 
-	 tuple<int,int> tableLocation, int option, bool hasArg2) {
-	tuple<vector<string>, vector<int>, vector<int>> vectWithIndexLookup;
-	vector<vector<string>> mergedResult;
-	vector<string> synCommonIndex;
-	vectWithIndexLookup = stringVectIntersect(tableToMerge.at(get<ARGTWO>(tableLocation)), 
-			stResult.at(option));
-	vector<int> commonResultIndexTTM = get<TTMINDEX>(vectWithIndexLookup);
-	vector<int> stResultIndex = get<STRINDEX>(vectWithIndexLookup);
-	for (auto synValues : tableToMerge) {
-		synCommonIndex = vector<string>();
-		for (auto chosenIndex : commonResultIndexTTM) {
-			synCommonIndex.push_back(synValues.at(chosenIndex));
-		}		
-		mergedResult.push_back(synCommonIndex);
-	}
-	synCommonIndex = vector<string>();
-	int otherArg = (option == ARGONE) ? ARGTWO : ARGONE;
-	if (hasArg2) {
-		for (auto chosenIndex : stResultIndex) {
-			synCommonIndex.push_back(stResult.at(otherArg).at(chosenIndex));
-		}
-		mergedResult.push_back(synCommonIndex);
-	}
-	
-	//re-map synonym table
-	for (int i = 0; i < mergedResult.size();i++) {
-		synTableMap[mergedResult.at(i).back()] = make_tuple(get<ARGONE>(tableLocation),i);
-	}
-	//remove synonym located at end of each vector
-	
-	mergedQueryTable.at(get<ARGONE>(tableLocation)) = mergedResult;
-}
-
-tuple<vector<string>,vector<int>,vector<int>> QueryAnalyzer::
-		stringVectIntersect(vector<string> v1, vector<string> v2) {
-	vector<string> v3;
-	vector<string> preSortV1 = v1; 
-	vector<string> preSortV2 = v2;
-	unordered_map<string, int> mapValueV1;
-	unordered_map<string, int> mapValueV2;
-	vector<int> commonV1Index;
-	vector<int> commonV2Index;
-	//map value of vector to index for lookup during merging
-	for (int i = 0; i<preSortV1.size(); i++) { 
-		mapValueV1.insert({ preSortV1.at(i),i });
-	}
-	for (int j = 0; j < preSortV2.size(); j++) {
-		mapValueV2.insert({ preSortV2.at(j),j });
-	}
-
-	sort(v1.begin(), v1.end());
-	sort(v2.begin(), v2.end());
-
-	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
-	for (string commonValue : v3) {
-		commonV1Index.push_back(mapValueV1.find(commonValue)->second);
-		commonV2Index.push_back(mapValueV2.find(commonValue)->second);
-	}
-
-	return make_tuple(v3,commonV1Index,commonV2Index);
 }
 
 void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult, 
@@ -1166,6 +1001,12 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 	// 1   4       1   6
 	// 2   3       4   7
 	// 3   1       
+	
+	// M = num of variables in QueryAnalyser, K = num of var in Clause Table 
+	// N = number of elements in QueryAnalyser, V = number of common values found
+	//complexity O((M+K-1)*NV )  
+	//Poor implementation of dataStructure
+
 
 	//hash   value of clause (key) to  row indices in multimap
 	for (int row = 0; row < clauseTable[0].size(); row++) {
