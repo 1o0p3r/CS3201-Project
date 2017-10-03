@@ -8,7 +8,6 @@
 #include <regex>
 #include <fstream>
 #include <sstream>
-#include <regex>
 #include <algorithm>
 #include <Util.h>
 
@@ -37,6 +36,8 @@ const string PARENT_STRING = "Parent";
 const string PARENT_STAR_STRING = "Parent";
 const string MODIFIES_STRING = "Modifies";
 const string USES_STRING = "Uses";
+const string CALLS_STRING = "Calls";
+const string NEXT_STRING = "Next";
 const string UNDER_SCORE_STRING = "_";
 const string WILDCARD_STRING = "wildcard";
 const string CONSTANT_STRING = "constant";
@@ -63,6 +64,8 @@ const string EMPTY_STRING = "empty";
 const string ASSIGN_STRING = "assign";
 const string WHILE_STRING = "while";
 const string IF_STRING = "if";
+const string AND_STRING = "and";
+const string ASTERIK = "*";
 
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
@@ -70,25 +73,65 @@ const string CONSTANT_STRING_REGEX = "\\d+";
 const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
 const string IDENT_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
-const string STMTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)";
-const string ENTREF_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")";
+const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
+const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
+const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))"; //Nth wrg here either
 const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
 const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line)";
 const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
 const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 
-const string MODIFIES_STRING_REGEX = "Modifies\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string USES_STRING_REGEX = "Uses\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\d|\#)*)|(\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\")))\\s*\\)";
-const string PARENT_STRING_REGEX = "Parent\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string PARENTT_STRING_REGEX = "Parent\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string FOLLOWS_STRING_REGEX = "Follows\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string FOLLOWST_STRING_REGEX = "Follows\\*\\s*\\((\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*,\\s*((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))\\s*)\\)";
-const string RELREF_STRING_REGEX = "(" + MODIFIES_STRING_REGEX + OR + USES_STRING_REGEX + OR
-+ PARENTT_STRING_REGEX + OR + PARENT_STRING_REGEX + OR + FOLLOWS_STRING_REGEX + OR + FOLLOWST_STRING_REGEX + ")";
+const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_MODIFIESS_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s*" + RELREF_STRING_REGEX;
-const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+const string TEMP_USESP_STRING_REGEX = USES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_USESS_STRING_REGEX = USES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_CALLS_STRING_REGEX = CALLS_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_CALLST_STRING_REGEX = CALLS_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_PARENT_STRING_REGEX = PARENT_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_PARENTT_STRING_REGEX = PARENT_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_FOLLOWS_STRING_REGEX = FOLLOWS_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_FOLLOWST_STRING_REGEX = FOLLOWS_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_NEXT_STRING_REGEX = NEXT_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string TEMP_NEXTT_STRING_REGEX = NEXT_STRING + "\\*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + TEMP_MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_PARENTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_PARENT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_FOLLOWS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_FOLLOWST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_NEXT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_NEXTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_CALLS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_CALLST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_MODIFIESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+//const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
+
+const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" +
+"([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
 
 //Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
@@ -109,7 +152,7 @@ bool QueryValidator::parseInput(string str) {
 	str = removeDuplicatesWhiteSpaces(str);
 
 	if (str.find(SYMBOL_SEMI_COLON_STRING)) {
-		bool valQuery = false;	
+		bool valQuery = false;
 		size_t pos;
 		std::string token;
 
@@ -140,6 +183,11 @@ bool QueryValidator::parseInput(string str) {
 	}
 }
 
+//To be deleted 
+bool QueryValidator::isValidModifiesP(string str) {
+	regex modifiesPRegex(TEMP_MODIFIESP_STRING_REGEX);
+	return regex_match(str, modifiesPRegex);
+}
 //This function parses the Entity And Synonym and checks for the validity of Entity
 bool QueryValidator::isEntityAndSynonym(string currentString) {
 	if (isValidEntity(currentString)) {
@@ -187,8 +235,8 @@ bool QueryValidator::isValidEntity(string currentString) {
 
 //Checks if a given entity is in the EntityTable
 bool QueryValidator::inEntityList(string entity) {
-	
-	for (size_t i =ZERO; i < validEntities.size(); i++) {
+
+	for (size_t i = ZERO; i < validEntities.size(); i++) {
 		if (entity == validEntities.at(i)) {
 			return true;
 		}
@@ -197,7 +245,7 @@ bool QueryValidator::inEntityList(string entity) {
 }
 //Parses the synonym with the associated entity into the synonymTable
 bool QueryValidator::parseDeclaration(vector<string> splitString) {
-	
+
 	//Obtains the entity and erase it from vector
 	string reqEntity = splitString.front();
 	splitString.erase(splitString.begin());
@@ -221,7 +269,7 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 
 	initialVector = splitStatement(initialVector);
 	//After splitting do validation different parts of the vector
-	if(isValidSelect(initialVector) && isValidOthers(initialVector)) {
+	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
 		return true;
 	}
 	else {
@@ -232,7 +280,7 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 
 bool QueryValidator::isValidSynDesignEntity(string synPattern) {
 	string entPattern = getCorrespondingEntity(synPattern);
-	
+
 	if (entPattern == ASSIGN_STRING) {
 		return true;
 	}
@@ -249,6 +297,7 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
 	//Example of current string : pattern a(v,"procs*ifs")	or pattern a(_,_"procs*while"_)
 	str = trim(str);
+	//str is now a(...,...)
 	str = str.substr(8, str.length() - 1);
 	int idxLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
 	string synDesignEnt = str.substr(0, idxLeftBracket);
@@ -323,12 +372,12 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 		//Arg 1 can be either a synonym, wildcard or variable, i only insert brackets when it is a variable
 		/**
 		if (arg1Variable) {
-			arg1 = Util::insertBrackets(arg1);
+		arg1 = Util::insertBrackets(arg1);
 		}**/
 
 		//Arg2 can be a substring, exactstring or a wildcard
 		//Insert brackets only when arg2 is a substring or exact string
-		if(arg2Substring|| arg2Exact) {
+		if (arg2Substring || arg2Exact) {
 			arg2 = Util::insertBrackets(arg2);
 		}
 
@@ -354,12 +403,12 @@ bool QueryValidator::isSubstringArg2(string arg2) {
 	string substringPattern = "_\".+\"_";
 	std::regex pattern(substringPattern);
 	std::smatch sm;
-	
+
 	return std::regex_match(arg2, sm, pattern);
 }
 //This function takes in an argument(2) and checks if it is an exact string
 bool QueryValidator::isExactString(string arg2) {
-	if ((arg2.at(0) == DOUBLE_QUOTATION)  && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
+	if ((arg2.at(0) == DOUBLE_QUOTATION) && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
 		return true;
 	}
 	else {
@@ -410,7 +459,7 @@ void QueryValidator::addSelectQueryElement(string ent, string syn) {
 
 //The following function
 void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
-	
+
 	//Implies that arg1 is wildcard i.e. _
 	if (arg1Wildcard) {
 		if (arg2Substring) {
@@ -434,7 +483,7 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 		else if (!arg2Substring && arg2FullString) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, EXACT_STRING));
 		}
-		else if(!arg2Substring && !arg2FullString && arg2Wilcard) {
+		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, WILDCARD_STRING));
 		}
 		else {
@@ -442,7 +491,7 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 			exit(0);
 		}
 	}
-	else if(arg1Synonym){
+	else if (arg1Synonym) {
 		if (arg2Substring) {
 			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, SUBSTRING_STRING));
 		}
@@ -477,7 +526,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		vector<string> vecSplit = splitBySymbol(selectStr, SYMBOL_WHITESPACE);
 		//Obtain the synonym
 		string syn = vecSplit.at(ONE);
-	
+
 		//loop through every string to check if the first index and last index is a whitespace
 		//If so, remove them
 		for (size_t k = ONE; k < vec.size(); k++) {
@@ -499,130 +548,154 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		return true;
 	}
 }
+
+//This method extracts all the relationship involed in the such that clauses and returns them in a vector
+vector<string> QueryValidator::extractSuchThatClauses(string str) {
+	regex suchThatRelRegex(TEMP_RELREF_STRING_REGEX);
+	smatch m;
+	string temp;
+	vector<string> toReturnVec;
+
+	while (regex_search(str, m, suchThatRelRegex)) {
+		std::cout << m[0] << std::endl;
+		temp = m[0];
+		toReturnVec.push_back(temp);
+		str = m.suffix().str();
+	}
+	return toReturnVec;
+}
 bool QueryValidator::isValidSuchThat(string str, string syn) {
 	int toAdd = ZERO;
-	
+
 	//Remove the additional leading and trailing whitespace
 	str = trim(str);
 
 	if (!isValidSuchThatRegex(str)) {
 		return false;
 	}
-	//Firstly extract/split till a relation is found
-	string tempString = str.substr(10, str.length()-ONE);
-
-	//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
-	vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
-	
-	//Obtain the relation e.g. Follows
-	string relation = tempVec.at(ZERO);
-
-	//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
-	string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length()-1);
-
-	//Remove all the whitespace first
-	argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
-
-	//Split them by Comma
-	vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
-
-	string arg1 = args.at(ZERO);
-	string arg2 = args.at(ONE);
-
-	//At this pt,
-	string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
-	string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
-	
-	bool arg1Valid = false;
-	bool arg2Valid = false;
-	bool arg1_NUM = false;
-	bool arg2_NUM = false;
-	bool arg1_UNDER = false;
-	bool arg2_UNDER = false;
-	bool arg2_VARIABLE = false;
-
-	if (arg1Ent != INVALID_STRING) {
-		//Implies that a corresponding entity was obtained
-		arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
-	}
 	else {
-		//If no correspond entity was obtained, try to check if it is a number or wildcard
-		if (is_number(arg1)) {
-			//If exists in table and part of declared relationship, create a clause and add it to query tree
-			arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
-			if (arg1Valid) {
-				arg1_NUM = true;
+		vector<string> suchThatRelVec = extractSuchThatClauses(str);
+		for (int idx = 0; idx < suchThatRelVec.size(); idx++) {
+			/** The following is no longer needed as we already haf sth like Follows(s,4)
+			//Firstly extract/split till a relation is found
+			string tempString = str.substr(10, str.length() - ONE);
+			*/
+			string tempString = suchThatRelVec.at(idx);
+
+			//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
+			vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
+
+			//Obtain the relation e.g. Follows
+			string relation = tempVec.at(ZERO);
+
+			//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
+			string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length() - 1);
+
+			//Remove all the whitespace first
+			argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
+
+			//Split them by Comma
+			vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
+
+			string arg1 = args.at(ZERO);
+			string arg2 = args.at(ONE);
+
+			//At this pt,
+			string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
+			string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
+
+			bool arg1Valid = false;
+			bool arg2Valid = false;
+			bool arg1_NUM = false;
+			bool arg2_NUM = false;
+			bool arg1_UNDER = false;
+			bool arg2_UNDER = false;
+			bool arg2_VARIABLE = false;
+
+			if (arg1Ent != INVALID_STRING) {
+				//Implies that a corresponding entity was obtained
+				arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
 			}
 			else {
-				arg1_NUM = false;
+				//If no correspond entity was obtained, try to check if it is a number or wildcard
+				if (is_number(arg1)) {
+					//If exists in table and part of declared relationship, create a clause and add it to query tree
+					arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
+					if (arg1Valid) {
+						arg1_NUM = true;
+					}
+					else {
+						arg1_NUM = false;
+					}
+				}
+				else if (arg1 == UNDER_SCORE_STRING) {
+					arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
+					if (arg1Valid) {
+						arg1_UNDER = true;
+					}
+					else {
+						arg1_UNDER = false;
+					}
+				}
+				else {
+					arg1Valid = false;
+				}
 			}
-		}
-		else if (arg1 == UNDER_SCORE_STRING) {
-			arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
-			if (arg1Valid) {
-				arg1_UNDER = true;
-			}
-			else {
-				arg1_UNDER = false;
-			}
-		}
-		else {
-			arg1Valid = false;
-		}
-	}
-	//Implies that it is part of the delcared synonym
-	if (arg2Ent != INVALID_STRING) {
-		arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
-	}
-	else {
-		if (is_number(arg2)) {
-			arg2Valid = checkRelationshipTable(relation, NUMBER_STRING, TWO);
-			if (arg2Valid) {
-				arg2_NUM = true;
-			}
-			else {
-				arg2_NUM = false;
-			}
-		}
-		else if (arg2 == UNDER_SCORE_STRING) {
-			arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
-			if (arg2Valid) {
-				arg2_UNDER = true;
+			//Implies that it is part of the delcared synonym
+			if (arg2Ent != INVALID_STRING) {
+				arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
 			}
 			else {
-				arg2_UNDER = false;
+				if (is_number(arg2)) {
+					arg2Valid = checkRelationshipTable(relation, NUMBER_STRING, TWO);
+					if (arg2Valid) {
+						arg2_NUM = true;
+					}
+					else {
+						arg2_NUM = false;
+					}
+				}
+				else if (arg2 == UNDER_SCORE_STRING) {
+					arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
+					if (arg2Valid) {
+						arg2_UNDER = true;
+					}
+					else {
+						arg2_UNDER = false;
+					}
+				}
+				//Implies arg 2 is sth like "x"
+				else if (isVariable(arg2)) {
+					arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
+					if (arg2Valid) {
+						arg2_VARIABLE = true;
+					}
+					else {
+						arg2_VARIABLE = false;
+					}
+				}
+				else {
+					arg2Valid = false;
+				}
 			}
-		}
-		//Implies arg 2 is sth like "x"
-		else if (isVariable(arg2)) {
-			arg2Valid = checkRelationshipTable(relation, VARIABLE_STRING, TWO);
-			if (arg2Valid) {
-				arg2_VARIABLE = true;
+			//If both are valid and true, create the clause
+			if (arg1Valid && arg2Valid) {
+				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
+					return false;
+				}
+				else {
+					return true;
+				}
 			}
 			else {
-				arg2_VARIABLE = false;
+				return false;
 			}
 		}
-		else {
-			arg2Valid = false;
-		}
-	}
-	//If both are valid and true, create the clause
-	if (arg1Valid && arg2Valid) {
-		if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-	else {
-		return false;
 	}
 }
 
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2) {
-	
+
 	//Implies that arg1 is a synonym
 	if (arg1_NUM == false && arg1_UNDER == false) {
 		//Implies that arg2 is also a synonym
@@ -690,7 +763,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 	else if (arg1_NUM == false && arg1_UNDER == true) {
 		//Implies taht arg1 is a wildcard and arg 2 is a synonym
 		if (arg2_NUM == false && arg2_UNDER == false && arg2_VARIABLE == false) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING , arg2, SYNONYM_STRING, type2, relType);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, type2, relType);
 			addSuchThatQueryElement(queryElement);
 			return true;
 		}
@@ -759,7 +832,7 @@ bool QueryValidator::isValidSynonym(string syn) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
 		vector<string> tempVec = tempPair.getSynonymList();
 		for (size_t j = ZERO; j < tempVec.size(); j++) {
-			if (changeLowerCase(tempVec.at(j)) ==  changeLowerCase(syn)){
+			if (changeLowerCase(tempVec.at(j)) == changeLowerCase(syn)) {
 				return true;
 			}
 		}
@@ -768,7 +841,7 @@ bool QueryValidator::isValidSynonym(string syn) {
 }
 //Splits the string into vectors of string with the required symbol and returns a vector of string
 vector<string> QueryValidator::splitBySymbol(string str, char symbolSplitWith) {
-	
+
 	vector<string> result = vector<string>();
 	std::string token;
 
@@ -790,14 +863,14 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 			if (count == 0) {
 				string before = curr.substr(0, pos);
 				result.push_back(before);
-				curr = curr.substr(pos + strToSplitWith.length()+1, curr.length());
+				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
 				pos = curr.find(strToSplitWith);
 				count++;
 			}
 			else {
 				string before = curr.substr(0, pos);
 				result.push_back(strToSplitWith + before);
-				curr = curr.substr(pos + strToSplitWith.length()+1, curr.length());
+				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
 				pos = curr.find(strToSplitWith);
 				count--;
 			}
@@ -814,7 +887,7 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 }
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	std::regex pattern(symbolToRemove);
-	std::string toReturn = std::regex_replace(str, pattern , "");
+	std::string toReturn = std::regex_replace(str, pattern, "");
 	return toReturn;
 }
 
@@ -830,11 +903,11 @@ string QueryValidator::trim(string str) {
 }
 /**
 int QueryValidator::getNumClauses() {
-	return this->numClauses;
+return this->numClauses;
 }**/
 string QueryValidator::changeLowerCase(string str) {
-	 std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	 return str;
+	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+	return str;
 }
 //Takes in a string and check if it matches the declaration regex
 //Returns true if matches, else false
@@ -845,7 +918,7 @@ bool QueryValidator::isValidDeclarationRegex(string str) {
 //Takes in a string and checks if it matches the such that regex
 //Retunrs true if matches, else false
 bool QueryValidator::isValidSuchThatRegex(string str) {
-	regex suchThatRegex(SUCH_THAT_CL_REGEX);
+	regex suchThatRegex(TEMP_ITR2_SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
 }
 //Takes in a string and checks if it matches the pattern regex

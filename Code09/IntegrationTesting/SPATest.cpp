@@ -56,8 +56,8 @@ public:
 		vector<string> expected;
 		vector<string> answer;
 		
-	/*
 	
+		/**
 		query = "stmt s; Select s such that Follows(s, 3)";
 		expected = {};
 		q.parseInput(query);
@@ -66,14 +66,14 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		
+	
 	
 		//Clear the objects that were used
 		q = QueryValidator();
 		qs = QueryStatement();
 		qa = QueryAnalyzer();
 		expected = vector<string>();
-		
+	
 		query = "stmt s; Select s such that Follows(1, s)";
 		expected = { "2" };
 		q.parseInput(query);
@@ -82,7 +82,7 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		
+
 		//Clear the objects that were used
 		q = QueryValidator();
 		qs = QueryStatement();
@@ -109,7 +109,7 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		
+
 		//Clear the objects that were used
 		q = QueryValidator();
 		qs = QueryStatement();
@@ -226,14 +226,14 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-
-		*/
-/*
-	q = QueryValidator();
+	
+		**/
+		q = QueryValidator();
 		qs = QueryStatement();
 
 		//cant even read parent*
-		query = "stmt s; assign a; Select a Parent*(s，4) pattern a(_, \"x*y + 1\")";
+		//Cuz wrong expected w
+		query = "stmt s; assign a; Select a such that Parent*(s, 4) pattern a(_, \"x*y + 1\")";
 		expected = { "4" };
 		q.parseInput(query);
 		qs = q.getQueryStatement();
@@ -241,7 +241,7 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		*/
+		/*
 		//same problem with 12
 		/*	q = QueryValidator();
 		qs = QueryStatement();
