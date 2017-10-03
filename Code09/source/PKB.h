@@ -4,6 +4,7 @@
 #include "Modify.h"
 #include "Parent.h"
 #include "Use.h"
+#include "Calls.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -226,6 +227,47 @@ public:
 	*/
 	vector<string> getProcUsedBy(string varName);
 
+	/**
+	Sets proc1 calls proc2. Implicitly sets calledBy, callsStar and calledByStar using parentStar.
+
+	@param procName1 procedure that is calling another procedure
+	@param procName2 procedure being called
+	@returns void
+	*/
+	void setCalls(string procName1, string procName2);
+
+	/**
+	Gets the procedures called directly by input procedure
+
+	@param procName name of procedure calling other procedures directly nested in it
+	@returns a vector containing strings the names of the procedures it directly calls
+	*/
+	vector<string> getCalls(int procName);
+
+	/**
+	Gets the procedures that the input procedure is called by
+
+	@param procName name of procedure calling other procedures directly nested in it
+	@returns a vector containing strings the names of the procedures the input procedure is called by
+	*/
+	vector<string> getCalledBy(int procName);
+
+	/**
+	Gets the procedures called by input procedure directly and indirectly
+
+	@param procName name of procedure calling other procedures 
+	@returns a vector containing strings the names of the procedures it calls
+	*/
+	vector<string> getCallsStar(int procName);
+
+	/**
+	Gets the procedures that the input procedure is called by directly and indirectly
+
+	@param procName name of procedure calling other procedures directly nested in it
+	@returns a vector containing strings the names of the procedures the input procedure is called by
+	*/
+	vector<string> getCalledByStar(int procName);
+
 	void setStatementType(int statementNum, string type);
 
 	/**
@@ -233,16 +275,31 @@ public:
 	@returns a vector containing ints of all while statements
 	*/
 	vector<int> getWhile();
+
 	/**
 	Gets all the assign statements
-	@returns a vector containing ints of all while statements
+	@returns a vector containing ints of all assign statements
 	*/
 	vector<int> getAssign();
+
 	/**
 	Gets all the if statements
-	@returns a vector containing ints of all while statements
+	@returns a vector containing ints of all if statements
 	*/
 	vector<int> getIf();
+
+	/**
+	Gets all the call statements
+	@returns a vector containing ints of all call statements
+	*/
+	vector<int> getCall();
+
+	/**
+	Gets all procedures that was called by another procedure
+	@returns a vector containing procedure names of all called procedures
+	*/
+	vector<string> PKB::getAllCalls();
+
 	/**
 	Gets all the statements
 	@returns a vector containing ints of all while statements
@@ -274,12 +331,14 @@ private:
 	Parent parent;
 	Modify modify;
 	Use use;
+	Calls call;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
 	vector<int> whileTable;
 	vector<int> assignTable;
 	vector<int> ifTable;
+	vector<int> callTable;
 	vector<vector<tuple<int, string>>> patternTable;
 
 	set<string> allVariables;
