@@ -218,7 +218,7 @@ namespace UnitTesting
 			string str;
 
 			str = "such that Uses(3,4)";
-			Assert::IsFalse(q.isValidSuchThatRegex(str));
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
 			str = "such that Uses(3,s)";
 			Assert::IsTrue(q.isValidSuchThatRegex(str));
@@ -236,7 +236,7 @@ namespace UnitTesting
 			Assert::IsFalse(q.isValidSuchThatRegex(str));
 
 			str = "such that Modifies(\"s\",\"a\")";
-			Assert::IsFalse(q.isValidSuchThatRegex(str));
+			Assert::IsTrue(q.isValidSuchThatRegex(str));
 
 			str = "such that Parent*(s#,    4)";
 			Assert::IsTrue(q.isValidSuchThatRegex(str));
@@ -263,7 +263,13 @@ namespace UnitTesting
 			str = "pattern a(_,_)";
 			Assert::IsTrue(q.isValidPatternRegex(str));
 
-			str = "pattern a(_,\"x\")";
+			str = "pattern a (_,_)";
+			Assert::IsTrue(q.isValidPatternRegex(str));
+
+			str = "pattern a  (_,_)";
+			Assert::IsFalse(q.isValidPatternRegex(str));
+
+			str = "pattern a (_,\"x\")";
 			Assert::IsTrue(q.isValidPatternRegex(str));
 
 			str = "pattern a(_,\"x\")";
