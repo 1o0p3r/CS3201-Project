@@ -1,6 +1,5 @@
 #include "ModifiesAnalyzer.h"
 
-
 const string WILDCARD_SYMBOL = "_";
 
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg1)
@@ -11,8 +10,12 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg
 	vector<string> pkbModifies;
 	vector<vector<string>> modifiesResult;
 
+	if (arg1Entity == "call" || arg1Entity == "procedure")
+		return addArgTwoResultProc(arg1);
+
+	//semantic error
 	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllStmt();
+		return make_tuple(false, vector<vector<string>>());
 	else
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
@@ -112,4 +115,22 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 	if(allStmts.size() < minNoStmtsForModifies)
 		hasSuchThatClause = false;
 	return hasSuchThatClause;
+}
+
+tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResultProc(string arg1)
+{
+	bool hasModifies = true;
+	vector<int> vecOfCandidates;
+	vector<string> pkbResult;
+	vector<string> pkbModifies;
+	vector<vector<string>> modifiesResult;
+	
+	//semantic errors
+	if (arg1 == WILDCARD_SYMBOL)
+		return make_tuple(false, vector<vector<string>>());
+	else
+		return;
+	// TO BE DONE ON TUESDAY
+
+	return tuple<bool, vector<vector<string>>>();
 }

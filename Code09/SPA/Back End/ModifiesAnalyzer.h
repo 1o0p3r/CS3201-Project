@@ -18,5 +18,9 @@ class ModifiesAnalyzer :
 		bool checkClauseVariableWild(string arg1) override;
 		bool checkClauseWildVariable(string arg2) override;
 		bool checkClauseBothWild() override;
+
+	private:
+		tuple<bool, vector<vector<string>>> addArgTwoResultProc(string arg1);
+
 	};
 
