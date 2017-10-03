@@ -242,15 +242,15 @@ public:
 	@param procName name of procedure calling other procedures directly nested in it
 	@returns a vector containing strings the names of the procedures it directly calls
 	*/
-	vector<string> getCalls(int procName);
-	vector<string> getCalls(string procName); //@niev remove when done
+
+	vector<string> getCalls(string procName); 
 	/**
 	Gets the procedures that the input procedure is called by
 
 	@param procName name of procedure calling other procedures directly nested in it
 	@returns a vector containing strings the names of the procedures the input procedure is called by
 	*/
-	vector<string> getCalledBy(int procName);
+	
 	vector<string> getCalledBy(string procName); // @niev remove when done
 	/**
 	Gets the procedures called by input procedure directly and indirectly
@@ -258,7 +258,7 @@ public:
 	@param procName name of procedure calling other procedures 
 	@returns a vector containing strings the names of the procedures it calls
 	*/
-	vector<string> getCallsStar(int procName);
+	vector<string> getCallsStar(string procName);
 
 	/**
 	Gets the procedures that the input procedure is called by directly and indirectly
@@ -266,7 +266,7 @@ public:
 	@param procName name of procedure calling other procedures directly nested in it
 	@returns a vector containing strings the names of the procedures the input procedure is called by
 	*/
-	vector<string> getCalledByStar(int procName);
+	vector<string> getCalledByStar(string procName);
 
 	void setStatementType(int statementNum, string type);
 
