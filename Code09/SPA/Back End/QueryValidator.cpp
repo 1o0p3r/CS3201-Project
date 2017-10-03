@@ -131,7 +131,7 @@ const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_
 const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
 
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" +
-"([a-zA-Z])([a-zA-Z]|\\d|\#)*\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+"([a-zA-Z])([a-zA-Z]|\\d|\#)*[ ]{0,1}\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*";
 
 //Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
@@ -279,6 +279,7 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 }
 
 bool QueryValidator::isValidSynDesignEntity(string synPattern) {
+	synPattern = removeSymbols(synPattern, WHITESPACE_STRING);
 	string entPattern = getCorrespondingEntity(synPattern);
 
 	if (entPattern == ASSIGN_STRING) {

@@ -57,7 +57,7 @@ public:
 		vector<string> answer;
 		
 	
-		/**
+		
 		query = "stmt s; Select s such that Follows(s, 3)";
 		expected = {};
 		q.parseInput(query);
@@ -226,8 +226,21 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
+
+		q = QueryValidator();
+		qs = QueryStatement();
+
+		//cant even read parent* and parent
+		query = "stmt a; Select a such that Parent(a ,3)";
+		expected = { "2" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
 	
-		**/
+		/**
 		q = QueryValidator();
 		qs = QueryStatement();
 
@@ -240,28 +253,12 @@ public:
 		qa.setPKB(pkb);
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
-		Assert::IsTrue(expected == answer);
-		/*
-		//same problem with 12
-		/*	q = QueryValidator();
-		qs = QueryStatement();
-
-		//cant even read parent* and parent
-		query = "stmt a; Select a such that Parent(a，3）";
-		expected = { "2" };
-		q.parseInput(query);
-		qs = q.getQueryStatement();
-		qa.setPKB(pkb);
-		qa.setQS(qs);
-		answer = qa.runQueryEval();
-		Assert::IsTrue(expected == answer);
-			*/
+		Assert::IsTrue(expected == answer);	
 	
-/*
 		q = QueryValidator();
 		qs = QueryStatement();
 
-		query = "assign a; Select a such that Uses(a，\"y\")";
+		query = "assign a; Select a such that Uses(a, \"y\")";
 		expected = { "4" };
 		Assert::IsTrue(q.parseInput(query));
 		qs = q.getQueryStatement();
@@ -269,19 +266,20 @@ public:
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-		*/
-
+	
+	**/
+		/**
 		q = QueryValidator();
 		qs = QueryStatement();
 		query = "stmt s; Select s such that Follows*(s, 2)";
-			expected = { "1" };
+		expected = { "1" };
 		Assert::IsTrue(q.parseInput(query));
 		qs = q.getQueryStatement();
 		qa.setPKB(pkb);
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
-
+		**/
 		//Assert::IsTrue(q.parseInput(query));
 	}
 	};
