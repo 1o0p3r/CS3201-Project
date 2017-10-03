@@ -52,6 +52,7 @@
     <ClInclude Include="Back End\RelationshipTable.h" />
     <ClInclude Include="Back End\suchThatAnalyzer.h" />
     <ClInclude Include="Back End\SynonymEntityPair.h" />
+    <ClInclude Include="Back End\TupleHash.h" />
     <ClInclude Include="Front End\Calls.h" />
     <ClInclude Include="Front End\Follow.h" />
     <ClInclude Include="Front End\Modify.h" />

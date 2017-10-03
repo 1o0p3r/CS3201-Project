@@ -415,7 +415,7 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE);
 			break;
 		case oneResultArg1Missing:
-			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE); //TODO
+			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE); 
 			break;
 		case bothSynFound:
 			insertArg1Arg2CommonSynTable(stResult);
@@ -445,14 +445,57 @@ void QueryAnalyzer::insertArg1Arg2CommonSynTable(vector<vector<string>> stResult
 	tuple<int, int> tableLocation2 = searchSynLocation2->second;
 	vector<vector<string>> tableToMerge1 = mergedQueryTable.at(get<ARGONE>(tableLocation1));
 	vector<vector<string>> tableToMerge2 = mergedQueryTable.at(get<ARGONE>(tableLocation2));
+	vector<vector<string>> result;
+	
 	//case arg1arg2 from same table, arg1arg2 not from same table
 	scenario = (get<ARGONE>(tableLocation1) == get<ARGONE>(tableLocation2)) ? 
 			SAMETABLE : TWO_DISJOINT_TABLE;
 	switch (scenario) {
 		case SAMETABLE:
+			restrictTableValues(tableToMerge1, get<ARGTWO>(tableLocation1), get<ARGTWO>(tableLocation2),
+					get<ARGONE>(tableLocation1), stResult);
 			break;
 		case TWO_DISJOINT_TABLE:
+			int clauseTableExists = -1;
+			result = hashJoin(tableToMerge1, get<ARGTWO>(tableLocation1),
+				stResult, ARGONE, get<ARGONE>(tableLocation1), clauseTableExists);
+			clauseTableExists = get<ARGONE>(tableLocation2);
+			result = hashJoin(result, get<ARGTWO>(tableLocation1), tableToMerge2,
+				get<ARGTWO>(tableLocation2), get<ARGONE>(tableLocation1), clauseTableExists);
 			break;
+	}
+}
+
+void QueryAnalyzer::restrictTableValues(vector<vector<string>> queryAnalyzerTable, int joinColArg1,
+		int joinColArg2, int tableLoc, vector<vector<string>> stResult)
+{
+	vector<int> keepRowIndex;
+	vector<string> vectResult;
+	vector<vector<string>> mergedResult;
+	unordered_set<tuple<string, string>> commonValuesSet;
+	for (int clauseRow = 0; clauseRow < stResult[ARGONE].size(); clauseRow++) {
+		commonValuesSet.insert(make_tuple(stResult[ARGONE][clauseRow],
+			stResult[ARGTWO][clauseRow]));
+	}
+
+	for (int dataTableRow = 0; dataTableRow < queryAnalyzerTable[ARGONE].size(); dataTableRow++) {
+		if (commonValuesSet.find(make_tuple(queryAnalyzerTable[joinColArg1][dataTableRow],
+			queryAnalyzerTable[joinColArg2][dataTableRow])) != commonValuesSet.end())
+			keepRowIndex.push_back(dataTableRow);
+	}
+	if (keepRowIndex.empty()) {
+		//terminate queryEval
+		hasSTClause = false;
+		hasPatternClause = false;
+	}
+	else {
+		for (int synonymIndex = 0; synonymIndex < queryAnalyzerTable.size(); synonymIndex++) {
+			vectResult = vector<string>();
+			for (int row : keepRowIndex) {
+				vectResult.push_back(queryAnalyzerTable[synonymIndex][row]);
+			}
+			mergedResult.push_back(vectResult);
+		}
 	}
 }
 

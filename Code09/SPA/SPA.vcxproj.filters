@@ -51,5 +51,6 @@
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
+    <ClInclude Include="Back End\TupleHash.h" />
   </ItemGroup>
 </Project>

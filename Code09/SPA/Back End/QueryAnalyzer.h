@@ -7,6 +7,7 @@
 #include "ParentStarAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
 #include "ModifiesAnalyzer.h"
+#include "TupleHash.h"
 
 #include <iterator>
 #include <algorithm>
@@ -59,15 +60,9 @@ public:
 	vector<vector<vector<string>>> insertSTResult(vector<vector<string>> stResult);
 	
 	void insertArg1Arg2CommonSynTable(vector<vector<string>> stResult);
-	void merge2DVectorTwoSyno(vector<vector<string>> tableToMerge1, 
-			vector<vector<string>> stResult, tuple<int,int> tableLocation1, tuple<int,int> tableLocation2);
-	void merge2DVectorDisjointTable(vector<vector<string>> tableToMerge1, vector<vector<string>> tableToMerge2,
-		vector<vector<string>> stResult, tuple<int, int> tableLocation1, tuple<int, int> tableLocation2);
+	void restrictTableValues(vector<vector<string>> tableToMerge1, int joinColArg1, int joinColArg2,
+			int tableLoc, vector<vector<string>> stResult);
 	void addSingleCommonSynTable(vector<vector<string>> stResult, string arg, int clauseJoinIndex);
-	void insertArg2CommonSynTable(vector<vector<string>>stResult, bool hasArg2);
-	void merge2DVector(vector<vector<string>> tableToMerge, vector<vector<string>> stResult, 
-		 tuple<int,int> tableLocation, int option, bool hasArg2);
-	tuple<vector<string>, vector<int>, vector<int>> stringVectIntersect(vector<string> v1, vector<string> v2);
 	void insertNoCommonSynToTable(vector<vector<string>> stResult, 
 			int tableIndex, bool hasArg2);
 	
