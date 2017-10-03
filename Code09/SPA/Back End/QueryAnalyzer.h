@@ -46,6 +46,7 @@ public:
 	void initParentSynTypeMap();
 	void initPatternValueMap();
 
+
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(string selectEntity);
@@ -92,5 +93,7 @@ public:
 	bool hasParentStmts();
 	vector<vector<string>> hashJoin(vector<vector<string>> queryAnalyzerTable, int qaJoinIndex, 
 			vector<vector<string>> clauseTable, int clausetableJoinIndex, int qaTableLoc1, int qaTableLoc2);
+	
+	vector<vector<vector<string>>> getMergedQueryTable();
 };
 

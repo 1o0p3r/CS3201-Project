@@ -17,6 +17,7 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
+    <ClCompile Include="JoinAlgorithmTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

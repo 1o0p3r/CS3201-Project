@@ -496,6 +496,7 @@ void QueryAnalyzer::restrictTableValues(vector<vector<string>> queryAnalyzerTabl
 			}
 			mergedResult.push_back(vectResult);
 		}
+		mergedQueryTable[tableLoc] = mergedResult;
 	}
 }
 
@@ -1094,5 +1095,10 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 		mergedQueryTable.at(qaTableLoc) = hashJoinTable;
 	}  
 	return hashJoinTable;
+}
+
+vector<vector<vector<string>>> QueryAnalyzer::getMergedQueryTable()
+{	// for debug
+	return mergedQueryTable;
 }
 
