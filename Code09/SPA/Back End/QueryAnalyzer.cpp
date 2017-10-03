@@ -92,6 +92,7 @@ void QueryAnalyzer::initPatternValueMap() {
 
 const string SYNONYM = "synonym";
 const string WILDCARD = "wildcard";
+const string WILDCARD_SYMBOL = "_";
 const int ARGONE = 0;
 const int ARGTWO = 1;
 const int TABLEPOS = 0;
@@ -345,7 +346,7 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 	vector<string> entityVector;
 	unordered_set<string> shortlisted; // for removing duplicates
 	vector<string> listOfCandidates;
-	if (arg1 == WILDCARD) 
+	if (arg1 == WILDCARD_SYMBOL) 
 		listOfCandidates = pkbReadOnly.getAllVariables();
 	else
 		listOfCandidates.push_back(arg1);
