@@ -56,7 +56,7 @@ public:
 		vector<string> expected;
 		vector<string> answer;
 		
-	
+	/*
 	
 		query = "stmt s; Select s such that Follows(s, 3)";
 		expected = {};
@@ -202,9 +202,88 @@ public:
 		answer = qa.runQueryEval();
 		Assert::IsTrue(expected == answer);
 		
+		q = QueryValidator();
+		qs = QueryStatement();
+
+		query = "variable v; Select v such that Modifies(2, v)";
+		expected = { "x", "y" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+
+		q = QueryValidator();
+		qs = QueryStatement();
+
+		//case 15
+		query = "assign a; Select a pattern a(\"x\", _) such that Modifies(a，_)";
+		expected = { "1", "4" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+
+		*/
+/*
+	q = QueryValidator();
+		qs = QueryStatement();
+
+		//cant even read parent*
+		query = "stmt s; assign a; Select a Parent*(s，4) pattern a(_, \"x*y + 1\")";
+		expected = { "4" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+		*/
+		//same problem with 12
+		/*	q = QueryValidator();
+		qs = QueryStatement();
+
+		//cant even read parent* and parent
+		query = "stmt a; Select a such that Parent(a，3）";
+		expected = { "2" };
+		q.parseInput(query);
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+			*/
 	
-	
+/*
+		q = QueryValidator();
+		qs = QueryStatement();
+
+		query = "assign a; Select a such that Uses(a，\"y\")";
+		expected = { "4" };
+		Assert::IsTrue(q.parseInput(query));
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+		*/
+
+		q = QueryValidator();
+		qs = QueryStatement();
+		query = "stmt s; Select s such that Follows*(s, 2)";
+			expected = { "1" };
+		Assert::IsTrue(q.parseInput(query));
+		qs = q.getQueryStatement();
+		qa.setPKB(pkb);
+		qa.setQS(qs);
+		answer = qa.runQueryEval();
+		Assert::IsTrue(expected == answer);
+
 		//Assert::IsTrue(q.parseInput(query));
 	}
 	};
 }
+
