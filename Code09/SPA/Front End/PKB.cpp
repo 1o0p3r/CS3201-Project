@@ -169,6 +169,27 @@ void PKB::setProcModifies(string procName, string varName) {
 	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
+
+	vector<string> procIsCalledBy = getCalledBy(procName);
+
+	int currProcIndex;
+	int currVarIndex;
+
+	for (int i = 0; i < procIsCalledBy.size(); i++) {
+		currProcIndex = getProcIndex(procIsCalledBy[i]);
+		modify.setProcModifies(currProcIndex, varIndex);
+	}
+
+	vector<string> procIsCalling = getCalls(procName);
+	vector<string> variablesModified;
+	for (int i = 0; i < procIsCalling.size(); i++) {
+		variablesModified = getProcModifies(procIsCalling[i]);
+		for (int j = 0; j < variablesModified.size(); j++) {
+			currVarIndex = getVarIndex(variablesModified[j]);
+			modify.setProcModifies(procIndex, currVarIndex);
+		}
+
+	}
 	modify.setProcModifies(procIndex, varIndex);
 }
 

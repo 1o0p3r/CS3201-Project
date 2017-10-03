@@ -56,5 +56,16 @@ public:
 		Assert::AreEqual(1, pkb.getAllStmt()[1]);
 		Assert::AreEqual(3, pkb.getAllStmt()[2]);
 	}
+	TEST_METHOD(setProcModifiesForMultiplePrcs) {
+		PKB pkb;
+		pkb.setProcModifies("first", "x");
+		pkb.setCalls("first", "second");
+		pkb.setProcModifies("second", "y");
+
+		vector<string> results;
+		Assert::IsTrue(pkb.getProcModifies("first") == vector<string>{"x", "y"});
+		Assert::IsTrue(pkb.getProcModifiedBy("y") == vector<string>{"first", "second"});
+	}
+
 	};
 }
