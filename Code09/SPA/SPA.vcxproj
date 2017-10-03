@@ -11,59 +11,54 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\source\DesignExtractor.cpp" />
-    <ClCompile Include="..\source\Parser.cpp" />
-    <ClCompile Include="..\source\PKB.cpp" />
-    <ClCompile Include="..\source\TNode.cpp" />
-    <ClCompile Include="Calls.cpp" />
-    <ClCompile Include="Follow.cpp" />
-    <ClCompile Include="FollowsAnalyzer.cpp" />
-    <ClCompile Include="FollowsStarAnalyzer.cpp" />
-    <ClCompile Include="ModifiesAnalyzer.cpp" />
-    <ClCompile Include="Modify.cpp" />
-    <ClCompile Include="Next.cpp" />
-    <ClCompile Include="Parent.cpp" />
-    <ClCompile Include="ParentStarAnalyzer.cpp" />
-    <ClCompile Include="QueryAnalyzer.cpp" />
-    <ClCompile Include="QueryEval.cpp" />
-    <ClCompile Include="SuchThatAnalyzer.cpp" />
-    <ClCompile Include="Use.cpp" />
+    <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
+    <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
+    <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\QueryAnalyzer.cpp" />
+    <ClCompile Include="Back End\QueryElement.cpp" />
+    <ClCompile Include="Back End\QueryEval.cpp" />
+    <ClCompile Include="Back End\QueryPreprocessor.cpp" />
+    <ClCompile Include="Back End\QueryStatement.cpp" />
+    <ClCompile Include="Back End\QueryValidator.cpp" />
+    <ClCompile Include="Back End\Relationship.cpp" />
+    <ClCompile Include="Back End\RelationshipTable.cpp" />
+    <ClCompile Include="Back End\suchThatAnalyzer.cpp" />
+    <ClCompile Include="Back End\SynonymEntityPair.cpp" />
+    <ClCompile Include="Front End\Calls.cpp" />
+    <ClCompile Include="Front End\Follow.cpp" />
+    <ClCompile Include="Front End\Modify.cpp" />
+    <ClCompile Include="Front End\Next.cpp" />
+    <ClCompile Include="Front End\Parent.cpp" />
+    <ClCompile Include="Front End\Parser.cpp" />
+    <ClCompile Include="Front End\PKB.cpp" />
+    <ClCompile Include="Front End\Use.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\Parser.h" />
-    <ClInclude Include="..\source\PKB.h" />
-    <ClInclude Include="..\source\TNode.h" />
-    <ClInclude Include="Calls.h" />
-    <ClInclude Include="Follow.h" />
-    <ClInclude Include="FollowsAnalyzer.h" />
-    <ClInclude Include="FollowsStarAnalyzer.h" />
-    <ClInclude Include="ModifiesAnalyzer.h" />
-    <ClInclude Include="Modify.h" />
-    <ClInclude Include="Next.h" />
-    <ClInclude Include="Parent.h" />
-    <ClInclude Include="ParentStarAnalyzer.h" />
-    <ClInclude Include="QueryAnalyzer.h" />
-    <ClInclude Include="QueryEval.h" />
-    <ClInclude Include="SuchThatAnalyzer.h" />
-    <ClInclude Include="Use.h" />
+    <ClInclude Include="Back End\FollowsAnalyzer.h" />
+    <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
+    <ClInclude Include="Back End\ModifiesAnalyzer.h" />
+    <ClInclude Include="Back End\ParentStarAnalyzer.h" />
+    <ClInclude Include="Back End\QueryAnalyzer.h" />
+    <ClInclude Include="Back End\QueryElement.h" />
+    <ClInclude Include="Back End\QueryEval.h" />
+    <ClInclude Include="Back End\QueryPreprocessor.h" />
+    <ClInclude Include="Back End\QueryStatement.h" />
+    <ClInclude Include="Back End\QueryValidator.h" />
+    <ClInclude Include="Back End\Relationship.h" />
+    <ClInclude Include="Back End\RelationshipTable.h" />
+    <ClInclude Include="Back End\suchThatAnalyzer.h" />
+    <ClInclude Include="Back End\SynonymEntityPair.h" />
+    <ClInclude Include="Front End\Calls.h" />
+    <ClInclude Include="Front End\Follow.h" />
+    <ClInclude Include="Front End\Modify.h" />
+    <ClInclude Include="Front End\Next.h" />
+    <ClInclude Include="Front End\Parent.h" />
+    <ClInclude Include="Front End\Parser.h" />
+    <ClInclude Include="Front End\PKB.h" />
+    <ClInclude Include="Front End\Use.h" />
     <ClInclude Include="Util.h" />
-    <ClCompile Include="QueryValidator.cpp" />
-    <ClCompile Include="QueryElement.cpp" />
-    <ClCompile Include="QueryPreprocessor.cpp" />
-    <ClCompile Include="QueryStatement.cpp" />
-    <ClCompile Include="Relationship.cpp" />
-    <ClCompile Include="RelationshipTable.cpp" />
-    <ClCompile Include="SynonymEntityPair.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="QueryValidator.h" />
-    <ClInclude Include="QueryElement.h" />
-    <ClInclude Include="QueryPreprocessor.h" />
-    <ClInclude Include="QueryStatement.h" />
-    <ClInclude Include="Relationship.h" />
-    <ClInclude Include="RelationshipTable.h" />
-    <ClInclude Include="SynonymEntityPair.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
@@ -112,7 +107,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Back End;$(ProjectDir)Front End;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

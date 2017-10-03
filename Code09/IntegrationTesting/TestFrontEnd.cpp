@@ -10,7 +10,7 @@ namespace IntegrationTesting {
 public:
 	TEST_METHOD(FrontEndTest) {
 		PKB pkb;
-		string filename = "Sample-Source.txt";
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
 		Assert::IsTrue(Parse(filename, pkb));
 		Assert::IsTrue(pkb.getAllConstants() == vector<string>{"1", "2", "5"});
 		Assert::IsTrue(pkb.getAllProcedures() == vector<string>{"Main"});

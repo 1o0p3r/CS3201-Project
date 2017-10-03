@@ -15,7 +15,7 @@ public:
 		QueryStatement qs;
 		tuple<bool, vector<vector<string>>> clauseResult;
 
-		string filename = "Sample-Source.txt";
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
 		Parse(filename, pkb);
 
 		vector<vector<string>> result;

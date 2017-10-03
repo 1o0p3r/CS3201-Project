@@ -1,42 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="FollowsAnalyzerTest.cpp" />
+    <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
+    <ClCompile Include="CallsTest.cpp" />
     <ClCompile Include="FollowTest.cpp" />
+    <ClCompile Include="ModifyTest.cpp" />
+    <ClCompile Include="ParentStarAnalyzer.cpp" />
+    <ClCompile Include="ParentTest.cpp" />
+    <ClCompile Include="ParserTest.cpp" />
+    <ClCompile Include="PKBTest.cpp" />
     <ClCompile Include="QueryValidatorTest.cpp" />
     <ClCompile Include="RelationshipTableTest.cpp" />
+    <ClCompile Include="QueryAnalyzerTest.cpp" />
+    <ClCompile Include="ModifiesAnalyzerTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="PKBTest.cpp" />
-    <ClCompile Include="ParentTest.cpp" />
-    <ClCompile Include="ModifyTest.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
-    <ClCompile Include="ParserTest.cpp" />
-<<<<<<< HEAD
-    <ClCompile Include="QueryAnalyzerTest.cpp" />
-    <ClCompile Include="FollowsAnalyzerTest.cpp" />
-    <ClCompile Include="ParentStarAnalyzer.cpp" />
-    <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
-    <ClCompile Include="ModifiesAnalyzerTest.cpp" />
-=======
-    <ClCompile Include="CallsTest.cpp" />
->>>>>>> PKB
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FollowTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QueryValidatorTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RelationshipTableTest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

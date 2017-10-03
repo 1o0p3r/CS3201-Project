@@ -148,7 +148,7 @@ void QueryAnalyzer::findQueryElements() {
 vector<string> QueryAnalyzer::analyzeClauseResults() {
 	vector<string> answer;
 	if (!hasSTClause || !hasPatternClause)
-		return{ "none" };
+		return{};
 
 	string selectSyn = selectElement.getSelectSynonym();
 	auto search = synTableMap.find(selectSyn);
@@ -192,8 +192,6 @@ vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
-	if (answer.empty())
-		answer = { "none" };
 
 	return answer;
 }

@@ -46,8 +46,8 @@ public:
 		Select s such that pattern a("x",_)
 		*/
 		PKB pkb;
-		string filename = "Sample-Source.txt";
-		Parse(filename, pkb);
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		Assert::IsTrue(Parse(filename, pkb));
 
 		QueryValidator q;
 		string query;
@@ -59,7 +59,7 @@ public:
 	
 	
 		query = "stmt s; Select s such that Follows(s, 3)";
-		expected = { "none" };
+		expected = {};
 		q.parseInput(query);
 		qs = q.getQueryStatement();
 		qa.setPKB(pkb);
@@ -117,7 +117,7 @@ public:
 		expected = vector<string>();
 
 		query = "variable v; Select v such that Uses(3,v)";
-		expected = { "none" };
+		expected = {};
 		q.parseInput(query);
 		qs = q.getQueryStatement();
 		qa.setPKB(pkb);
