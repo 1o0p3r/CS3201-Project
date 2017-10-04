@@ -1,5 +1,5 @@
-procedure Main {
+procedure Main{
 	x = 5;
-	while x {
+	while x{
 	 	y = 2;
 		x = x * y + 1; } }

@@ -22,15 +22,15 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-		/*	"stmt s; Select s such that Follows(s,3)",  
+			"stmt s; Select s such that Follows(s,3)",  
 			"stmt s; Select s such that Follows(1,s)",  
 			"stmt s; Select s such that Follows*(s,2)", 
 			"variable v; assign a; Select v such that Modifies(a,v)", 
 			"variable v; Select v such that Modifies(2,v)", 
 			"variable v; Select v such that Modifies(3,v)", 
-			"variable v; Select v such that Uses(3,v)",     
-			"variable v; Select v such that Uses(4,v",                 
-			"variable v; assign a; Select a such that Uses(a，\"y\"）",  */
+			"variable v; Select v such that Uses(3,v)",
+			"variable v; Select v such that Uses(4,v)",                 
+			"variable v; assign a; Select a such that Uses(a,\"y\")",
 			"assign a; Select a such that Parent(a,3)",               
 			"stmt a; Select a such that Parent(a,3)",
 			"stmt a; Select a such that Parent*(a,4)",
@@ -39,7 +39,7 @@ public:
 			"stmt s; assign a; Select a such that Modifies(a,_）pattern a(\"x\", _)"
 		};
 		vector<vector<string>> expected = {
-		/*	{},
+			{},
 			{"2"},
 			{"1"},
 			{"x", "y"},
@@ -47,7 +47,7 @@ public:
 			{"y"},
 			{},
 			{"x", "y"},
-			{"4"}, */
+			{"4"}, 
 			{"2"}, 
 			{"2"},
 			{"2"},
@@ -67,11 +67,13 @@ public:
 				answer = analyzer.runQueryEval();
 			} else {
 				Logger::WriteMessage("Invalid Query");
+				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
-			Assert::AreEqual(answer.size(), expected[i].size());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), L"size error");
 			for (int j = 0; j < answer.size(); j++) {
-				Assert::AreEqual(answer[j], expected[i][j]);
+				Assert::AreEqual(expected[i][j], answer[j], L"value error");
 			}
 		}
 	}

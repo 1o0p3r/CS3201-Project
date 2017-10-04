@@ -1,6 +1,7 @@
 #include "Util.h"
 #include <iostream>
 #include <algorithm>
+#include <tuple>
 
 string Util::insertBrackets(string input) {
 	string results;
@@ -168,4 +169,15 @@ string Util::getExpression(vector<string> sList) {
 		front++;
 	}
 	return s;
+}
+
+tuple<string, string> Util::extractBrackets(string s) {
+	int bracket = 0;
+	while (s[bracket] != '{') {
+		bracket++;
+	}
+	string name = s.substr(0, bracket);
+	string open = s.substr(bracket, s.size());
+	tuple<string, string> result = { name, open };
+	return result;
 }
