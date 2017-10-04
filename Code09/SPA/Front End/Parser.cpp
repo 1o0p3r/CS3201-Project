@@ -42,18 +42,18 @@ bool Parse(string fileName, PKB& pkb) {
 	} else {
 		if (firstLine.size() == 3 && firstLine[2] == "{" && Util::isValidName(firstLine[1])) {
 			procName = firstLine[1];
-			nestLevel++;
 		} else if (firstLine.size() == 2) {
 			temp = Util::extractBrackets(firstLine[1]);
 			if (Util::isValidName(get<0>(temp)) && get<1>(temp) == "{") {
 				procName = get<0>(temp);
-				nestLevel++;
 			} else {
 				return false;
 			}
 		} else {
 			return false;
 		}
+		nestLevel++;
+		pkb.setFirstline(procName, 1);
 	}
 	while (getline(file, line)) { //read line by line
 		lineCounter++;
@@ -72,25 +72,27 @@ bool Parse(string fileName, PKB& pkb) {
 			Parent.push_back(prevFollow);
 			isNewContainer = true;
 		} else if (nextLine[0] == PROCEDURE && nestLevel == 0 && Parent.size() != 0) {
-			string var;
+			string proc_name;
 			if (nextLine.size() == 3 && Util::isValidName(nextLine[1]) && nextLine[2] != "{") {
-				var = nextLine[1];
+				proc_name = nextLine[1];
 			} else if (nextLine.size() == 2) {
 				temp = Util::extractBrackets(firstLine[1]);
 				if (Util::isValidName(get<0>(temp)) && get<1>(temp) == "{") {
-					var = get<0>(temp);
+					proc_name = get<0>(temp);
 				} else {
 					return false;
 				}
 			} else {
 				return false;
 			}
-			procName = var;
+			pkb.setLastline(procName, lineCounter - 1);
+			procName = proc_name;
 			Parent.push_back(0);
 			lineCounter--;
 			isNewContainer = true;
 			isSameLevel = false;
 			nestLevel++;
+			pkb.setFirstline(procName, lineCounter + 1);
 		} else {
 			if (!isNewContainer) {
 				if (isSameLevel) {

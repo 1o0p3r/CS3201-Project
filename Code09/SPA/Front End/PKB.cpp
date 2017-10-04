@@ -41,6 +41,12 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
+	vector<int> callTable;
+	vector<int> firstlineTable;
+	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
 	set<string> allVariables;
 	set<string> allConstants;
@@ -292,8 +298,6 @@ vector<string> PKB::getProcUsedBy(string varName) {
 }
 
 void PKB::setCalls(string procName1, string procName2) {
-	addProcedure(procName1);
-	addProcedure(procName2);
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
 	call.setCalls(index1, index2);
@@ -378,3 +382,28 @@ vector<int> PKB::getAllStmt() {
 	return result;
 }
 
+void PKB::setFirstline(string procName, int firstline) {
+	int procIndex = getProcIndex(procName);
+	if (firstlineTable.size() <= procIndex) {
+		firstlineTable.resize(procIndex + 1);
+	}
+	firstlineTable[procIndex] = firstline;
+}
+
+int PKB::getFirstline(string procName) {
+	int procIndex = getProcIndex(procName);
+	return firstlineTable[procIndex];
+}
+
+void PKB::setLastline(string procName, int lastline) {
+	int procIndex = getProcIndex(procName);
+	if (lastlineTable.size() <= procIndex) {
+		lastlineTable.resize(procIndex + 1);
+	}
+	lastlineTable[procIndex] = lastline;
+}
+
+int PKB::getLastline(string procName) {
+	int procIndex = getProcIndex(procName);
+	return lastlineTable[procIndex];
+}

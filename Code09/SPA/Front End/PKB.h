@@ -307,6 +307,33 @@ public:
 	vector<int> getAllStmt();
 
 	/**
+	Set the first line of a procedure
+	@param procName the name of the procedure
+	@param firstline the first line of the procedure
+	*/
+	void setFirstline(string procName, int firstline);
+	/**
+	Gets the first line of a procedure
+	@param procName the name of the procedure
+	@returns the statement number of the first line
+	*/
+	int getFirstline(string procName);
+
+	/**
+	Set the last line of a procedure
+	@param procName the name of the procedure
+	@param lastline the last line of the procedure
+	*/
+	void setLastline(string procName, int lastline);
+
+	/**
+	Gets the last line of a procedure
+	@param procName the name of the procedure
+	@returns the statement number of the last line
+	*/
+	int getLastline(string procName);
+
+	/**
 	Add a Constant to PKB
 	@param c the constant name
 	*/
@@ -339,6 +366,8 @@ private:
 	vector<int> assignTable;
 	vector<int> ifTable;
 	vector<int> callTable;
+	vector<int> firstlineTable;
+	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
 
 	set<string> allVariables;
