@@ -13,4 +13,5 @@ public:
 	static bool isNumber(string s);
 	static string trim(string s);
 	static string getExpression(vector<string> sList);
+	static tuple<string, string> extractBrackets(string s);
 };

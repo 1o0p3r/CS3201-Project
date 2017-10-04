@@ -15,6 +15,7 @@ using namespace std;
 #define IF "if"
 #define ASSIGN "assign"
 #define PROCEDURE "procedure"
+#define CALL "call"
 
 bool Parse(string fileName, PKB& pkb) {
 
@@ -27,6 +28,7 @@ bool Parse(string fileName, PKB& pkb) {
 	bool isNewContainer = true;
 	int nestLevel = 0;
 	int prevFollow;
+	tuple<string, string> temp;
 
 	getline(file, line);
 	vector<string> firstLine = Util::splitLine(line, ' ');
@@ -35,33 +37,60 @@ bool Parse(string fileName, PKB& pkb) {
 	vector<int> Parent(1);
 
 	//detect procedure
-	if (firstLine[0] != PROCEDURE && firstLine[2] != "{" && !Util::isValidName(firstLine[1])) {
+	if (firstLine[0] != PROCEDURE) {
 		return false;
 	} else {
-		procName = firstLine[1];
-		nestLevel++;
+		if (firstLine.size() == 3 && firstLine[2] == "{" && Util::isValidName(firstLine[1])) {
+			procName = firstLine[1];
+			nestLevel++;
+		} else if (firstLine.size() == 2) {
+			temp = Util::extractBrackets(firstLine[1]);
+			if (Util::isValidName(get<0>(temp)) && get<1>(temp) == "{") {
+				procName = get<0>(temp);
+				nestLevel++;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	while (getline(file, line)) { //read line by line
 		lineCounter++;
 		vector<string> nextLine = Util::splitLine(Util::trim(line), ' ');
 		if (nextLine.size() == 0) {
 			lineCounter--;
-		} else if (nextLine[0] == "else" && nextLine[1] == "{") {
+		} else if (nextLine[0].substr(0, 4) == "else") {
+			if (nextLine.size() == 2 && nextLine[1] != "{") {
+				temp = Util::extractBrackets(nextLine[0]);
+				if (get<0>(temp) != "else" || get<1>(temp) != "{") {
+					return false;
+				}
+			}
 			lineCounter--;
 			nestLevel++;
 			Parent.push_back(prevFollow);
 			isNewContainer = true;
-		} else if (nextLine[0] == PROCEDURE) {
-			if (!Util::isValidName(nextLine[1]) || nextLine[2] != "{" || nestLevel != 0 || Parent.size() != 0) {
-				return false;
+		} else if (nextLine[0] == PROCEDURE && nestLevel == 0 && Parent.size() != 0) {
+			string var;
+			if (nextLine.size() == 3 && Util::isValidName(nextLine[1]) && nextLine[2] != "{") {
+				var = nextLine[1];
+			} else if (nextLine.size() == 2) {
+				temp = Util::extractBrackets(firstLine[1]);
+				if (Util::isValidName(get<0>(temp)) && get<1>(temp) == "{") {
+					var = get<0>(temp);
+				} else {
+					return false;
+				}
 			} else {
-				Parent.push_back(0);
-				procName = nextLine[1];
-				lineCounter--;
-				isNewContainer = true;
-				isSameLevel = false;
-				nestLevel++;
+				return false;
 			}
+			procName = var;
+			Parent.push_back(0);
+			lineCounter--;
+			isNewContainer = true;
+			isSameLevel = false;
+			nestLevel++;
 		} else {
 			if (!isNewContainer) {
 				if (isSameLevel) {
@@ -100,7 +129,13 @@ bool Parse(string fileName, PKB& pkb) {
 				}
 				isNewContainer = false;
 				isSameLevel = true;
-			} else if (nextLine[0] == IF && nextLine[2] == "then" && Util::isValidName(nextLine[1]) && nextLine[3] == "{") {
+			} else if (nextLine[0] == IF && Util::isValidName(nextLine[1])) {
+				if (!(nextLine.size() == 4 && nextLine[2] == "then" && nextLine[3] == "{")) {
+					temp = Util::extractBrackets(nextLine[2]);
+					if (nextLine.size() != 3 || get<0>(temp) != "then" || get<1>(temp) != "{") {
+						return false;
+					}
+				}
 				pkb.setStatementType(lineCounter, IF);
 				string var = nextLine[1];
 				pkb.setUses(lineCounter, var);
@@ -109,23 +144,48 @@ bool Parse(string fileName, PKB& pkb) {
 				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
-			} else if (nextLine[0] == WHILE && nextLine[2] == "{" && Util::isValidName(nextLine[1])) {
+			} else if (nextLine[0] == WHILE) {
+				string var;
+				if (nextLine.size() == 3 && nextLine[2] == "{" && Util::isValidName(nextLine[1])) {
+					var = nextLine[1];
+				} else if (nextLine.size() == 2) {
+					temp = Util::extractBrackets(nextLine[1]);
+					if (Util::isValidName(get<0>(temp)) && get<1>(temp) == "{") {
+						var = get<0>(temp);
+					} else {
+						return false;
+					}
+				} else {
+					return false;
+				}
 				pkb.setStatementType(lineCounter, WHILE);
-				string var = nextLine[1];
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
 				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
-			} else if (nextLine[0] == "call") {
-				if (nextLine[1].back() != ';') {
-					return false;
-				} else {
-					//TODO call pkb.setcall()
-					string proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
+			} else if (nextLine[0] == CALL) {
+				string proc_name;
+				if (nextLine.size() == 2) {
+					if (nextLine[1].back() != ';') {
+						return false;
+					} else {
+						proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
+					}
+				} else if (nextLine.size() == 3) {
+					if (nextLine[2] == ";") {
+						proc_name = nextLine[1];
+					} else {
+						return false;
+					}
+				}
+				if (Util::isValidName(proc_name)) {
+					pkb.setCalls(procName, proc_name);
 					isSameLevel = true;
 					isNewContainer = false;
+				} else {
+					return false;
 				}
 			} else {
 				return false;

@@ -22,38 +22,38 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-		/*	"stmt s; Select s such that Follows(s,3)",  
+			"stmt s; Select s such that Follows(s,3)",  
 			"stmt s; Select s such that Follows(1,s)",  
 			"stmt s; Select s such that Follows*(s,2)", 
 			"variable v; assign a; Select v such that Modifies(a,v)", 
 			"variable v; Select v such that Modifies(2,v)", 
 			"variable v; Select v such that Modifies(3,v)", 
-			"variable v; Select v such that Uses(3,v)",     
-			"variable v; Select v such that Uses(4,v",                 
-			"variable v; assign a; Select a such that Uses(a,\"y\")",  
-			"assign a; Select a such that Parent(a,3)",      
+			"variable v; Select v such that Uses(3,v)",
+			"variable v; Select v such that Uses(4,v)",                 
+			"variable v; assign a; Select a such that Uses(a,\"y\")",
+			"assign a; Select a such that Parent(a,3)",               
 			"stmt a; Select a such that Parent(a,3)",
-			"stmt a; Select a such that Parent*(a,4)", */
+			"stmt a; Select a such that Parent*(a,4)",
 			"stmt s; assign a; Select a such that Parent*(s,4）pattern a(_, \"x*y+ 1\")",
-		/*	"stmt s; assign a; Select a such that Follows(s,4）pattern a(_, _\"y+1\")",
-			"stmt s; assign a; Select a such that Modifies(a,_）pattern a(\"x\", _)" */
+			"stmt s; assign a; Select a such that Follows(s,4）pattern a(_, _\"y+1\")",
+			"stmt s; assign a; Select a such that Modifies(a,_）pattern a(\"x\", _)"
 		};
 		vector<vector<string>> expected = {
-		/*	{},
+			{},
 			{"2"},
 			{"1"},
 			{"x", "y"},
 			{"x", "y"},
 			{"y"},
 			{},
-			{}, 
+			{"x", "y"},
 			{"4"}, 
-			{}, 
+			{"2"}, 
 			{"2"},
-			{"2"}, */
+			{"2"},
 			{"4"},
-		/*	{},
-			{"1", "4"} */
+			{},
+			{"1", "4"}
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
@@ -67,11 +67,13 @@ public:
 				answer = analyzer.runQueryEval();
 			} else {
 				Logger::WriteMessage("Invalid Query");
+				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
-			Assert::AreEqual(answer.size(), expected[i].size());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), L"size error");
 			for (int j = 0; j < answer.size(); j++) {
-				Assert::AreEqual(answer[j], expected[i][j]);
+				Assert::AreEqual(expected[i][j], answer[j], L"value error");
 			}
 		}
 	}
