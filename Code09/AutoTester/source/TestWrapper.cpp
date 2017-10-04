@@ -19,7 +19,6 @@ TestWrapper::TestWrapper() {
 	// create any objects here as instance variables of this class
 	// as well as any initialization required for your spa program
 	PKB pkb;
-	QueryValidator validator;
 	QueryAnalyzer analyzer;
 }
 
@@ -33,6 +32,7 @@ void TestWrapper::parse(std::string filename) {
 void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
 	// call your evaluator to evaluate the query here
 	  // ...code to evaluate query...
+	QueryValidator validator;
 	if (validator.parseInput(query)) {
 		QueryStatement statement = validator.getQueryStatement();
 		analyzer.setQS(statement);
