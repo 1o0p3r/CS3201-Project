@@ -65,6 +65,7 @@ public:
 				analyzer.setQS(statement);
 				answer = analyzer.runQueryEval();
 			} else {
+				Logger::WriteMessage("Invalid Query");
 				answer = {};
 			}
 			Assert::AreEqual(answer.size(), expected[i].size());
