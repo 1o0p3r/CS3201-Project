@@ -34,9 +34,9 @@ public:
 			"assign a; Select a such that Parent(a,3)",               
 			"stmt a; Select a such that Parent(a,3)",
 			"stmt a; Select a such that Parent*(a,4)",
-			"stmt s; assign a; Select a such that Parent*(s,4）pattern a(_, \"x*y+ 1\")",
-			"stmt s; assign a; Select a such that Follows(s,4）pattern a(_, _\"y+1\")",
-			"stmt s; assign a; Select a such that Modifies(a,_）pattern a(\"x\", _)"
+			"stmt s; assign a; Select a such that Parent*(s,4)pattern a(_, \"x*y+ 1\")",
+			"stmt s; assign a; Select a such that Follows(s,4)pattern a(_, _\"y+1\")",
+			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)"
 		};
 		vector<vector<string>> expected = {
 			{},
@@ -48,7 +48,7 @@ public:
 			{},
 			{"x", "y"},
 			{"4"}, 
-			{"2"}, 
+			{}, 
 			{"2"},
 			{"2"},
 			{"4"},
