@@ -318,13 +318,13 @@ vector<string> PKB::getCalledBy(string procName) {
 vector<string> PKB::getCallsStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
 	vector<int> results = call.getCallsStar(procNameIndex);
-	return convertToProcNames(results);
+	return convertToProcNames(Util::removeDuplicates(results));
 }
 
 vector<string> PKB::getCalledByStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
-	vector<int> results = call.getCalls(procNameIndex);
-	return convertToProcNames(results);
+	vector<int> results = call.getCalledByStar(procNameIndex);
+	return convertToProcNames(Util::removeDuplicates(results));
 }
 
 void PKB::setStatementType(int statementNum, string type) {
@@ -374,11 +374,13 @@ vector<int> PKB::getAllStmt() {
 	vector<int> _while = getWhile();
 	vector<int> assign = getAssign();
 	vector<int> _if = getIf();
+	vector<int> _call = getCall();
 	vector<int> result;
-	result.reserve(_while.size() + assign.size() + _if.size());
+	result.reserve(_while.size() + assign.size() + _if.size() + _call.size());
 	result.insert(result.end(), _while.begin(), _while.end());
 	result.insert(result.end(), assign.begin(), assign.end());
 	result.insert(result.end(), _if.begin(), _if.end());
+	result.insert(result.end(), _call.begin(), _call .end());
 	return result;
 }
 

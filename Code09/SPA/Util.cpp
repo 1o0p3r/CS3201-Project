@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <tuple>
+#include <set>
 
 string Util::insertBrackets(string input) {
 	string results;
@@ -179,5 +180,29 @@ tuple<string, string> Util::extractBrackets(string s) {
 	string name = s.substr(0, bracket);
 	string open = s.substr(bracket, s.size());
 	tuple<string, string> result = { name, open };
+	return result;
+}
+
+vector<int> Util::removeDuplicates(vector<int> input) {
+	set<int> temp;
+	vector<int> result;
+	for each (int item in input) {
+		temp.insert(item);
+	}
+	for each (int item in temp) {
+		result.push_back(item);
+	}
+	return result;
+}
+
+vector<string> Util::removeDuplicates(vector<string> input) {
+	set<string> temp;
+	vector<string> result;
+	for each (string item in input) {
+		temp.insert(item);
+	}
+	for each (string item in temp) {
+		result.push_back(item);
+	}
 	return result;
 }

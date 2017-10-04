@@ -71,9 +71,9 @@ bool Parse(string fileName, PKB& pkb) {
 			nestLevel++;
 			Parent.push_back(prevFollow);
 			isNewContainer = true;
-		} else if (nextLine[0] == PROCEDURE && nestLevel == 0 && Parent.size() != 0) {
+		} else if (nextLine[0] == PROCEDURE && nestLevel == 0 && Parent.size() == 0) {
 			string proc_name;
-			if (nextLine.size() == 3 && Util::isValidName(nextLine[1]) && nextLine[2] != "{") {
+			if (nextLine.size() == 3 && Util::isValidName(nextLine[1]) && nextLine[2] == "{") {
 				proc_name = nextLine[1];
 			} else if (nextLine.size() == 2) {
 				temp = Util::extractBrackets(firstLine[1]);
@@ -169,20 +169,19 @@ bool Parse(string fileName, PKB& pkb) {
 				isNewContainer = true;
 			} else if (nextLine[0] == CALL) {
 				string proc_name;
-				if (nextLine.size() == 2) {
-					if (nextLine[1].back() != ';') {
-						return false;
-					} else {
+				if (nextLine.size() >= 2) {
+					if (nextLine[1].back() == ';') {
 						proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
-					}
-				} else if (nextLine.size() == 3) {
-					if (nextLine[2] == ";") {
+					} else if (nextLine[2] == ";") {
 						proc_name = nextLine[1];
 					} else {
 						return false;
 					}
+				} else {
+					return false;
 				}
 				if (Util::isValidName(proc_name)) {
+					pkb.setStatementType(lineCounter, CALL);
 					pkb.setCalls(procName, proc_name);
 					isSameLevel = true;
 					isNewContainer = false;
@@ -205,7 +204,8 @@ bool Parse(string fileName, PKB& pkb) {
 			}
 		}
 	}
-	if (nestLevel == 0) {
+	pkb.setLastline(procName, lineCounter);
+	if (nestLevel == 0 && Parent.size() == 0) {
 		return true;
 	} else {
 		return false;

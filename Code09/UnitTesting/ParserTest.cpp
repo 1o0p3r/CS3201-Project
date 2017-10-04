@@ -15,7 +15,7 @@ namespace UnitTesting {
 
 			pkb = PKB();
 			filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
-			//Assert::IsTrue(Parse(filename, pkb));
+			Assert::IsTrue(Parse(filename, pkb));
 		}
 	};
 }

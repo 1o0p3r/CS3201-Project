@@ -14,4 +14,6 @@ public:
 	static string trim(string s);
 	static string getExpression(vector<string> sList);
 	static tuple<string, string> extractBrackets(string s);
+	static vector<int> removeDuplicates(vector<int> input);
+	static vector<string> removeDuplicates(vector<string> input);
 };
