@@ -19,10 +19,16 @@ public:
 	}
 	TEST_METHOD(addPattern) {
 		PKB pkb;
-		pkb.addPattern(1, "x", "3+5*y");
+		pkb.addPattern(1, "x", "5");
+		pkb.addPattern(3, "y", "2");
+		pkb.addPattern(4, "x", "x*y+1");
 		Assert::AreEqual(1, get<0>(pkb.getPattern("x")[0]));
-		string exp = "(3+(5*y))";
+		string exp = "5";
 		Assert::AreEqual(exp, get<1>(pkb.getPattern("x")[0]));
+		Assert::AreEqual(4, get<0>(pkb.getPattern("x")[1]));
+		exp = "((x*y)+1)";
+		Assert::AreEqual(exp, get<1>(pkb.getPattern("x")[1]));
+		Assert::AreEqual(3, get<0>(pkb.getPattern("y")[0]));
 	}
 	TEST_METHOD(addProcedure) {
 		PKB pkb;

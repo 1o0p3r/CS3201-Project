@@ -97,7 +97,9 @@ void PKB::addProcedure(string p) {
 void PKB::addPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
 	tuple<int, string> entry = { statementNum, Util::insertBrackets(rightExpression) };
-	patternTable.resize(varIndex + 1);
+	if (patternTable.size() <= varIndex) {
+		patternTable.resize(varIndex + 1);
+	}
 	patternTable[varIndex].push_back(entry);
 }
 
