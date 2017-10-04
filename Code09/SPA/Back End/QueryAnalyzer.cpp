@@ -151,23 +151,25 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	if (!hasSTClause || !hasPatternClause)
 		return{};
 
+	string selectEntity = selectElement.getSelectEntity();
 	string selectSyn = selectElement.getSelectSynonym();
 	auto search = synTableMap.find(selectSyn);
 	if (search != synTableMap.end()) {
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
 				.at(get<ARGTWO>(search->second));
 		answer = removeVectDuplicates(answer);
+		answer = analyzeSelect(answer, selectEntity);
 	} else {
-		answer = analyzeSelect(selectElement.getSelectEntity());
+		answer = analyzeSelect(answer, selectEntity);
 	}
 	return answer;
 }
 
-vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
+vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string selectEntity) {
 	vector<int> selectResultInt;
 	vector<string> answer;
 
-	switch (mapSelectValues[selectElement.getSelectEntity()]) {
+	switch (mapSelectValues[selectEntity]) {
 	case stmtSelect: //stmt
 		selectResultInt = pkbReadOnly.getAllStmt();
 		break;
@@ -193,9 +195,25 @@ vector<string> QueryAnalyzer::analyzeSelect(string selectEntity) {
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
-
+	if (!queryResult.empty()) {
+		answer = intersection(answer, queryResult);
+	}
 	return answer;
 }
+
+vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
+{
+
+	vector<string> v3;
+
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+
+	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
+
+	return v3;
+}
+
 
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
 	unordered_set<string> shortlisted;
@@ -665,6 +683,7 @@ vector<vector<string>> QueryAnalyzer::toAddUsesSynVect(string arg1, string arg2,
 				vectorToAdd.push_back(arg1);
 				usesResult.push_back(vectorToAdd);
 			}
+			break;
 		case synSyn_: //how to solve pairing (1,"a"), (1,"x")
 			candidates = pkbReadOnly.getAllVariables();
 			for (string interviewee : candidates) {

@@ -49,7 +49,8 @@ public:
 
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
-	vector<string> analyzeSelect(string selectEntity);
+	vector<string> analyzeSelect(vector<string> answer, string selectEntity);
+	vector<string> intersection(vector<string> v1, vector<string> v2);
 	vector<string> removeVectDuplicates(vector<string> selectClause);
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
