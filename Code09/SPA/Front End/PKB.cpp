@@ -6,6 +6,7 @@
 #include "Modify.h"
 #include "Use.h"
 #include "Calls.h"
+#include "Next.h"
 #include "Util.h"
 
 #include <stdio.h>
@@ -38,6 +39,7 @@ PKB::PKB() {
 	Modify modify;
 	Use use;
 	Calls call;
+	Next next;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
@@ -321,6 +323,10 @@ vector<string> PKB::getCalledByStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
 	vector<int> results = call.getCalls(procNameIndex);
 	return convertToProcNames(results);
+}
+
+void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec) {
+	next.createCFGTable(stmtsAndType, parentOfStmtVec);
 }
 
 void PKB::setStatementType(int statementNum, string type) {

@@ -1,5 +1,4 @@
 #include "Next.h"
-#include "PKB.h"
 #include <vector>
 
 using namespace std;
@@ -10,10 +9,9 @@ Next::Next() {
 	vector<vector<int>> previousTable;
 	vector<vector<int>> nextStarTable;
 	vector<vector<int>> previousStarTable;
-	vector<int> nestingLvl; //delete
 }
 
-void Next::createCFGTable(vector<int> stmtsAndType, PKB pkb) {
+void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec) {
 
 	nextTable.resize(stmtsAndType.size());
 
@@ -25,10 +23,8 @@ void Next::createCFGTable(vector<int> stmtsAndType, PKB pkb) {
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
 	for (int i = 1; i < stmtsAndType.size(); i++) {
 
-		vector<int> parentOfStmtVec = pkb.getParent(i);
-		nestingLvl.push_back(parentOfStmtVec.size()); //to test for parent, delete
-		if (parentOfStmtVec.size() != 0) {
-			int parentOfStmt = parentOfStmtVec[0];
+		int parentOfStmt = parentOfStmtVec[i];
+		if (parentOfStmt != 0) {
 			if (parentOfStmt != (saveWhile[nestingLevel])) {
 				nextTable[i - 1].clear();
 				nextTable[i - 1].push_back(saveWhile[nestingLevel]);

@@ -5,6 +5,7 @@
 #include "Parent.h"
 #include "Use.h"
 #include "Calls.h"
+#include "Next.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -268,6 +269,22 @@ public:
 	*/
 	vector<string> getCalledByStar(string procName);
 
+	/**
+	Creates the CFG of the program after one parsing
+
+	@param stmtsAndType type of stmt at stmtNum, such as assign, while, etc.
+	@param parentOfStmtVec parent of stmt, where stmt is the location in the vector
+	@returns void
+	*/
+	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec);
+
+	/**
+	Sets the stmt type of each stmt
+
+	@param statementNum number of statement
+	@param type type of the statement
+	@returns void
+	*/
 	void setStatementType(int statementNum, string type);
 
 	/**
@@ -332,6 +349,7 @@ private:
 	Modify modify;
 	Use use;
 	Calls call;
+	Next next;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
