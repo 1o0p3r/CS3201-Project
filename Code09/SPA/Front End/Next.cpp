@@ -1,5 +1,6 @@
 #include "Next.h"
 #include <vector>
+#include <tuple>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ Next::Next() {
 	vector<vector<int>> previousStarTable;
 }
 
-void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec) {
+void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
 
 	nextTable.resize(stmtsAndType.size());
 

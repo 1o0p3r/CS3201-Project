@@ -276,7 +276,7 @@ public:
 	@param parentOfStmtVec parent of stmt, where stmt is the location in the vector
 	@returns void
 	*/
-	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec);
+	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines);
 
 	/**
 	Sets the stmt type of each stmt

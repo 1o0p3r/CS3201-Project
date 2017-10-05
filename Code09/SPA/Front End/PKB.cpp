@@ -325,8 +325,8 @@ vector<string> PKB::getCalledByStar(string procName) {
 	return convertToProcNames(results);
 }
 
-void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec) {
-	next.createCFGTable(stmtsAndType, parentOfStmtVec);
+void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
+	next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
 }
 
 void PKB::setStatementType(int statementNum, string type) {

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "Next.h"
+#include <tuple>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -15,7 +16,8 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 2, 2, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 0, 0 };
-			next.createCFGTable(stmtsAndType, parentOfStmtVec);
+			vector<tuple<int, int>> procFirstAndLastLines = {};
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines); //, vector<tuple<int, int>> procFirstAndLastLines
 			Assert::AreEqual(2, next.getNext(1)[0]);
 		}
 
@@ -24,8 +26,9 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 1, 1, 2, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 1, 2, 1 };
+			vector<tuple<int, int>> procFirstAndLastLines = {};
 
-			next.createCFGTable(stmtsAndType, parentOfStmtVec);
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
 			Assert::IsTrue(next.getNext(2) == vector<int>{3, 4});
 		}
 
