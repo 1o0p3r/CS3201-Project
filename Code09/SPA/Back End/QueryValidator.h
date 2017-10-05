@@ -16,7 +16,7 @@ class QueryValidator
 private:
 	int numClauses;
 	RelationshipTable relationshipTable;
-	QueryStatement queryStatement;
+	QueryStatement queryStatement; //Has to be refreshed after each query
 	vector<SynonymEntityPair> synonymAndEntityList; //Has to be refresh after each query
 
 													//The following is reserved for future iterations												
@@ -72,8 +72,6 @@ public:
 	bool isValidQueryLine(string selectString);
 	bool isValidSynDesignEntity(string syn);
 	bool is_number(string str);
-
-	void startParsing(string str);
 
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
