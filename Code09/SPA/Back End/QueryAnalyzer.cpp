@@ -9,7 +9,7 @@ enum selectValue
 enum suchThatValue
 {
 	undefinedSuchThat, modifies, uses, parent, parentStar, follows,
-	followsStar
+	followsStar, calls, callsStar, next_, nextStar
 };
 
 enum parentArgCase
@@ -73,6 +73,10 @@ void QueryAnalyzer::initSuchThatMap()
 	mapSuchThatValues["Parent*"] = parentStar;
 	mapSuchThatValues["Follows"] = follows;
 	mapSuchThatValues["Follows*"] = followsStar;
+	mapSuchThatValues["Calls"] = calls;
+	mapSuchThatValues["Calls*"] = callsStar;
+	mapSuchThatValues["Next"] = next_;
+	mapSuchThatValues["Next*"] = nextStar;
 
 }
 
@@ -247,7 +251,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
-				stResult = solveUses(stClause);
+				clauseResult = UsesAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
 				stResult = solveParent(stClause);
@@ -266,6 +272,17 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
+				break;
+			case calls:
+				clauseResult = CallsAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
+				break;
+			case callsStar:
+				break;
+			case next_:
+				break;
+			case nextStar:
 				break;
 		}
 		if (!stResult.empty())

@@ -26,6 +26,7 @@
     <ClCompile Include="Back End\RelationshipTable.cpp" />
     <ClCompile Include="Back End\suchThatAnalyzer.cpp" />
     <ClCompile Include="Back End\SynonymEntityPair.cpp" />
+    <ClCompile Include="Back End\UsesAnalyzer.cpp" />
     <ClCompile Include="Front End\Calls.cpp" />
     <ClCompile Include="Front End\Follow.cpp" />
     <ClCompile Include="Front End\Modify.cpp" />
@@ -53,6 +54,7 @@
     <ClInclude Include="Back End\suchThatAnalyzer.h" />
     <ClInclude Include="Back End\SynonymEntityPair.h" />
     <ClInclude Include="Back End\TupleHash.h" />
+    <ClInclude Include="Back End\UsesAnalyzer.h" />
     <ClInclude Include="Front End\Calls.h" />
     <ClInclude Include="Front End\Follow.h" />
     <ClInclude Include="Front End\Modify.h" />

@@ -41,13 +41,12 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	vector<string> pkbResult;
 	vector<vector<string>> modifiesResult;
 
-	//change apiCall
 	if (arg2 == WILDCARD_SYMBOL)
 		vecOfCandidates = pkbReadOnly.getAllVariables();
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = pkbReadOnly.getModifiedBy(candidates);
+		pkbModifies = getModifiesResultAddArg1(arg2, arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -65,18 +64,18 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string arg1, string arg2)
 {
 	bool hasModifies = true;
-	vector<int> vecOfCandidates;
+	vector<string> vecOfCandidates;
 	vector<string> pkbModifies;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> modifiesResult;
 
-	vecOfCandidates = pkbReadOnly.getAllStmt();
-	for (int candidates : vecOfCandidates) {
-		pkbModifies = pkbReadOnly.getModifies(candidates);
+	vecOfCandidates = pkbReadOnly.getAllVariables();
+	for (string candidates : vecOfCandidates) {
+		pkbModifies = getModifiesResultAddArg1(arg2,arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
-			pkbResultForArg1.push_back(to_string(candidates));
-			pkbResultForArg2.push_back(candidatesChosen);
+			pkbResultForArg1.push_back(candidatesChosen);
+			pkbResultForArg2.push_back(candidates);
 		}
 	}
 	if (pkbResultForArg1.empty())
@@ -117,20 +116,23 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 	return hasSuchThatClause;
 }
 
-
-//@param: must be procedure entity for Arg2
-vector<string> ModifiesAnalyzer::
-		getModifiesResultAddArg2(string arg1, string arg2Entity)
+vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
 {	
 	return pkbReadOnly.getModifies(stoi(arg1));
 }
 
-
 //@param: must be procedure entity for Arg1
-vector<string> ModifiesAnalyzer::
-getModifiesResultAddArg2(string arg2, string arg1Entity)
+vector<string> ModifiesAnalyzer::getModifiesResultAddArg1(string arg2, string arg1Entity)
 {
+	vector<int> pkbResultInt;
+	vector<string> pkbResult;
 	if(arg1Entity == PROCEDURE)
-		return pkbReadOnly.getProcModifiedBy(arg2);
-		pkbReadOnly.getModifiedBy(arg2);
+		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
+	else {
+		pkbResultInt = pkbReadOnly.getModifiedBy(arg2);
+		for (int entryToString : pkbResultInt)
+			pkbResult.push_back(to_string(entryToString));
+	}
+	return pkbResult;
+	
 }

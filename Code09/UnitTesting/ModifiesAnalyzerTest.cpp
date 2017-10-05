@@ -28,7 +28,7 @@ public:
 		4 	x = x*y + 1; } }
 		*/
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "FollowsStar");
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Modifies");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);

@@ -1,5 +1,6 @@
 #pragma once
 #include "PKB.h"
+#include "CallsAnalyzer.h"
 #include "QueryStatement.h"
 #include "QueryElement.h"
 #include "suchThatAnalyzer.h"
@@ -7,6 +8,7 @@
 #include "ParentStarAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
 #include "ModifiesAnalyzer.h"
+#include "UsesAnalyzer.h"
 #include "TupleHash.h"
 
 #include <iterator>

@@ -25,6 +25,7 @@
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
+    <ClCompile Include="Back End\UsesAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h" />
@@ -52,5 +53,6 @@
     <ClInclude Include="Front End\Use.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
     <ClInclude Include="Back End\TupleHash.h" />
+    <ClInclude Include="Back End\UsesAnalyzer.h" />
   </ItemGroup>
 </Project>
