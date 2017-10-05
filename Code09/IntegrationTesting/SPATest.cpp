@@ -55,12 +55,11 @@ public:
 			{},
 			{"1", "4"}
 		};
-
+		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
 			string testNo = "In test ";
 			testNo.append(to_string(i + 1));
 			Logger::WriteMessage(testNo.c_str());
-			validator = QueryValidator(); //re-init validator.
 			if (validator.parseInput(queries[i])) {
 				statement = validator.getQueryStatement();
 				analyzer.setQS(statement);

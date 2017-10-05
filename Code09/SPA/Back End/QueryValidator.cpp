@@ -139,16 +139,12 @@ using namespace std;
 QueryValidator::QueryValidator()
 {
 }
-//This function takes in a string query
-void QueryValidator::startParsing(string str) {
+//With a given str, loop thru to find ;
+bool QueryValidator::parseInput(string str) {
 	//Upon taking in a string query, clear the following
 	queryStatement = QueryStatement();
 	synonymAndEntityList = vector<SynonymEntityPair>();
-	parseInput(str);
-}
 
-//With a given str, loop thru to find ;
-bool QueryValidator::parseInput(string str) {
 	str = removeDuplicatesWhiteSpaces(str);
 
 	if (str.find(SYMBOL_SEMI_COLON_STRING)) {
