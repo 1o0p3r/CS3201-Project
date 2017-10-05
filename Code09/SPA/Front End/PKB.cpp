@@ -162,6 +162,10 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
+vector<int> PKB::getAllParent() {
+	return parent.getAllParent();
+}
+
 void PKB::setModifies(int statementNum, string varName) {
 	addVariable(varName);
 	int index = getVarIndex(varName);

@@ -283,6 +283,7 @@ public:
 	vector<int> getPrevious(int stmtNum);
 
 	vector<int> getAllNext();
+	vector<int> getAllParent();
 
 	/**
 	Sets the stmt type of each stmt
