@@ -10,6 +10,8 @@ public:
 
 	void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines);
 	vector<int> getNext(int stmtNum);
+	vector<int> getPrevious(int stmtNum);
+	vector<int> Next::getAllNext();
 
 private:
 

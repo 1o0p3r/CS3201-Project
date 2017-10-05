@@ -278,6 +278,12 @@ public:
 	*/
 	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines);
 
+	vector<int> getNext(int stmtNum);
+
+	vector<int> getPrevious(int stmtNum);
+
+	vector<int> getAllNext();
+
 	/**
 	Sets the stmt type of each stmt
 

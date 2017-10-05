@@ -5,6 +5,7 @@ Parent::Parent() {
 	vector<int> childTable;
 	vector<vector<int>> parentStarTable;
 	vector<vector<int>> childStarTable;
+	set<int> allParentTable;
 }
 
 void Parent::setParent(int s1, int s2) {
@@ -15,6 +16,7 @@ void Parent::setParent(int s1, int s2) {
 		parentTable.resize(s1 + 1);
 	}
 	parentTable[s1].push_back(s2);
+	allParentTable.insert(s2);
 	setChild(s2, s1);
 	setParentStar(s1, s2);
 	vector<int> holder = getParent(s1);
@@ -84,6 +86,17 @@ vector<int> Parent::getParentStar(int statementNum) {
 	if (childStarTable.size() > statementNum) {
 		return childStarTable[statementNum];
 	} else {
+		return vector<int>();
+	}
+}
+
+vector<int> Parent::getAllParent() {
+	if (allParentTable.size() > 0) {
+		vector<int> result;
+		result.insert(result.end(), allParentTable.begin(), allParentTable.end());
+		return result;
+	}
+	else {
 		return vector<int>();
 	}
 }

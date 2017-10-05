@@ -329,6 +329,18 @@ void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vecto
 	next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
 }
 
+vector<int> PKB::getNext(int stmtNum) {
+	return next.getNext(stmtNum);
+}
+
+vector<int> PKB::getPrevious(int stmtNum) {
+	return next.getPrevious(stmtNum);
+}
+
+vector<int> PKB::getAllNext() {
+	return next.getAllNext();
+}
+
 void PKB::setStatementType(int statementNum, string type) {
 	// 1 = while, 2 = assign, 3 = if, 4 = call
 	switch (mapTypeValues[type]) {
