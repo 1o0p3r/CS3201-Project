@@ -46,7 +46,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
-		pkbUses = getUsesResultAddArg1(arg2, arg1Entity);
+		pkbUses = getUsesResultAddArg1(candidates, arg1Entity);
 		for (string candidatesChosen : pkbUses) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -72,7 +72,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addBothSynResult(string arg1, 
 
 	vecOfCandidates = pkbReadOnly.getAllVariables();
 	for (string candidates : vecOfCandidates) {
-		pkbUses = getUsesResultAddArg1(arg2, arg1Entity);
+		pkbUses = getUsesResultAddArg1(candidates, arg1Entity);
 		for (string candidatesChosen : pkbUses) {
 			pkbResultForArg1.push_back(candidatesChosen);
 			pkbResultForArg2.push_back(candidates);

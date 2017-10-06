@@ -46,7 +46,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = getModifiesResultAddArg1(arg2, arg1Entity);
+		pkbModifies = getModifiesResultAddArg1(candidates, arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -72,7 +72,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 
 	vecOfCandidates = pkbReadOnly.getAllVariables();
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = getModifiesResultAddArg1(arg2,arg1Entity);
+		pkbModifies = getModifiesResultAddArg1(candidates,arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
 			pkbResultForArg1.push_back(candidatesChosen);
 			pkbResultForArg2.push_back(candidates);
