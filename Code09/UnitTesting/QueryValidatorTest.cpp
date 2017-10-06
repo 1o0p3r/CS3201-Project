@@ -133,12 +133,11 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			vector<string> vecStr;
 			vector<string> expectedVecStr;
-			string toPush, arg1, arg2;
-
+			string toPush, arg1, arg2, arg3, arg4, arg5, arg6;
 
 			toPush = "Select s such that Follows(s,4)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "such that Follows(s,4)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -149,7 +148,7 @@ namespace UnitTesting
 						
 			toPush = "Select s such that Follows(s,4) pattern a(""x"",_)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "such that Follows(s,4) pattern a(""x"",_)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -157,10 +156,10 @@ namespace UnitTesting
 			
 			vecStr.clear();
 			expectedVecStr.clear();
-			
+
 			toPush = "Select s pattern a(""x"",_)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "pattern a(""x"",_)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -177,6 +176,38 @@ namespace UnitTesting
 			
 			vecStr.clear();
 			expectedVecStr.clear();
+		
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) with p.procName = \"First\"";
+			vecStr.push_back(toPush);
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _)";
+			arg4 = "with p.procName = \"First\"";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			vecStr = q.split(vecStr, "such that");
+			vecStr = q.split(vecStr, "pattern");
+			vecStr = q.split(vecStr, "with");
+			vector<string> temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) and pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1";
+			vecStr.push_back(toPush);
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _)";
+			arg4 = "and pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n=1";
+			vecStr = q.split(vecStr, "such that");
+			vecStr = q.split(vecStr, "pattern");
+			vecStr = q.split(vecStr, "with");
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
 		}
 		//This checks if we get the correct corresponding entity
 		TEST_METHOD(is_number) {
@@ -319,6 +350,157 @@ namespace UnitTesting
 			str = "pattern a(s, _\"x+y\"_ )";
 			expectedStr = "s,_\"x+y\"_";
 			Assert::IsTrue(queryValidator.trimPatternArgs(str) == expectedStr);
+		}
+		TEST_METHOD(isValidAttRef) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "p.procName";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "v.varName";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "c.value";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "a.stmt#";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "w.stmt#";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "i.stmt#";
+			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
+			
+			input = "P.PROCNAME";
+			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
+			
+			input = "p. procName";
+			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
+			
+			input = "p.pr0cName";
+			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
+
+		}
+		TEST_METHOD(isValidAttrCompare) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "p.procName = v.varName";
+			Assert::IsTrue(queryValidator.isValidAttrCompareRegex(input));
+
+			input = "p.procName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidAttrCompareRegex(input));
+
+		}
+		TEST_METHOD(isValidAttrCond) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "p.procName = v.varName";
+			Assert::IsTrue(queryValidator.isValidAttrCondRegex(input));
+
+			input = "p.procName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidAttrCondRegex(input));
+
+		}
+		TEST_METHOD(isValidWithClause) {
+			QueryValidator queryValidator;
+			string input;
+
+
+			input = "with p.procName = v.varName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+			
+			input = "with p.procName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with p.procName = p2.procName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with \"help\" = p.procName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with p.procName=\"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+			
+			
+			
+			input = "with v.varName = \"iAmvarName\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with v1.varName = v2.varName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with \"varName\" = v1.varName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with v.varName    =       \"hi\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+
+			
+			input = "with c.value = 1";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with c.value = a.stmt#";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with c.value = n";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with c1.value = c2.value";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+
+			input = "with 2 = c1.value";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with a.stmt# = c1.value";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with w.stmt# = 3";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with     i.stmt# = a.stmt#";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+
+			input = "with n = c2.value";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with n1 = n2";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with 2 = n1";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with i.stmt#      = n1";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			
+			input = "with 2 = 2";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+
+			input = "with v1.varName = v2.varName and v1.varName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with n1 = n2.varName and v2.procName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with v1.varName = v2.varName and v1.varName = p.procName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with a.stmt# = 1       and v2.varName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with a.stmt# = 1       and v2.varName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+			input = "with         p.procName = v2.varName      and v2.varName = \"hello\"    and i.stmt# = 5 and v1.varName = v2.varName";
+			Assert::IsTrue(queryValidator.isValidWithRegex(input));
 		}
 	};
 }
