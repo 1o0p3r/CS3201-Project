@@ -117,14 +117,14 @@ public:
 		vector<vector<string>> hardcode;
 		vector<vector<vector<string>>> database;
 		//intint
-		vector<vector<string>> a{ { "1","2","3","4","a" },{ "s","a","d","c","b" } };
-		vector<vector<string>> b{ { "c","b","x","s" },{"hello","world","how","you" } };
-		// 1  4 a, b  c b, world hello, you
+		vector<vector<string>> a{ { "1","2","3","4","a" },{ "b","a","d","c","b" } };
+		vector<vector<string>> b{ { "c","b","a","b" },{"hello","world","how","you" } };
+		// 1  2 4 ,b a c , world how hello
 
 		vector<vector<string>> intermediate;
 		qa.insertSTResult(a);
 		qa.insertSTResult(b);
-		hardcode = { { "1","4","a" },{ "b","c","b" },{"world","hello","you"} };
+		hardcode = { { "1","2","4","a" },{ "b","a","c","b" },{"world","how","hello","you"} };
 		database = qa.getMergedQueryTable();
 		for (int i = 0; i < database[0].size(); i++)
 			for (int j = 0; j < database[0][i].size(); j++) {
