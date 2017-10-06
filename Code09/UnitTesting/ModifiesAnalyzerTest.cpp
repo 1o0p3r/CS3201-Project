@@ -18,6 +18,8 @@ public:
 		//string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
 		//Parse(filename, pkb);
 
+		vector<string> test2;
+		vector<int> test3;
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
 		/*
@@ -36,7 +38,10 @@ public:
 		pkb.setModifies(2, "y");
 		pkb.setModifies(3, "y");
 		pkb.setModifies(4, "x");
+		test3 = pkb.getModifiedBy("x");
 		test = pkb.getModifiedBy("y");
+		test2 = pkb.getModifies(2);
+
 		sizEMOdifies = test.size();
 		pkb.setStatementType(1, "assign");
 		pkb.setStatementType(2, "while");
