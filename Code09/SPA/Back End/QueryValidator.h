@@ -16,17 +16,12 @@ class QueryValidator
 private:
 	int numClauses;
 	RelationshipTable relationshipTable;
-	QueryStatement queryStatement; //Has to be refreshed after each query
-	vector<SynonymEntityPair> synonymAndEntityList; //Has to be refresh after each query
-
-													//The following is reserved for future iterations												
-													/**
-													vector<string> validEntities = { "procedure", "stmtLst", "stmt", "assign", "call", "while", "if",
-													"variable", "constant", "prog_line"};
-													**/
-
+	QueryStatement queryStatement; 
+	vector<SynonymEntityPair> synonymAndEntityList; 
 	vector<string> validEntities = { "stmt", "assign", "while",
-		"variable", "constant", "prog_line" };
+		"variable", "constant", "prog_line", "procedure", "stmtLst", "call", "if"};
+	unordered_map<string, string> withClauseTypeBank;
+
 
 	string getCorrespondingEntity(string syn);
 
@@ -39,6 +34,7 @@ private:
 	void addSelectQueryElement(string ent, string syn);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
+	void addSynonymEntityList();
 
 	bool isValidSelect(vector<string> vectorClauses);
 	bool isValidOthers(vector<string> others);
@@ -48,13 +44,16 @@ private:
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
 	bool checkRelationshipTable(string, string, int);
-	void addSynonymEntityList();
 	bool parseQueryLine(string);
 
 public:
 	QueryValidator();
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThatRegex(string str);
+	bool isValidWithRegex(string str);
+	bool isValidAttrCondRegex(string str);
+	bool isValidAttRefRegex(string str);
+	bool isValidAttrCompareRegex(string str);
 	bool isValidPatternRegex(string str);
 	bool isValidSelectInitialRegex(string str);
 	bool isVariable(string str);

@@ -66,12 +66,24 @@ const string WHILE_STRING = "while";
 const string IF_STRING = "if";
 const string AND_STRING = "and";
 const string ASTERIK = "*";
+const string EQUAL_STRING = "=";
+
+const string WITH = "with";
+const string PROCNAME = "procName";
+const string VARNAME = "varName";
+const string VALUE = "value";
+const string STMTNUM = "stmt#";
+const string STRING_LITERAL = "stringLiteral";
+
+const string STRTYPE = "strType";
+const string INTTYPE = "intType";
 
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
 const string CONSTANT_STRING_REGEX = "\\d+";
 const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
-const string IDENT_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
+const string IDENT_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)";
+const string QUOTATION_IDENT_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\"" + IDENT_STRING_REGEX + "\"" + SYMBOL_RIGHT_BRACKET_STRING;
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
 const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
@@ -81,7 +93,15 @@ const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_li
 const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
 const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
+const string ATTRNAME_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "procName|varName|value|stmt#" + SYMBOL_RIGHT_BRACKET_STRING;
+const string ATTRREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + "\." + ATTRNAME_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGEX + OR + SYNONYM_STRING_REGEX + OR + QUOTATION_IDENT_STRING_REGEX 
++ OR + INTEGER_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+const string ATTRCOMPARE_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + REF_STRING_REGEX + "\\s*" + EQUAL_STRING + "\\s*" + REF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+const string ATTRCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRCOMPARE_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s+" + AND_STRING + "\\s+" + ATTRCOMPARE_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+const string WITH_CL_REGEX = WITH + "\\s+" + ATTRCOND_STRING_REGEX;
 
+//Regexs for such that relationships
 const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 const string TEMP_MODIFIESS_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
@@ -138,6 +158,15 @@ const string SELECT_INITIAL_REGEX = SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z
 using namespace std;
 QueryValidator::QueryValidator()
 {
+	//Add in the elements into the unordered map that will be used for with clauses
+	withClauseTypeBank[PROCNAME] = STRTYPE;
+	withClauseTypeBank[VARNAME] = STRTYPE;
+	withClauseTypeBank[VALUE] = INTTYPE;
+	withClauseTypeBank[STMTNUM] = INTTYPE;
+	withClauseTypeBank[SYNONYM_STRING] = INTTYPE;
+	withClauseTypeBank[STRING_LITERAL] = STRTYPE;
+	withClauseTypeBank[NUMBER_STRING] = INTTYPE;
+
 }
 //With a given str, loop thru to find ;
 bool QueryValidator::parseInput(string str) {
@@ -515,6 +544,7 @@ void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
+
 		return true;
 	}
 	else {
@@ -822,7 +852,6 @@ QueryStatement QueryValidator::getQueryStatement()
 {
 	return queryStatement;
 }
-
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
 bool QueryValidator::isValidSynonym(string syn) {
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
@@ -917,6 +946,22 @@ bool QueryValidator::isValidDeclarationRegex(string str) {
 bool QueryValidator::isValidSuchThatRegex(string str) {
 	regex suchThatRegex(TEMP_ITR2_SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
+}
+bool QueryValidator::isValidWithRegex(string str) {
+	regex withRegex(WITH_CL_REGEX);
+	return regex_match(str, withRegex);
+}
+bool QueryValidator::isValidAttrCondRegex(string str) {
+	regex attrCondRegex(ATTRCOND_STRING_REGEX);
+	return regex_match(str, attrCondRegex);
+}
+bool QueryValidator::isValidAttrCompareRegex(string str) {
+	regex attrCompareRegex(ATTRCOMPARE_STRING_REGEX);
+	return regex_match(str, attrCompareRegex);
+}
+bool QueryValidator::isValidAttRefRegex(string str) {
+	regex attrRefRegex(ATTRREF_STRING_REGEX);
+	return regex_match(str, attrRefRegex);
 }
 //Takes in a string and checks if it matches the pattern regex
 //Returns true if matches, else false
