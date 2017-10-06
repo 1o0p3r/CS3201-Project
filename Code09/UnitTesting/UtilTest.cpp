@@ -41,8 +41,8 @@ namespace UnitTesting {
 		}
 		
 		TEST_METHOD(getExpression) {
-			Assert::IsTrue("5" == Util::getExpression(vector<string>{"x", "=", "5;", "}"}));
-			Assert::IsTrue("x+5" == Util::getExpression(vector<string>{"x", "=", "x", "+", "5;"}));
+			Assert::AreEqual("5", Util::getExpression("5;}").c_str());
+			Assert::AreEqual("x+5", Util::getExpression(" x + 5 ;").c_str());
 		}
 	};
 }

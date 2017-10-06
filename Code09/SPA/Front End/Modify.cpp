@@ -38,7 +38,7 @@ void Modify::setModifies(int statementNum, int varName) {
 }
 
 void Modify::setModifiedBy(int varName, int statementNum) {
-	if (modifiedByTable.size() <= statementNum) {
+	if (modifiedByTable.size() <= varName) {
 		modifiedByTable.resize(varName + 1);
 	}
 	modifiedByTable[varName].insert(statementNum);
