@@ -54,7 +54,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	if (pkbResult.empty())
 		hasUses = false;
 	else {
-		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
+		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		UsesResult.push_back(pkbResult);
 	}
 

@@ -132,6 +132,37 @@ public:
 			}
 	}
 
+	TEST_METHOD(arg2Common2Args) {
+		PKB pkb;
+		QueryAnalyzer qa;
+		QueryStatement qs;
+		tuple<bool, vector<vector<string>>> clauseResult;
+		pkb.setStatementType(1, "while");
+		pkb.setStatementType(2, "assign");
+		pkb.setStatementType(3, "assign");
+		pkb.setParent(1, 3);
+		pkb.setParent(1, 2);
+		pkb.setFollows(2, 3);
+		qa.setPKB(pkb);
+		vector<vector<string>> result;
+		vector<vector<string>> hardcode;
+		vector<vector<vector<string>>> database;
+		//intint
+		vector<vector<string>> a{ { "1","2","3","4","a" },{ "b","a","d","c","b" } };
+		vector<vector<string>> b{ { "c","b","a","e" },{ "1","16","4","a" } };
+		// 1  2 4 ,b a c , world how hello
+
+		vector<vector<string>> intermediate;
+		qa.insertSTResult(a);
+		qa.insertSTResult(b);
+		hardcode = { { "1","4","a" },{ "b","c","b" },{ "c","a","e" } };
+		database = qa.getMergedQueryTable();
+		for (int i = 0; i < database[0].size(); i++)
+			for (int j = 0; j < database[0][i].size(); j++) {
+				Assert::AreEqual(hardcode[i][j], database[0][i][j]);
+			}
+	}
+
 
 	};
 }
