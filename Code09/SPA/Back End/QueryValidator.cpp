@@ -880,7 +880,90 @@ vector<string> QueryValidator::splitBySymbol(string str, char symbolSplitWith) {
 	}
 	return result;
 }
+vector<string> QueryValidator::splitToSentences(string strToSplit) {
+	string curr = strToSplit;
+	vector<string> results;
+	int currIdx = 0;
 
+	size_t posSuchThat = curr.find(SUCH_THAT_STRING);
+
+	size_t posPattern = curr.find(PATTERN_STRING);
+
+	size_t posWith = curr.find(WITH_STRING);
+
+	//Compare to get the one with smallest index
+	//Then find the occurence of the one with smallest index
+	size_t posInterest;
+	string clauseInterest;
+	if ((posSuchThat != std::string::npos) && (posSuchThat < posPattern) && (posSuchThat < posWith)) {
+		posInterest = posSuchThat;
+		clauseInterest = SUCH_THAT_STRING;
+	}
+	else if ((posPattern != std::string::npos) && (posPattern < posSuchThat) && (posPattern < posWith)) {
+		posInterest = posPattern;
+		clauseInterest = PATTERN_STRING;
+	}
+	else if ((posWith != std::string::npos) && (posWith < posSuchThat) && (posWith < posWith)) {
+		posInterest = posWith;
+		clauseInterest = WITH_STRING;
+	}
+	//If Select clauses are sth like Select s, just return
+	if ((posSuchThat == std::string::npos) && (posPattern == std::string::npos)
+		&& (posWith == std::string::npos)) {
+		results.push_back(curr);
+		return results;
+	}
+
+	size_t nextPosInterest = posInterest;
+	string nextClauseInterest = clauseInterest;
+	
+	int count = 0;
+	while(currIdx != -1){
+		string toPush = curr.substr(0, nextPosInterest);
+		toPush = trim(toPush);
+		results.push_back(toPush);
+		//Get the next instance of the string
+		curr = curr.substr(nextPosInterest, curr.length());
+
+		size_t nextPosSuchThat = curr.find(SUCH_THAT_STRING);
+
+		size_t nextPosPattern = curr.find(PATTERN_STRING);
+
+		size_t nextPosWith = curr.find(WITH_STRING);
+
+		if ((nextPosSuchThat != std::string::npos) && (nextPosSuchThat != 0) 
+			&& (((nextPosPattern == 0) && (nextPosSuchThat < nextPosWith)) || ((nextPosWith == 0) && (nextPosSuchThat < nextPosPattern)))) {
+				nextPosInterest = nextPosSuchThat;
+				nextClauseInterest = SUCH_THAT_STRING;
+		}
+		else if ((nextPosPattern != std::string::npos) && (nextPosPattern != 0)
+			&& (((nextPosSuchThat == 0) && (nextPosPattern < nextPosWith)) || ((nextPosWith == 0) && (nextPosPattern > nextPosWith)))) {
+				nextPosInterest = nextPosPattern;
+				nextClauseInterest = PATTERN_STRING;
+
+		}
+		else if ((nextPosWith != std::string::npos) && (nextPosWith != 0)
+			&& (((nextPosSuchThat == 0) && (nextPosPattern > nextPosWith)) || ((nextPosPattern == 0) && (nextPosSuchThat > nextPosWith)))) {	
+				nextPosInterest = nextPosWith;
+				nextClauseInterest = WITH_STRING;
+	
+		}
+		else if (((nextPosSuchThat == 0) && (nextPosWith == std::string::npos) && (nextPosPattern == std::string::npos))
+			|| ((nextPosPattern == 0) && (nextPosSuchThat == std::string::npos) && (nextPosWith == std::string::npos)) 
+			|| ((nextPosWith == 0) && (nextPosSuchThat == std::string::npos) && (nextPosPattern == std::string::npos))) {
+			toPush = curr.substr(0, curr.length());
+			toPush = trim(toPush);
+			results.push_back(toPush);
+			break;
+		}
+		else {
+			//Sth went wrong
+			break;
+		}
+		currIdx = nextPosInterest;
+	}
+	return results;
+}
 vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToSplitWith) {
 	vector<string> result;
 
@@ -891,7 +974,7 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 		while (pos != std::string::npos) {
 			if (count == 0) {
 				string before = curr.substr(0, pos);
-				before = trim(before);
+ 				before = trim(before);
 				result.push_back(before);
 				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
 				pos = curr.find(strToSplitWith);

@@ -135,50 +135,70 @@ namespace UnitTesting
 			vector<string> expectedVecStr;
 			string toPush, arg1, arg2, arg3, arg4, arg5, arg6;
 
-			toPush = "Select s such that Follows(s,4)";
-			vecStr.push_back(toPush);
-			arg1 = "Select s";
-			arg2 = "such that Follows(s,4)";
-			expectedVecStr.push_back(arg1);
-			expectedVecStr.push_back(arg2);
-			Assert::IsTrue(queryValidator.split(vecStr, "such that") == expectedVecStr);
-
-			vecStr.clear();
-			expectedVecStr.clear();
-						
-			toPush = "Select s such that Follows(s,4) pattern a(""x"",_)";
-			vecStr.push_back(toPush);
-			arg1 = "Select s";
-			arg2 = "such that Follows(s,4) pattern a(""x"",_)";
-			expectedVecStr.push_back(arg1);
-			expectedVecStr.push_back(arg2);
-			Assert::IsTrue(queryValidator.split(vecStr, "such that") == expectedVecStr);
-			
-			vecStr.clear();
-			expectedVecStr.clear();
-
-			toPush = "Select s pattern a(""x"",_)";
-			vecStr.push_back(toPush);
-			arg1 = "Select s";
-			arg2 = "pattern a(""x"",_)";
-			expectedVecStr.push_back(arg1);
-			expectedVecStr.push_back(arg2);
-			Assert::IsTrue(queryValidator.split(vecStr, "pattern") == expectedVecStr);
-			
-			vecStr.clear();
-			expectedVecStr.clear();
 
 			toPush = "Select s";
-			vecStr.push_back(toPush);
 			arg1 = "Select s";
 			expectedVecStr.push_back(arg1);
-			Assert::IsTrue(queryValidator.split(vecStr, "pattern") == expectedVecStr);
+			vecStr = queryValidator.splitToSentences(toPush);
+			vector<string> temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
 			
 			vecStr.clear();
 			expectedVecStr.clear();
 		
+			toPush = "Select s such that Follows(s,4)";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			vecStr = queryValidator.splitToSentences(toPush);
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+			toPush = "Select a pattern a(_, \"y\")";
+			arg1 = "Select a";
+			arg2 = "pattern a(_, \"y\")";
+			temp = vecStr;
+			vecStr = queryValidator.splitToSentences(toPush);
+			vecStr.clear();
+			expectedVecStr.clear();
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(""x"",_)";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(""x"",_)";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			temp = vecStr;
+			vecStr = queryValidator.splitToSentences(toPush);
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+			toPush = "Select s        pattern a(""x"",_)       such that         Follows(s,4)                    ";
+			arg1 = "Select s";
+			arg2 = "pattern a(""x"",_)";
+			arg3 = "such that Follows(s,4)";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			temp = vecStr;
+			vecStr = queryValidator.splitToSentences(toPush);
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
 			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) with p.procName = \"First\"";
-			vecStr.push_back(toPush);
 			arg1 = "Select s";
 			arg2 = "such that Follows(s,4)";
 			arg3 = "pattern a(\"x\", _)";
@@ -187,15 +207,42 @@ namespace UnitTesting
 			expectedVecStr.push_back(arg2);
 			expectedVecStr.push_back(arg3);
 			expectedVecStr.push_back(arg4);
-			vecStr = q.split(vecStr, "such that");
-			vecStr = q.split(vecStr, "pattern");
-			vecStr = q.split(vecStr, "with");
-			vector<string> temp = vecStr;
+			vecStr = queryValidator.splitToSentences(toPush);
+			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
 
 			vecStr.clear();
 			expectedVecStr.clear();
+			
+			toPush = "Select s pattern a(""x"",_)";
+			arg1 = "Select s";
+			arg2 = "pattern a(""x"",_)";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			vecStr = queryValidator.splitToSentences(toPush);
+			temp = vecStr;
 
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+
+			toPush = "Select s such that Follows(s,4) and Parent(a,4) pattern a(\"x\", _) with p.procName = \"First\" such that Modifies(x, \"x\")";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4) and Parent(a,4)";
+			arg3 = "pattern a(\"x\", _)";
+			arg4 = "with p.procName = \"First\"";
+			arg5 = "such that Modifies(x, \"x\")";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			expectedVecStr.push_back(arg5);
+			vecStr = queryValidator.splitToSentences(toPush);
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			/**
 			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) and pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1";
 			vecStr.push_back(toPush);
 			arg1 = "Select s";
@@ -203,11 +250,12 @@ namespace UnitTesting
 			arg3 = "pattern a(\"x\", _)";
 			arg4 = "and pattern a2(_, _\"y\"_)";
 			arg4 = "with p.procName = \"First\" and n=1";
-			vecStr = q.split(vecStr, "such that");
-			vecStr = q.split(vecStr, "pattern");
-			vecStr = q.split(vecStr, "with");
+			vecStr = queryValidator.split(vecStr, "such that");
+			vecStr = queryValidator.split(vecStr, "pattern");
+			vecStr = queryValidator.split(vecStr, "with");
 			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
+			**/
 		}
 		//This checks if we get the correct corresponding entity
 		TEST_METHOD(is_number) {

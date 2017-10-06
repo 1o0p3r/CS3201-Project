@@ -26,6 +26,7 @@ private:
 	string getCorrespondingEntity(string syn);
 
 	vector<string> splitBySymbol(string str, char symbol);
+	
 	vector<string> splitStatement(vector<string> currentVector);
 	vector<string> declarationString;
 	vector<string> queryString;
@@ -81,4 +82,5 @@ public:
 	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
 	vector<string> extractSuchThatClauses(string str);
 	QueryStatement getQueryStatement();
+	vector<string> splitToSentences(string strToSplit);
 };
