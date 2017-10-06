@@ -146,9 +146,16 @@ const string TEMP_RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT
 + OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
-//const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string TEMP_RELCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "*" + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+
 const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
+const string TEMPORARY = SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_SUCH_THAT_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+
+//const string TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX = TEMPORARY + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+
+//SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_SUCH_THAT_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING + 
+//"\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMP_ITR2_SUCH_THAT_CL_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+
 
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" +
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*[ ]{0,1}\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
@@ -292,7 +299,9 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	vector<string> initialVector;
 	initialVector.push_back(selectString);
 
-	initialVector = splitStatement(initialVector);
+	//initialVector = splitStatement(initialVector);
+
+	initialVector = splitToSentences(selectString);
 	//After splitting do validation different parts of the vector
 	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
 		return true;
@@ -547,7 +556,6 @@ void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
-
 		return true;
 	}
 	else {
@@ -565,7 +573,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		vector<string> temp = vec;
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
-				if (!isValidSuchThat(vec.at(i), syn)) {
+				if (!isValidSuchThat(vec.at(i))) {
 					return false;
 				}
 			}
@@ -594,22 +602,26 @@ vector<string> QueryValidator::extractSuchThatClauses(string str) {
 	}
 	return toReturnVec;
 }
-bool QueryValidator::isValidSuchThat(string str, string syn) {
+bool QueryValidator::isValidSuchThat(string str) {
 	int toAdd = ZERO;
 
 	//Remove the additional leading and trailing whitespace
 	str = trim(str);
 
+	//If the str is a valid str regex just proceed
+	if (isValidSuchThatRegex(str)) {
+
+	}
+	//Else if str is an 'extended' str regex
+
+	/**
 	if (!isValidSuchThatRegex(str)) {
 		return false;
 	}
 	else {
 		vector<string> suchThatRelVec = extractSuchThatClauses(str);
 		for (int idx = 0; idx < suchThatRelVec.size(); idx++) {
-			/** The following is no longer needed as we already haf sth like Follows(s,4)
-			//Firstly extract/split till a relation is found
-			string tempString = str.substr(10, str.length() - ONE);
-			*/
+
 			string tempString = suchThatRelVec.at(idx);
 
 			//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
@@ -721,7 +733,9 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 				return false;
 			}
 		}
-	}
+		
+	}**/
+return true;
 }
 
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2) {
@@ -1034,6 +1048,10 @@ bool QueryValidator::isValidDeclarationRegex(string str) {
 bool QueryValidator::isValidSuchThatRegex(string str) {
 	regex suchThatRegex(TEMP_ITR2_SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
+}
+bool QueryValidator::isValisSuchThatRegexExtended(string str) {
+	regex suchThatExtendedRegex(TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX);
+	return regex_match(str, suchThatExtendedRegex);
 }
 bool QueryValidator::isValidWithRegex(string str) {
 	regex withRegex(WITH_CL_REGEX);

@@ -134,13 +134,13 @@ namespace UnitTesting
 			vector<string> vecStr;
 			vector<string> expectedVecStr;
 			string toPush, arg1, arg2, arg3, arg4, arg5, arg6;
-
-
+			vector<string> temp = vecStr;
+			
 			toPush = "Select s";
 			arg1 = "Select s";
 			expectedVecStr.push_back(arg1);
 			vecStr = queryValidator.splitToSentences(toPush);
-			vector<string> temp = vecStr;
+			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
 			
 			vecStr.clear();
@@ -225,7 +225,7 @@ namespace UnitTesting
 
 			vecStr.clear();
 			expectedVecStr.clear();
-
+			temp.clear();
 
 			toPush = "Select s such that Follows(s,4) and Parent(a,4) pattern a(\"x\", _) with p.procName = \"First\" such that Modifies(x, \"x\")";
 			arg1 = "Select s";
@@ -242,20 +242,60 @@ namespace UnitTesting
 			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
 
-			/**
+			
+			vecStr.clear();
+			expectedVecStr.clear();
+			temp.clear();
+
 			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) and pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1";
-			vecStr.push_back(toPush);
 			arg1 = "Select s";
 			arg2 = "such that Follows(s,4)";
-			arg3 = "pattern a(\"x\", _)";
-			arg4 = "and pattern a2(_, _\"y\"_)";
-			arg4 = "with p.procName = \"First\" and n=1";
-			vecStr = queryValidator.split(vecStr, "such that");
-			vecStr = queryValidator.split(vecStr, "pattern");
-			vecStr = queryValidator.split(vecStr, "with");
+			arg3 = "pattern a(\"x\", _) and pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n= 1";
+			vecStr = queryValidator.splitToSentences(toPush);
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
 			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
-			**/
+			
+			vecStr.clear();
+			expectedVecStr.clear();
+			temp.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _) pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n= 1";
+			vecStr = queryValidator.splitToSentences(toPush);
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+			temp.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1 pattern a3(_, \"z\")";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _) pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n= 1";
+			arg5 = "pattern a3(_, \"z\")";
+			vecStr = queryValidator.splitToSentences(toPush);
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			expectedVecStr.push_back(arg5);
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
 		}
 		//This checks if we get the correct corresponding entity
 		TEST_METHOD(is_number) {
@@ -333,6 +373,12 @@ namespace UnitTesting
 			str = "such that Modifies(\"s\",\"a\")";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,4) and Uses(3,s)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
 			str = "such that Parent*(s#,    4)";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
@@ -340,7 +386,31 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
 		}
+		TEST_METHOD(isValidSuchThatRegexExtended) {
+			QueryValidator queryValidator;
+			string str;
 
+			str = "such that Uses(3,4)such that Follows(s,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			/**
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4) and Parent(5,7)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
+			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+			**/
+
+		}
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
 			string str;
