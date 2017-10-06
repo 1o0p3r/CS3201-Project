@@ -117,12 +117,11 @@ namespace UnitTesting
 			QueryValidator q;
 			vector<string> vecStr;
 			vector<string> expectedVecStr;
-			string toPush, arg1, arg2;
-
+			string toPush, arg1, arg2, arg3, arg4, arg5, arg6;
 
 			toPush = "Select s such that Follows(s,4)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "such that Follows(s,4)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -133,7 +132,7 @@ namespace UnitTesting
 						
 			toPush = "Select s such that Follows(s,4) pattern a(""x"",_)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "such that Follows(s,4) pattern a(""x"",_)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -141,10 +140,10 @@ namespace UnitTesting
 			
 			vecStr.clear();
 			expectedVecStr.clear();
-			
+
 			toPush = "Select s pattern a(""x"",_)";
 			vecStr.push_back(toPush);
-			arg1 = "Select s ";
+			arg1 = "Select s";
 			arg2 = "pattern a(""x"",_)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
@@ -161,6 +160,38 @@ namespace UnitTesting
 			
 			vecStr.clear();
 			expectedVecStr.clear();
+		
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) with p.procName = \"First\"";
+			vecStr.push_back(toPush);
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _)";
+			arg4 = "with p.procName = \"First\"";
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			vecStr = q.split(vecStr, "such that");
+			vecStr = q.split(vecStr, "pattern");
+			vecStr = q.split(vecStr, "with");
+			vector<string> temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
+			vecStr.clear();
+			expectedVecStr.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(\"x\", _) and pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1";
+			vecStr.push_back(toPush);
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"x\", _)";
+			arg4 = "and pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n=1";
+			vecStr = q.split(vecStr, "such that");
+			vecStr = q.split(vecStr, "pattern");
+			vecStr = q.split(vecStr, "with");
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
 		}
 		//This checks if we get the correct corresponding entity
 		TEST_METHOD(is_number) {

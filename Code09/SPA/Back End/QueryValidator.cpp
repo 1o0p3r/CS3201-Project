@@ -68,7 +68,7 @@ const string AND_STRING = "and";
 const string ASTERIK = "*";
 const string EQUAL_STRING = "=";
 
-const string WITH = "with";
+const string WITH_STRING = "with";
 const string PROCNAME = "procName";
 const string VARNAME = "varName";
 const string VALUE = "value";
@@ -99,7 +99,7 @@ const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGE
 + OR + INTEGER_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRCOMPARE_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + REF_STRING_REGEX + "\\s*" + EQUAL_STRING + "\\s*" + REF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRCOMPARE_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s+" + AND_STRING + "\\s+" + ATTRCOMPARE_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
-const string WITH_CL_REGEX = WITH + "\\s+" + ATTRCOND_STRING_REGEX;
+const string WITH_CL_REGEX = WITH_STRING + "\\s+" + ATTRCOND_STRING_REGEX;
 
 //Regexs for such that relationships
 const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
@@ -448,6 +448,9 @@ vector<string> QueryValidator::splitStatement(vector<string> currentVector) {
 
 	//Split by pattern
 	currentVector = split(currentVector, PATTERN_STRING);
+
+	//Split by with
+	currentVector = split(currentVector, WITH_STRING);
 
 	return currentVector;
 }
@@ -888,6 +891,7 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 		while (pos != std::string::npos) {
 			if (count == 0) {
 				string before = curr.substr(0, pos);
+				before = trim(before);
 				result.push_back(before);
 				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
 				pos = curr.find(strToSplitWith);
@@ -895,6 +899,7 @@ vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToS
 			}
 			else {
 				string before = curr.substr(0, pos);
+				before = trim(before);
 				result.push_back(strToSplitWith + before);
 				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
 				pos = curr.find(strToSplitWith);
