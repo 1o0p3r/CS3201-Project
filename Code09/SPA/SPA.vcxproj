@@ -15,6 +15,7 @@
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
+    <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryElement.cpp" />
@@ -25,6 +26,7 @@
     <ClCompile Include="Back End\RelationshipTable.cpp" />
     <ClCompile Include="Back End\suchThatAnalyzer.cpp" />
     <ClCompile Include="Back End\SynonymEntityPair.cpp" />
+    <ClCompile Include="Back End\UsesAnalyzer.cpp" />
     <ClCompile Include="Front End\Calls.cpp" />
     <ClCompile Include="Front End\Follow.cpp" />
     <ClCompile Include="Front End\Modify.cpp" />
@@ -40,6 +42,7 @@
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
     <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
     <ClInclude Include="Back End\ModifiesAnalyzer.h" />
+    <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\ParentStarAnalyzer.h" />
     <ClInclude Include="Back End\QueryAnalyzer.h" />
     <ClInclude Include="Back End\QueryElement.h" />
@@ -51,6 +54,7 @@
     <ClInclude Include="Back End\suchThatAnalyzer.h" />
     <ClInclude Include="Back End\SynonymEntityPair.h" />
     <ClInclude Include="Back End\TupleHash.h" />
+    <ClInclude Include="Back End\UsesAnalyzer.h" />
     <ClInclude Include="Front End\Calls.h" />
     <ClInclude Include="Front End\Follow.h" />
     <ClInclude Include="Front End\Modify.h" />

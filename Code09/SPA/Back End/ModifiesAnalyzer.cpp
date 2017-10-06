@@ -1,25 +1,24 @@
 #include "ModifiesAnalyzer.h"
 
 const string WILDCARD_SYMBOL = "_";
+const string PROCEDURE = "procedure";
 
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasModifies = true;
-	vector<int> vecOfCandidates;
+	vector<string> vecOfCandidates;
 	vector<string> pkbResult;
 	vector<string> pkbModifies;
 	vector<vector<string>> modifiesResult;
 
-	if (arg1Entity == "call" || arg1Entity == "procedure")
-		return addArgTwoResultProc(arg1);
-
-	//semantic error
+	//semantic error check by preprocessor
+	/*
 	if (arg1 == WILDCARD_SYMBOL)
 		return make_tuple(false, vector<vector<string>>());
-	else
-		vecOfCandidates.push_back(stoi(arg1));
-	for (int candidates : vecOfCandidates) {
-		pkbModifies = pkbReadOnly.getModifies(candidates);
+	*/
+	vecOfCandidates.push_back(arg1);
+	for (string candidates : vecOfCandidates) {
+		pkbModifies = getModifiesResultAddArg2(candidates, arg2Entity);
 		for (string candidatesChosen : pkbModifies) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -38,7 +37,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 {
 	bool hasModifies = true;
 	vector<string> vecOfCandidates;
-	vector<int> pkbModifies;
+	vector<string> pkbModifies;
 	vector<string> pkbResult;
 	vector<vector<string>> modifiesResult;
 
@@ -47,9 +46,9 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = pkbReadOnly.getModifiedBy(candidates);
-		for (int candidatesChosen : pkbModifies) {
-			pkbResult.push_back(to_string(candidatesChosen));
+		pkbModifies = getModifiesResultAddArg1(candidates, arg1Entity);
+		for (string candidatesChosen : pkbModifies) {
+			pkbResult.push_back(candidatesChosen);
 		}
 	}
 	if (pkbResult.empty())
@@ -65,18 +64,18 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string arg1, string arg2)
 {
 	bool hasModifies = true;
-	vector<int> vecOfCandidates;
+	vector<string> vecOfCandidates;
 	vector<string> pkbModifies;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> modifiesResult;
 
-	vecOfCandidates = pkbReadOnly.getAllStmt();
-	for (int candidates : vecOfCandidates) {
-		pkbModifies = pkbReadOnly.getModifies(candidates);
+	vecOfCandidates = pkbReadOnly.getAllVariables();
+	for (string candidates : vecOfCandidates) {
+		pkbModifies = getModifiesResultAddArg1(candidates,arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
-			pkbResultForArg1.push_back(to_string(candidates));
-			pkbResultForArg2.push_back(candidatesChosen);
+			pkbResultForArg1.push_back(candidatesChosen);
+			pkbResultForArg2.push_back(candidates);
 		}
 	}
 	if (pkbResultForArg1.empty())
@@ -117,15 +116,23 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 	return hasSuchThatClause;
 }
 
-tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResultProc(string arg1)
-{
-	bool hasModifies = true;
-	vector<int> vecOfCandidates;
-	vector<string> pkbResult;
-	vector<string> pkbModifies;
-	vector<vector<string>> modifiesResult;
-	
-	// TO BE DONE ON TUESDAY
+vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
+{	
+	return pkbReadOnly.getModifies(stoi(arg1));
+}
 
-	return tuple<bool, vector<vector<string>>>();
+//@param: must be procedure entity for Arg1
+vector<string> ModifiesAnalyzer::getModifiesResultAddArg1(string arg2, string arg1Entity)
+{
+	vector<int> pkbResultInt;
+	vector<string> pkbResult;
+	if(arg1Entity == PROCEDURE)
+		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
+	else {
+		pkbResultInt = pkbReadOnly.getModifiedBy(arg2);
+		for (int entryToString : pkbResultInt)
+			pkbResult.push_back(to_string(entryToString));
+	}
+	return pkbResult;
+	
 }

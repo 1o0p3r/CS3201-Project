@@ -20,7 +20,8 @@ class ModifiesAnalyzer :
 		bool checkClauseBothWild() override;
 
 	private:
-		tuple<bool, vector<vector<string>>> addArgTwoResultProc(string arg1);
+		vector<string> getModifiesResultAddArg2(string arg1, string arg2Entity);
+		vector<string> getModifiesResultAddArg1(string arg2, string arg1Entity);
 
 	};
 
