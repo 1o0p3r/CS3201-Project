@@ -256,7 +256,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
-				stResult = solveParent(stClause);
+				clauseResult = ParentAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parentStar:
 				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();

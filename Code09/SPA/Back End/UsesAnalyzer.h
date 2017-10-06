@@ -24,3 +24,4 @@ private:
 	vector<string> getUsesResultAddArg1(string arg2, string arg1Entity);
 
 };
+

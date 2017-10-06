@@ -136,3 +136,4 @@ vector<string> UsesAnalyzer::getUsesResultAddArg1(string arg2, string arg1Entity
 	return pkbResult;
 
 }
+

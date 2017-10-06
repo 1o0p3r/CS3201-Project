@@ -15,6 +15,7 @@
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
+    <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryElement.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
     <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
     <ClInclude Include="Back End\ModifiesAnalyzer.h" />
+    <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\ParentStarAnalyzer.h" />
     <ClInclude Include="Back End\QueryAnalyzer.h" />
     <ClInclude Include="Back End\QueryElement.h" />
