@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Next::Next() {
+Next::Next() { 
 
 	vector<vector<int>> nextTable;
 	vector<vector<int>> previousTable;
@@ -39,7 +39,7 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			nestingLvlParent[nestingLvl] = i;
 		}
 
-		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl]) { //check for while
+		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl] && stmtsAndType[nestingLvlParent[nestingLvl]] == 1) { //check for while
 			nextTable[i].push_back(parentOfStmtVec[i]);
 			previousTable[parentOfStmtVec[i]].push_back(i);
 
@@ -66,13 +66,12 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		if (stmtsAndType[i] == 5) {
 			nextTable[nestingLvlParent[nestingLvl]].push_back(i);
 			previousTable[i].push_back(nestingLvlParent[nestingLvl]);
+			continue;
 		}
 
-		else {
-			if ((i + 1) != stmtsAndType.size()) {
-				nextTable[i].push_back(i + 1);
-				previousTable[i + 1].push_back(i);
-			}
+		if ((i + 1) != stmtsAndType.size()) {
+			nextTable[i].push_back(i + 1);
+			previousTable[i + 1].push_back(i);
 		}
 	}
 }
