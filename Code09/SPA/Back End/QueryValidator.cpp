@@ -580,6 +580,9 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 					return false;
 				}
 			}
+			else if (vec.at(i).find(WITH_STRING) != std::string::npos) {
+				if (!isValidWith(vec.at(i)));
+			}
 		}
 		return true;
 	}
@@ -914,11 +917,22 @@ bool QueryValidator::isValidWith(string str) {
 					}
 				}
 			}
-
-
 			//Do comparison between LHS and RHS
 			if (isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity)) {
-
+				//If arg1 and 2 are both attrRref
+				if (arg1AttrRef && arg2AttrRef) {
+					addWithQueryElement(arg1, arg2, arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				} 
+				//Only arg1 is attrRef and arg2 could be 
+				else if (arg1AttrRef && !arg2AttrRef) {
+					addWithQueryElement(arg1, arg2, arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				}
+				else if (!arg1AttrRef && arg2AttrRef) {
+					addWithQueryElement(arg1, arg2, arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				}
+				else {
+					addWithQueryElement(arg1, arg2, arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				}
 			}
 			else {
 				return false;
@@ -928,6 +942,12 @@ bool QueryValidator::isValidWith(string str) {
 	else {
 		return false;
 	}
+}
+void QueryValidator::addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
+	string arg2Synonym) {
+	QueryElement queryElement = QueryElement(arg1, arg2, arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym);
+
+	queryStatement.addWithQuery(queryElement);
 }
 //Checks if it is attrRef
 bool QueryValidator::isAttrRef(string arg) {
@@ -998,8 +1018,48 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			return (arg1Type == arg2Type);
 		}
 		else {
-			//LHS and RHS are both not attrRef
+			//LHS and RHS are both not attrRef, means arg1 and arg 2 are both default things like n,1,"hi"
 
+			//First check: if arg1 identity is number
+			if (arg1Identity == NUMBER_STRING) {
+				//If both are numbers and are not equal to each other
+				if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2)) {
+					return false;
+				}
+				else if ((arg2Identity == NUMBER_STRING) && (arg1 == arg2)) {
+					return true;
+				}
+				else if ((arg2Identity == PROG_LINE_STRING)) {
+					return true;
+				}
+				//Arg2Identity must be a string, so must be a mismatch
+				else {
+					return false;
+				}
+			}
+			else if (arg1Identity == PROG_LINE_STRING) {
+				//Arg 1 is progline and arg2 is number
+				if (arg2Identity == NUMBER_STRING) {
+					return true;
+				}
+				//Arg1 is progline and arg2 is progLine
+				else if (arg2Identity == PROG_LINE_STRING) {
+					return true;
+				}
+				//Arg2 must be a string
+				else {
+					return false;
+				}
+			}
+			//Arg1 is a string, only other match is a string
+			else {
+				if (arg2Identity != STRING_LITERAL) {
+					return false;
+				}
+				else {
+					return true;
+				}
+			}
 
 		}
 	}

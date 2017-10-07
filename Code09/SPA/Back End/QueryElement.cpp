@@ -38,6 +38,18 @@ QueryElement::QueryElement(string arg1, string arg2, string patternEntity, strin
 	patternArg2Type = argTwoType;
 }
 
+//With
+QueryElement::QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
+	argumentOneWith = arg1;
+	argumentTwoWith = arg2;
+	argumentOneTypeWith = arg1Type;
+	argumentTwoTypeWith = arg2Type;
+	argumentOneEntWith = ent1Type;
+	argumentTwoEntWith = ent2Type;
+	argumentOneSynWith = arg1Syn;
+	argumentTwoSynWith = arg2Syn;
+}
+
 string QueryElement::getSelectEntity()
 {
 	return ent;

@@ -41,6 +41,7 @@ private:
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
 	bool isValidWith(string str);
+	void addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
 	bool isAttrRef(string arg);
 	bool isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName, string arg1Identity, string arg2Identity);
 	string extractIdentity(string arg);
