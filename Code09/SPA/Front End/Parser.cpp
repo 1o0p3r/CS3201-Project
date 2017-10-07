@@ -155,7 +155,7 @@ bool Parse(string fileName, PKB& pkb) {
 					proc_name = nextLine[1];
 				}
 				pkb.setStatementType(lineCounter, CALL);
-				pkb.setCalls(procName, proc_name);
+				pkb.setCalls(lineCounter, procName, proc_name);
 				isSameLevel = true;
 				isNewContainer = false;
 			} else {
