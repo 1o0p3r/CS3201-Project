@@ -84,5 +84,14 @@ public:
 		Assert::IsTrue(pkb.getProcUses("first") == vector<string>{"x", "y", "z"});
 		Assert::IsTrue(pkb.getProcUsedBy("z") == vector<string>{"first", "second"});
 	}
+
+	TEST_METHOD(setModifies) {
+		PKB pkb;
+		pkb.setModifies(1, "x");
+		pkb.setModifies(2, "x");
+		pkb.setModifies(3, "y");
+		pkb.setModifies(4, "x");
+		Assert::AreEqual(3, pkb.getModifiedBy("y")[0]);
+	}
 	};
 }
