@@ -230,11 +230,12 @@ public:
 	/**
 	Sets proc1 calls proc2. Implicitly sets calledBy, callsStar and calledByStar using parentStar.
 
+	@parem statementNum statement number of call
 	@param procName1 procedure that is calling another procedure
 	@param procName2 procedure being called
 	@returns void
 	*/
-	void setCalls(string procName1, string procName2);
+	void setCalls(int statementNum, string procName1, string procName2);
 
 	/**
 	Gets the procedures called directly by input procedure
