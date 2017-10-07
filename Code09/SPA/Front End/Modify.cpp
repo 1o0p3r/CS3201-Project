@@ -44,7 +44,7 @@ void Modify::setModifiedBy(int varName, int statementNum) {
 	modifiedByTable[varName].insert(statementNum);
 }
 
-void Modify::setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling) {
+void Modify::setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt) {
 
 	for (int i = 0; i < procIsCalledBy.size(); i++) {
 		setProcModifies(procIsCalledBy[i], varName);
@@ -57,6 +57,11 @@ void Modify::setProcModifies(int procName, int varName, vector<int> procIsCalled
 			setProcModifies(procName, variablesModified[j]);
 		}
 	}
+
+	for (int i = 0; i < procCalledByStmt.size(); i++) {
+		setModifies(procCalledByStmt[i], varName);
+	}
+
 	setProcModifies(procName, varName);
 }
 

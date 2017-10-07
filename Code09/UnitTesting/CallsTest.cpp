@@ -15,10 +15,10 @@ namespace UnitTesting
 
 			Calls call;
 
-			call.setCalls(1, 2);
+			call.setCalls(1, 1, 2);
 			Assert::AreEqual(2, call.getCalls(1)[0]);
 			Assert::AreEqual(1, call.getCalledBy(2)[0]);
-			call.setCalls(2, 3);
+			call.setCalls(5, 2, 3);
 			Assert::AreEqual(3, call.getCalls(2)[0]);
 			Assert::AreEqual(2, call.getCalledBy(3)[0]);
 			Assert::IsTrue(call.getCallsStar(1) == vector<int>{2, 3});
@@ -29,8 +29,8 @@ namespace UnitTesting
 
 			Calls call;
 
-			call.setCalls(1, 2);
-			call.setCalls(2, 3);
+			call.setCalls(1, 1, 2);
+			call.setCalls(5, 2, 3);
 			Assert::IsTrue(call.getAllCalls() == set<int>{2, 3});
 		}
 

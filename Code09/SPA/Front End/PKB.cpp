@@ -175,7 +175,7 @@ void PKB::setProcModifies(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex));
+	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
@@ -251,11 +251,17 @@ vector<string> PKB::getProcUsedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setCalls(string procName1, string procName2) {
+void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
-	call.setCalls(index1, index2);
+	call.setCalls(statementNum, index1, index2);
 }
+
+//-----delete this-----
+void PKB::setCalls(string procName1, string procName2) {
+	
+}
+//-----end delete-----
 
 vector<string> PKB::getCalls(string procName) {
 	int procNameIndex = getProcIndex(procName);

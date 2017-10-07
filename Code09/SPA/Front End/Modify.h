@@ -10,7 +10,7 @@ public:
 
 	void setModifies(int statementNum, int varName, vector<int> parentStarOfStmt);
 	void setModifies(int statementNum, int varName);
-	void setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling);
+	void setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt);
 	void setProcModifies(int procName, int varName);
 
 	vector<int> getModifies(int statementNum);

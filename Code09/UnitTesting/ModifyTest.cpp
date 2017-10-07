@@ -63,12 +63,37 @@ namespace UnitTesting
 			vector<int> proc1Calls = { 2 };
 			vector<int> proc2CalledBy = { 1 };
 			vector<int> proc2Calls = {};
+			vector<int> proc1CalledByStmt = {};
+			vector<int> proc2CalledByStmt = {2};
 
-			modify.setProcModifies(1, 1, proc1CalledBy, proc1Calls);
-			modify.setProcModifies(1, 2, proc1CalledBy, proc1Calls);
-			modify.setProcModifies(2, 3, proc2CalledBy, proc2Calls);
-			modify.setProcModifies(2, 4, proc2CalledBy, proc2Calls);
+			modify.setProcModifies(1, 1, proc1CalledBy, proc1Calls, proc1CalledByStmt);
+			modify.setProcModifies(1, 2, proc1CalledBy, proc1Calls, proc1CalledByStmt);
+			modify.setProcModifies(2, 3, proc2CalledBy, proc2Calls, proc2CalledByStmt);
+			modify.setProcModifies(2, 4, proc2CalledBy, proc2Calls, proc2CalledByStmt);
 			Assert::IsTrue(modify.getProcModifies(1) == vector<int>{1, 2, 3, 4});
+		}
+
+		TEST_METHOD(setModifiesWMultipleProcsCorrectly) { //values are significant in proc set
+
+			Modify modify;
+			vector<int> proc1CalledBy = {};
+			vector<int> proc1Calls = { 2 };
+			vector<int> proc2CalledBy = { 1 };
+			vector<int> proc2Calls = {};
+			vector<int> proc1CalledByStmt = {};
+			vector<int> proc2CalledByStmt = { 2 };
+
+			modify.setModifies(1, 1);
+			modify.setModifies(2, 2);
+			modify.setModifies(3, 3);
+			modify.setModifies(4, 4);
+
+
+			modify.setProcModifies(1, 1, proc1CalledBy, proc1Calls, proc1CalledByStmt);
+			modify.setProcModifies(1, 2, proc1CalledBy, proc1Calls, proc1CalledByStmt);
+			modify.setProcModifies(2, 3, proc2CalledBy, proc2Calls, proc2CalledByStmt);
+			modify.setProcModifies(2, 4, proc2CalledBy, proc2Calls, proc2CalledByStmt);
+			Assert::IsTrue(modify.getModifies(2) == vector<int>{2, 3, 4});
 		}
 
 		TEST_METHOD(checkModifiesSizeAndBoundaryAreCorrect) { 
