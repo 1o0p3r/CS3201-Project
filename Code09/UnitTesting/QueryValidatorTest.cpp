@@ -25,6 +25,9 @@ namespace UnitTesting
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			
+			query = "variable v; Select v such that Uses(\"Second\", v)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
 			query = "   while w   ; assign a   ; Select w such that Follows(w, a)  ";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			
@@ -78,6 +81,7 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			
 		}
 		//This test method checks if the correct Query Elements are parse into the QueryStatement
 		TEST_METHOD(isValidQueryStatement) {
@@ -485,7 +489,53 @@ namespace UnitTesting
 			returnedVec = queryValidator.extractSuchThatClauses(str);
 			Assert::IsTrue(returnedVec == expectedVec);
 		}
+		TEST_METHOD(isValidExtractWithClauses) {
+			QueryValidator queryValidator;
+			string str;
+			vector<string> expectedVec;
+			vector<string> returnedVec;
 
+			str = "with p.procName = v1.varName";
+			expectedVec.push_back("p.procName = v1.varName");
+			returnedVec = queryValidator.extractWithClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "with v1.varName = v2.varName and v1.varName = \"hello\"";
+			expectedVec.push_back("v1.varName = v2.varName");
+			expectedVec.push_back("v1.varName = \"hello\"");
+			returnedVec = queryValidator.extractWithClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "with v1.varName = v2.varName and v1.varName = \"hello\" with c.value = 1 with p.procName = \"First\"";
+			expectedVec.push_back("v1.varName = v2.varName");
+			expectedVec.push_back("v1.varName = \"hello\"");
+			expectedVec.push_back("c.value = 1");
+			expectedVec.push_back("p.procName = \"First\"");
+			returnedVec = queryValidator.extractWithClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "with c.value = a.stmt# with v2.varName = p.procName and 4 = c.value with n = c.value and p.procName = \"HELL\"";
+			expectedVec.push_back("c.value = a.stmt#");
+			expectedVec.push_back("v2.varName = p.procName");
+			expectedVec.push_back("4 = c.value");
+			expectedVec.push_back("n = c.value");
+			expectedVec.push_back("p.procName = \"HELL\"");
+			returnedVec = queryValidator.extractWithClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+		}
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
 			string str;
@@ -694,6 +744,27 @@ namespace UnitTesting
 
 			input = "with         p.procName = v2.varName      and v2.varName = \"hello\"    and i.stmt# = 5 and v1.varName = v2.varName";
 			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+		}
+
+		TEST_METHOD(isValidWithClauseExtended) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "with v1.varName = v2.varName and v1.varName = \"hello\"";
+			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
+
+			input = "with v1.varName = v2.varName and v1.varName = \"hello\" with v3.varName = \"hi\"";
+			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
+
+			input = "with v1.varName = v2.varName with v1.varName = \"hello\" with v3.varName = \"hi\"";
+			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
+
+			input = "with v1.varName = v2.varName with v1.varName = \"hello\" and c.value = 1 with v3.varName = \"hi\"";
+			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
+
+			input = "with v1.varName = v2.varName with v1.varName = \"hello\" and cb.value = 1  and 4 = a.stmt# with v3.varName = \"hi\" and p.procName = \"First\"";
+			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
+
 		}
 	};
 }

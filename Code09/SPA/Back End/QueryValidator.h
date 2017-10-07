@@ -40,6 +40,10 @@ private:
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
+	bool isValidWith(string str);
+	bool isAttrRef(string arg);
+	bool isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName, string arg1Identity, string arg2Identity);
+	string extractIdentity(string arg);
 	bool checkRelationshipTable(string, string, int);
 	bool parseQueryLine(string);
 
@@ -49,17 +53,19 @@ public:
 	bool isValidSuchThatRegex(string str);
 	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
+	bool isValidWithExtendedRegex(string str);
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
 	bool isValidAttrCompareRegex(string str);
 	bool isValidPatternRegex(string str);
 	bool isValidSelectInitialRegex(string str);
 	bool isVariable(string str);
+	bool isQuotationIdentRegex(string str);
 	bool parseInput(string str);
 	bool isValidModifiesP(string str);
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str);
-	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2);
+	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
 	bool isValidEntity(string);
 
 	bool isVariableArg1(string arg1);
@@ -77,6 +83,7 @@ public:
 	string trimPatternArgs(string str);
 
 	vector<string> extractSuchThatClauses(string str);
+	vector<string> extractWithClauses(string str);
 	QueryStatement getQueryStatement();
 	vector<string> splitToSentences(string strToSplit);
 	vector<string> splitBySymbol(string str, char symbol);
