@@ -10,19 +10,20 @@ namespace UnitTesting {
 public:
 	TEST_METHOD(parse) {
 		PKB pkb;
-		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		string filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
+		
 		Assert::IsTrue(Parse(filename, pkb));
 
 		pkb = PKB();
-		filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
-		Assert::IsTrue(Parse(filename, pkb));
-
-		pkb = PKB();
-		filename = "..\\..\\Tests09\\Sample-Source-1.txt";
+		filename = "..\\..\\Tests09\\Sample-Source-3.txt";
 		Assert::IsTrue(Parse(filename, pkb));
 
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-1.txt";
 		Assert::IsTrue(Parse(filename, pkb));
 	}
 

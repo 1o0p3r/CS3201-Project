@@ -10,15 +10,12 @@ namespace UnitTesting {
 	TEST_CLASS(UtilTest) {
 	public:
 		TEST_METHOD(insertBrackets) {
-			string test1 = "x * y * h * f";
-			string results = Util::insertBrackets(test1);
-			Assert::AreEqual(string("(((x*y)*h)*f)"), results);
-			string test2 = "x*y*h+f*g";
-			results = Util::insertBrackets(test2);
-			Assert::AreEqual(string("(((x*y)*h)+(f*g))"), results);
+			Assert::AreEqual(string("(((x*y)*h)*f)"), Util::insertBrackets("x * y * h * f"));
+			Assert::AreEqual(string("(((x*y)*h)+(f*g))"), Util::insertBrackets("x*y*h+f*g"));
 			Assert::AreEqual(string("((x-y)+z)"), Util::insertBrackets("x-y+z"));
 			Assert::AreEqual(string("((x-(y*g))+z)"), Util::insertBrackets("x-y*g+z"));
 			Assert::AreEqual(string("((((x*y)*g)+z)+k)"), Util::insertBrackets("x*y*g+z+k"));
+			Assert::AreEqual(string("(((x+1))*y)"), Util::insertBrackets("(x+1)*y"));
 		}
 
 		TEST_METHOD(splitLine) {
@@ -43,6 +40,14 @@ namespace UnitTesting {
 		TEST_METHOD(getExpression) {
 			Assert::AreEqual("5", Util::getExpression("5;}").c_str());
 			Assert::AreEqual("x+5", Util::getExpression(" x + 5 ;").c_str());
+			Assert::AreEqual("(x+5)*y", Util::getExpression(" (x + 5) * y ;").c_str());
+		}
+
+		TEST_METHOD(constructExpression) {
+			vector<string> actual = { "x", "5", "y" };
+			Assert::IsTrue(actual == Util::constructExpression("(x+5)*y"));
+			actual = { "x", "5", "y" };
+			Assert::IsTrue(actual == Util::constructExpression("((x+5)*y)"));
 		}
 	};
 }

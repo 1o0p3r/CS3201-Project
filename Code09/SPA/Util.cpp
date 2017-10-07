@@ -15,10 +15,10 @@ string Util::insertBrackets(string input) {
 	int index = 0;
 	while (index < results.size()) {
 		if (results[index] == '*') {
-			if (results[index - 1] != ')') {
+			if (results[index - 1] != ')' && results[index] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else {
+			} else if (results[index + 1] != ')') {
 				int counter = 1;
 				int back = index - 1;
 				while (counter > 0) {
@@ -31,6 +31,42 @@ string Util::insertBrackets(string input) {
 				}
 				results.insert(index + 2, ")");
 				results.insert(back, "(");
+			} else if (results[index - 1] != '(') {
+				int counter = 1;
+				int front = index + 1;
+				while (counter > 0) {
+					front++;
+					if (results[front] == '(') {
+						counter++;
+					} else if (results[front] == ')') {
+						counter--;
+					}
+				}
+				results.insert(front, ")");
+				results.insert(index - 1, "(");
+			} else {
+				int counter = 1;
+				int front = index + 1;
+				int back = index - 1;
+				while (counter > 0) {
+					front++;
+					if (results[front] == '(') {
+						counter++;
+					} else if (results[front] == ')') {
+						counter--;
+					}
+				}
+				counter = 1;
+				while (counter > 0) {
+					back--;
+					if (results[back] == '(') {
+						counter--;
+					} else if (results[back] == ')') {
+						counter++;
+					}
+				}
+				results.insert(front, ")");
+				results.insert(back, "(");
 			}
 			index++;
 		}
@@ -42,55 +78,55 @@ string Util::insertBrackets(string input) {
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else if (results[index - 1] == ')' && results[index + 1] != '(') {
+			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 2;
+				int back = index - 1;
 				while (counter > 0) {
+					back--;
 					if (results[back] == '(') {
 						counter--;
 					} else if (results[back] == ')') {
 						counter++;
 					}
-					back--;
 				}
 				results.insert(index + 2, ")");
-				results.insert(back + 1, "(");
-			} else if (results[index + 1] == '(' && results[index - 1] != ')') {
+				results.insert(back, "(");
+			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 2;
+				int front = index + 1;
 				while (counter > 0) {
+					front++;
 					if (results[front] == ')') {
 						counter--;
 					} else if (results[front] == '(') {
 						counter++;
 					}
-					front++;
 				}
-				results.insert(front - 1, ")");
+				results.insert(front, ")");
 				results.insert(index - 1, "(");
 			} else {
 				int counter = 1;
-				int back = index - 2;
-				int front = index + 2;
+				int back = index - 1;
+				int front = index + 1;
 				while (counter > 0) {
+					back--;
 					if (results[back] == '(') {
 						counter--;
 					} else if (results[back] == ')') {
 						counter++;
 					}
-					back--;
 				}
 				counter = 1;
 				while (counter > 0) {
+					front++;
 					if (results[front] == ')') {
 						counter--;
 					} else if (results[front] == '(') {
 						counter++;
 					}
-					front++;
 				}
-				results.insert(front - 1, ")");
-				results.insert(back + 1, "(");
+				results.insert(front, ")");
+				results.insert(back, "(");
 			}
 			index++;
 		}
@@ -124,7 +160,7 @@ bool Util::isValidName(string s) {
 }
 
 bool Util::isOperand(char c) {
-	if (c == '+' || c == '-' || c == '*') {
+	if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')') {
 		return true;
 	} else {
 		return false;
@@ -203,11 +239,16 @@ vector<string> Util::constructExpression(string expression) {
 	string current = "";
 	for (int i = 0; i < expression.size(); i++) {
 		if (Util::isOperand(expression[i])) {
-			result.push_back(current);
+			if (!current.empty()) {
+				result.push_back(current);
+			}
 			current = "";
 		} else {
 			current.push_back(expression[i]);
 		}
+	}
+	if (!current.empty()) {
+		result.push_back(current);
 	}
 	return result;
 }
