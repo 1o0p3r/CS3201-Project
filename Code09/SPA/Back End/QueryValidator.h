@@ -25,9 +25,6 @@ private:
 
 	string getCorrespondingEntity(string syn);
 
-	vector<string> splitBySymbol(string str, char symbol);
-	
-	vector<string> splitStatement(vector<string> currentVector);
 	vector<string> declarationString;
 	vector<string> queryString;
 
@@ -40,7 +37,6 @@ private:
 	bool isValidSelect(vector<string> vectorClauses);
 	bool isValidOthers(vector<string> others);
 	bool isValidPattern(string str, string syn);
-
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
@@ -51,6 +47,7 @@ public:
 	QueryValidator();
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThatRegex(string str);
+	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
@@ -72,7 +69,6 @@ public:
 	bool isValidQueryLine(string selectString);
 	bool isValidSynDesignEntity(string syn);
 	bool is_number(string str);
-	bool isValisSuchThatRegexExtended(string str);
 
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
@@ -80,8 +76,8 @@ public:
 	string trim(string str);
 	string trimPatternArgs(string str);
 
-	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
 	vector<string> extractSuchThatClauses(string str);
 	QueryStatement getQueryStatement();
 	vector<string> splitToSentences(string strToSplit);
+	vector<string> splitBySymbol(string str, char symbol);
 };

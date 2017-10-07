@@ -89,9 +89,9 @@ namespace UnitTesting
 			vector<QueryElement> expectedPatternQueryElements;
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
+			queryValidator.parseInput(query);
 			queryStatement = queryValidator.getQueryStatement();
 			expectedSelectQueryElement = QueryElement("variable", "v1");
-			//expectedSuchThatQueryElements = { QueryElement("6", "number", )
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
@@ -146,9 +146,9 @@ namespace UnitTesting
 			vecStr.clear();
 			expectedVecStr.clear();
 		
-			toPush = "Select s such that Follows(s,4)";
+			toPush = "Select s such that Follows (s,4)";
 			arg1 = "Select s";
-			arg2 = "such that Follows(s,4)";
+			arg2 = "such that Follows (s,4)";
 			expectedVecStr.push_back(arg1);
 			expectedVecStr.push_back(arg2);
 			vecStr = queryValidator.splitToSentences(toPush);
@@ -390,27 +390,102 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string str;
 
-			str = "such that Uses(3,4)such that Follows(s,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+			str = "such that Uses(3,4)such that Modifies(2,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			/**
 			str = "such that Modifies(\"s\",\"a\") and Follows(s,3)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
 			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
-
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
 			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4) and Parent(5,7)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
 			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
-			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
-			**/
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
 		}
+		TEST_METHOD(isInValidSuchThatRegexExtended) {
+			QueryValidator queryValidator;
+			string str;
+
+			//Not allowed symbols
+			str = "such that Uses(3,4) such that Modifies(2,4)#";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//Not allowed relationships
+			str = "such that Uses(3,4) such that Pathod(2,4)#";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//Missing relationship
+			str = "such that";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//Missing relationship
+			str = "such that Uses(4,5) and";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//Missing 2 relationships
+			str = "such that Uses(4,5) and such that";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//Whitespaces
+			str = "such that Uses (4,5) and such that";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
+
+
+		}
+		TEST_METHOD(isValidExtractSuchThatClauses) {
+			QueryValidator queryValidator;
+			string str;
+			vector<string> expectedVec;
+			vector<string> returnedVec;
+
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,4) and Uses(3,s)";
+			expectedVec.push_back("Modifies(\"s\",\"a\")");
+			expectedVec.push_back("Follows(s,4)");
+			expectedVec.push_back("Uses(3,s)");
+			returnedVec = queryValidator.extractSuchThatClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "such that Uses(3, 4)such that Modifies(2, 4)";
+			expectedVec.push_back("Uses(3, 4)");
+			expectedVec.push_back("Modifies(2, 4)");
+			returnedVec = queryValidator.extractSuchThatClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
+			expectedVec.push_back("Modifies(\"s\",\"a\")");
+			expectedVec.push_back("Follows(s,3)");
+			expectedVec.push_back("Next(8,9)");
+			expectedVec.push_back("Uses(3,4)");
+			expectedVec.push_back("Parent(5,7)");
+			returnedVec = queryValidator.extractSuchThatClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "such that Modifies (\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
+			expectedVec.push_back("Follows(s,3)");
+			expectedVec.push_back("Next(8,9)");
+			expectedVec.push_back("Uses(3,4)");
+			expectedVec.push_back("Parent(5,7)");
+			returnedVec = queryValidator.extractSuchThatClauses(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+		}
+
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
 			string str;
