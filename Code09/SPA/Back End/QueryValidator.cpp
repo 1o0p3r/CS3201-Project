@@ -68,7 +68,7 @@ const string AND_STRING = "and";
 const string ASTERIK = "*";
 const string EQUAL_STRING = "=";
 
-const string WITH = "with";
+const string WITH_STRING = "with";
 const string PROCNAME = "procName";
 const string VARNAME = "varName";
 const string VALUE = "value";
@@ -95,11 +95,13 @@ const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant
 const string VARIABLE_STRING_REGEX = "\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"";
 const string ATTRNAME_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "procName|varName|value|stmt#" + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + "\." + ATTRNAME_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
-const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGEX + OR + SYNONYM_STRING_REGEX + OR + QUOTATION_IDENT_STRING_REGEX 
+const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGEX + OR + SYNONYM_STRING_REGEX + OR + QUOTATION_IDENT_STRING_REGEX
 + OR + INTEGER_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRCOMPARE_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + REF_STRING_REGEX + "\\s*" + EQUAL_STRING + "\\s*" + REF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRCOMPARE_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s+" + AND_STRING + "\\s+" + ATTRCOMPARE_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
-const string WITH_CL_REGEX = WITH + "\\s+" + ATTRCOND_STRING_REGEX;
+const string WITH_CL_REGEX = WITH_STRING + "\\s+" + ATTRCOND_STRING_REGEX;
+const string WITH_CL_EXTENDED_REGEX = SYMBOL_LEFT_BRACKET_STRING + WITH_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING
++ WITH_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 
 //Regexs for such that relationships
 const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
@@ -146,9 +148,16 @@ const string TEMP_RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT
 + OR + SYMBOL_LEFT_BRACKET_STRING + TEMP_USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
-//const string TEMP_RELCOND_STRING_REGEX = TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string TEMP_RELCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + TEMP_RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "*" + "\\s+" + TEMP_RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+
 const string TEMP_ITR2_SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + TEMP_RELCOND_STRING_REGEX;
+const string TEMPORARY = SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_SUCH_THAT_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX = TEMPORARY + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+
+//SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_SUCH_THAT_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING + 
+//"\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMP_ITR2_SUCH_THAT_CL_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+
 
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" +
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*[ ]{0,1}\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
@@ -292,7 +301,9 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	vector<string> initialVector;
 	initialVector.push_back(selectString);
 
-	initialVector = splitStatement(initialVector);
+	//initialVector = splitStatement(initialVector);
+
+	initialVector = splitToSentences(selectString);
 	//After splitting do validation different parts of the vector
 	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
 		return true;
@@ -442,15 +453,7 @@ bool QueryValidator::isExactString(string arg2) {
 	}
 	return true;
 }
-vector<string> QueryValidator::splitStatement(vector<string> currentVector) {
-	//Split by such that
-	currentVector = split(currentVector, SUCH_THAT_STRING);
 
-	//Split by pattern
-	currentVector = split(currentVector, PATTERN_STRING);
-
-	return currentVector;
-}
 //This function function checks for the select portion of the select query and ensure that the synonym
 bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	//First element of this vector gives the select clause
@@ -544,7 +547,6 @@ void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
-
 		return true;
 	}
 	else {
@@ -562,7 +564,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		vector<string> temp = vec;
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
-				if (!isValidSuchThat(vec.at(i), syn)) {
+				if (!isValidSuchThat(vec.at(i))) {
 					return false;
 				}
 			}
@@ -591,43 +593,25 @@ vector<string> QueryValidator::extractSuchThatClauses(string str) {
 	}
 	return toReturnVec;
 }
-bool QueryValidator::isValidSuchThat(string str, string syn) {
+bool QueryValidator::isValidSuchThat(string str) {
 	int toAdd = ZERO;
 
 	//Remove the additional leading and trailing whitespace
 	str = trim(str);
 
-	if (!isValidSuchThatRegex(str)) {
-		return false;
-	}
-	else {
+	//If the str is a valid str regex just proceed
+	if (isValidSuchThatRegex(str) || isValidSuchThaExtendedRegex(str)) {
 		vector<string> suchThatRelVec = extractSuchThatClauses(str);
 		for (int idx = 0; idx < suchThatRelVec.size(); idx++) {
-			/** The following is no longer needed as we already haf sth like Follows(s,4)
-			//Firstly extract/split till a relation is found
-			string tempString = str.substr(10, str.length() - ONE);
-			*/
-			string tempString = suchThatRelVec.at(idx);
-
-			//So sth like Follows(s,4) is tempString, after calling the next statement, [0]= Follows	[1] = s,4)
-			vector<string> tempVec = splitBySymbol(tempString, SYMBOL_LEFT_BRACKET);
-
-			//Obtain the relation e.g. Follows
+			string currentString = suchThatRelVec.at(idx);
+			vector<string> tempVec = splitBySymbol(currentString, SYMBOL_LEFT_BRACKET);
 			string relation = tempVec.at(ZERO);
-
-			//Obtain the string argsWithoutBracket i.e.  s,4 is obtained
 			string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length() - 1);
-
-			//Remove all the whitespace first
 			argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
-
-			//Split them by Comma
 			vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
-
 			string arg1 = args.at(ZERO);
 			string arg2 = args.at(ONE);
 
-			//At this pt,
 			string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
 			string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
 
@@ -668,7 +652,6 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 					arg1Valid = false;
 				}
 			}
-			//Implies that it is part of the delcared synonym
 			if (arg2Ent != INVALID_STRING) {
 				arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
 			}
@@ -710,15 +693,16 @@ bool QueryValidator::isValidSuchThat(string str, string syn) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg2_NUM, arg2_UNDER, arg2_VARIABLE, relation, arg1, arg2, arg1Ent, arg2Ent)) {
 					return false;
 				}
-				else {
-					return true;
-				}
 			}
 			else {
 				return false;
 			}
 		}
 	}
+	else {
+		return false;
+	}
+	return true;
 }
 
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2) {
@@ -877,39 +861,89 @@ vector<string> QueryValidator::splitBySymbol(string str, char symbolSplitWith) {
 	}
 	return result;
 }
+vector<string> QueryValidator::splitToSentences(string strToSplit) {
+	string curr = strToSplit;
+	vector<string> results;
+	int currIdx = 0;
 
-vector<string> QueryValidator::split(vector<string> vectorToSplit, string strToSplitWith) {
-	vector<string> result;
+	size_t posSuchThat = curr.find(SUCH_THAT_STRING);
 
-	for (size_t i = 0; i < vectorToSplit.size(); i++) {
-		string curr = vectorToSplit.at(i);
-		size_t pos = curr.find(strToSplitWith);
-		int count = 0;
-		while (pos != std::string::npos) {
-			if (count == 0) {
-				string before = curr.substr(0, pos);
-				result.push_back(before);
-				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
-				pos = curr.find(strToSplitWith);
-				count++;
-			}
-			else {
-				string before = curr.substr(0, pos);
-				result.push_back(strToSplitWith + before);
-				curr = curr.substr(pos + strToSplitWith.length() + 1, curr.length());
-				pos = curr.find(strToSplitWith);
-				count--;
-			}
+	size_t posPattern = curr.find(PATTERN_STRING);
+
+	size_t posWith = curr.find(WITH_STRING);
+
+	//Compare to get the one with smallest index
+	//Then find the occurence of the one with smallest index
+	size_t posInterest;
+	string clauseInterest;
+	if ((posSuchThat != std::string::npos) && (posSuchThat < posPattern) && (posSuchThat < posWith)) {
+		posInterest = posSuchThat;
+		clauseInterest = SUCH_THAT_STRING;
+	}
+	else if ((posPattern != std::string::npos) && (posPattern < posSuchThat) && (posPattern < posWith)) {
+		posInterest = posPattern;
+		clauseInterest = PATTERN_STRING;
+	}
+	else if ((posWith != std::string::npos) && (posWith < posSuchThat) && (posWith < posWith)) {
+		posInterest = posWith;
+		clauseInterest = WITH_STRING;
+	}
+	//If Select clauses are sth like Select s, just return
+	if ((posSuchThat == std::string::npos) && (posPattern == std::string::npos)
+		&& (posWith == std::string::npos)) {
+		results.push_back(curr);
+		return results;
+	}
+
+	size_t nextPosInterest = posInterest;
+	string nextClauseInterest = clauseInterest;
+
+	int count = 0;
+	while (currIdx != -1) {
+		string toPush = curr.substr(0, nextPosInterest);
+		toPush = trim(toPush);
+		results.push_back(toPush);
+		//Get the next instance of the string
+		curr = curr.substr(nextPosInterest, curr.length());
+
+		size_t nextPosSuchThat = curr.find(SUCH_THAT_STRING);
+
+		size_t nextPosPattern = curr.find(PATTERN_STRING);
+
+		size_t nextPosWith = curr.find(WITH_STRING);
+
+		if ((nextPosSuchThat != std::string::npos) && (nextPosSuchThat != 0)
+			&& (((nextPosPattern == 0) && (nextPosSuchThat < nextPosWith)) || ((nextPosWith == 0) && (nextPosSuchThat < nextPosPattern)))) {
+			nextPosInterest = nextPosSuchThat;
+			nextClauseInterest = SUCH_THAT_STRING;
 		}
-		if (count == 1) {
-			result.push_back(strToSplitWith + " " + curr);
-			count--;
+		else if ((nextPosPattern != std::string::npos) && (nextPosPattern != 0)
+			&& (((nextPosSuchThat == 0) && (nextPosPattern < nextPosWith)) || ((nextPosWith == 0) && (nextPosPattern > nextPosWith)))) {
+			nextPosInterest = nextPosPattern;
+			nextClauseInterest = PATTERN_STRING;
+
+		}
+		else if ((nextPosWith != std::string::npos) && (nextPosWith != 0)
+			&& (((nextPosSuchThat == 0) && (nextPosPattern > nextPosWith)) || ((nextPosPattern == 0) && (nextPosSuchThat > nextPosWith)))) {
+			nextPosInterest = nextPosWith;
+			nextClauseInterest = WITH_STRING;
+
+		}
+		else if (((nextPosSuchThat == 0) && (nextPosWith == std::string::npos) && (nextPosPattern == std::string::npos))
+			|| ((nextPosPattern == 0) && (nextPosSuchThat == std::string::npos) && (nextPosWith == std::string::npos))
+			|| ((nextPosWith == 0) && (nextPosSuchThat == std::string::npos) && (nextPosPattern == std::string::npos))) {
+			toPush = curr.substr(0, curr.length());
+			toPush = trim(toPush);
+			results.push_back(toPush);
+			break;
 		}
 		else {
-			result.push_back(curr);
+			//Sth went wrong
+			break;
 		}
+		currIdx = nextPosInterest;
 	}
-	return result;
+	return results;
 }
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	std::regex pattern(symbolToRemove);
@@ -927,10 +961,6 @@ string QueryValidator::removeDuplicatesWhiteSpaces(string str) {
 string QueryValidator::trim(string str) {
 	return regex_replace(str, regex("^ +| +$|( ) +"), "$1");
 }
-/**
-int QueryValidator::getNumClauses() {
-return this->numClauses;
-}**/
 string QueryValidator::changeLowerCase(string str) {
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 	return str;
@@ -946,6 +976,10 @@ bool QueryValidator::isValidDeclarationRegex(string str) {
 bool QueryValidator::isValidSuchThatRegex(string str) {
 	regex suchThatRegex(TEMP_ITR2_SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
+}
+bool QueryValidator::isValidSuchThaExtendedRegex(string str) {
+	regex suchThatExtendedRegex(TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX);
+	return regex_match(str, suchThatExtendedRegex);
 }
 bool QueryValidator::isValidWithRegex(string str) {
 	regex withRegex(WITH_CL_REGEX);
