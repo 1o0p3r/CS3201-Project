@@ -9,7 +9,8 @@ public:
 	Modify();
 
 	void setModifies(int statementNum, int varName, vector<int> parentStarOfStmt);
-	void Modify::setModifies(int statementNum, int varName);
+	void setModifies(int statementNum, int varName);
+	void setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling);
 	void setProcModifies(int procName, int varName);
 
 	vector<int> getModifies(int statementNum);
@@ -26,4 +27,5 @@ private:
 
 	void setModifiedBy(int varName, int statementNum);
 	void setProcModifiedBy(int procName, int varName);
+
 };

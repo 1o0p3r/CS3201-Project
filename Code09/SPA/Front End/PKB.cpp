@@ -178,27 +178,21 @@ void PKB::setProcModifies(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	vector<string> procIsCalledBy = getCalledBy(procName);
+	vector<string> procIsCalledByS = getCalledBy(procName);
+	vector<int> procIsCalledBy;
 
-	int currProcIndex;
-	int currVarIndex;
-
-	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		currProcIndex = getProcIndex(procIsCalledBy[i]);
-		modify.setProcModifies(currProcIndex, varIndex);
+	for (int i = 0; i < procIsCalledByS.size(); i++) {
+		procIsCalledBy.push_back(getProcIndex(procIsCalledByS[i]));
 	}
 
-	vector<string> procIsCalling = getCalls(procName);
-	vector<string> variablesModified;
-	for (int i = 0; i < procIsCalling.size(); i++) {
-		variablesModified = getProcModifies(procIsCalling[i]);
-		for (int j = 0; j < variablesModified.size(); j++) {
-			currVarIndex = getVarIndex(variablesModified[j]);
-			modify.setProcModifies(procIndex, currVarIndex);
-		}
+	vector<string> procIsCallingS = getCalls(procName);
+	vector<int> procIsCalling;
 
+	for (int i = 0; i < procIsCallingS.size(); i++) {
+		procIsCalling.push_back(getProcIndex(procIsCallingS[i]));
 	}
-	modify.setProcModifies(procIndex, varIndex);
+
+	modify.setProcModifies(procIndex, varIndex, procIsCalledBy, procIsCalling);
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
