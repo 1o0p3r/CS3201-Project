@@ -167,14 +167,11 @@ vector<int> PKB::getChildStar(int statementNum) {
 }
 
 void PKB::setModifies(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcModifies(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
@@ -220,14 +217,11 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 }
 
 void PKB::setUses(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	use.setUses(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcUses(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
