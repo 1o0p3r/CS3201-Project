@@ -30,7 +30,7 @@ void QueryStatement::addPatternQuery(QueryElement toAdd) {
 	patternElement.push_back(toAdd);
 }
 void QueryStatement::addWithQuery(QueryElement toAdd) {
-
+	withElement.push_back(toAdd);
 }
 void QueryStatement::addSynonymEntityList(vector<SynonymEntityPair> synEntityList)
 {
