@@ -257,12 +257,6 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	call.setCalls(statementNum, index1, index2);
 }
 
-//-----delete this-----
-void PKB::setCalls(string procName1, string procName2) {
-	
-}
-//-----end delete-----
-
 vector<string> PKB::getCalls(string procName) {
 	int procNameIndex = getProcIndex(procName);
 	vector<int> results = call.getCalls(procNameIndex);

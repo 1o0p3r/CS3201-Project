@@ -65,7 +65,7 @@ public:
 	TEST_METHOD(setProcModifiesForMultiplePrcs) {
 		PKB pkb;
 		pkb.setProcModifies("first", "x");
-		pkb.setCalls("first", "second");
+		pkb.setCalls(1, "first", "second");
 		pkb.setProcModifies("second", "y");
 
 		vector<string> results;
@@ -77,7 +77,7 @@ public:
 		PKB pkb;
 		pkb.setProcUses("first", "x");
 		pkb.setProcUses("first", "y");
-		pkb.setCalls("first", "second");
+		pkb.setCalls(1, "first", "second");
 		pkb.setProcUses("second", "z");
 
 		vector<string> results;

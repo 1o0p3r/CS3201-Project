@@ -354,10 +354,6 @@ public:
 	*/
 	vector<tuple<int, string>> getPattern(string varName);
 
-	//-----delete this-----
-	void setCalls(string procName1, string procName2);
-	//-----end delete-----
-
 private:
 	Follow follow;
 	Parent parent;

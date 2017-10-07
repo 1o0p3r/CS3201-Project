@@ -182,7 +182,7 @@ bool Parse(string fileName, PKB& pkb) {
 				}
 				if (Util::isValidName(proc_name)) {
 					pkb.setStatementType(lineCounter, CALL);
-					pkb.setCalls(procName, proc_name);
+					pkb.setCalls(lineCounter, procName, proc_name);
 					isSameLevel = true;
 					isNewContainer = false;
 				} else {
