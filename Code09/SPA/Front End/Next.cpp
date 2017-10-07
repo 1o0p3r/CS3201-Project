@@ -17,12 +17,15 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	vector<int> nestingLvlParent;
 	vector<int> lastIfLine;
 
-	nextTable.resize(stmtsAndType.size());
-	previousTable.resize(stmtsAndType.size());
-	nestingLvlParent.resize(stmtsAndType.size());
-	lastIfLine.resize(stmtsAndType.size());
+	nextTable.resize(stmtsAndType.size() + 1);
+	previousTable.resize(stmtsAndType.size() + 1);
+	nestingLvlParent.resize(stmtsAndType.size() + 1);
+	lastIfLine.resize(stmtsAndType.size() + 1);
 
 	nestingLvlParent[0] = 0;
+	nestingLvlParent[stmtsAndType.size()] = 0;
+	nextTable[stmtsAndType.size()].push_back(0);
+	previousTable[0].push_back(0);
 	int nestingLvl = 0;
 
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
@@ -49,12 +52,10 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 				continue;
 			}
 			else {
-				if ((i + 1) != stmtsAndType.size()) {
-					nextTable[parentOfStmtVec[i]].push_back(i + 1);
-					previousTable[i + 1].push_back(parentOfStmtVec[i]);
-					nestingLvl--;
-					continue;
-				}
+				nextTable[parentOfStmtVec[i]].push_back(i + 1);
+				previousTable[i + 1].push_back(parentOfStmtVec[i]);
+				nestingLvl--;
+				continue;
 			}
 		}
 
@@ -69,10 +70,8 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			continue;
 		}
 
-		if ((i + 1) != stmtsAndType.size()) {
-			nextTable[i].push_back(i + 1);
-			previousTable[i + 1].push_back(i);
-		}
+		nextTable[i].push_back(i + 1);
+		previousTable[i + 1].push_back(i);
 	}
 }
 
