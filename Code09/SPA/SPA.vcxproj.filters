@@ -26,6 +26,7 @@
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\UsesAnalyzer.cpp" />
+    <ClCompile Include="Back End\NextAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h" />
@@ -54,5 +55,6 @@
     <ClInclude Include="Back End\TupleHash.h" />
     <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\UsesAnalyzer.h" />
+    <ClInclude Include="Back End\NextAnalyzer.h" />
   </ItemGroup>
 </Project>

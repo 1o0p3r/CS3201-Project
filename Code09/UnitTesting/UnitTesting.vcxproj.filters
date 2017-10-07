@@ -19,6 +19,7 @@
     <ClCompile Include="UtilTest.cpp" />
     <ClCompile Include="JoinAlgorithmTest.cpp" />
     <ClCompile Include="UsesAnalyzerTest.cpp" />
+    <ClCompile Include="ParentAnalyzerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

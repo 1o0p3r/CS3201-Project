@@ -272,6 +272,16 @@ public:
 	void setStatementType(int statementNum, string type);
 
 	/**
+	@Niv,
+	Stub functions for Next, 
+	*/
+	vector<int> getNext(int statementNum);
+	vector<int> getPrevious(int statementNum);
+	
+	//return all prog_lines that leads to another statement directly executed in the same procedure
+	vector<int> getAllNext(); //next(n1,n2) , returns all possilble n1 values. 
+
+	/**
 	Gets all the while statements
 	@returns a vector containing ints of all while statements
 	*/

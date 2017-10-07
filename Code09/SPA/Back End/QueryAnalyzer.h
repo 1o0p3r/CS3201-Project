@@ -5,6 +5,7 @@
 #include "QueryElement.h"
 #include "suchThatAnalyzer.h"
 #include "FollowsAnalyzer.h"
+#include "NextAnalyzer.h"
 #include "ParentAnalyzer.h"
 #include "ParentStarAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
