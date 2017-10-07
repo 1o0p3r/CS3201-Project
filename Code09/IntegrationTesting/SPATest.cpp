@@ -55,7 +55,7 @@ public:
 			{},
 			{"1", "4"} 
 		};
-		validator = QueryValidator(); //re-init validator.
+		
 		for (int i = 0; i < queries.size(); i++) {
 			string testNo = "In test ";
 			testNo.append(to_string(i + 1));
