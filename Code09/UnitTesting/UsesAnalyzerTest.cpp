@@ -7,9 +7,9 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTesting {
-	TEST_CLASS(QueryAnalyzerTest) {
+	TEST_CLASS(UsesAnalyzerTest) {
 public:
-	TEST_METHOD(solveModifiesAnalyzer) {
+	TEST_METHOD(solveUsesAnalyzer) {
 		PKB pkb;
 		QueryAnalyzer qa;
 		QueryStatement qs;
@@ -31,34 +31,34 @@ public:
 		*/
 
 		vector<int> test;
-		int sizEMOdifies;
-		pkb.setModifies(1, "x");
-		pkb.setModifies(2, "x");
-		
-		pkb.setModifies(2, "y");
-		pkb.setModifies(3, "y");
-		pkb.setModifies(4, "x");
+		int sizEUses;
+		pkb.setUses(1, "x");
+		pkb.setUses(2, "x");
 
-		sizEMOdifies = test.size();
+		pkb.setUses(2, "y");
+		pkb.setUses(4, "x");
+		pkb.setUses(4, "y");
+
+		sizEUses = test.size();
 		pkb.setStatementType(1, "assign");
 		pkb.setStatementType(2, "while");
 		pkb.setStatementType(3, "assign");
 		pkb.setStatementType(4, "assign");
 
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Modifies");
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Uses");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
-		clauseResult = ModifiesAnalyzer(synSyn, pkb).solveClause();
-		hardcode = { { "1","2","4","2","3","a" }, { "x","x","x","y","y","b" } };
+		clauseResult = UsesAnalyzer(synSyn, pkb).solveClause();
+		hardcode = { { "1","2","4","2","4","a" },{ "x","x","x","y","y","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
 				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
 			}
-		
+
 	}
-	
+
 	};
 }

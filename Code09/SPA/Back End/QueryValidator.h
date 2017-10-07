@@ -25,8 +25,6 @@ private:
 
 	string getCorrespondingEntity(string syn);
 
-	vector<string> splitBySymbol(string str, char symbol);
-	vector<string> splitStatement(vector<string> currentVector);
 	vector<string> declarationString;
 	vector<string> queryString;
 
@@ -39,7 +37,6 @@ private:
 	bool isValidSelect(vector<string> vectorClauses);
 	bool isValidOthers(vector<string> others);
 	bool isValidPattern(string str, string syn);
-
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
@@ -50,6 +47,7 @@ public:
 	QueryValidator();
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThatRegex(string str);
+	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
@@ -60,7 +58,7 @@ public:
 	bool parseInput(string str);
 	bool isValidModifiesP(string str);
 	bool isEntityAndSynonym(string);
-	bool isValidSuchThat(string str, string syn);
+	bool isValidSuchThat(string str);
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg2_NUM, bool arg2_UNDER, bool arg2_VARIABLE, string relType, string arg1, string arg2, string type1, string type2);
 	bool isValidEntity(string);
 
@@ -78,7 +76,8 @@ public:
 	string trim(string str);
 	string trimPatternArgs(string str);
 
-	vector<string> split(vector<string> vectorToSplit, string strToSplitWith);
 	vector<string> extractSuchThatClauses(string str);
 	QueryStatement getQueryStatement();
+	vector<string> splitToSentences(string strToSplit);
+	vector<string> splitBySymbol(string str, char symbol);
 };

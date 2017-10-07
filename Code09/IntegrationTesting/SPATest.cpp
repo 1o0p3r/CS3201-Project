@@ -36,7 +36,7 @@ public:
 			"stmt a; Select a such that Parent*(a,4)",
 			"stmt s; assign a; Select a such that Parent*(s,4)pattern a(_, \"x*y+ 1\")",
 			"stmt s; assign a; Select a such that Follows(s,4)pattern a(_, _\"y+1\")",
-			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)"
+			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)" 
 		};
 		vector<vector<string>> expected = {
 			{},
@@ -53,9 +53,9 @@ public:
 			{"2"},
 			{"4"},
 			{},
-			{"1", "4"}
+			{"1", "4"} 
 		};
-		validator = QueryValidator(); //re-init validator.
+		
 		for (int i = 0; i < queries.size(); i++) {
 			if (validator.parseInput(queries[i])) {
 				statement = validator.getQueryStatement();

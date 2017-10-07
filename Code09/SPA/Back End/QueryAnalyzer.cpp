@@ -9,7 +9,7 @@ enum selectValue
 enum suchThatValue
 {
 	undefinedSuchThat, modifies, uses, parent, parentStar, follows,
-	followsStar
+	followsStar, calls, callsStar, next_, nextStar
 };
 
 enum parentArgCase
@@ -73,6 +73,10 @@ void QueryAnalyzer::initSuchThatMap()
 	mapSuchThatValues["Parent*"] = parentStar;
 	mapSuchThatValues["Follows"] = follows;
 	mapSuchThatValues["Follows*"] = followsStar;
+	mapSuchThatValues["Calls"] = calls;
+	mapSuchThatValues["Calls*"] = callsStar;
+	mapSuchThatValues["Next"] = next_;
+	mapSuchThatValues["Next*"] = nextStar;
 
 }
 
@@ -247,10 +251,14 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
-				stResult = solveUses(stClause);
+				clauseResult = UsesAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
-				stResult = solveParent(stClause);
+				clauseResult = ParentAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parentStar:
 				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
@@ -266,6 +274,17 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
+				break;
+			case calls:
+				clauseResult = CallsAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
+				break;
+			case callsStar:
+				break;
+			case next_:
+				break;
+			case nextStar:
 				break;
 		}
 		if (!stResult.empty())
@@ -418,6 +437,7 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 	if (iteratorMapFindArg1 == synTableMap.end()) { //element not found
 		if (stResult.size() > 1) {
 			scenario += 4;
+			hasArg2 = true;
 			if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
 				scenario += 1;
 			}
@@ -1059,6 +1079,7 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 	vector<vector<string>> hashJoinTable;
 	vector<string> addToTable;
 	vector<string> hashKeys;
+	vector<string> tableKeys;
 	
 	// A | B       A | C
 	// 1   2       3   5
@@ -1071,6 +1092,17 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 	//complexity O((M+K-1)*NV )  
 	//Poor implementation of dataStructure
 
+	//poor implementation of mapping, required for bug fix when synonym exists as variable name in code
+	for (int col = 0; col < queryAnalyzerTable.size(); col++) {
+		tableKeys.push_back(queryAnalyzerTable[col].back());
+		queryAnalyzerTable[col].pop_back();
+	}
+
+	for (int col = 0; col < clauseTable.size(); col++) {
+		if(col != clausetableJoinIndex)
+			tableKeys.push_back(clauseTable[col].back());
+		clauseTable[col].pop_back();
+	}
 
 	//hash   value of clause (key) to  row indices in multimap
 	for (int row = 0; row < clauseTable[0].size(); row++) {
@@ -1106,6 +1138,7 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 	if (!hashJoinTable.empty()) {
 		//re-map synonym table
 		for (int i = 0; i < hashJoinTable.size(); i++) {
+			hashJoinTable[i].push_back(tableKeys[i]);
 			synTableMap[hashJoinTable.at(i).back()] = make_tuple(qaTableLoc, i);
 		}
 		if (clauseTableLoc != -1) { //table is existing

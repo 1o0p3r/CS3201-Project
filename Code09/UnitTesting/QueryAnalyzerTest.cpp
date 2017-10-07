@@ -273,7 +273,7 @@ public:
 		qa.findQueryElements();
 		mergedResult = qa.solveSTClause();
 		// a, b, c
-		hardcode = { { { "1", "1", "1", "1", "1", "1" },{ "c", "c", "x", "x", "y", "y" },
+		hardcode = { { {"1", "1", "1", "1", "1", "1" },{ "c", "c", "x", "x", "y", "y" },
 						{"2", "3", "2", "3", "2", "3"} } };
 		for (int i = 0; i < mergedResult.size(); i++) {
 			for (int j = 0; j < mergedResult.size(); j++) {
@@ -287,7 +287,7 @@ public:
 		//QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement b("d", "synonym", "while", "a", "synonym", "assign", "Parent");
-		// { { "1","1", "a" },{ "2","3","d" } };
+		// { { "1","1", "d" },{ "2","3","a" } };
 
 		qa = QueryAnalyzer();
 		qa.setPKB(pkb);
