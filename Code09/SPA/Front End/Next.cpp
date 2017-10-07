@@ -14,48 +14,65 @@ Next::Next() {
 
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
 
-	nextTable.resize(stmtsAndType.size());
-
 	vector<int> nestingLvlParent;
-	vector<int> lastIf;
-	int nestingLvl = 0;
+	vector<int> lastIfLine;
 
+	nextTable.resize(stmtsAndType.size());
+	previousTable.resize(stmtsAndType.size());
 	nestingLvlParent.resize(stmtsAndType.size());
-	lastIf.resize(stmtsAndType.size());
+	lastIfLine.resize(stmtsAndType.size());
+
+	nestingLvlParent[0] = 0;
+	int nestingLvl = 0;
 
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
 	for (int i = 1; i < stmtsAndType.size(); i++) {
 
-		int parentOfNextStmt = parentOfStmtVec[i + 1];
-		if (parentOfNextStmt != nestingLvlParent[nestingLvl]) { //while loop
-			if (stmtsAndType[parentOfNextStmt] == 1) {
-				nextTable[i].push_back(parentOfNextStmt);
-				nextTable[parentOfNextStmt].push_back(i + 1); 
-			}
-
-			else { //if clause
-				nextTable[i].push_back(i + 1);
-				nextTable[lastIf[nestingLvl]].push_back(i + 1); 
-				lastIf[nestingLvl] = i + 1;
-			}
+		if (parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) { //check for if
+			nextTable[lastIfLine[nestingLvl]].push_back(i);
+			previousTable[i].push_back(lastIfLine[nestingLvl]);
 			nestingLvl--;
 		}
 
-		if (stmtsAndType[i] == 1 || stmtsAndType[i] == 3) {
+		if (stmtsAndType[i] == 1 || stmtsAndType[i] == 3) { //save parent of nesting level
 			nestingLvl++;
 			nestingLvlParent[nestingLvl] = i;
 		}
 
-		if (stmtsAndType[i + 1] == 4) {
+		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl]) { //check for while
+			nextTable[i].push_back(parentOfStmtVec[i]);
+			previousTable[parentOfStmtVec[i]].push_back(i);
 
+			if (stmtsAndType[i + 1] == 5) {
+				nestingLvl--;
+				lastIfLine[nestingLvl] = parentOfStmtVec[i];
+				continue;
+			}
+			else {
+				if ((i + 1) != stmtsAndType.size()) {
+					nextTable[parentOfStmtVec[i]].push_back(i + 1);
+					previousTable[i + 1].push_back(parentOfStmtVec[i]);
+					nestingLvl--;
+					continue;
+				}
+			}
 		}
 
-		else if (stmtsAndType[i + 1] == 5) {
-			nextTable[parentOfStmtVec[i]].push_back(i + 1);
+		if (stmtsAndType[i + 1] == 5) {
+			lastIfLine[nestingLvl] = i;
+			continue;
+		}
+
+		if (stmtsAndType[i] == 5) {
+			nextTable[nestingLvlParent[nestingLvl]].push_back(i);
+			previousTable[i].push_back(nestingLvlParent[nestingLvl]);
 		}
 
 		else {
-			nextTable[i].push_back(i + 1);
+			if ((i + 1) != stmtsAndType.size()) {
+				nextTable[i].push_back(i + 1);
+				previousTable[i + 1].push_back(i);
+			}
 		}
 	}
 }
