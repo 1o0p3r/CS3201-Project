@@ -93,7 +93,7 @@ public:
 		vector<string> queries = {
 			"while w; Select w such that Parent(w, 7)",
 			"assign a; Select a such that Parent*(3, a)",
-			"if a; stmt b; Select a such that Parent*(3,b)",
+			//"if a; stmt b; Select a such that Parent*(3,b)",
 			"stmt s; Select s such that Follows(8, s)",
 			"stmt c; Select c such that Follows*(1, c)",
 			"stmt a; Select a such that Follows(a, 9)",
@@ -110,16 +110,16 @@ public:
 		vector<vector<string>> expected = {
 			{ "3" },
 			{ "4", "5", "6", "7" },
-			{ "8" },
+			//{ "8" },
 			{ "11" },
-			{ "2", "3", "8", "11", "12", "13" },
+			{ "11", "12", "13", "2", "3", "8" },
 			{},
-			{ "2", "7" },
+			{ "2","3", "7" },
+			{ "x" },
 			{ "3" },
 			{ "i", "x", "y", "z" },
-			{ "7", "11" },
-			{ "9" },
-			{ "4" },
+			{ "3", "7", "11" },
+			{ "x" },
 			{ "4" },
 			{},
 			{ "9" }
@@ -131,7 +131,7 @@ public:
 				analyzer.setQS(statement);
 				answer = analyzer.runQueryEval();
 			} else {
-				Logger::WriteMessage("Invalid Query");
+				Logger::WriteMessage("Invalid Query in Source 2");
 				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
