@@ -18,7 +18,7 @@ namespace UnitTesting
 		{
 			QueryValidator queryValidator;
 			string query;
-			
+	
 			query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			

@@ -678,7 +678,7 @@ bool QueryValidator::isValidSuchThat(string str) {
 					}
 				}
 				//Implies arg 2 is sth like "x"
-				else if (isQuotationIdentRegex(arg1)) {
+				else if (isQuotationIdentRegex(arg2)) {
 					arg2Valid = checkRelationshipTable(relation, STR_STRING, TWO);
 					if (arg2Valid) {
 						arg2_STRING_LITERAL = true;
