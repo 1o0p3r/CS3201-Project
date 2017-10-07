@@ -225,7 +225,7 @@ void PKB::setProcUses(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex));
+	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::getUses(int statementNum) {
