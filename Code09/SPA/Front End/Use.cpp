@@ -54,6 +54,23 @@ void Use::setUsedBy(int varName, int statementNum) {
 	}
 }
 
+void Use::setProcUses(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling) {
+
+	for (int i = 0; i < procIsCalledBy.size(); i++) {
+		setProcUses(procIsCalledBy[i], varName);
+	}
+
+	vector<int> variablesUsed;
+	for (int i = 0; i < procIsCalling.size(); i++) {
+		variablesUsed = getProcUses(procIsCalling[i]);
+		for (int j = 0; j < variablesUsed.size(); j++) {
+			setProcUses(procName, variablesUsed[j]);
+		}
+
+	}
+	setProcUses(procName, varName);
+}
+
 void Use::setProcUses(int procName, int varName) {
 
 	if ((procName) >= procUsesTable.size()) {

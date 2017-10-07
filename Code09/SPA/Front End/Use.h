@@ -10,6 +10,7 @@ public:
 
 	void setUses(int statementNum, int varName, vector<int> parentStarOfStmt);
 	void setUses(int statementNum, int varName);
+	void setProcUses(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling);
 	void setProcUses(int procName, int varName);
 
 	vector<int> getUses(int statementNum);

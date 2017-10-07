@@ -47,16 +47,15 @@ void Modify::setModifiedBy(int varName, int statementNum) {
 void Modify::setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling) {
 
 	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		setProcModifies(i, varName);
+		setProcModifies(procIsCalledBy[i], varName);
 	}
 
 	vector<int> variablesModified;
 	for (int i = 0; i < procIsCalling.size(); i++) {
 		variablesModified = getProcModifies(procIsCalling[i]);
 		for (int j = 0; j < variablesModified.size(); j++) {
-			setProcModifies(procName, j);
+			setProcModifies(procName, variablesModified[j]);
 		}
-
 	}
 	setProcModifies(procName, varName);
 }
