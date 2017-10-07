@@ -56,6 +56,21 @@ namespace UnitTesting
 			Assert::IsTrue(modify.getProcModifies(2).size() == 1);
 		}
 
+		TEST_METHOD(procModifiesTablesAddCorrectly2) { //values are significant in proc set
+
+			Modify modify;
+			vector<int> proc1CalledBy = {};
+			vector<int> proc1Calls = { 2 };
+			vector<int> proc2CalledBy = { 1 };
+			vector<int> proc2Calls = {};
+
+			modify.setProcModifies(1, 1, proc1CalledBy, proc1Calls);
+			modify.setProcModifies(1, 2, proc1CalledBy, proc1Calls);
+			modify.setProcModifies(2, 3, proc2CalledBy, proc2Calls);
+			modify.setProcModifies(2, 4, proc2CalledBy, proc2Calls);
+			Assert::IsTrue(modify.getProcModifies(1) == vector<int>{1, 2, 3, 4});
+		}
+
 		TEST_METHOD(checkModifiesSizeAndBoundaryAreCorrect) { 
 
 			Modify modify;
