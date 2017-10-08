@@ -21,6 +21,7 @@ private:
 	vector<vector<int>> previousStarTable;
 
 	vector<vector<int>> procLastLine;
+	bool procChecksComplete;
 
 	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine);
 	};

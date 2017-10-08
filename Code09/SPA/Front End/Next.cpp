@@ -12,6 +12,7 @@ Next::Next() {
 	vector<vector<int>> previousStarTable;
 
 	vector<vector<int>> procLastLine;
+	bool procChecksComplete = false;
 }
 
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
@@ -25,10 +26,10 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 	do {
 
-		for (int i = 1; i < stmtsAndType.size(); i--) {
+		for (int i = 1; i < stmtsAndType.size(); i++) {
 			if (stmtsAndType[i] == 4) {
 				numOfProc++;
-				for (int j = stmtsAndType[get<0>(procFirstAndLastLines[i])]; j < stmtsAndType[get<1>(procFirstAndLastLines[i]) + 1]; j++) {
+				for (int j = get<0>(procFirstAndLastLines[i]); j < get<1>(procFirstAndLastLines[i]) + 1; j++) {
 					if (stmtsAndType[j] == 4)
 						continue;
 					else {
@@ -46,7 +47,8 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	nextStarTable.clear();
 	previousStarTable.clear();
 
-	createCFG(stmtsAndType, parentOfStmtVec, 1, stmtsAndType.size() - 1);
+	procChecksComplete = true;
+	createCFG(stmtsAndType, parentOfStmtVec, procFirstAndLastLines, 1, stmtsAndType.size() - 1);
 
 }
 
@@ -71,7 +73,8 @@ void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vect
 
 		if (parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) { //check for if
 			nextTable[lastIfLine[nestingLvl]].push_back(i);
-			previousTable[i].push_back(lastIfLine[nestingLvl]);
+			if (stmtsAndType[lastIfLine[nestingLvl]] != 4)
+				previousTable[i].push_back(lastIfLine[nestingLvl]);
 			nestingLvl--;
 		}
 
@@ -82,7 +85,8 @@ void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vect
 
 		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl] && stmtsAndType[nestingLvlParent[nestingLvl]] == 1) { //check for while
 			nextTable[i].push_back(parentOfStmtVec[i]);
-			previousTable[parentOfStmtVec[i]].push_back(i);
+			if (stmtsAndType[i] != 4)
+				previousTable[parentOfStmtVec[i]].push_back(i);
 
 			if (stmtsAndType[i + 1] == 5) {
 				nestingLvl--;
@@ -104,15 +108,32 @@ void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vect
 
 		if (stmtsAndType[i] == 5) {
 			nextTable[nestingLvlParent[nestingLvl]].push_back(i);
-			previousTable[i].push_back(nestingLvlParent[nestingLvl]);
+			if (stmtsAndType[nestingLvlParent[nestingLvl]] != 4)
+				previousTable[i].push_back(nestingLvlParent[nestingLvl]);
 			continue;
 		}
 
 		nextTable[i].push_back(i + 1);
-		previousTable[i + 1].push_back(i);
+		if (stmtsAndType[i] != 4)
+			previousTable[i + 1].push_back(i);
 	}
 
 	procLastLine[firstLine] = previousTable[lastLine + 1];
+
+	if (procChecksComplete) {
+
+		for (int i = 1; i < stmtsAndType.size(); i++) {
+			if (stmtsAndType[i] == 4) {
+				vector<int> next = nextTable[i];
+				nextTable[i].clear();
+				nextTable[i].push_back(get<0>(procFirstAndLastLines[i]));
+				for (int j = 0; j < next.size(); j++) {
+					nextTable[get<1>(procFirstAndLastLines[i])].push_back(next[j]);
+					previousTable[next[j]].push_back(get<1>(procFirstAndLastLines[i]));
+				}
+			}
+		}
+	}
 }
 
 vector<int> Next::getNext(int stmtNum) {
@@ -120,7 +141,7 @@ vector<int> Next::getNext(int stmtNum) {
 }
 
 vector<int> Next::getPrevious(int stmtNum) {
-	return vector<int>{};
+	return previousTable[stmtNum];
 }
 
 vector<int> Next::getAllNext() {
