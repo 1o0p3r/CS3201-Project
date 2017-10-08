@@ -382,9 +382,7 @@ vector<int> PKB::getCall() {
 }
 
 vector<string> PKB::getAllCalls() {
-	set<int> setOfAllCalls = call.getAllCalls();
-	vector<int> results;
-	results.insert(results.end(), setOfAllCalls.begin(), setOfAllCalls.end());
+	vector<int> results = call.getAllCalls();
 	return convertToProcNames(results);
 }
 

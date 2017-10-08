@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <tuple>
+#include <set>
 
 using namespace std;
 
@@ -19,4 +20,5 @@ private:
 	vector<vector<int>> previousTable;
 	vector<vector<int>> nextStarTable;
 	vector<vector<int>> previousStarTable;
+	set<int> allNextTable;
 };

@@ -14,7 +14,7 @@ public:
 	vector<int> getCalledBy(int procName);
 	vector<int> getCallsStar(int procName);
 	vector<int> getCalledByStar(int procName);
-	set<int> getAllCalls();
+	vector<int> getAllCalls();
 
 private:
 

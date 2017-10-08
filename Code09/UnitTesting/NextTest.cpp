@@ -42,6 +42,20 @@ namespace UnitTesting
 			next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
 			Assert::IsTrue(next.getNext(2) == vector<int>{3, 5});
 			Assert::IsTrue(next.getNext(3) == vector<int>{4, 6});
+			Assert::IsTrue(next.getNext(3) == vector<int>{4, 6});
+			Assert::IsTrue(next.getPrevious(5) == vector<int>{2});
+			Assert::IsTrue(next.getPrevious(3) == vector<int>{2, 4});
+		}
+
+		TEST_METHOD(checkLastLine) {
+
+			Next next;
+			vector<int> stmtsAndType = { 0, 2, 1, 2 };
+			vector<int> parentOfStmtVec = { 0, 0, 0, 2 };
+			vector<tuple<int, int>> procFirstAndLastLines = {};
+
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
+			Assert::IsTrue(next.getPrevious(0) == vector<int>{2});
 		}
 
 	};

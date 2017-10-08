@@ -1,6 +1,7 @@
 #include "Next.h"
 #include <vector>
 #include <tuple>
+#include <set>
 
 using namespace std;
 
@@ -10,6 +11,7 @@ Next::Next() {
 	vector<vector<int>> previousTable;
 	vector<vector<int>> nextStarTable;
 	vector<vector<int>> previousStarTable;
+	set<int> allNextTable;
 }
 
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
@@ -30,6 +32,7 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 		if (parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) { //check for if
 			nextTable[lastIfLine[nestingLvl]].push_back(i);
+			allNextTable.insert(lastIfLine[nestingLvl]);
 			previousTable[i].push_back(lastIfLine[nestingLvl]);
 			nestingLvl--;
 		}
@@ -40,8 +43,9 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		}
 
 		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl] && stmtsAndType[nestingLvlParent[nestingLvl]] == 1) { //check for while
-			nextTable[i].push_back(parentOfStmtVec[i]);
-			previousTable[parentOfStmtVec[i]].push_back(i);
+				nextTable[i].push_back(parentOfStmtVec[i]);
+				allNextTable.insert(i);
+				previousTable[parentOfStmtVec[i]].push_back(i);
 
 			if (stmtsAndType[i + 1] == 5) {
 				nestingLvl--;
@@ -51,8 +55,13 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			else {
 				if ((i + 1) != stmtsAndType.size()) {
 					nextTable[parentOfStmtVec[i]].push_back(i + 1);
+					allNextTable.insert(parentOfStmtVec[i]);
 					previousTable[i + 1].push_back(parentOfStmtVec[i]);
 					nestingLvl--;
+					continue;
+				}
+				else {
+					previousTable[0].push_back(parentOfStmtVec[i]);
 					continue;
 				}
 			}
@@ -65,13 +74,18 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 		if (stmtsAndType[i] == 5) {
 			nextTable[nestingLvlParent[nestingLvl]].push_back(i);
+			allNextTable.insert(nestingLvlParent[nestingLvl]);
 			previousTable[i].push_back(nestingLvlParent[nestingLvl]);
 			continue;
 		}
 
 		if ((i + 1) != stmtsAndType.size()) {
 			nextTable[i].push_back(i + 1);
+			allNextTable.insert(i);
 			previousTable[i + 1].push_back(i);
+		}
+		else {
+			previousTable[0].push_back(i);
 		}
 	}
 }
@@ -81,9 +95,11 @@ vector<int> Next::getNext(int stmtNum) {
 }
 
 vector<int> Next::getPrevious(int stmtNum) {
-	return vector<int>{};
+	return previousTable[stmtNum];
 }
 
 vector<int> Next::getAllNext() {
-	return vector<int>{};
+	vector<int> allNextTableV;
+	allNextTableV.insert(allNextTableV.end(), allNextTable.begin(), allNextTable.end());
+	return allNextTableV;
 }
