@@ -19,4 +19,8 @@ private:
 	vector<vector<int>> previousTable;
 	vector<vector<int>> nextStarTable;
 	vector<vector<int>> previousStarTable;
-};
+
+	vector<vector<int>> procLastLine;
+
+	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
+	};

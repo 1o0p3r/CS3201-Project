@@ -10,9 +10,42 @@ Next::Next() {
 	vector<vector<int>> previousTable;
 	vector<vector<int>> nextStarTable;
 	vector<vector<int>> previousStarTable;
+
+	vector<vector<int>> procLastLine;
 }
 
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
+
+	int firstLine;// = 1;
+	int lastLine;// = stmtsAndType.size() - 1;
+	int numOfProc = 0;
+	int procCompleteCounter = 0;
+
+	procLastLine.resize(stmtsAndType.size());
+
+	do {
+
+		for (int i = 1; i < stmtsAndType.size(); i--) {
+			if (stmtsAndType[i] == 4) {
+				numOfProc++;
+				for (int j = stmtsAndType[get<0>(procFirstAndLastLines[i]) + 1]; j < stmtsAndType[get<1>(procFirstAndLastLines[i]) + 1]; j++) {
+					if (stmtsAndType[j] == 4)
+						continue;
+					else {
+						createCFG(stmtsAndType, parentOfStmtVec, get<0>(procFirstAndLastLines[i]), get<1>(procFirstAndLastLines[i]));
+						procCompleteCounter++;
+					}
+				}
+			}
+		}
+
+	} while (numOfProc != procCompleteCounter);
+
+	createCFG(stmtsAndType, parentOfStmtVec, 1, stmtsAndType.size() - 1);
+
+}
+
+void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine) {
 
 	vector<int> nestingLvlParent;
 	vector<int> lastIfLine;
@@ -29,7 +62,7 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	int nestingLvl = 0;
 
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
-	for (int i = 1; i < stmtsAndType.size(); i++) {
+	for (int i = firstLine; i < lastLine + 1; i++) {
 
 		if (parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) { //check for if
 			nextTable[lastIfLine[nestingLvl]].push_back(i);
@@ -73,6 +106,8 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		nextTable[i].push_back(i + 1);
 		previousTable[i + 1].push_back(i);
 	}
+
+	procLastLine[firstLine] = previousTable[lastLine + 1];
 }
 
 vector<int> Next::getNext(int stmtNum) {
