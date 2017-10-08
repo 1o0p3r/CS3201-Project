@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "QueryValidator.h"
 #include <assert.h>
+#include <Util.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -412,8 +413,8 @@ namespace UnitTesting
 			expected = "This is a dummy string";
 			Assert::IsTrue(queryValidator.removeDuplicatesWhiteSpaces(str) == expected);
 			
-			str = "stmt    s;     while w; Select s such    that Follows(s   ,4)";
-			expected = "stmt s; while w; Select s such that Follows(s ,4)";
+			str = "stmt    S;     while w; Select S such    that Follows(s   ,4)";
+			expected = "stmt S; while w; Select S such that Follows(s ,4)";
 			Assert::IsTrue(queryValidator.removeDuplicatesWhiteSpaces(str) == expected);
 
 			str = " stmt s;  while  w; Select s such  that  Follows(  s,4) pattern a(_,   \"x\")";
@@ -424,17 +425,42 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string str;
 
-			str = "stmt s;";
+			str = "stmt sos;";
 			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
-
-			str = "while ,v;";
-			Assert::IsFalse(queryValidator.isValidDeclarationRegex(str));
 
 			str = "constant s,v;";
 			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
 
 			str = "assign a1,a2,a;";
 			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "prog_line n;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "prog_line n123;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "stmt First;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "stmt First#;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "procedure First#;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+			str = "call wOdeCall#;";
+			Assert::IsTrue(queryValidator.isValidDeclarationRegex(str));
+
+
+		}
+		TEST_METHOD(isInvalidDeclarationRegex) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "while ,v;";
+			Assert::IsFalse(queryValidator.isValidDeclarationRegex(str));
+
 
 		}
 		TEST_METHOD(isValidSuchThatRegex) {
@@ -620,6 +646,91 @@ namespace UnitTesting
 			expectedVec.clear();
 			returnedVec.clear();
 
+		}
+
+		TEST_METHOD(isValidExtractPattern) {
+			QueryValidator queryValidator;
+			string str;
+
+			vector<string> expectedVec;
+			vector<string> returnedVec;
+
+			str = "pattern a(a, _) pattern ifs(_,_,_) and pattern a(_,_)";
+			expectedVec.push_back("pattern a(a, _)");
+			expectedVec.push_back(" pattern ifs(_,_,_)");
+			expectedVec.push_back(" and pattern a(_,_)");
+
+			returnedVec = queryValidator.extractPattern(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+			
+			expectedVec.clear();
+			returnedVec.clear();
+
+			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+			expectedVec.push_back("pattern a(a, \"x\")a()");
+			expectedVec.push_back(" pattern ifs(_,_,_)");
+			expectedVec.push_back(" and pattern a(_,_)");
+
+			returnedVec = queryValidator.extractPattern(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+		}
+		TEST_METHOD(isValidPatternExtendedClauses) {
+			QueryValidator queryValidator;
+			string str;
+
+
+			str = "pattern a(_,_) pattern ifs(_,_,_)";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(_,_) pattern ifs(_,_,_) pattern a2(_,\"x\")";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(_,_) and pattern ifs(_,_,_) and pattern a2(_,\"x\")";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(_,_) and pattern ifs(_,_,_) pattern a2(_,\"x\")";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(_,_)         pattern ifs(_,_,_)                 and pattern a2(_,\"x\")";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(a, _\"(story+xandor)\"_) pattern ifs(_,_,_) and pattern a(_,_)";
+			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
+		}
+
+		TEST_METHOD(isInValidPatternExtendedClauses) {
+			QueryValidator queryValidator;
+			string str;
+
+
+			str = "pattern a(_,_) pattern# ifs(_,_,_)";
+			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(a, \"(x+y)\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+
+			str = "pattern a(a, _\"(story+xandor)\"_)a() pattern ifs(_,_,_) and pattern a(_,_)";
+			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+		}
+
+		TEST_METHOD(isValidIfPatternRegex) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "pattern ifs(_,_,_)";
+			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+
+//			str = "pattern ifs(x,   _   ,     _)";
+	//		Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+
+	//		str = "pattern ifs     (x,   _   ,     _)";
+	//		Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 		}
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
@@ -851,5 +962,25 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
 
 		}
+
+		TEST_METHOD(isValidTrim) {
+			QueryValidator queryValidator;
+			string input;
+			string expected;
+			input = "          with v1.varName = v2.varName and v1.varName = \"hello\"              ";
+			expected = "with v1.varName = v2.varName and v1.varName = \"hello\"";
+			Assert::IsTrue(Util::trim(input) == expected);
+
+
+			input = "          with v1.varName = v2.varName and v1.varName = \"hello\"              ";
+			expected = "with v1.varName = v2.varName and v1.varName = \"hello\"";
+			Assert::IsTrue(Util::trim(input) == expected);
+
+
+			input = "          with v1.varName =    v2.varName and v1.varName = \"hello\"			             ";
+			expected = "with v1.varName =    v2.varName and v1.varName = \"hello\"";
+			Assert::IsTrue(Util::trim(input) == expected);
+		}
+
 	};
 }

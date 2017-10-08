@@ -110,6 +110,8 @@ const string ATTRCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRCOMPARE_ST
 const string WITH_CL_REGEX = WITH_STRING + "\\s+" + ATTRCOND_STRING_REGEX;
 const string TEMPORARY_WITH = SYMBOL_LEFT_BRACKET_STRING + WITH_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string WITH_CL_EXTENDED_REGEX = TEMPORARY_WITH + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY_WITH + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string LEAD_TRAIL = "and|\\s+";
+
 
 //Regexs for such that relationships
 const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
@@ -163,8 +165,21 @@ const string TEMPORARY = SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_SUCH_THAT_CL_REG
 
 const string TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX = TEMPORARY + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 
-const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" +
+const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*[ ]{0,1}\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
+
+
+const string BRACKETED_SYNONYM = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_ITR2_GENERAL_PATTERN_CL_REGEX = SYMBOL_LEFT_BRACKET_STRING + PATTERN_STRING + "\\s+" + SYNONYM_STRING_REGEX + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+
+const string TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX = SYMBOL_LEFT_BRACKET_STRING + PATTERN_STRING + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + BRACKETED_SYNONYM
++ "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING
++ "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "and" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + "{0,1}" + "\\s+" + PATTERN_STRING
++ "\\s+" + SYMBOL_LEFT_BRACKET_STRING + BRACKETED_SYNONYM + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+
+const string IF_PATTERN_REGEX = BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+
 const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*||(BOOLEAN)" + SYMBOL_RIGHT_BRACKET_STRING;
 
 //Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
@@ -306,8 +321,6 @@ bool QueryValidator::isValidQueryLine(string selectString) {
 	vector<string> initialVector;
 	initialVector.push_back(selectString);
 
-	//initialVector = splitStatement(initialVector);
-
 	initialVector = splitToSentences(selectString);
 	//After splitting do validation different parts of the vector
 	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
@@ -333,7 +346,56 @@ bool QueryValidator::isValidSynDesignEntity(string synPattern) {
 		return false;
 	}
 }
-//For now this funcction assumes that pattern is of valid syntax
+
+//Posssible str received here are:
+//pattern a(,) pattern(,)
+//pattern ifs(,,) and pattern a()
+bool QueryValidator::isValidPatternIter2(string str) {
+	//First trim it
+	str = trim(str);
+
+	//Extract out all the pattern
+	vector<string> vecPattern = extractPattern(str);
+
+	for (size_t i = 0; i < vecPattern.size(); i++) {
+
+		if (!isValidLeadingCheck(str)) {
+			return false;
+		}
+		else {
+			//Do trimming on this string
+			str = Util::trim(str);
+			//if string consists of AND
+			if (str.find(AND_STRING) != string::npos) {
+				if (isValidSpace(str)) {
+
+				}
+			}
+		}
+	}
+	
+	return true;
+}
+
+//This functions checks the leading area of the str i.e. it can onli be whitespace or the word 'and' of one occurence
+bool QueryValidator::isValidLeadingCheck(string str) {
+	//Try to find the index of the first occurence of pattern, take note of it
+	int patternFirst = str.find(PATTERN_STRING);
+	//Next get the substring till before occurence of pattern
+	string before = str.substr(ZERO, patternFirst);
+	if (patternFirst == ZERO) {
+		return true;
+	}
+	else {
+		if (!isValidLeadTrail(str)) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
+}
 
 bool QueryValidator::isValidPattern(string str, string syn) {
 	//Idea: From given string, ignore Pattern, obtain (arg1, arg2)
@@ -1241,7 +1303,6 @@ vector<string> QueryValidator::extractSuchThatClauses(string str) {
 	vector<string> toReturnVec;
 
 	while (regex_search(str, m, suchThatRelRegex)) {
-		std::cout << m[0] << std::endl;
 		temp = m[0];
 		toReturnVec.push_back(temp);
 		str = m.suffix().str();
@@ -1255,14 +1316,41 @@ vector<string> QueryValidator::extractWithClauses(string str) {
 	vector<string> toReturnVec;
 
 	while (regex_search(str, m, withRegex)) {
-		std::cout << m[0] << std::endl;
 		temp = m[0];
 		toReturnVec.push_back(temp);
 		str = m.suffix().str();
 	}
 	return toReturnVec;
 }
+//This Method extracts out individual pattern from given string and places them into a vector of string
+vector<string> QueryValidator::extractPattern(string str) {
+	size_t pos=0;
+	string curr = str;
+	vector<string> vecPattern;
+	//While pos is not end of string
+	while (pos != string::npos) {
+		//Try to find the next occurence of pattern
+		size_t found = curr.find(PATTERN_STRING, pos+1);
+		
+		//Means end of string, so just push in and break
+		if (found == string::npos) {
+			vecPattern.push_back(curr);
+			break;
+		}
+		//Means a match has been found
+		else {
 
+			//curr is now pattern(....)...
+			string currTwo = curr.substr(ZERO, found);
+			size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
+			currTwo = currTwo.substr(ZERO, lastBracket+ONE);
+			vecPattern.push_back(currTwo);
+			curr = curr.substr(lastBracket+ONE, curr.length() - lastBracket);
+			pos = lastBracket+ONE;
+		}
+	}
+	return vecPattern;
+}
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	std::regex pattern(symbolToRemove);
 	std::string toReturn = std::regex_replace(str, pattern, "");
@@ -1315,6 +1403,10 @@ bool QueryValidator::isValidAttrCompareRegex(string str) {
 	regex attrCompareRegex(ATTRCOMPARE_STRING_REGEX);
 	return regex_match(str, attrCompareRegex);
 }
+bool QueryValidator::isValidLeadTrail(string str) {
+	regex leadTrailRegex(LEAD_TRAIL);
+	return regex_match(str, leadTrailRegex);
+}
 bool QueryValidator::isValidAttRefRegex(string str) {
 	regex attrRefRegex(ATTRREF_STRING_REGEX);
 	return regex_match(str, attrRefRegex);
@@ -1328,6 +1420,14 @@ bool QueryValidator::isValidPatternRegex(string str) {
 bool QueryValidator::isValidSelectInitialRegex(string str) {
 	regex patternRegex(SELECT_INITIAL_REGEX);
 	return regex_match(str, patternRegex);
+}
+bool QueryValidator::isValidPatternExtendedRegex(string str) {
+	regex patternExtendedRegex(TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX);
+	return regex_match(str, patternExtendedRegex);
+}
+bool QueryValidator::isValidIfPatternRegex(string str) {
+	regex ifPatternRegex(IF_PATTERN_REGEX);
+	return regex_match(str, ifPatternRegex);
 }
 bool QueryValidator::isVariable(string str) {
 	regex patternRegex(VARIABLE_STRING_REGEX);

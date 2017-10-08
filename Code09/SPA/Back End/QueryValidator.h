@@ -60,6 +60,8 @@ public:
 	bool isValidAttrCompareRegex(string str);
 	bool isValidPatternRegex(string str);
 	bool isValidSelectInitialRegex(string str);
+	bool isValidPatternExtendedRegex(string str);
+	bool isValidIfPatternRegex(string str);
 	bool isVariable(string str);
 	bool isQuotationIdentRegex(string str);
 	bool parseInput(string str);
@@ -75,6 +77,9 @@ public:
 	bool isExactString(string arg2);
 	bool isValidQueryLine(string selectString);
 	bool isValidSynDesignEntity(string syn);
+	bool isValidPatternIter2(string str);
+	bool isValidLeadingCheck(string str);
+	bool isValidLeadTrail(string str);
 	bool is_number(string str);
 
 	string changeLowerCase(string str);
@@ -85,6 +90,8 @@ public:
 
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
+	vector<string> extractPatternClauses(string str);
+	vector<string> extractPattern(string str);
 	QueryStatement getQueryStatement();
 	vector<string> splitToSentences(string strToSplit);
 	vector<string> splitBySymbol(string str, char symbol);
