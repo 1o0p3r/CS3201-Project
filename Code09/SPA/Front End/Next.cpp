@@ -16,8 +16,8 @@ Next::Next() {
 
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
 
-	int firstLine;// = 1;
-	int lastLine;// = stmtsAndType.size() - 1;
+	int firstLine;
+	int lastLine;
 	int numOfProc = 0;
 	int procCompleteCounter = 0;
 
@@ -28,11 +28,11 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		for (int i = 1; i < stmtsAndType.size(); i--) {
 			if (stmtsAndType[i] == 4) {
 				numOfProc++;
-				for (int j = stmtsAndType[get<0>(procFirstAndLastLines[i]) + 1]; j < stmtsAndType[get<1>(procFirstAndLastLines[i]) + 1]; j++) {
+				for (int j = stmtsAndType[get<0>(procFirstAndLastLines[i])]; j < stmtsAndType[get<1>(procFirstAndLastLines[i]) + 1]; j++) {
 					if (stmtsAndType[j] == 4)
 						continue;
 					else {
-						createCFG(stmtsAndType, parentOfStmtVec, get<0>(procFirstAndLastLines[i]), get<1>(procFirstAndLastLines[i]));
+						createCFG(stmtsAndType, parentOfStmtVec, procFirstAndLastLines, get<0>(procFirstAndLastLines[i]), get<1>(procFirstAndLastLines[i]));
 						procCompleteCounter++;
 					}
 				}
@@ -41,11 +41,16 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 	} while (numOfProc != procCompleteCounter);
 
+	nextTable.clear();
+	previousTable.clear();
+	nextStarTable.clear();
+	previousStarTable.clear();
+
 	createCFG(stmtsAndType, parentOfStmtVec, 1, stmtsAndType.size() - 1);
 
 }
 
-void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine) {
+void Next::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine) {
 
 	vector<int> nestingLvlParent;
 	vector<int> lastIfLine;

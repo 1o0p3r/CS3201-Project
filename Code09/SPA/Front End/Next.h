@@ -22,5 +22,5 @@ private:
 
 	vector<vector<int>> procLastLine;
 
-	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
+	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine);
 	};
