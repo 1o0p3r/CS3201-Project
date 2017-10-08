@@ -7,6 +7,7 @@ class QueryElement
 private:
 	string ent;
 	string syn;
+	string selectType;
 
 	string argumentOneSuchThat;
 	string argumentTwoSuchThat;
@@ -35,13 +36,14 @@ private:
 
 public:
 	QueryElement();
-	QueryElement(string entity, string synonym);
+	QueryElement(string entity, string synonym, string type);
 	QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel); // such that
 	QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern
-	QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn);
+	QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn); //With
 
 	string getSelectEntity();
 	string getSelectSynonym();
+	string getSelectType();
 
 	string getSuchThatArg1();
 	string getSuchThatArg2();

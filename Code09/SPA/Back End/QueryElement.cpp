@@ -7,11 +7,13 @@ QueryElement::QueryElement()
 {
 }
 
-QueryElement::QueryElement(string entity, string synonym)
+//Select
+//type can be synonym, tuple, BOOLEAN
+QueryElement::QueryElement(string entity, string synonym, string type)
 {
 	ent = entity;
 	syn = synonym;
-
+	selectType = type;
 }
 
 //Such that
@@ -58,6 +60,11 @@ string QueryElement::getSelectEntity()
 string QueryElement::getSelectSynonym()
 {
 	return syn;
+}
+
+string QueryElement::getSelectType()
+{
+	return selectType;
 }
 
 string QueryElement::getSuchThatArg1()

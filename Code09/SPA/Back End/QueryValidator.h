@@ -29,7 +29,7 @@ private:
 	vector<string> queryString;
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
-	void addSelectQueryElement(string ent, string syn);
+	void addSelectQueryElement(string ent, string syn, string selectType);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addSynonymEntityList();

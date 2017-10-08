@@ -18,69 +18,154 @@ namespace UnitTesting
 		{
 			QueryValidator queryValidator;
 			string query;
-	
+			QueryStatement queryStatement;
+
 			query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "variable v; Select v such that Uses(\"Second\", v)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "   while w   ; assign a   ; Select w such that Follows(w, a)  ";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "assign a; Select a pattern b#(_, _\"f - d + b - l\"_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "while w; assign a; Select x such that Follows(w, a) pattern a(_, \"x\")";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "while w; assign a; Select w such that Follows(\"w\", a) pattern a(_, \"x\")";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "prog_line pl, p#; constant c; Select c such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "assign a; prog_line pl, p#; constant c, d; Select p# such that Follows(a,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "assign a; Select a pattern a(_, _\"f - d + b - l\"_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "variable v1,v#; assign a1,a#; constant d; Select v1 such that Modifies(6,v1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,v1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a1(_, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(_, _\"x\")";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a#(\"y\", \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			
+		}
+		TEST_METHOD(isValidQueryIfsAndProcDeclaration) {
+			QueryValidator queryValidator;
+			string query;
+			QueryElement selectQueryElement, suchThatQueryElement,patternQueryElement, withQueryElement;
+			QueryStatement expectedQueryStatement;
+			QueryStatement queryStatement;
+
+			query = "stmt s; assign a; procedure p; while w; if i;  call c; variable v; Select BOOLEAN such that Modifies(3, \"a\") and Modifies(a, v) and Modifies(\"x\", \"x\") and Modifies(s, v) such that Modifies(w, v) and Modifies(i, v) and  Modifies(p, v)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			selectQueryElement = QueryElement("empty", "empty", "BOOLEAN");
+			expectedQueryStatement.addSelectQuery(selectQueryElement);
+			suchThatQueryElement = QueryElement("3", "number", "empty", "a", "variable", "empty", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("a", "synonym", "assign", "v", "synonym", "variable", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("x", "variable", "empty", "x", "variable", "empty", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("s", "synonym", "stmt", "v", "synonym", "variable", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("w", "synonym", "while", "v", "synonym", "variable", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("i", "synonym", "if", "v", "synonym", "variable", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			suchThatQueryElement = QueryElement("p", "synonym", "procedure", "v", "synonym", "variable", "Modifies");
+			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			queryStatement = queryValidator.getQueryStatement();
+
+		}
+
+		TEST_METHOD(isValidQueryWith) {
+			QueryValidator queryValidator;
+			string query;
+			QueryStatement queryStatement;
+
+			query = "procedure p; constant c; assign a; Select BOOLEAN pattern a(_,_) with p.procName = \"First\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a, a1, a2; constant c; Select BOOLEAN pattern a (_,   _) such that Next(20, 40)   and  Next(30, 50) with c.value = 10";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			
+			query = "assign a, a1; constant c; Select BOOLEAN pattern a(_, _) such that Next(20,40) and Next*(a, 30) with c.value = 10 and a.stmt# = c.value";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; procedure p; if ifs; variable v; constant c; Select BOOLEAN pattern a(_,_) such that Calls*(\"First\", p) with p.procName = \"Second\" with v.varName = \"Hello\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			
+			query = "assign a; procedure p1, p2; if ifs; variable v; constant c; Select BOOLEAN with p1.procName = \"Second\" and p2.procName = p1.procName with v.varName = \"HELP\" with c.value = ifs.stmt#";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; prog_line n1,n2; procedure p1,p2; if ifs; variable v; constant c; Select BOOLEAN with p1.procName = v.varName and n1 = ifs.stmt# with n1 = 5";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; prog_line n1,n2; procedure p1,p2; while w; variable v; constant c; Select BOOLEAN with p1.procName = \"Second\" and \"Third\" = v.varName with p1.procName = v.varName with w.stmt# = 5 and w.stmt# = c.value";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
 		}
 		//This test method checks if the correct Query Elements are parse into the QueryStatement
@@ -95,7 +180,7 @@ namespace UnitTesting
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
 			queryValidator.parseInput(query);
 			queryStatement = queryValidator.getQueryStatement();
-			expectedSelectQueryElement = QueryElement("variable", "v1");
+			expectedSelectQueryElement = QueryElement("variable", "v1", "synonym");
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(isValidParseEntityAndSynonym) {
