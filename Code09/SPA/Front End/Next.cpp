@@ -31,12 +31,12 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			procLastLine = get<1>(procFirstAndLastLines[i]);
 	
 			createCFGTable(stmtsAndType, parentOfStmtVec, procFirstLine, procLastLine);
-			if (stmtsAndType[procLastLine] == 4) {
-				createCFGTable(stmtsAndType, parentOfStmtVec, get<0>(procFirstAndLastLines[procLastLine]), get<1>(procFirstAndLastLines[procLastLine]));
-				procEndLine[i] = previousTable[0];
-			}
+			//if (stmtsAndType[procLastLine] == 4) {
+			//	createCFGTable(stmtsAndType, parentOfStmtVec, get<0>(procFirstAndLastLines[procLastLine]), get<1>(procFirstAndLastLines[procLastLine]));
+			//	procEndLine[i] = previousTable[0];
+			//}
 
-			else 
+			//else 
 				procEndLine[i] = previousTable[0];
 		}
 		nextTable.clear();
@@ -73,6 +73,8 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			nestingLvl++;
 			nestingLvlParent[nestingLvl] = i;
 		}
+
+		//if ((i + 1) != (lastLine + 1) && )
 
 		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl] && stmtsAndType[nestingLvlParent[nestingLvl]] == 1) { //check for while
 				nextTable[i].insert(parentOfStmtVec[i]);

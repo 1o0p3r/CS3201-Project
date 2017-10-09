@@ -69,5 +69,18 @@ namespace UnitTesting
 			Assert::IsTrue(next.getProcEndLine(2) == vector<int>{4});
 		}
 
+		/*
+		TEST_METHOD(checkProcEndLineWMultipleProc) {
+
+			Next next;
+			vector<int> stmtsAndType = { 0, 2, 4, 2, 4, 2, 2 };
+			vector<int> parentOfStmtVec = { 0, 0, 0, 0, 0 };
+			vector<tuple<int, int>> procFirstAndLastLines = { make_tuple(0, 0), make_tuple(0, 0) , make_tuple(5, 6), make_tuple(0, 0) , make_tuple(5, 6) };
+
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
+			Assert::IsTrue(next.getProcEndLine(2) == vector<int>{6});
+			Assert::IsTrue(next.getProcEndLine(4) == vector<int>{6});
+		}
+		*/
 	};
 }
