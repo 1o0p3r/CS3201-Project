@@ -19,18 +19,6 @@ public:
 
 private:
 
-<<<<<<< HEAD
-	vector<vector<int>> nextTable;
-	vector<vector<int>> previousTable;
-	vector<vector<int>> nextStarTable;
-	vector<vector<int>> previousStarTable;
-
-	vector<vector<int>> procLastLine;
-	bool procChecksComplete;
-
-	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine);
-	};
-=======
 	vector<set<int>> nextTable;
 	vector<set<int>> previousTable;
 	vector<set<int>> nextStarTable;
@@ -42,4 +30,3 @@ private:
 
 	void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
 };
->>>>>>> PKB2
