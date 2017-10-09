@@ -41,8 +41,13 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	vector<string> pkbResult;
 	vector<vector<string>> modifiesResult;
 
-	if (arg2 == WILDCARD_SYMBOL)
+	if (arg2 == WILDCARD_SYMBOL) {
 		vecOfCandidates = pkbReadOnly.getAllVariables();
+		if (unitTestModeOn) {
+			vecOfCandidates = unitTestInputs[inputHardCodeIndex];
+			inputHardCodeIndex++;
+		}
+	}
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
@@ -71,6 +76,10 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 	vector<vector<string>> modifiesResult;
 
 	vecOfCandidates = pkbReadOnly.getAllVariables();
+	if (unitTestModeOn) {
+		vecOfCandidates = unitTestInputs[inputHardCodeIndex];
+		inputHardCodeIndex++;
+	}
 	for (string candidates : vecOfCandidates) {
 		pkbModifies = getModifiesResultAddArg1(candidates,arg1Entity);
 		for (string candidatesChosen : pkbModifies) {
@@ -92,23 +101,46 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 
 bool ModifiesAnalyzer::checkClauseBothVariables(string arg1, string arg2)
 {
-	auto pkbResult = pkbReadOnly.getModifies(stoi(arg1));
-	return find(pkbResult.begin(), pkbResult.end(), arg2) == pkbResult.end() ?
+	vector<string> pkbResult;
+	if (unitTestModeOn) {
+		return(unitTestInputs[inputHardCodeIndex].size());
+	}
+	if (arg1Type == PROCEDUREARG)
+		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
+	else {
+		auto pkbResultInt = pkbReadOnly.getModifiedBy(arg2);
+		for (int candidate : pkbResultInt)
+			pkbResult.push_back(to_string(candidate));
+	}
+	return find(pkbResult.begin(), pkbResult.end(), arg1) == pkbResult.end() ?
 		false : true;
 }
 
 bool ModifiesAnalyzer::checkClauseVariableWild(string arg1)
 {
+	if (unitTestModeOn) {
+		return(unitTestInputs[inputHardCodeIndex].size());
+	}
+	if (arg1Type == PROCEDUREARG)
+		return pkbReadOnly.getProcModifies(arg1).empty() ? false : true;
 	return pkbReadOnly.getModifies(stoi(arg1)).empty() ? false : true;
 }
 
 bool ModifiesAnalyzer::checkClauseWildVariable(string arg2)
-{
+{	
+	assert(arg1 == WILDCARD_SYMBOL);
+	if (unitTestModeOn) {
+		return(unitTestInputs[inputHardCodeIndex].size());
+	}
 	return pkbReadOnly.getModifiedBy(arg2).empty() ? false : true;
 }
 
 bool ModifiesAnalyzer::checkClauseBothWild()
 {
+	assert(arg1 == WILDCARD_SYMBOL);
+	if (unitTestModeOn) {
+		return(unitTestInputs[inputHardCodeIndex].size());
+	}
 	int minNoStmtsForModifies = 1;
 	vector<int> allStmts = pkbReadOnly.getAllStmt();
 	if(allStmts.size() < minNoStmtsForModifies)
@@ -118,6 +150,11 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 
 vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
 {	
+	if (unitTestModeOn) {
+		auto result = (unitTestInputs[inputHardCodeIndex]);
+		inputHardCodeIndex++;
+		return result;
+	}
 	return (arg1Type == PROCEDUREARG) ? pkbReadOnly.getProcModifies(arg1):
 			pkbReadOnly.getModifies(stoi(arg1));
 }
@@ -127,6 +164,12 @@ vector<string> ModifiesAnalyzer::getModifiesResultAddArg1(string arg2, string ar
 {
 	vector<int> pkbResultInt;
 	vector<string> pkbResult;
+
+	if (unitTestModeOn) {
+		auto result = (unitTestInputs[inputHardCodeIndex]);
+		inputHardCodeIndex++;
+		return result;
+	}
 	if(arg1Entity == PROCEDURE)
 		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
 	else {

@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <tuple>
 #include <unordered_set>
+#include <assert.h>
 
 using namespace std;
 
@@ -45,9 +46,16 @@ protected:
 
 	vector<string> removeDuplicates(vector<string> clauseResult);
 
+
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
 	tuple<bool, vector<vector<string>>> solveClause();
 	tuple<bool,vector<vector<string>>> solveClauseStmt();
+	
+	int inputHardCodeIndex;
+	bool unitTestModeOn;
+	vector<vector<string>> unitTestInputs;
+	void setUnitTestInputs(vector<vector<string>> hcInput);
+	vector<string> getUnitTestInputs(int index);
 };
 

@@ -90,24 +90,35 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addBothSynResult(string arg1, 
 }
 
 bool UsesAnalyzer::checkClauseBothVariables(string arg1, string arg2)
-{
-	auto pkbResult = pkbReadOnly.getUses(stoi(arg1));
-	return find(pkbResult.begin(), pkbResult.end(), arg2) == pkbResult.end() ?
+{	
+	vector<string> pkbResult;
+	if (arg1Type == PROCEDUREARG)
+		pkbResult = pkbReadOnly.getProcUsedBy(arg2);
+	else {
+		auto pkbResultInt = pkbReadOnly.getUsedBy(arg2);
+		for (int candidate : pkbResultInt)
+			pkbResult.push_back(to_string(candidate));
+	}
+	return find(pkbResult.begin(), pkbResult.end(), arg1) == pkbResult.end() ?
 		false : true;
 }
 
 bool UsesAnalyzer::checkClauseVariableWild(string arg1)
 {
+	if (arg1Type == PROCEDUREARG)
+		return pkbReadOnly.getProcModifies(arg1).empty() ? false : true;
 	return pkbReadOnly.getUses(stoi(arg1)).empty() ? false : true;
 }
 
 bool UsesAnalyzer::checkClauseWildVariable(string arg2)
 {
+	assert(arg1 == WILDCARD_SYMBOL);
 	return pkbReadOnly.getUsedBy(arg2).empty() ? false : true;
 }
 
 bool UsesAnalyzer::checkClauseBothWild()
 {
+	assert(arg1 == WILDCARD_SYMBOL);
 	int minNoStmtsForUses = 1;
 	vector<int> allStmts = pkbReadOnly.getAllStmt();
 	if (allStmts.size() < minNoStmtsForUses)
