@@ -168,7 +168,6 @@ const string TEMP_ITR2_SUCH_THAT_CL_EXTENDED_REGEX = TEMPORARY + SYMBOL_LEFT_BRA
 const string PATTERN_CL_REGEX = PATTERN_STRING + "\\s+" + 
 "([a-zA-Z])([a-zA-Z]|\\d|\#)*[ ]{0,1}\\(\\s*((([a-zA-Z])([a-zA-Z]|\\d|\\#)*)|(\\_)|(\"([a-zA-Z])([a-zA-Z]|\\d|\\#)*\"))\\s*,\\s*(\\_\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\"\\_|\\_|\"([a-zA-Z])(\\w)*((\\+|\\*|\\-)\\w+)*\")\\s*\\)";
 
-
 const string BRACKETED_SYNONYM = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 
 const string TEMP_ITR2_GENERAL_PATTERN_CL_REGEX = SYMBOL_LEFT_BRACKET_STRING + PATTERN_STRING + "\\s+" + SYNONYM_STRING_REGEX + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
@@ -178,11 +177,12 @@ const string TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX = SYMBOL_LEFT_BRACKET_S
 + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "and" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + "{0,1}" + "\\s+" + PATTERN_STRING
 + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + BRACKETED_SYNONYM + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 
-const string IF_PATTERN_REGEX = BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+const string IF_PATTERN_REGEX = PATTERN_STRING + "\\s+" + BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+const string PARTIAL_PATTERN_REGEX = "(and\\s+pattern)(.+)";
 
 const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*||(BOOLEAN)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-//Whaat methods  do i need to check, 1 for declaration, 1 for such-that, 1 for pattern
+
 using namespace std;
 QueryValidator::QueryValidator()
 {
@@ -367,9 +367,19 @@ bool QueryValidator::isValidPatternIter2(string str) {
 			str = Util::trim(str);
 			//if string consists of AND
 			if (str.find(AND_STRING) != string::npos) {
-				if (isValidSpace(str)) {
-
+				//Remove Leading 'And' if it exists
+				if (isLeadingAnd(str)) {
+					str = removeLeadingAnd(str);
 				}
+
+				//If it matches the if regex
+				if (isValidIfPatternRegex(str)) {
+					//Go and do checking on if pattern statements
+					if (!isValidIfPattern(str)) {
+						return false;
+					}
+				}
+
 			}
 		}
 	}
@@ -377,6 +387,43 @@ bool QueryValidator::isValidPatternIter2(string str) {
 	return true;
 }
 
+//This function checks if the given pattern that matches the if regex is of the allowed semantics
+//Possible if pattern : pattern ifs(x,_,_)		pattern ifs("x",_,_)		pattern ifs(1,_,_)		pattern ifs(_,_,_)
+//While taking note that the entity before ( must be an 'if design entity
+//This function assumes that the string received here will be
+//pattern		ifs(....)		or pattern ifs(.....)	or pattern ifs	(....)	or pattern	ifs	(....)
+//With pattern as the leading word
+bool QueryValidator::isValidIfPattern(string str) {
+	//With given string, first remove the word pattern
+	
+}
+bool QueryValidator::isLeadingAnd(string str) {
+	if (str.find(AND_STRING) == 0) {
+		if (isPartialPatternRegex(str)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		return false;
+	}
+}
+//This function removes the leading pattern string, then trim it and returns this trimmed string
+string QueryValidator::removeLeadingPatternString(string str) {
+
+	str = str.substr(PATTERN_STRING.length(), str.length()-PATTERN_STRING.length());
+
+	return Util::trim(str);
+}
+string QueryValidator::removeLeadingAnd(string str) {
+	
+	int idxPatternIntitial = str.find(PATTERN_STRING);
+
+	string curr = str.substr(idxPatternIntitial, str.length()- idxPatternIntitial);
+	return curr;
+}
 //This functions checks the leading area of the str i.e. it can onli be whitespace or the word 'and' of one occurence
 bool QueryValidator::isValidLeadingCheck(string str) {
 	//Try to find the index of the first occurence of pattern, take note of it
@@ -1436,6 +1483,10 @@ bool QueryValidator::isVariable(string str) {
 bool QueryValidator::isQuotationIdentRegex(string str) {
 	regex quotationRegex(QUOTATION_IDENT_STRING_REGEX);
 	return regex_match(str, quotationRegex);
+}
+bool QueryValidator::isPartialPatternRegex(string str) {
+	regex partialPatternRegex(PARTIAL_PATTERN_REGEX);
+	return regex_match(str, partialPatternRegex);
 }
 string QueryValidator::trimPatternArgs(string str) {
 	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);

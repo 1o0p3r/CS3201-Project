@@ -64,6 +64,7 @@ public:
 	bool isValidIfPatternRegex(string str);
 	bool isVariable(string str);
 	bool isQuotationIdentRegex(string str);
+	bool isPartialPatternRegex(string str);
 	bool parseInput(string str);
 	bool isValidModifiesP(string str);
 	bool isEntityAndSynonym(string);
@@ -78,6 +79,10 @@ public:
 	bool isValidQueryLine(string selectString);
 	bool isValidSynDesignEntity(string syn);
 	bool isValidPatternIter2(string str);
+	bool isValidIfPattern(string str);
+	bool isLeadingAnd(string str);
+	string removeLeadingPatternString(string str);
+	string removeLeadingAnd(string str);
 	bool isValidLeadingCheck(string str);
 	bool isValidLeadTrail(string str);
 	bool is_number(string str);

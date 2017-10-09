@@ -726,11 +726,46 @@ namespace UnitTesting
 			str = "pattern ifs(_,_,_)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
-//			str = "pattern ifs(x,   _   ,     _)";
-	//		Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+			str = "pattern ifs(x,   _   ,     _)";
+			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
-	//		str = "pattern ifs     (x,   _   ,     _)";
-	//		Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+			str = "pattern		ifs     (x,   _   ,     _)";
+			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+
+
+			str = "pattern ifs     (	x,   _   ,     _			)";
+			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+
+			str = "pattern ifs     (	pattern,   _   ,     _			)";
+			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
+		}
+		TEST_METHOD(isInValidIfPatternRegex) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "pattern ifs(@,_,_)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+
+			str = "pattern ifs(_,3,4)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+
+			str = "patternifs(_,3,4)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+		}
+		TEST_METHOD(isValidRemoveLeadingPatternString) {
+			QueryValidator queryValidator;
+			string str;
+			string expected;
+
+			str = "pattern ifs(@,_,_)";
+			expected = "ifs(@,_,_)";
+			Assert::IsTrue(queryValidator.removeLeadingPatternString(str) == expected);
+
+			str = "pattern ifs     (	x,   _   ,     _			)";
+			expected = "ifs     (	x,   _   ,     _			)";
+			Assert::IsTrue(queryValidator.removeLeadingPatternString(str) == expected);
+
+
 		}
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
@@ -962,7 +997,37 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
 
 		}
+		TEST_METHOD(isValidPartialPatternMatch) {
+			QueryValidator queryValidator;
+			string input;
 
+			input = "and pattern a(_,_)";
+			Assert::IsTrue(queryValidator.isPartialPatternRegex(input));
+
+			input = "and          pattern a(_,_)";
+			Assert::IsTrue(queryValidator.isPartialPatternRegex(input));
+		}
+		TEST_METHOD(isInValidPartialPatternMatch) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "andpattern a(_,_)";
+			Assert::IsFalse(queryValidator.isPartialPatternRegex(input));
+		}
+		TEST_METHOD(isValidRemoveLeadingAnd) {
+			QueryValidator queryValidator;
+			string input;
+			string expected;
+
+			input = "and pattern a(_,_)";
+			expected = "pattern a(_,_)";
+			Assert::IsTrue(queryValidator.removeLeadingAnd(input) == expected);
+
+
+			input = "and			pattern		 a(_,_)";
+			expected = "pattern		 a(_,_)";
+			Assert::IsTrue(queryValidator.removeLeadingAnd(input) == expected);
+		}
 		TEST_METHOD(isValidTrim) {
 			QueryValidator queryValidator;
 			string input;
