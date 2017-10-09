@@ -31,14 +31,13 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			procLastLine = get<1>(procFirstAndLastLines[i]);
 	
 			createCFGTable(stmtsAndType, parentOfStmtVec, procFirstLine, procLastLine);
-			//int checkForCalls;
-			//checkForCalls = previousTable[0][0];
-			//if (stmtsAndType[next(previousTable[0].begin()] == 4) { //if last line of proc is calls
-
-			//}
-			//else {
+			if (stmtsAndType[procLastLine] == 4) {
+				createCFGTable(stmtsAndType, parentOfStmtVec, get<0>(procFirstAndLastLines[procLastLine]), get<1>(procFirstAndLastLines[procLastLine]));
 				procEndLine[i] = previousTable[0];
-			//}
+			}
+
+			else 
+				procEndLine[i] = previousTable[0];
 		}
 		nextTable.clear();
 		previousTable.clear();
