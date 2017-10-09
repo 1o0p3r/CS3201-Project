@@ -1,7 +1,6 @@
 #include "UsesAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
-const string PROCEDURE = "procedure";
+
 
 tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgTwoResult(string arg1)
 {
@@ -118,7 +117,8 @@ bool UsesAnalyzer::checkClauseBothWild()
 
 vector<string> UsesAnalyzer::getUsesResultAddArg2(string arg1, string arg2Entity)
 {
-	return pkbReadOnly.getUses(stoi(arg1));
+	return (arg1Type == PROCEDUREARG) ? pkbReadOnly.getProcUses(arg1) : 
+			pkbReadOnly.getUses(stoi(arg1));
 }
 
 //@param: must be procedure entity for Arg1

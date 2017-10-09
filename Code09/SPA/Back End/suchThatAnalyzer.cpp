@@ -1,6 +1,6 @@
 #include "SuchThatAnalyzer.h"
 
-const string WILDCARD = "wildcard";
+
 
 enum clauseCases 
 {

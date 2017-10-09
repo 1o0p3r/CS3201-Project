@@ -25,9 +25,13 @@ protected:
 	string arg2;
 	string arg2Type;
 	string arg2Entity;
-
 	bool hasSuchThatClause;
 	
+	const string WILDCARD_SYMBOL = "_";
+	const string PROCEDURE = "procedure";
+	const string PROCEDUREARG = "variable";
+	const string WILDCARD = "wildcard";
+
 	bool checkClauseTrue(string arg1, string arg2, int scenarioArg1Arg2);
 	tuple<bool,vector<vector<string>>> addClauseTable(string arg1, string arg2, int scenario);
 	virtual tuple<bool, vector<vector<string>>> addArgTwoResult(string arg1);

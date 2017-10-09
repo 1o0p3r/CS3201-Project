@@ -118,7 +118,8 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 
 vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
 {	
-	return pkbReadOnly.getModifies(stoi(arg1));
+	return (arg1Type == PROCEDUREARG) ? pkbReadOnly.getProcModifies(arg1):
+			pkbReadOnly.getModifies(stoi(arg1));
 }
 
 //@param: must be procedure entity for Arg1
