@@ -10,7 +10,7 @@ namespace UnitTesting {
 	TEST_CLASS(ModifiesAnalyzerTest) {
 public:
 	TEST_METHOD(solveModifiesAnalyzer) {
-	// using sample-source(actual)
+		// using sample-source(actual)
 		PKB pkb;
 		QueryAnalyzer qa;
 		QueryStatement qs;
@@ -18,10 +18,10 @@ public:
 		vector<vector<string>> pkbHardCode;
 		vector<vector<string>> hardCodeResult;
 
-		////test wildCard true
-		//QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Modifies");
+		////test wildcard true
+		//QueryElement intWild("3", "number", "", "_", "wildcard", "", "Modifies");
 		//pkbHardCode = { {"true"} };
-		//ModifiesAnalyzer testWild(wildWild, pkb);
+		//ModifiesAnalyzer testWild(intWild, pkb);
 		//testWild.setUnitTestInputs(pkbHardCode);
 		//clauseResult = testWild.solveClause();
 		//Assert::IsTrue(get<0>(clauseResult));
@@ -77,21 +77,58 @@ public:
 		//for (int i = 0; i < hardCodeResult[0].size(); i++)
 		//	Assert::AreEqual(hardCodeResult[0][i], get<1>(clauseResult)[0][i]);
 		//
-		//test arg1 = stmt, arg2 = synonym
-		QueryElement procSynSyn("waow", "synonym", "procedure", "happy", "synonym", "", "Modifies");
-		pkbHardCode = { {"x","z","i","y"},{"Example","p","q"},{ "Example","p","q" },
-			{ "Example","p"},{"Example"} };
-		hardCodeResult = { { "Example","p","q","Example","p","q","Example","p","Example","waow" }, 
-			{"x","x","x","z","z","z","i","i","y","happy" } };
-		ModifiesAnalyzer test4(procSynSyn, pkb);
-		test4.setUnitTestInputs(pkbHardCode);
-		clauseResult = test4.solveClause();
+		////test arg1 = stmt, arg2 = synonym
+		//QueryElement procSynSyn("waow", "synonym", "procedure", "happy", "synonym", "", "Modifies");
+		//pkbHardCode = { {"x","z","i","y"},{"Example","p","q"},{ "Example","p","q" },
+		//	{ "Example","p"},{"Example"} };
+		//hardCodeResult = { { "Example","p","q","Example","p","q","Example","p","Example","waow" },
+		//	{"x","x","x","z","z","z","i","i","y","happy" } };
+		//ModifiesAnalyzer test4(procSynSyn, pkb);
+		//test4.setUnitTestInputs(pkbHardCode);
+		//clauseResult = test4.solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
+		//Assert::AreEqual(hardCodeResult[0].size(), get<1>(clauseResult)[0].size());
+		//for (int i = 0; i < hardCodeResult.size(); i++)
+		//	for (int j = 0; j < hardCodeResult[0].size(); j++)
+		//		Assert::AreEqual(hardCodeResult[i][j], get<1>(clauseResult)[i][j]);
+
+		////test arg1 = proc, arg2 = wildcard
+		//QueryElement procSynWild("waow", "synonym", "procedure", "_", "wildcard", "", "Modifies");
+		//pkbHardCode = { { "x","z","i","y" },{ "Example","p","q" },{ "Example","p","q" },
+		//{ "Example","p" },{ "Example" } };
+		//hardCodeResult = { { "Example","p","q","Example","p","q","Example","p","Example","waow" } };
+		//ModifiesAnalyzer test5(procSynWild, pkb);
+		//test5.setUnitTestInputs(pkbHardCode);
+		//clauseResult = test5.solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
+		//Assert::AreEqual(hardCodeResult[0].size(), get<1>(clauseResult)[0].size());
+		//for (int i = 0; i < hardCodeResult.size(); i++)
+		//	for (int j = 0; j < hardCodeResult[0].size(); j++)
+		//		Assert::AreEqual(hardCodeResult[i][j], get<1>(clauseResult)[i][j]);
+	
+		QueryElement stmtSynSyn("waow", "synonym", "stmt", "dead", "synonym", "", "Modifies");
+		pkbHardCode = { { "1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16",
+				"17","18","19","20","21","22","23","24" },{ "x" },{ "z" },{ "i" },{ "x","z","y","i" },
+				{ "x" },{ "z","y" },{ "z" },{ "y" },{ "z" },{ "z","x" },{ "i" },{ "x","z","i" },
+				{ "x","z","i" },{ "x","z","i" },{ "x" },{ "x","z" },{ "i" },
+				{ "x" },{ "z" },{ "z" },{ "z" },{ "z","x" },{ "z","x" },{ "x" }
+		};
+		hardCodeResult = { { "x","z","i","x","z","y","i",
+			"x","z","y","z","y","z","z","x","i","x","z","i","x","z","i","x","z","i","x","x","z","i",
+			"x","z","z","z","z","x","z","x","x","waow" } ,{ "1","2","3","4","4","4","4","5","6","6","7","8","9","10","10","11",
+				"12","12","12","13","13","13","14","14","14","15","16","16","17","18","19","20",
+				"21","22","22","23","23","24","dead" }
+				
+		};
+		ModifiesAnalyzer test6(stmtSynSyn, pkb);
+		test6.setUnitTestInputs(pkbHardCode);
+		clauseResult = test6.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 		Assert::AreEqual(hardCodeResult[0].size(), get<1>(clauseResult)[0].size());
 		for (int i = 0; i < hardCodeResult.size(); i++)
-			for(int j = 0; j < hardCodeResult[0].size(); j++)
-			Assert::AreEqual(hardCodeResult[i][j], get<1>(clauseResult)[i][j]);
-	}
+			for (int j = 0; j < hardCodeResult[0].size(); j++)
+				Assert::AreEqual(hardCodeResult[i][j], get<1>(clauseResult)[i][j]);
 
+	}
 	};
 }

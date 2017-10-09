@@ -101,11 +101,18 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 
 bool ModifiesAnalyzer::checkClauseBothVariables(string arg1, string arg2)
 {
+	vector<string> pkbResult;
 	if (unitTestModeOn) {
 		return(unitTestInputs[inputHardCodeIndex].size());
 	}
-	auto pkbResult = pkbReadOnly.getModifies(stoi(arg1));
-	return find(pkbResult.begin(), pkbResult.end(), arg2) == pkbResult.end() ?
+	if (arg1Type == PROCEDUREARG)
+		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
+	else {
+		auto pkbResultInt = pkbReadOnly.getModifiedBy(arg2);
+		for (int candidate : pkbResultInt)
+			pkbResult.push_back(to_string(candidate));
+	}
+	return find(pkbResult.begin(), pkbResult.end(), arg1) == pkbResult.end() ?
 		false : true;
 }
 
@@ -130,6 +137,7 @@ bool ModifiesAnalyzer::checkClauseWildVariable(string arg2)
 
 bool ModifiesAnalyzer::checkClauseBothWild()
 {
+	assert(arg1 == WILDCARD_SYMBOL);
 	if (unitTestModeOn) {
 		return(unitTestInputs[inputHardCodeIndex].size());
 	}
