@@ -31,7 +31,7 @@ namespace UnitTesting
 
 			call.setCalls(1, 2);
 			call.setCalls(2, 3);
-			Assert::IsTrue(call.getAllCalls() == set<int>{2, 3});
+			Assert::IsTrue(call.getAllCalls() == vector<int>{2, 3});
 		}
 
 		TEST_METHOD(setCallsIncorrectly) {

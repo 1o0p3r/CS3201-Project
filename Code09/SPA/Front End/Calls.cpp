@@ -115,9 +115,11 @@ vector<int> Calls::getCalledByStar(int procName) {
 	}
 }
 
-set<int> Calls::getAllCalls() {
+vector<int> Calls::getAllCalls() {
 
-	return allCallsTable;
+	vector<int> allCallsTableV;
+	allCallsTableV.insert(allCallsTableV.end(), allCallsTable.begin(), allCallsTable.end());
+	return allCallsTableV;
 }
 
 void Calls::checkIfRecursive() {
