@@ -138,8 +138,9 @@ vector<int> Calls::getProcCalledByStmt(int procName) {
 }
 
 set<int> Calls::getAllCalls() {
-
-	return allCallsTable;
+	vector<int> allCallsTableV;
+	allCallsTableV.insert(allCallsTableV.end(), allCallsTable.begin(), allCallsTable.end());
+	return allCallsTableV;
 }
 
 void Calls::checkIfRecursive() {

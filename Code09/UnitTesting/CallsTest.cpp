@@ -28,7 +28,6 @@ namespace UnitTesting
 		TEST_METHOD(getAllCallsWorking) {
 
 			Calls call;
-
 			call.setCalls(1, 1, 2);
 			call.setCalls(5, 2, 3);
 			Assert::IsTrue(call.getAllCalls() == set<int>{2, 3});

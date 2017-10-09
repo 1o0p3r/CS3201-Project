@@ -6,6 +6,7 @@
 #include "Modify.h"
 #include "Use.h"
 #include "Calls.h"
+#include "Next.h"
 #include "Util.h"
 
 #include <stdio.h>
@@ -38,6 +39,7 @@ PKB::PKB() {
 	Modify modify;
 	Use use;
 	Calls call;
+	Next next;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
@@ -166,6 +168,10 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
+vector<int> PKB::getAllParent() {
+	return parent.getAllParent();
+}
+
 void PKB::setModifies(int statementNum, string varName) {
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
@@ -281,6 +287,22 @@ vector<string> PKB::getCalledByStar(string procName) {
 	return convertToProcNames(Util::removeDuplicates(results));
 }
 
+void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
+	next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
+}
+
+vector<int> PKB::getNext(int stmtNum) {
+	return next.getNext(stmtNum);
+}
+
+vector<int> PKB::getPrevious(int stmtNum) {
+	return next.getPrevious(stmtNum);
+}
+
+vector<int> PKB::getAllNext() {
+	return next.getAllNext();
+}
+
 void PKB::setStatementType(int statementNum, string type) {
 	// 1 = while, 2 = assign, 3 = if, 4 = call
 	switch (mapTypeValues[type]) {
@@ -318,9 +340,7 @@ vector<int> PKB::getCall() {
 }
 
 vector<string> PKB::getAllCalls() {
-	set<int> setOfAllCalls = call.getAllCalls();
-	vector<int> results;
-	results.insert(results.end(), setOfAllCalls.begin(), setOfAllCalls.end());
+	vector<int> results = call.getAllCalls();
 	return convertToProcNames(results);
 }
 

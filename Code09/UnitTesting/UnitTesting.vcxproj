@@ -168,7 +168,7 @@
     <ClCompile Include="FollowTest.cpp" />
     <ClCompile Include="JoinAlgorithmTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
-    <ClCompile Include="ParentAnalyzerTest.cpp" />
+    <ClCompile Include="NextTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="ParentTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
