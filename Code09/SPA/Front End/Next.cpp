@@ -22,7 +22,7 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	int procFirstLine;
 	int procLastLine;
 	procEndLine.resize(stmtsAndType.size());
-
+	
 	for (int i = 1; i < stmtsAndType.size(); i++) {
 
 		if (stmtsAndType[i] == 4) {
@@ -38,10 +38,12 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 			//else 
 			procEndLine[i] = previousTable[0];
+
+			nextTable.clear();
+			previousTable.clear();
 		}
-		nextTable.clear();
-		previousTable.clear();
 	}
+
 	procChecksAreComplete = true;
 	createCFGTable(stmtsAndType, parentOfStmtVec, 1, stmtsAndType.size() - 1);
 }
@@ -62,6 +64,31 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
 	for (int i = firstLine; i < (lastLine + 1); i++) {
 
+		if (i == (lastLine)) {
+
+			if (nestingLvl == 0) {
+				previousTable[0].insert(i);
+			}
+
+			else {
+				while (nestingLvl != 0) {
+					if (stmtsAndType[nestingLvlParent[nestingLvl]] == 1) {
+						nextTable[i].insert(nestingLvlParent[nestingLvl]);
+						previousTable[0].insert(nestingLvlParent[nestingLvl]);
+						nestingLvl--;
+					}
+					else if (stmtsAndType[nestingLvlParent[nestingLvl]] == 3) {
+						nextTable[lastIfLine[nestingLvl]].insert(i);
+						allNextTable.insert(lastIfLine[nestingLvl]);
+						previousTable[0].insert(lastIfLine[nestingLvl]);
+						previousTable[0].insert(i);
+						nestingLvl--;
+					}
+				}
+			}
+			continue;
+		}
+
 		if (parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) { //check for if
 			nextTable[lastIfLine[nestingLvl]].insert(i);
 			allNextTable.insert(lastIfLine[nestingLvl]);
@@ -74,8 +101,6 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			nestingLvlParent[nestingLvl] = i;
 		}
 
-		//if ((i + 1) != (lastLine + 1) && )
-
 		if (parentOfStmtVec[i + 1] != nestingLvlParent[nestingLvl] && stmtsAndType[nestingLvlParent[nestingLvl]] == 1) { //check for while
 			nextTable[i].insert(parentOfStmtVec[i]);
 			allNextTable.insert(i);
@@ -87,17 +112,11 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 				continue;
 			}
 			else {
-				if ((i + 1) != (lastLine + 1)) {
-					nextTable[parentOfStmtVec[i]].insert(i + 1);
-					allNextTable.insert(parentOfStmtVec[i]);
-					previousTable[i + 1].insert(parentOfStmtVec[i]);
-					nestingLvl--;
-					continue;
-				}
-				else {
-					previousTable[0].insert(parentOfStmtVec[i]);
-					continue;
-				}
+				nextTable[parentOfStmtVec[i]].insert(i + 1);
+				allNextTable.insert(parentOfStmtVec[i]);
+				previousTable[i + 1].insert(parentOfStmtVec[i]);
+				nestingLvl--;
+				continue;
 			}
 		}
 
@@ -113,14 +132,9 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			continue;
 		}
 
-		if ((i + 1) != (lastLine + 1)) {
-			nextTable[i].insert(i + 1);
-			allNextTable.insert(i);
-			previousTable[i + 1].insert(i);
-		}
-		else {
-			previousTable[0].insert(i);
-		}
+		nextTable[i].insert(i + 1);
+		allNextTable.insert(i);
+		previousTable[i + 1].insert(i);
 	}
 }
 
