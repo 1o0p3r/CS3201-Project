@@ -100,8 +100,8 @@ public:
 			//"stmt s; Select s such that Modifies(s, \"i\")",
 			//"variable n; Select n such that Modifies(1, n)",
 			//"assign a; variable b; while i; Select i such that Modifies(a, b)",
-			"variable v; Select v such that Uses(\"Second\", v)",
-			//"stmt s; Select s such that Uses(s, \"i\")",
+			//"variable v; Select v such that Uses(\"Second\", v)",
+			"stmt s; Select s such that Uses(s, \"i\")",
 			//"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
 			//"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\" 2*y \")",
 			//"assign a; Select a pattern a(\"z\", _\"x+i\")",
@@ -117,12 +117,12 @@ public:
 			//{ "2","3", "7" },
 			//{ "x" },
 			//{ "3" },
-			{ "i", "x", "y", "z" },
-			//{ "3", "7", "11" },
-			//{ "x" },
-			//{ "4" },
-			//{},
-			//{ "9" }
+			//{ "i", "x", "y", "z" },
+			{ "11", "3", "7" },
+			{ "x" },
+			{ "4" },
+			{},
+			{ "9" }
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
