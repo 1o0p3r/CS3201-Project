@@ -214,7 +214,7 @@ public:
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement a("d", "synonym", "while", "a", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("assign", "a");
+		QueryElement sel("assign", "a", "synonym");
 		
 		QueryElement pat1("v", Util::insertBrackets("4*c-x"), "assign", "a", "synonym", "exact");
 		// pattern a(v,"4*c-x")
@@ -333,7 +333,7 @@ public:
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("while", "a");
+		QueryElement sel("while", "a", "synonym");
 
 		qa.setPKB(pkb);
 

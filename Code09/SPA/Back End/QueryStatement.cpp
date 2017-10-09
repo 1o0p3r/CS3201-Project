@@ -14,6 +14,9 @@ vector<QueryElement> QueryStatement::getSuchThatQueryElement() {
 vector<QueryElement> QueryStatement::getPatternQueryElement() {
 	return patternElement;
 }
+vector<QueryElement> QueryStatement::getWithQueryElement() {
+	return withElement;
+}
 vector<SynonymEntityPair> QueryStatement::getSynonymEntityList() {
 	return synonymEntityList;
 }
@@ -26,7 +29,9 @@ void QueryStatement::addSuchThatQuery(QueryElement toAdd) {
 void QueryStatement::addPatternQuery(QueryElement toAdd) {
 	patternElement.push_back(toAdd);
 }
-
+void QueryStatement::addWithQuery(QueryElement toAdd) {
+	withElement.push_back(toAdd);
+}
 void QueryStatement::addSynonymEntityList(vector<SynonymEntityPair> synEntityList)
 {
 	synonymEntityList = synEntityList;

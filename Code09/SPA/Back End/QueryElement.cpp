@@ -7,11 +7,13 @@ QueryElement::QueryElement()
 {
 }
 
-QueryElement::QueryElement(string entity, string synonym)
+//Select
+//type can be synonym, tuple, BOOLEAN
+QueryElement::QueryElement(string entity, string synonym, string type)
 {
 	ent = entity;
 	syn = synonym;
-
+	selectType = type;
 }
 
 //Such that
@@ -38,6 +40,18 @@ QueryElement::QueryElement(string arg1, string arg2, string patternEntity, strin
 	patternArg2Type = argTwoType;
 }
 
+//With
+QueryElement::QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
+	argumentOneWith = arg1;
+	argumentTwoWith = arg2;
+	argumentOneTypeWith = arg1Type;
+	argumentTwoTypeWith = arg2Type;
+	argumentOneEntWith = ent1Type;
+	argumentTwoEntWith = ent2Type;
+	argumentOneSynWith = arg1Syn;
+	argumentTwoSynWith = arg2Syn;
+}
+
 string QueryElement::getSelectEntity()
 {
 	return ent;
@@ -46,6 +60,11 @@ string QueryElement::getSelectEntity()
 string QueryElement::getSelectSynonym()
 {
 	return syn;
+}
+
+string QueryElement::getSelectType()
+{
+	return selectType;
 }
 
 string QueryElement::getSuchThatArg1()
