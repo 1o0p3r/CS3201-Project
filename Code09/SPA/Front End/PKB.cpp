@@ -43,6 +43,12 @@ PKB::PKB() {
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
+	vector<int> whileTable;
+	vector<int> assignTable;
+	vector<int> ifTable;
+	vector<int> callTable;
+	vector<int> firstlineTable;
+	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
 	set<string> allVariables;
 	set<string> allConstants;
@@ -167,38 +173,15 @@ vector<int> PKB::getAllParent() {
 }
 
 void PKB::setModifies(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcModifies(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	vector<string> procIsCalledBy = getCalledBy(procName);
-
-	int currProcIndex;
-	int currVarIndex;
-
-	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		currProcIndex = getProcIndex(procIsCalledBy[i]);
-		modify.setProcModifies(currProcIndex, varIndex);
-	}
-
-	vector<string> procIsCalling = getCalls(procName);
-	vector<string> variablesModified;
-	for (int i = 0; i < procIsCalling.size(); i++) {
-		variablesModified = getProcModifies(procIsCalling[i]);
-		for (int j = 0; j < variablesModified.size(); j++) {
-			currVarIndex = getVarIndex(variablesModified[j]);
-			modify.setProcModifies(procIndex, currVarIndex);
-		}
-
-	}
-	modify.setProcModifies(procIndex, varIndex);
+	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
@@ -240,38 +223,15 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 }
 
 void PKB::setUses(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	use.setUses(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcUses(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	vector<string> procIsCalledBy = getCalledBy(procName);
-
-	int currProcIndex;
-	int currVarIndex;
-
-	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		currProcIndex = getProcIndex(procIsCalledBy[i]);
-		use.setProcUses(currProcIndex, varIndex);
-	}
-
-	vector<string> procIsCalling = getCalls(procName);
-	vector<string> variablesUsed;
-	for (int i = 0; i < procIsCalling.size(); i++) {
-		variablesUsed = getProcUses(procIsCalling[i]);
-		for (int j = 0; j < variablesUsed.size(); j++) {
-			currVarIndex = getVarIndex(variablesUsed[j]);
-			use.setProcUses(procIndex, currVarIndex);
-		}
-
-	}
-	use.setProcUses(procIndex, varIndex);
+	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::getUses(int statementNum) {
@@ -297,12 +257,10 @@ vector<string> PKB::getProcUsedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setCalls(string procName1, string procName2) {
-	addProcedure(procName1);
-	addProcedure(procName2);
+void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
-	call.setCalls(index1, index2);
+	call.setCalls(statementNum, index1, index2);
 }
 
 vector<string> PKB::getCalls(string procName) {
@@ -320,13 +278,13 @@ vector<string> PKB::getCalledBy(string procName) {
 vector<string> PKB::getCallsStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
 	vector<int> results = call.getCallsStar(procNameIndex);
-	return convertToProcNames(results);
+	return convertToProcNames(Util::removeDuplicates(results));
 }
 
 vector<string> PKB::getCalledByStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
-	vector<int> results = call.getCalls(procNameIndex);
-	return convertToProcNames(results);
+	vector<int> results = call.getCalledByStar(procNameIndex);
+	return convertToProcNames(Util::removeDuplicates(results));
 }
 
 void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
@@ -390,11 +348,38 @@ vector<int> PKB::getAllStmt() {
 	vector<int> _while = getWhile();
 	vector<int> assign = getAssign();
 	vector<int> _if = getIf();
+	vector<int> _call = getCall();
 	vector<int> result;
-	result.reserve(_while.size() + assign.size() + _if.size());
+	result.reserve(_while.size() + assign.size() + _if.size() + _call.size());
 	result.insert(result.end(), _while.begin(), _while.end());
 	result.insert(result.end(), assign.begin(), assign.end());
 	result.insert(result.end(), _if.begin(), _if.end());
+	result.insert(result.end(), _call.begin(), _call .end());
 	return result;
 }
 
+void PKB::setFirstline(string procName, int firstline) {
+	int procIndex = getProcIndex(procName);
+	if (firstlineTable.size() <= procIndex) {
+		firstlineTable.resize(procIndex + 1);
+	}
+	firstlineTable[procIndex] = firstline;
+}
+
+int PKB::getFirstline(string procName) {
+	int procIndex = getProcIndex(procName);
+	return firstlineTable[procIndex];
+}
+
+void PKB::setLastline(string procName, int lastline) {
+	int procIndex = getProcIndex(procName);
+	if (lastlineTable.size() <= procIndex) {
+		lastlineTable.resize(procIndex + 1);
+	}
+	lastlineTable[procIndex] = lastline;
+}
+
+int PKB::getLastline(string procName) {
+	int procIndex = getProcIndex(procName);
+	return lastlineTable[procIndex];
+}

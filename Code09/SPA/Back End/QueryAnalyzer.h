@@ -1,12 +1,16 @@
 #pragma once
 #include "PKB.h"
+#include "CallsAnalyzer.h"
 #include "QueryStatement.h"
 #include "QueryElement.h"
 #include "suchThatAnalyzer.h"
 #include "FollowsAnalyzer.h"
+#include "NextAnalyzer.h"
+#include "ParentAnalyzer.h"
 #include "ParentStarAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
 #include "ModifiesAnalyzer.h"
+#include "UsesAnalyzer.h"
 #include "TupleHash.h"
 
 #include <iterator>
@@ -49,7 +53,8 @@ public:
 
 	void findQueryElements();
 	vector<string> analyzeClauseResults();
-	vector<string> analyzeSelect(string selectEntity);
+	vector<string> analyzeSelect(vector<string> answer, string selectEntity);
+	vector<string> intersection(vector<string> v1, vector<string> v2);
 	vector<string> removeVectDuplicates(vector<string> selectClause);
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();

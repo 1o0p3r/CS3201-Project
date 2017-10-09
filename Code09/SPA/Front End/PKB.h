@@ -231,11 +231,12 @@ public:
 	/**
 	Sets proc1 calls proc2. Implicitly sets calledBy, callsStar and calledByStar using parentStar.
 
+	@parem statementNum statement number of call
 	@param procName1 procedure that is calling another procedure
 	@param procName2 procedure being called
 	@returns void
 	*/
-	void setCalls(string procName1, string procName2);
+	void setCalls(int statementNum, string procName1, string procName2);
 
 	/**
 	Gets the procedures called directly by input procedure
@@ -295,6 +296,16 @@ public:
 	void setStatementType(int statementNum, string type);
 
 	/**
+	@Niv,
+	Stub functions for Next, 
+	*/
+	vector<int> getNext(int statementNum);
+	vector<int> getPrevious(int statementNum);
+	
+	//return all prog_lines that leads to another statement directly executed in the same procedure
+	vector<int> getAllNext(); //next(n1,n2) , returns all possilble n1 values. 
+
+	/**
 	Gets all the while statements
 	@returns a vector containing ints of all while statements
 	*/
@@ -331,6 +342,33 @@ public:
 	vector<int> getAllStmt();
 
 	/**
+	Set the first line of a procedure
+	@param procName the name of the procedure
+	@param firstline the first line of the procedure
+	*/
+	void setFirstline(string procName, int firstline);
+	/**
+	Gets the first line of a procedure
+	@param procName the name of the procedure
+	@returns the statement number of the first line
+	*/
+	int getFirstline(string procName);
+
+	/**
+	Set the last line of a procedure
+	@param procName the name of the procedure
+	@param lastline the last line of the procedure
+	*/
+	void setLastline(string procName, int lastline);
+
+	/**
+	Gets the last line of a procedure
+	@param procName the name of the procedure
+	@returns the statement number of the last line
+	*/
+	int getLastline(string procName);
+
+	/**
 	Add a Constant to PKB
 	@param c the constant name
 	*/
@@ -364,6 +402,8 @@ private:
 	vector<int> assignTable;
 	vector<int> ifTable;
 	vector<int> callTable;
+	vector<int> firstlineTable;
+	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
 
 	set<string> allVariables;

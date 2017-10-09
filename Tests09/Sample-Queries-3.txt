@@ -30,46 +30,46 @@ y
 5000
 7 - comment
 variable v;
-Select v such that Uses(3，v）
+Select v such that Uses(3,v)
 none
 5000
 8 - comment
 variable v;
-Select v such that Uses(4，v）
+Select v such that Uses(4,v)
 x, y
 5000
 9 - comment
 variable v; assign a;
-Select a such that Uses(a，"y"）
+Select a such that Uses(a,"y")
 4
 5000
 10 - comment
 assign a;
-Select a such that Parent(a，3）
+Select a such that Parent(a,3)
 none
 5000
 11 - comment
 stmt a;
-Select a such that Parent(a，3）
+Select a such that Parent(a,3)
 2
 5000
 12 - comment
 stmt a;
-Select a such that Parent*(a，4）
+Select a such that Parent*(a,4)
 2
 5000
 13 - comment
 stmt s; assign a;
-Select a such that Parent*(s，4）pattern a(_, "x*y+ 1")
+Select a such that Parent*(s,4)pattern a(_, "x*y+ 1")
 4
 5000
 14 - comment
 stmt s; assign a;
-Select a such that Follows(s，4）pattern a(_, _"y+ 1")
+Select a such that Follows(s,4)pattern a(_, _"y+ 1")
 none
 5000
 15 - comment
 stmt s; assign a;
-Select a such that Modifies(a，_）pattern a("x", _)
+Select a such that Modifies(a,_)pattern a("x", _)
 1, 4
 5000

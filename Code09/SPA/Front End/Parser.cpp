@@ -11,10 +11,19 @@
 #include <fstream>
 
 using namespace std;
+#define OB "{"
+#define CB '}'
 #define WHILE "while"
 #define IF "if"
+#define THEN "then"
+#define THEN_B "then{"
 #define ASSIGN "assign"
 #define PROCEDURE "procedure"
+#define CALL "call"
+#define ELSE "else"
+#define ELSE_B "else{"
+#define SPACE ' '
+#define SEMICOLON ";"
 
 bool Parse(string fileName, PKB& pkb) {
 
@@ -27,42 +36,63 @@ bool Parse(string fileName, PKB& pkb) {
 	bool isNewContainer = true;
 	int nestLevel = 0;
 	int prevFollow;
+	int lastLine;
+	bool toSetFirstLine;
+	tuple<string, string> temp;
+	vector<int> Parent;
 
-	getline(file, line);
-	vector<string> firstLine = Util::splitLine(line, ' ');
-
-	//	tells you who is the immediate parent so you can call setParent	
-	vector<int> Parent(1);
-
-	//detect procedure
-	if (firstLine[0] != PROCEDURE && firstLine[2] != "{" && !Util::isValidName(firstLine[1])) {
-		return false;
-	} else {
-		procName = firstLine[1];
-		nestLevel++;
-	}
 	while (getline(file, line)) { //read line by line
+		line = Util::trim(line);
 		lineCounter++;
-		vector<string> nextLine = Util::splitLine(Util::trim(line), ' ');
+		vector<string> nextLine = Util::splitLine(line, ' ');
 		if (nextLine.size() == 0) {
 			lineCounter--;
-		} else if (nextLine[0] == "else" && nextLine[1] == "{") {
+		} else if (isElseStatement(nextLine)) {
 			lineCounter--;
 			nestLevel++;
 			Parent.push_back(prevFollow);
+			isSameLevel = false;
 			isNewContainer = true;
-		} else if (nextLine[0] == PROCEDURE) {
-			if (!Util::isValidName(nextLine[1]) || nextLine[2] != "{" || nestLevel != 0 || Parent.size() != 0) {
-				return false;
-			} else {
-				Parent.push_back(0);
-				procName = nextLine[1];
-				lineCounter--;
-				isNewContainer = true;
-				isSameLevel = false;
-				nestLevel++;
+		} else if (isProcedure(nextLine)) {
+			if (lineCounter > 1) {
+				pkb.setLastline(procName, lastLine);
 			}
+			lineCounter--;
+			if (nextLine.size() == 3) {
+				procName = nextLine[1];
+			} else {
+				procName = nextLine[1].substr(0, nextLine[1].size() - 1);
+			}
+			Parent.push_back(0);
+			isNewContainer = true;
+			isSameLevel = false;
+			nestLevel++;
+			toSetFirstLine = true;
+		} else if (startsWithBrackets(nextLine)) {
+			int i = 0;
+			while (i < line.size()) {
+				if (line[i] == CB) {
+					isSameLevel = false;
+					nestLevel--;
+					prevFollow = Parent.back();
+					Parent.pop_back();
+				} else if (line[i] != SPACE) {
+					break;
+				}
+				i++;
+			}
+			if (i < line.size()) {
+				line = line.substr(i, line.size());
+				if (!isElseStatement(Util::splitLine(line, ' '))) {
+					return false;
+				}
+			}
+			lineCounter--;
 		} else {
+			if (toSetFirstLine) {
+				pkb.setFirstline(procName, lineCounter);
+				toSetFirstLine = false;
+			}
 			if (!isNewContainer) {
 				if (isSameLevel) {
 					pkb.setFollows(lineCounter - 1, lineCounter);
@@ -73,34 +103,28 @@ bool Parse(string fileName, PKB& pkb) {
 			if (nestLevel > 1) {
 				pkb.setParent(Parent.back(), lineCounter);
 			}
-			if (nextLine[1] == "=" && Util::isValidName(nextLine[0])) {
-				bool hasSemicolon = false;
+			if (isAssignStatement(line)) {
+				int pos = line.find("=");
+				string var = Util::trim(line.substr(0, pos));
 				pkb.setStatementType(lineCounter, ASSIGN);
-				string var = nextLine[0];
 				pkb.setModifies(lineCounter, var);
 				pkb.setProcModifies(procName, var);
-				for (int i = 2; i < nextLine.size(); i++) {
-					string current = nextLine[i];
-					if (current.back() == ';') {
-						current = current.substr(0, current.size() - 1);
-						hasSemicolon = true;
-					}
-					if (Util::isNumber(current)) {//number
-						pkb.addConstant(current);
-					} else if (Util::isValidName(current)) {//var
-						pkb.setUses(lineCounter, current);
-						pkb.setProcUses(procName, current);
-					} else if (!Util::isOperand(current) && current != "}") {// only operands left
+				string expression = Util::getExpression(line.substr(pos + 1));
+				vector<string> expressionList = Util::constructExpression(expression);
+				for each (string item in expressionList) {
+					if (Util::isNumber(item)) {
+						pkb.addConstant(item);
+					} else if (Util::isValidName(item)) {
+						pkb.setUses(lineCounter, item);
+						pkb.setProcUses(procName, item);
+					} else {
 						return false;
 					}
 				}
-				pkb.addPattern(lineCounter, var, Util::getExpression(nextLine));
-				if (!hasSemicolon) {
-					return false;
-				}
+				pkb.addPattern(lineCounter, var, expression);
 				isNewContainer = false;
 				isSameLevel = true;
-			} else if (nextLine[0] == IF && nextLine[2] == "then" && Util::isValidName(nextLine[1]) && nextLine[3] == "{") {
+			} else if (isIfStatement(nextLine)) {
 				pkb.setStatementType(lineCounter, IF);
 				string var = nextLine[1];
 				pkb.setUses(lineCounter, var);
@@ -109,43 +133,113 @@ bool Parse(string fileName, PKB& pkb) {
 				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
-			} else if (nextLine[0] == WHILE && nextLine[2] == "{" && Util::isValidName(nextLine[1])) {
+			} else if (isWhileStatement(nextLine)) {
+				string var;
+				if (nextLine.size() == 3) {
+					var = nextLine[1];
+				} else {
+					var = nextLine[1].substr(0, nextLine[1].size() - 1);
+				}
 				pkb.setStatementType(lineCounter, WHILE);
-				string var = nextLine[1];
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
 				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
-			} else if (nextLine[0] == "call") {
-				if (nextLine[1].back() != ';') {
-					return false;
+			} else if (isCallStatement(nextLine)) {
+				string proc_name;
+				if (nextLine[1].substr(nextLine[1].size() - 1) == SEMICOLON) {
+					proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
 				} else {
-					//TODO call pkb.setcall()
-					string proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
-					isSameLevel = true;
-					isNewContainer = false;
+					proc_name = nextLine[1];
 				}
+				pkb.setStatementType(lineCounter, CALL);
+				pkb.setCalls(lineCounter, procName, proc_name);
+				isSameLevel = true;
+				isNewContainer = false;
 			} else {
 				return false;
 			}
 			// after all statements, check for '}'s at the end
-			for (int i = nextLine.size() - 1; i >= 0; i--) {
-				if (nextLine[i] == "}") {
+			for (int i = line.size() - 1; i >= 0; i--) {
+				if (line[i] == CB) {
 					isSameLevel = false;
 					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
-				} else {
+				} else if (line[i] != SPACE) {
 					break;
 				}
 			}
 		}
 	}
-	if (nestLevel == 0) {
+	pkb.setLastline(procName, lineCounter);
+	if (nestLevel == 0 && Parent.size() == 0) {
 		return true;
 	} else {
 		return false;
 	}
+}
+
+bool isElseStatement(vector<string> line) {
+	return (line.size() == 2 && line[0] == ELSE && line[1] == OB) ||
+		(line.size() == 1 && line[0] == ELSE_B);
+}
+
+bool startsWithBrackets(vector<string> line) {
+	return line.size() > 0 && line[0][0] == CB;
+}
+
+bool endsWithBrackets(vector<string> line, int pos) {
+	for (int i = pos; i < line.size(); i++) {
+		for (int j = 0; j < line[i].size(); j++) {
+			if (line[i][j] != CB) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool isProcedure(vector<string> line) {
+	return (line.size() == 3 && line[0] == PROCEDURE && Util::isValidName(line[1]) && line[2] == OB) ||
+		(line.size() == 2 && line[0] == PROCEDURE && Util::isValidName(line[1].substr(0, line[1].size() - 1)) && line[1].substr(line[1].size() - 1) == OB);
+}
+
+bool isCallStatement(vector<string> line) {
+	return (line.size() >= 2 && line[0] == CALL) &&
+		((line[0] == CALL && Util::isValidName(line[1].substr(0, line[1].size() - 1)) && line[1].substr(line[1].size() - 1) == SEMICOLON && endsWithBrackets(line, 2)) ||
+		(line.size() >= 3 && Util::isValidName(line[1]) && line[2] == SEMICOLON && endsWithBrackets(line, 3)));
+}
+
+bool isWhileStatement(vector<string> line) {
+	return (line.size() == 3 && line[0] == WHILE && Util::isValidName(line[1]) && line[2] == OB) ||
+		(line.size() == 2 && line[0] == WHILE && Util::isValidName(line[1].substr(0, line[1].size() - 1)) && line[1].substr(line[1].size() - 1) == OB);
+}
+
+bool isIfStatement(vector<string> line) {
+	return (line.size() == 4 && line[0] == IF && Util::isValidName(line[1]) && line[2] == THEN && line[3] == OB) ||
+		(line.size() == 3 && line[0] == IF && Util::isValidName(line[1]) && line[2] == THEN_B);
+}
+
+bool isAssignStatement(string line) {
+	int pos = line.find("=");
+	if (pos <= 0 || !Util::isValidName(Util::trim(line.substr(0, pos)))) {
+		return false;
+	} else {
+		bool afterSC = false;
+		for (int i = pos + 1; i < line.size(); i++) {
+			string s;
+			s.push_back(line[i]);
+			if (afterSC && line[i] != CB && line[i] != SPACE) {
+				return false;
+			} else if (!afterSC && s == SEMICOLON) {
+				afterSC = true;
+			} else if (!afterSC && !Util::isOperand(line[i]) && !isalpha(line[i]) && !Util::isNumber(s) && line[i] != SPACE) {
+				return false;
+			}
+		}
+	}
+	return true;
 }

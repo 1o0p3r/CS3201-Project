@@ -1,10 +1,11 @@
 How to compile:
 	1) Open Code09.sln with Visual Studio
 	2) Click Build tab and click Build Solution
+	3) From Tests09 folder, copy in test cases to Release folder
 	
 How to run code:
 	1) Open CMD in the release folder
-	2) run AutoTester Sample‐Source.txt Sample‐Queries.txt out.xml
+	2) run AutoTester Sample‐Source-3.txt Sample‐Queries-3.txt out.xml
 
 How to test testcases:
 	1) Open Code09.sln with Visual Studio
@@ -12,4 +13,4 @@ How to test testcases:
 
 Visual Studio 2015(Release)
 
-Our project do not have a parser, therefore the testing is hardcoded into the code.
+FrontEndTest unit test does not pass as it is being worked on for iteration 2

@@ -1,6 +1,8 @@
 #include "Util.h"
 #include <iostream>
 #include <algorithm>
+#include <tuple>
+#include <set>
 
 string Util::insertBrackets(string input) {
 	string results;
@@ -13,10 +15,10 @@ string Util::insertBrackets(string input) {
 	int index = 0;
 	while (index < results.size()) {
 		if (results[index] == '*') {
-			if (results[index - 1] != ')') {
+			if (results[index - 1] != ')' && results[index] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else {
+			} else if (results[index + 1] != ')') {
 				int counter = 1;
 				int back = index - 1;
 				while (counter > 0) {
@@ -29,6 +31,42 @@ string Util::insertBrackets(string input) {
 				}
 				results.insert(index + 2, ")");
 				results.insert(back, "(");
+			} else if (results[index - 1] != '(') {
+				int counter = 1;
+				int front = index + 1;
+				while (counter > 0) {
+					front++;
+					if (results[front] == '(') {
+						counter++;
+					} else if (results[front] == ')') {
+						counter--;
+					}
+				}
+				results.insert(front, ")");
+				results.insert(index - 1, "(");
+			} else {
+				int counter = 1;
+				int front = index + 1;
+				int back = index - 1;
+				while (counter > 0) {
+					front++;
+					if (results[front] == '(') {
+						counter++;
+					} else if (results[front] == ')') {
+						counter--;
+					}
+				}
+				counter = 1;
+				while (counter > 0) {
+					back--;
+					if (results[back] == '(') {
+						counter--;
+					} else if (results[back] == ')') {
+						counter++;
+					}
+				}
+				results.insert(front, ")");
+				results.insert(back, "(");
 			}
 			index++;
 		}
@@ -40,55 +78,55 @@ string Util::insertBrackets(string input) {
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else if (results[index - 1] == ')' && results[index + 1] != '(') {
+			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 2;
+				int back = index - 1;
 				while (counter > 0) {
+					back--;
 					if (results[back] == '(') {
 						counter--;
 					} else if (results[back] == ')') {
 						counter++;
 					}
-					back--;
 				}
 				results.insert(index + 2, ")");
-				results.insert(back + 1, "(");
-			} else if (results[index + 1] == '(' && results[index - 1] != ')') {
+				results.insert(back, "(");
+			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 2;
+				int front = index + 1;
 				while (counter > 0) {
+					front++;
 					if (results[front] == ')') {
 						counter--;
 					} else if (results[front] == '(') {
 						counter++;
 					}
-					front++;
 				}
-				results.insert(front - 1, ")");
+				results.insert(front, ")");
 				results.insert(index - 1, "(");
 			} else {
 				int counter = 1;
-				int back = index - 2;
-				int front = index + 2;
+				int back = index - 1;
+				int front = index + 1;
 				while (counter > 0) {
+					back--;
 					if (results[back] == '(') {
 						counter--;
 					} else if (results[back] == ')') {
 						counter++;
 					}
-					back--;
 				}
 				counter = 1;
 				while (counter > 0) {
+					front++;
 					if (results[front] == ')') {
 						counter--;
 					} else if (results[front] == '(') {
 						counter++;
 					}
-					front++;
 				}
-				results.insert(front - 1, ")");
-				results.insert(back + 1, "(");
+				results.insert(front, ")");
+				results.insert(back, "(");
 			}
 			index++;
 		}
@@ -121,8 +159,8 @@ bool Util::isValidName(string s) {
 	}
 }
 
-bool Util::isOperand(string s) {
-	if (s == "+" || s == "-" || s == "*") {
+bool Util::isOperand(char c) {
+	if (c == '+' || c == '-' || c == '*' || c == '(' || c == ')') {
 		return true;
 	} else {
 		return false;
@@ -147,25 +185,70 @@ string Util::trim(string s) {
 	return s;
 }
 
-string Util::getExpression(vector<string> sList) {
-	int front = 0;
-	int back = sList.size() - 1;
-	while (sList[front] != "=") {
-		front++;
-	}
-	while (sList[back].back() != ';') {
+string Util::getExpression(string line) {
+	int back = line.size() - 1;
+	while (line[back] != ';') {
 		back--;
 	}
-	front++;
-	if (sList[back].size() == 1) {
-		back--;
-	} else {
-		sList[back] = sList[back].substr(0, sList[back].size() - 1);
+	string result = "";
+	for (int i = 0; i < back; i++) {
+		if (line[i] != ' ') {
+			result.push_back(line[i]);
+		}
 	}
-	string s = "";
-	while (front <= back) {
-		s.append(sList[front]);
-		front++;
+	return result;
+}
+
+tuple<string, string> Util::extractBackBrackets(string s) {
+	int bracket = 0;
+	while (s[bracket] != '{') {
+		bracket++;
 	}
-	return s;
+	string name = s.substr(0, bracket);
+	string open = s.substr(bracket, s.size());
+	tuple<string, string> result = { name, open };
+	return result;
+}
+
+vector<int> Util::removeDuplicates(vector<int> input) {
+	set<int> temp;
+	vector<int> result;
+	for each (int item in input) {
+		temp.insert(item);
+	}
+	for each (int item in temp) {
+		result.push_back(item);
+	}
+	return result;
+}
+
+vector<string> Util::removeDuplicates(vector<string> input) {
+	set<string> temp;
+	vector<string> result;
+	for each (string item in input) {
+		temp.insert(item);
+	}
+	for each (string item in temp) {
+		result.push_back(item);
+	}
+	return result;
+}
+
+vector<string> Util::constructExpression(string expression) {
+	vector<string> result;
+	string current = "";
+	for (int i = 0; i < expression.size(); i++) {
+		if (Util::isOperand(expression[i])) {
+			if (!current.empty()) {
+				result.push_back(current);
+			}
+			current = "";
+		} else {
+			current.push_back(expression[i]);
+		}
+	}
+	if (!current.empty()) {
+		result.push_back(current);
+	}
+	return result;
 }

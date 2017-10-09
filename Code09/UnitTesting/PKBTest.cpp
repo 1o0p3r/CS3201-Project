@@ -65,7 +65,7 @@ public:
 	TEST_METHOD(setProcModifiesForMultiplePrcs) {
 		PKB pkb;
 		pkb.setProcModifies("first", "x");
-		pkb.setCalls("first", "second");
+		pkb.setCalls(1, "first", "second");
 		pkb.setProcModifies("second", "y");
 
 		vector<string> results;
@@ -77,12 +77,21 @@ public:
 		PKB pkb;
 		pkb.setProcUses("first", "x");
 		pkb.setProcUses("first", "y");
-		pkb.setCalls("first", "second");
+		pkb.setCalls(1, "first", "second");
 		pkb.setProcUses("second", "z");
 
 		vector<string> results;
 		Assert::IsTrue(pkb.getProcUses("first") == vector<string>{"x", "y", "z"});
 		Assert::IsTrue(pkb.getProcUsedBy("z") == vector<string>{"first", "second"});
+	}
+
+	TEST_METHOD(setModifies) {
+		PKB pkb;
+		pkb.setModifies(1, "x");
+		pkb.setModifies(2, "x");
+		pkb.setModifies(3, "y");
+		pkb.setModifies(4, "x");
+		Assert::AreEqual(3, pkb.getModifiedBy("y")[0]);
 	}
 	};
 }

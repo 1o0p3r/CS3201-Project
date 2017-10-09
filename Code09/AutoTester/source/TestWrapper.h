@@ -27,7 +27,6 @@ class TestWrapper : public AbstractWrapper {
 
 private:
 	PKB pkb;
-	QueryValidator validator;
 	QueryAnalyzer analyzer;
 };
 
