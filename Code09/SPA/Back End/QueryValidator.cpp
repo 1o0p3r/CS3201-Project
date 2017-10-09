@@ -59,6 +59,8 @@ const string PROCEDURE_STRING = "procedure";
 const string PROG_LINE_STRING = "prog_line";
 const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
+const string CALL_STRING = "call";
+
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -90,12 +92,12 @@ const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
 const string INTEGER_STRING_REGEX = "\\d+";
 const string CONSTANT_STRING_REGEX = "\\d+";
 const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
-const string IDENT_STRING_REGEX = "(([a-zA-Z])([a-zA-Z]|\\d|\#)*)";
+const string IDENT_STRING_REGEX = "(\\s*(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*)";
 const string QUOTATION_IDENT_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\"" + IDENT_STRING_REGEX + "\"" + SYMBOL_RIGHT_BRACKET_STRING;
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
 const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
 const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
-const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"([a-zA-Z])([a-zA-Z]|\\d|\#)*\"))"; //Nth wrg here either
+const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*\\s*\"))"; //Nth wrg here either
 const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
 const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line|procedure|stmtLst|if|call)";
 const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line|procedure|stmtLst|if|call)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
@@ -172,12 +174,18 @@ const string BRACKETED_SYNONYM = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REG
 
 const string TEMP_ITR2_GENERAL_PATTERN_CL_REGEX = SYMBOL_LEFT_BRACKET_STRING + PATTERN_STRING + "\\s+" + SYNONYM_STRING_REGEX + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX = SYMBOL_LEFT_BRACKET_STRING + PATTERN_STRING + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + BRACKETED_SYNONYM
-+ "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING
-+ "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "and" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + "{0,1}" + "\\s+" + PATTERN_STRING
-+ "\\s+" + SYMBOL_LEFT_BRACKET_STRING + BRACKETED_SYNONYM + "\\s*" + "\\(" + ".+?" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+const string TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX = SYMBOL_LEFT_BRACKET_STRING + TEMP_ITR2_GENERAL_PATTERN_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING +  "\\s+" + SYMBOL_RIGHT_BRACKET_STRING + "?" + "\\s*" + TEMP_ITR2_GENERAL_PATTERN_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 
-const string IF_PATTERN_REGEX = PATTERN_STRING + "\\s+" + BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+
+const string IF_PATTERN_REGEX = "\\s*" + BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+const string WHILE_PATTERN_REGEX = "\\s*" + BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "_" + "\\s*" + "\\)";
+const string ASSIGN_PATTERN_REGEX = "\\s*" + BRACKETED_SYNONYM + "\\s*" + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "," + "\\s*" + "([^\\.\\,\\@\\$\\%\\&\\^\\'\\=\\~\\`\/\]+)" + "\\s*" + "\\)";
+
+const string SUB_MATCH_REGEX = "([\\w][\\w\\d\#]*\\s+[\\w][\\w\\d\#]*)";
+const string IF_PATTERN_AND_REGEX = SYMBOL_LEFT_BRACKET_STRING + IF_PATTERN_REGEX + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + "\\s+" + SYMBOL_RIGHT_BRACKET_STRING + "{0,1}"
++ SYMBOL_RIGHT_BRACKET_STRING + IF_PATTERN_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
+
 const string PARTIAL_PATTERN_REGEX = "(and\\s+pattern)(.+)";
 
 const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*||(BOOLEAN)" + SYMBOL_RIGHT_BRACKET_STRING;
@@ -237,11 +245,7 @@ bool QueryValidator::parseInput(string str) {
 	}
 }
 
-//To be deleted 
-bool QueryValidator::isValidModifiesP(string str) {
-	regex modifiesPRegex(TEMP_MODIFIESP_STRING_REGEX);
-	return regex_match(str, modifiesPRegex);
-}
+
 //This function parses the Entity And Synonym and checks for the validity of Entity
 bool QueryValidator::isEntityAndSynonym(string currentString) {
 	if (isValidEntity(currentString)) {
@@ -347,9 +351,11 @@ bool QueryValidator::isValidSynDesignEntity(string synPattern) {
 	}
 }
 
+
 //Posssible str received here are:
 //pattern a(,) pattern(,)
 //pattern ifs(,,) and pattern a()
+//pattern w(_,_) and pattern a() pattern ifs(,,)
 bool QueryValidator::isValidPatternIter2(string str) {
 	//First trim it
 	str = trim(str);
@@ -371,31 +377,281 @@ bool QueryValidator::isValidPatternIter2(string str) {
 				if (isLeadingAnd(str)) {
 					str = removeLeadingAnd(str);
 				}
+				//Checks generally up to before first occurence of left bracket
+				if (!isValidGeneralPatternRegex(str)) {
+					return false;
+				}
+				//What i should do: remove leading pattern
+				//With given string, first remove the word pattern
+				str = str.substr(PATTERN_STRING_LENGTH, str.length() - PATTERN_STRING_LENGTH);
+				//Trim it again
+				str = Util::trim(str);
 
-				//If it matches the if regex
-				if (isValidIfPatternRegex(str)) {
-					//Go and do checking on if pattern statements
-					if (!isValidIfPattern(str)) {
-						return false;
-					}
+				//To be used as identification of the pattern regex
+				bool isAssign = false;
+				bool isIf = false;
+				bool isWhile = false;
+
+				int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
+				string synPattern = str.substr(ZERO, idxFirstLeftBracket);
+				string entPattern = getCorrespondingEntity(str);
+
+				if (entPattern != ASSIGN_STRING && entPattern != IF_STRING && entPattern != WHILE_STRING) {
+					return false;
+				}
+				else if (entPattern == ASSIGN_STRING) {
+					return isValidAddAssignPattern(str, synPattern);
+				}
+				else if (entPattern == IF_STRING) {
+					return isValidAddIfPattern(str, synPattern);
+				}
+				else if (entPattern == WHILE_STRING) {
+					return isValidAddWhilePattern(str, synPattern);
+				}
+				else {
+					return false;
 				}
 
 			}
 		}
 	}
-	
 	return true;
+}
+
+//This function handles the Assign pattern scenario
+bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
+	//Cannot really use regex due to brackets, so perform manual check on each arguments
+	//However can check generally for the first arg
+	if (!isAssignPatternRegex(str)) {
+		return false;
+	}
+
+	//Find the first occurence of left bracket
+	int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
+
+	//Get the string without the synPattern
+	string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
+
+	//Remove outer 2 brackets
+	curr = removeOuterParentheses(curr);
+
+	//Split the string by comma
+	vector<string> assignVecPattern = splitBySymbol(curr, SYMBOL_COMMA);
+
+	string arg1 = assignVecPattern.at(ZERO);
+	string arg2 = assignVecPattern.at(ONE);
+
+	//Firstly trim them
+	arg1 = Util::trim(arg1);
+	arg2 = Util::trim(arg2);
+
+	//Then for each arg, check wad type they are
+	bool arg1UnderScore = false;
+	bool arg1Number = false;
+	bool arg1Variable = false;
+	bool arg1StringLiteral = false;
+	bool arg2UnderScore = false;
+	bool arg2Exact = false;
+	bool arg2Substring = false;
+
+	if (isWildcard(arg1)) {
+		arg1UnderScore = true;
+	}
+	else if (is_number(arg1)) {
+		arg1Number = true;
+	}
+	else if (isQuotationIdentRegex(arg1)) {
+		arg1StringLiteral = true;
+	}
+	else if (isVariableSynonym(arg1)) {
+		arg1Variable = true;
+	}
+	else {
+		return false;
+	}
+	if (isWildcard(arg2)) {
+		arg2UnderScore = true;
+	}
+	else if (isValidExpr(str)) {
+		arg2Exact = true;
+	}
+	else if (isValidExprUnder(str)) {
+		arg2Substring = true;
+	}
+	else {
+		return false;
+	}
+
+
+}
+
+//This method checks if given string is a well-formed expression
+bool QueryValidator::isValidExpr(string str) {
+	//Several checks to perform here
+	//First ensure that no. of left brackets == no. of right brackets
+	//Next ensure that onli string,integers and brackets are allowed
+	//Next ensure that within a bracket, it is not empty
+	//Next ensure that when an operator is encountered, LHS can onli be a ')', string/integer. RHS can onli be string/integer '('
+	//Next ensure that when a string/integer is encounter LHS can never be a ')', RHS can never be '('
+
+
+}
+
+//This method checks if a given string a well-formed expression with underscores at both ends
+bool QueryValidator::isValidExprUnder(string str) {
+
+}
+//This function handles the while pattern scenario
+bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
+
+	//Returns false if it doesnt matches the while regex
+	if (!isValidWhilePatternRegex(str)) {
+		return false;
+	}
+	else {
+		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
+
+		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
+
+		curr = removeSymbols(curr, SYMBOL_LEFT_BRACKET_STRING);
+		curr = removeSymbols(curr, SYMBOL_RIGHT_BRACKET_STRING);
+
+		vector<string> whilePatternVec = splitBySymbol(curr, SYMBOL_COMMA);
+		string arg1 = whilePatternVec.at(ZERO);
+		//trim arg1
+		arg1 = Util::trim(arg1);
+
+		bool arg1UnderScore = false;
+		bool arg1Number = false;
+		bool arg1Variable = false;
+		bool arg1StringLiteral = false;
+
+		if (isWildcard(arg1)) {
+			arg1UnderScore = true;
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (is_number(arg1)) {
+			arg1Number = true;
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (isQuotationIdentRegex(arg1)) {
+			arg1StringLiteral = true;
+			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+			arg1 = Util::trim(arg1);
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (isVariableSynonym(arg1)) {
+			arg1Variable = true;
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 //This function checks if the given pattern that matches the if regex is of the allowed semantics
 //Possible if pattern : pattern ifs(x,_,_)		pattern ifs("x",_,_)		pattern ifs(1,_,_)		pattern ifs(_,_,_)
 //While taking note that the entity before ( must be an 'if design entity
 //This function assumes that the string received here will be
-//pattern		ifs(....)		or pattern ifs(.....)	or pattern ifs	(....)	or pattern	ifs	(....)
+//ifs(....)		or ifs(.....)	or ifs	(....)	or ifs	(....)
 //With pattern as the leading word
-bool QueryValidator::isValidIfPattern(string str) {
-	//With given string, first remove the word pattern
-	
+bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
+	//If it does not matches the if regex
+	if (!isValidIfPatternRegex(str)) {
+		return false;
+	}
+	else {
+		//Since regex passed, try and get wad is contained inside the string now
+		//Find the occurence of the first left bracket
+		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
+		//Since it passed the regex, i am sure that arg2 and arg 3 will be wildcard i.e. underscore string
+		//So all i need to do is find out what is arg1 
+		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
+		//Remove the brackets
+		curr = removeSymbols(curr, SYMBOL_LEFT_BRACKET_STRING);
+		curr = removeSymbols(curr, SYMBOL_RIGHT_BRACKET_STRING);
+		
+		vector<string> ifPatternVec = splitBySymbol(curr, SYMBOL_COMMA);
+		string arg1 = ifPatternVec.at(ZERO);
+		//trim arg1
+		arg1 = Util::trim(arg1);
+
+		//Possible identities of arg1 entRef: stringliterals, synonym variable, number, underscore_String
+		bool arg1UnderScore = false;
+		bool arg1Number = false;
+		bool arg1Variable = false;
+		bool arg1StringLiteral = false;
+
+		if (isWildcard(arg1)) {
+			arg1UnderScore = true;
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (is_number(arg1)) {
+			arg1Number = true;
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (isQuotationIdentRegex(arg1)) {
+			arg1StringLiteral = true;
+			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+			arg1 = Util::trim(arg1);
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else if (isVariableSynonym(arg1)) {
+			arg1Variable = true;
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+//This functions takes in arg1 and 4 boolean and 1 string and creates a	QueryElement to be added to the QueryStatement
+void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
+	//If arg1 is a boolean, just add
+	if (arg1Underscore) {
+		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(ifQueryElement);
+	}
+	else if (arg1Number) {
+		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(ifQueryElement);
+	}
+	else if (arg1StringLiteral) {
+		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(ifQueryElement);
+	}
+	else if (arg1Variable) {
+		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING);
+		queryStatement.addPatternQuery(ifQueryElement);
+	}
+}
+
+void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
+	if (arg1Underscore) {
+		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(whileQueryElement);
+	}
+	else if (arg1Number) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(whileQueryElement);
+	}
+	else if (arg1StringLiteral) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		queryStatement.addPatternQuery(whileQueryElement);
+	}
+	else if (arg1Variable) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING);
+		queryStatement.addPatternQuery(whileQueryElement);
+	}
 }
 bool QueryValidator::isLeadingAnd(string str) {
 	if (str.find(AND_STRING) == 0) {
@@ -537,6 +793,11 @@ bool QueryValidator::isValidPattern(string str, string syn) {
 	}
 }
 
+//This functions checks if the given str is of the design entity
+bool QueryValidator::isVariableSynonym(string str) {
+	string ent = getCorrespondingEntity(str);
+	return(ent == VARIABLE_STRING);
+}
 //This funtion checks if the given arg 1 of pattern is a variable type
 bool QueryValidator::isVariableArg1(string arg1) {
 	if (arg1.at(ZERO) == DOUBLE_QUOTATION   && arg1.at(arg1.length() - 1) == DOUBLE_QUOTATION) {
@@ -604,19 +865,20 @@ void QueryValidator::addSelectQueryElement(string ent, string syn, string select
 	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType));
 }
 
+
 //The following function
 void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
 
 	//Implies that arg1 is wildcard i.e. _
 	if (arg1Wildcard) {
 		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, SUBSTRING_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, EXACT_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, WILDCARD_STRING, WILDCARD_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else {
 			//cout << "Error occured";
@@ -625,13 +887,13 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 	}
 	else if (arg1Variable) {
 		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, SUBSTRING_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING ,ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, EXACT_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, VARIABLE_STRING, WILDCARD_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else {
 			//cout << "Error occured";
@@ -640,13 +902,13 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 	}
 	else if (arg1Synonym) {
 		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, SUBSTRING_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, EXACT_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, ent, syn, SYNONYM_STRING, WILDCARD_STRING));
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
 		}
 		else {
 			//cout << "Error occured";
@@ -657,6 +919,7 @@ void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent
 		exit(0);
 	}
 }
+
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
 }
@@ -704,505 +967,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 	}
 }
 
-bool QueryValidator::isValidSuchThat(string str) {
-	int toAdd = ZERO;
 
-	//Remove the additional leading and trailing whitespace
-	str = trim(str);
-
-	//If the str is a valid str regex just proceed
-	if (isValidSuchThatRegex(str) || isValidSuchThaExtendedRegex(str)) {
-		vector<string> suchThatRelVec = extractSuchThatClauses(str);
-		for (int idx = 0; idx < suchThatRelVec.size(); idx++) {
-			string currentString = suchThatRelVec.at(idx);
-			vector<string> tempVec = splitBySymbol(currentString, SYMBOL_LEFT_BRACKET);
-			string relation = tempVec.at(ZERO);
-			string argsWithoutBracket = tempVec.at(ONE).substr(ZERO, tempVec.at(ONE).length() - 1);
-			argsWithoutBracket = removeSymbols(argsWithoutBracket, WHITESPACE_STRING);
-			vector<string> args = splitBySymbol(argsWithoutBracket, SYMBOL_COMMA);
-			string arg1 = args.at(ZERO);
-			string arg2 = args.at(ONE);
-
-			string arg1Ent = getCorrespondingEntity(arg1);	//Attempts to get corresponding entity for each entity
-			string arg2Ent = getCorrespondingEntity(arg2);	//E.g. Follows(s,4).	type1= stmt, type2 = number
-
-			bool arg1Valid = false;
-			bool arg2Valid = false;
-			bool arg1_NUM = false;
-			bool arg1_UNDER = false;
-			bool arg1_STRING_LITERAL = false;
-
-			bool arg2_UNDER = false;
-			bool arg2_NUM = false;
-			bool arg2_STRING_LITERAL = false;
-
-			if (arg1Ent != INVALID_STRING) {
-				//Implies that a corresponding entity was obtained
-				arg1Valid = checkRelationshipTable(relation, arg1Ent, 1);
-			}
-			else {
-				//If no correspond entity was obtained, try to check if it is a number or wildcard
-				if (is_number(arg1)) {
-					//If exists in table and part of declared relationship, create a clause and add it to query tree
-					arg1Valid = checkRelationshipTable(relation, NUMBER_STRING, ONE);
-					if (arg1Valid) {
-						arg1_NUM = true;
-					}
-					else {
-						arg1_NUM = false;
-					}
-				}
-				else if (arg1 == UNDER_SCORE_STRING) {
-					arg1Valid = checkRelationshipTable(relation, WILDCARD_STRING, ONE);
-					if (arg1Valid) {
-						arg1_UNDER = true;
-					}
-					else {
-						arg1_UNDER = false;
-					}
-				}
-				else if (isQuotationIdentRegex(arg1)) {
-					arg1Valid = checkRelationshipTable(relation, STR_STRING, ONE);
-					if (arg1Valid) {
-						arg1_STRING_LITERAL = true;
-					}
-					else {
-						arg1_STRING_LITERAL = false;
-					}
-				} 
-				else {
-					arg1Valid = false;
-				}
-			}
-			if (arg2Ent != INVALID_STRING) {
-				arg2Valid = checkRelationshipTable(relation, arg2Ent, TWO);
-			}
-			else {
-				if (is_number(arg2)) {
-					arg2Valid = checkRelationshipTable(relation, NUMBER_STRING, TWO);
-					if (arg2Valid) {
-						arg2_NUM = true;
-					}
-					else {
-						arg2_NUM = false;
-					}
-				}
-				else if (arg2 == UNDER_SCORE_STRING) {
-					arg2Valid = checkRelationshipTable(relation, WILDCARD_STRING, TWO);
-					if (arg2Valid) {
-						arg2_UNDER = true;
-					}
-					else {
-						arg2_UNDER = false;
-					}
-				}
-				//Implies arg 2 is sth like "x"
-				else if (isQuotationIdentRegex(arg2)) {
-					arg2Valid = checkRelationshipTable(relation, STR_STRING, TWO);
-					if (arg2Valid) {
-						arg2_STRING_LITERAL = true;
-					}
-					else {
-						arg2_STRING_LITERAL = false;
-					}
-				}
-				else {
-					arg2Valid = false;
-				}
-			}
-			//If both are valid and true, create the clause
-			if (arg1Valid && arg2Valid) {
-				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
-					return false;
-				}
-			}
-			else {
-				return false;
-			}
-		}
-	}
-	else {
-		return false;
-	}
-	return true;
-}
-
-bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string arg1Ent, string arg2Ent) {
-
-	//QueryElement parameters:
-	//Arg1, Arg1Type, Arg1Ent, Arg2, Arg2Type, arg2Ent, relType
-	//Implies that arg1 is a synonym
-	if (arg1_NUM == false && arg1_UNDER == false && arg1_STRING_LITERAL == false) {
-		//Implies that arg 1 is snyonym and arg2 is also a synonym
-		if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, SYNONYM_STRING, arg2Ent, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is synonym and arg2 is a wildcard
-		else if (arg2_NUM == false && arg2_UNDER == true && arg2_STRING_LITERAL == false) {
-			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is synonym, arg 2 is an integer i.e. number
-		else if (arg2_NUM == true && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, NUMBER_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is synonym, arg2 is a stringLiteral
-		else if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == true) {
-			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	//Implies that arg1 is a num
-	else if (arg1_NUM == true && arg1_UNDER == false && arg1_STRING_LITERAL == false) {
-		//Implies that arg1 is a number and arg2 is a synonym
-		if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a number and arg2 is a wildcard i.e underscore
-		else if (arg2_NUM == false && arg2_UNDER == true && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a number and arg2 is a number
-		else if (arg2_NUM == true && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies taht arg1 is a number and arg2 is a variable type i.e. "IDENT"
-		else if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == true) {
-			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	//Implies that arg1 is a wildcard i.e. underscore
-	else if (arg1_NUM == false && arg1_UNDER == true && arg1_STRING_LITERAL == false) {
-		//Implies taht arg1 is a wildcard and arg 2 is a synonym
-		if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a wild card and arg 2 is a wildcard
-		else if (arg2_NUM == false && arg2_UNDER == true && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a wildcard and arg2 is a number i.e. integer
-		else if (arg2_NUM == true && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a wildcard and arg2 is a variable i.e. "IDENT"
-		else if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == true) {
-			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-	else if (arg1_NUM == false && arg1_UNDER == false && arg1_STRING_LITERAL == true) {
-		//Implies taht arg1 is a stringLiteral and arg 2 is a synonym
-		if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1 ,VARIABLE_STRING ,EMPTY_STRING , arg2, SYNONYM_STRING, arg2Ent, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a string literal and arg2 is a wildcard
-		else if (arg2_NUM == false && arg2_UNDER == true && arg2_STRING_LITERAL == false) {
-			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}//Implies that arg1 is a wildcard and arg2 is a number i.e. integer
-		else if (arg2_NUM == true && arg2_UNDER == false && arg2_STRING_LITERAL == false) {
-			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		//Implies that arg1 is a wildcard and arg2 is a variable i.e. "IDENT"
-		else if (arg2_NUM == false && arg2_UNDER == false && arg2_STRING_LITERAL == true) {
-			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);	
-			addSuchThatQueryElement(queryElement);
-			return true;
-		}
-		else {
-			return true;
-		}
-	}
-	else {
-		return false;
-	}
-}
-
-//This method checks if the with clauses is a valid with clause by initially checking with the regex 
-//Then proceed to check if LHS = RHS in terms of type
-bool QueryValidator::isValidWith(string str) {
-	str = trim(str);
-
-	//If there is a match with a regex simply proceed to compare
-	if (isValidWithRegex(str) || isValidWithExtendedRegex(str)) {
-		vector<string> vecWith = extractWithClauses(str);
-
-		//Loop through for every with clauses and compare LHS AND RHS
-		for (size_t i = 0; i < vecWith.size(); i++) {
-			//Split the string by equal symbol
-			string currWith = vecWith.at(i);
-			vector<string> argsWith = splitBySymbol(currWith, EQUAL_CHAR);
-
-			//Gets the LHS and RHS
-			string arg1 = argsWith.at(ZERO);
-			string arg2 = argsWith.at(ONE);
-
-			string arg1Ent, arg1Syn, arg1attrName, arg1Identity;
-			string arg2Ent, arg2Syn, arg2attrName, arg2Identity;
-			bool arg1AttrRef = false;
-			bool arg2AttrRef = false;
-			//Checks to be done sequentially in this order: 
-			//Checks if arg1 arg2 is and attrRef, if so check if the synonym is a valid one and get the corresponding entity and checks if it is a valid entity for the attrRef
-			//Checks if it is a prog_line as well
-			//Then proceed to check LHS and RHS
-
-			arg1 = trim(arg1);
-			arg2 = trim(arg2);
-			//Implies that e.g. v.varName as a whole is a valid, so i can go and get its respective entity, synonym, etc
-			if (isAttrRef(arg1)) {
-				//Split by dot
-				vector<string> arg1Vec = splitBySymbol(arg1, DOT_CHAR);
-				//Gets the synonym
-				arg1Syn = arg1Vec.at(ZERO);
-				//Gets the Entity
-				arg1Ent = getCorrespondingEntity(arg1Syn);
-				//Gets the attrRef
-				arg1attrName = arg1Vec.at(ONE);
-				arg1AttrRef = true;
-			}
-			else {
-				//Implies that arg1 is either a synonym, stringLiteral or integer
-				arg1Identity = extractIdentity(arg1);
-				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING)) {
-					return false;
-				}
-			}
-			if (isAttrRef(arg2)) {
-				//Split by dot
-				vector<string> arg2Vec = splitBySymbol(arg2, DOT_CHAR);
-				//Gets the synonym
-				arg2Syn = arg2Vec.at(ZERO);
-				//Gets the Entity
-				arg2Ent = getCorrespondingEntity(arg2Syn);
-				//Gets the attrRef
-				arg2attrName = arg2Vec.at(ONE);
-				arg2AttrRef = true;
-			}
-			else {
-				arg2Identity = extractIdentity(arg2);
-				
-				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING)) {
-					return false;
-				}
-				
-			}
-			//Do comparison between LHS and RHS
-			if (isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity)) {
-				//Do cleaning up for stringLiteral
-				if (arg1Identity == STRING_LITERAL) {
-					arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-				}
-				if (arg2Identity == STRING_LITERAL) {
-					arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-				}
-				//If arg1 and 2 are both attrRref
-				if (arg1AttrRef && arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				} 
-				//Only arg1 is attrRef and arg2 could be 
-				else if (arg1AttrRef && !arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else if (!arg1AttrRef && arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else {
-					addWithQueryElement(arg1, arg2, arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-			}
-			else {
-				return false;
-			}
-		}
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-void QueryValidator::addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
-	string arg2Synonym) {
-	QueryElement queryElement = QueryElement(arg1, arg2, arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym);
-
-	queryStatement.addWithQuery(queryElement);
-}
-//Checks if it is attrRef
-bool QueryValidator::isAttrRef(string arg) {
-	if (isValidAttRefRegex(arg)) {
-		vector<string> argVec = splitBySymbol(arg, DOT_CHAR);
-		string argSyn = argVec.at(0);
-		string argAttrName = argVec.at(1);
-
-		string argEnt = getCorrespondingEntity(argSyn);
-
-		//Only match will be procedure
-		if (argAttrName == PROCNAME) {
-			return(argEnt == PROCEDURE_STRING);
-		}
-		//Only match will be variable
-		else if (argAttrName == VARNAME) {
-			return(argEnt == VARIABLE_STRING);
-		}
-		//Only match will be constant
-		else if (argAttrName == VALUE) {
-			return(argEnt == CONSTANT_STRING);
-		}
-		//Only matches will be stmt i.e. assign, while, if
-		else if (argAttrName == STMTNUM) {
-			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING)) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-	}
-	else {
-		return false;
-	}
-}
-//This function compare LHS and RHS 
-bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName
-, string arg1Identity, string arg2Identity) {
-	//First check if LHS is an attrRef
-	if (arg1AttrRef) {
-		//If RHS is attrRef
-		if (arg2AttrRef) {
-			//LHS and RHS are both attrRef
-			string arg1Type = withClauseTypeBank[arg1AttrName];
-			string arg2Type = withClauseTypeBank[arg2AttrName];
-
-			return (arg1Type == arg2Type);
-		}
-		//else RHS is not an attrRef
-		else {
-			//LHS IS attrRef, RHS is not attrRef
-			string arg1Type = withClauseTypeBank[arg1AttrName];
-			//RHS is not attrRef, so it can be either a synonym, stringliteral or integer
-			string arg2TypeTemp = arg2Identity;
-			string arg2Type = withClauseTypeBank[arg2TypeTemp];
-
-			return(arg1Type == arg2Type);
-		}
-	}
-	//else if LHS is not an attrRef
-	else{
-		//If LHS IS not attrRef, RHS is an attrRef
-		if (arg2AttrRef) {
-			string arg1Type = withClauseTypeBank[arg1Identity];
-			string arg2Type = withClauseTypeBank[arg2AttrName];
-			
-			return (arg1Type == arg2Type);
-		}
-		else {
-			//LHS and RHS are both not attrRef, means arg1 and arg 2 are both default things like n,1,"hi"
-
-			//First check: if arg1 identity is number
-			if (arg1Identity == NUMBER_STRING) {
-				//If both are numbers and are not equal to each other
-				if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2)) {
-					return false;
-				}
-				else if ((arg2Identity == NUMBER_STRING) && (arg1 == arg2)) {
-					return true;
-				}
-				else if ((arg2Identity == PROG_LINE_STRING)) {
-					return true;
-				}
-				//Arg2Identity must be a string, so must be a mismatch
-				else {
-					return false;
-				}
-			}
-			else if (arg1Identity == PROG_LINE_STRING) {
-				//Arg 1 is progline and arg2 is number
-				if (arg2Identity == NUMBER_STRING) {
-					return true;
-				}
-				//Arg1 is progline and arg2 is progLine
-				else if (arg2Identity == PROG_LINE_STRING) {
-					return true;
-				}
-				//Arg2 must be a string
-				else {
-					return false;
-				}
-			}
-			//Arg1 is a string, only other match is a string
-			else {
-				if (arg2Identity != STRING_LITERAL) {
-					return false;
-				}
-				else {
-					return true;
-				}
-			}
-
-		}
-	}
-}
-
-//This function finds the identity of the given argument i.e. either a synonym, stringliterl or integer
-string QueryValidator::extractIdentity(string arg) {
-	if (isQuotationIdentRegex(arg)) {
-		return STRING_LITERAL;
-	}
-	else if (is_number(arg)) {
-		return NUMBER_STRING;
-	}
-	//Else must be synonym
-	else {
-		if (isValidSynonym(arg)) {
-			string toReturn = getCorrespondingEntity(arg);
-			return toReturn;
-		}
-	}
-}
 //This function takes in e.g. str = Follows, type = stmt, idx = 1
 bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 	if (relationshipTable.isValidArg(rel, type, idx)) {
@@ -1342,20 +1107,7 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 	}
 	return results;
 }
-//This method extracts all the relationship involed in the such that clauses and returns them in a vector
-vector<string> QueryValidator::extractSuchThatClauses(string str) {
-	regex suchThatRelRegex(TEMP_RELREF_STRING_REGEX);
-	smatch m;
-	string temp;
-	vector<string> toReturnVec;
 
-	while (regex_search(str, m, suchThatRelRegex)) {
-		temp = m[0];
-		toReturnVec.push_back(temp);
-		str = m.suffix().str();
-	}
-	return toReturnVec;
-} 
 vector<string> QueryValidator::extractWithClauses(string str) {
 	regex withRegex(ATTRCOMPARE_STRING_REGEX);
 	smatch m;
@@ -1410,7 +1162,11 @@ string QueryValidator::removeDuplicatesWhiteSpaces(string str) {
 		str = str.replace(pos, 2, " ");
 	return str;
 }
-
+string QueryValidator::removeOuterParentheses(string str) {
+	str = str.substr(ONE, str.length() - ONE);
+	str = str.substr(ZERO, str.length() - ONE);
+	return str;
+}
 string QueryValidator::trim(string str) {
 	return regex_replace(str, regex("^ +| +$|( ) +"), "$1");
 }
@@ -1458,8 +1214,10 @@ bool QueryValidator::isValidAttRefRegex(string str) {
 	regex attrRefRegex(ATTRREF_STRING_REGEX);
 	return regex_match(str, attrRefRegex);
 }
-//Takes in a string and checks if it matches the pattern regex
-//Returns true if matches, else false
+bool QueryValidator::isValidIfMultiplePatternRegex(string str) {
+	regex ifPatternAndRegex(IF_PATTERN_AND_REGEX);
+	return regex_match(str, ifPatternAndRegex);
+}
 bool QueryValidator::isValidPatternRegex(string str) {
 	regex patternRegex(PATTERN_CL_REGEX);
 	return regex_match(str, patternRegex);
@@ -1467,6 +1225,14 @@ bool QueryValidator::isValidPatternRegex(string str) {
 bool QueryValidator::isValidSelectInitialRegex(string str) {
 	regex patternRegex(SELECT_INITIAL_REGEX);
 	return regex_match(str, patternRegex);
+}
+bool QueryValidator::isValidGeneralPatternRegex(string str) {
+	regex generalPatternRegex(TEMP_ITR2_GENERAL_PATTERN_CL_REGEX);
+	return regex_match(str, generalPatternRegex);
+}
+bool QueryValidator::isValidWhilePatternRegex(string str) {
+	regex whilePatternRegex(WHILE_PATTERN_REGEX);
+	return regex_match(str, whilePatternRegex);
 }
 bool QueryValidator::isValidPatternExtendedRegex(string str) {
 	regex patternExtendedRegex(TEMP_ITR2_GENERAL_PATTERN_CL_EXTENDED_REGEX);
@@ -1488,9 +1254,18 @@ bool QueryValidator::isPartialPatternRegex(string str) {
 	regex partialPatternRegex(PARTIAL_PATTERN_REGEX);
 	return regex_match(str, partialPatternRegex);
 }
+bool QueryValidator::isAssignPatternRegex(string str) {
+	regex assignPatternRegex(ASSIGN_PATTERN_REGEX);
+	return regex_match(str, assignPatternRegex);
+}
 string QueryValidator::trimPatternArgs(string str) {
 	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);
 	str = str.substr(idxLeft + ONE, str.length() - idxLeft - TWO);
 	str = removeSymbols(str, WHITESPACE_STRING);
 	return str;
+}
+bool::QueryValidator::isSubMatchArg2Pattern(string str) {
+	std::cmatch m;
+	regex subMatchRegex(SUB_MATCH_REGEX);
+	regex_match(str, subMatchRegex);
 }

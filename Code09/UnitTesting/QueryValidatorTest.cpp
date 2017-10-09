@@ -29,7 +29,7 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 			
-			query = "variable v; Select v such that Uses(\"Second\", v)";
+			query = "variable v; Select v such that Uses(\"       Second\", v)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
@@ -219,6 +219,65 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.removeSymbols(str, DOUBLE_QUOTATION_STRING) == expectedStr);
 
 		}
+		TEST_METHOD(isValidQuotationIDENT) {
+			QueryValidator queryValidator;
+			string str;
+			
+			str = "\"x\"";
+			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
+
+			str = "\"		x\"";
+			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
+
+			str = "\"		FREEE1234			\"";
+			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
+		}
+		TEST_METHOD(isValidOuterParenthesesRemoval) {
+			QueryValidator queryValidator;
+			string str;
+			string expected;
+
+			str = "(x+y)";
+			expected = "x+y";
+			Assert::IsTrue(queryValidator.removeOuterParentheses(str) == expected);
+
+			str = "(_ , \"(x+y\")";
+			expected = "_ , \"(x+y\"";
+			Assert::IsTrue(queryValidator.removeOuterParentheses(str) == expected);
+		}
+		TEST_METHOD(isValidAssignPatternRegex) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "a(_, \"x+y\")";
+			Assert::IsTrue(queryValidator.isAssignPatternRegex(str));
+
+			str = "a22(\"	x	\", \"x+y\")";
+			Assert::IsTrue(queryValidator.isAssignPatternRegex(str));
+
+			str = "a#( v, \"(x+y)\")";
+			Assert::IsTrue(queryValidator.isAssignPatternRegex(str));
+
+			str = "a#(2	, _\"(x+y)\"_)";
+			Assert::IsTrue(queryValidator.isAssignPatternRegex(str));
+
+		}
+
+		TEST_METHOD(isInValidAssignPatternRegex) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "a(_\"x\"_, \"x+y\")";
+			Assert::IsFalse(queryValidator.isAssignPatternRegex(str));
+
+			str = "a(_\"x%\"_, \"x+y\")";
+			Assert::IsFalse(queryValidator.isAssignPatternRegex(str));
+
+			str = "a(_\"x%\"_, \".,\")";
+			Assert::IsFalse(queryValidator.isAssignPatternRegex(str));
+	
+		}
+
 		TEST_METHOD(isValidSplit) {
 			QueryValidator queryValidator;
 			vector<string> vecStr;
@@ -386,6 +445,25 @@ namespace UnitTesting
 			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
 
+			vecStr.clear();
+			expectedVecStr.clear();
+			temp.clear();
+
+			toPush = "Select s such that Follows(s,4) pattern a(\"pattern\", _) pattern a2(_, _\"y\"_) with p.procName = \"First\" and n= 1 pattern a3(_, \"pattern\")";
+			arg1 = "Select s";
+			arg2 = "such that Follows(s,4)";
+			arg3 = "pattern a(\"pattern\", _) pattern a2(_, _\"y\"_)";
+			arg4 = "with p.procName = \"First\" and n= 1";
+			arg5 = "pattern a3(_, \"pattern\")";
+			vecStr = queryValidator.splitToSentences(toPush);
+			expectedVecStr.push_back(arg1);
+			expectedVecStr.push_back(arg2);
+			expectedVecStr.push_back(arg3);
+			expectedVecStr.push_back(arg4);
+			expectedVecStr.push_back(arg5);
+			temp = vecStr;
+			Assert::IsTrue(vecStr == expectedVecStr);
+
 		}
 		//This checks if we get the correct corresponding entity
 		TEST_METHOD(is_number) {
@@ -523,6 +601,8 @@ namespace UnitTesting
 			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
 			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
+			str = "such that Modifies(uses, \"Next\") and Follows(s,3) such that Next(6, Parent)";
+			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 		}
 		TEST_METHOD(isInValidSuchThatRegexExtended) {
 			QueryValidator queryValidator;
@@ -552,7 +632,9 @@ namespace UnitTesting
 			str = "such that Uses (4,5) and such that";
 			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
 
-
+			//Invalid symbols within arguments
+			str = "such that Modifies(uses, \"Next(x, y)\") and Follows(s,3) such that Next(6, Parent)";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
 		}
 		TEST_METHOD(isValidExtractSuchThatClauses) {
 			QueryValidator queryValidator;
@@ -676,6 +758,23 @@ namespace UnitTesting
 
 			expectedVec.clear();
 			returnedVec.clear();
+
+			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+			expectedVec.push_back("pattern a(a, \"x\")a()");
+			expectedVec.push_back(" pattern ifs(_,_,_)");
+			expectedVec.push_back(" and pattern a(_,_)");
+
+			returnedVec = queryValidator.extractPattern(str);
+			Assert::IsTrue(returnedVec == expectedVec);
+
+			expectedVec.clear();
+			returnedVec.clear();
+
+			//May need to rewrite extract mtd
+	//		str = "pattern a(pattern, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+	//		returnedVec = queryValidator.extractPattern(str);
+
+
 		}
 		TEST_METHOD(isValidPatternExtendedClauses) {
 			QueryValidator queryValidator;
@@ -685,10 +784,10 @@ namespace UnitTesting
 			str = "pattern a(_,_) pattern ifs(_,_,_)";
 			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
 
-			str = "pattern a(_,_) pattern ifs(_,_,_) pattern a2(_,\"x\")";
+			str = "pattern a(_,_)pattern ifs(_,_,_) pattern a2(_,\"x\")";
 			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
 
-			str = "pattern a(_,_) and pattern ifs(_,_,_) and pattern a2(_,\"x\")";
+			str = "pattern a(_,_)and pattern ifs(_,_,_) and pattern a2(_,\"x\")";
 			Assert::IsTrue(queryValidator.isValidPatternExtendedRegex(str));
 
 			str = "pattern a(_,_) and pattern ifs(_,_,_) pattern a2(_,\"x\")";
@@ -705,51 +804,78 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string str;
 
+	//		str = "pattern a(_,_) patter ifs(_,_,_)";
+	//		Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
 
-			str = "pattern a(_,_) pattern# ifs(_,_,_)";
-			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+	//		str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+	//		Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
 
-			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
-			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+	//		str = "pattern a(a, \"(x+y)\")a() pattern ifs(_,_,_) and pattern a(_,_)";
+	//		Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
 
-			str = "pattern a(a, \"(x+y)\")a() pattern ifs(_,_,_) and pattern a(_,_)";
-			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+	//		str = "pattern a(a, _\"(story+xandor)\"_)a() pattern ifs(_,_,_) and pattern a(_,_)";
+	//		Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+		}
+		TEST_METHOD(isValidGeneralPattern) {
+			QueryValidator queryValidator;
+			string str;
 
-			str = "pattern a(a, _\"(story+xandor)\"_)a() pattern ifs(_,_,_) and pattern a(_,_)";
-			Assert::IsFalse(queryValidator.isValidPatternExtendedRegex(str));
+			str = "pattern a(_,_)";
+			Assert::IsTrue(queryValidator.isValidGeneralPatternRegex(str));
+
+			
+			str = "pattern a(_,\"(x+y)\")";
+			Assert::IsTrue(queryValidator.isValidGeneralPatternRegex(str));
+
 		}
 
+		TEST_METHOD(isInValidGeneralPattern) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "pattern # a(_,_)";
+			Assert::IsFalse(queryValidator.isValidGeneralPatternRegex(str));
+
+
+		}
 		TEST_METHOD(isValidIfPatternRegex) {
 			QueryValidator queryValidator;
 			string str;
 
-			str = "pattern ifs(_,_,_)";
+			str = " ifs(_,_,_)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
-			str = "pattern ifs(x,   _   ,     _)";
+			str = " ifs(x,   _   ,     _)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
-			str = "pattern		ifs     (x,   _   ,     _)";
+			str = "		ifs     (x,   _   ,     _)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
 
-			str = "pattern ifs     (	x,   _   ,     _			)";
+			str = " ifs     (	x,   _   ,     _			)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 
-			str = "pattern ifs     (	pattern,   _   ,     _			)";
+			str = " ifs     (	pattern,   _   ,     _			)";
 			Assert::IsTrue(queryValidator.isValidIfPatternRegex(str));
 		}
 		TEST_METHOD(isInValidIfPatternRegex) {
 			QueryValidator queryValidator;
 			string str;
 
+			str = "ifs(@,_,_)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+
+			str = "ifs(_,3,4)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+
+			str = "f@s(_,3,4)";
+			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
+		}
+		TEST_METHOD(isValidIfMultipleRegex) {
+			QueryValidator queryValidator;
+			string str;
+
 			str = "pattern ifs(@,_,_)";
-			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
-
-			str = "pattern ifs(_,3,4)";
-			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
-
-			str = "patternifs(_,3,4)";
 			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
 		}
 		TEST_METHOD(isValidRemoveLeadingPatternString) {
@@ -824,6 +950,38 @@ namespace UnitTesting
 			str = "pattern a(s, _\"x+y\"_ )";
 			expectedStr = "s,_\"x+y\"_";
 			Assert::IsTrue(queryValidator.trimPatternArgs(str) == expectedStr);
+		}
+		TEST_METHOD(isValidWhilePattern) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "w#(x,_)";
+			Assert::IsTrue(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "wwewew(\"x\",_)";
+			Assert::IsTrue(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "waaaa(\"	x	\",_)";
+			Assert::IsTrue(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "wddd(1,_)";
+			Assert::IsTrue(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "w(		_		,		_)";
+			Assert::IsTrue(queryValidator.isValidWhilePatternRegex(str));
+		}
+		TEST_METHOD(isInValidWhilePattern) {
+			QueryValidator queryValidator;
+			string str;
+
+			str = "w#(__,_)";
+			Assert::IsFalse(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "w#(_+_,_)";
+			Assert::IsFalse(queryValidator.isValidWhilePatternRegex(str));
+
+			str = "w#(_,2)";
+			Assert::IsFalse(queryValidator.isValidWhilePatternRegex(str));
 		}
 		TEST_METHOD(isValidAttRef) {
 			QueryValidator queryValidator;
@@ -975,6 +1133,9 @@ namespace UnitTesting
 
 			input = "with         p.procName = v2.varName      and v2.varName = \"hello\"    and i.stmt# = 5 and v1.varName = v2.varName";
 			Assert::IsTrue(queryValidator.isValidWithRegex(input));
+
+	//		input = "with v1.varName = v2.varName and v1.varName = \"hello\" with v3.varName = \"hi\"";
+//			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
 		}
 
 		TEST_METHOD(isValidWithClauseExtended) {

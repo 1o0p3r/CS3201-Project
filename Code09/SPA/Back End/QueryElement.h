@@ -19,10 +19,14 @@ private:
 
 	string argumentOnePattern;
 	string argumentTwoPattern;
+	string argumentThreePattern;
 	string patternEnt;
 	string patternSyn;
 	string patternArg1Type;
 	string patternArg2Type;
+	string patternArg3Type;
+	string patternArg1Ent;
+	
 	
 	string argumentOneWith;
 	string argumentTwoWith;
@@ -38,7 +42,7 @@ public:
 	QueryElement();
 	QueryElement(string entity, string synonym, string type);
 	QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel); // such that
-	QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern
+	QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
 	QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn); //With
 
 	string getSelectEntity();
