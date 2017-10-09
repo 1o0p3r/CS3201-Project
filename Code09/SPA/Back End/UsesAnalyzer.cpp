@@ -98,6 +98,8 @@ bool UsesAnalyzer::checkClauseBothVariables(string arg1, string arg2)
 
 bool UsesAnalyzer::checkClauseVariableWild(string arg1)
 {
+	if (arg1Type == PROCEDUREARG)
+		return pkbReadOnly.getProcModifies(arg1).empty() ? false : true;
 	return pkbReadOnly.getUses(stoi(arg1)).empty() ? false : true;
 }
 

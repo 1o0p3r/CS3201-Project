@@ -199,3 +199,15 @@ vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
 
 	return answer;
 }
+
+void suchThatAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
+{
+	unitTestModeOn = true;
+	unitTestInputs = hcInput;
+	inputHardCodeIndex = 0;
+}
+
+vector<string> suchThatAnalyzer::getUnitTestInputs(int index)
+{
+	return unitTestInputs[index];
+}
