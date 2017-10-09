@@ -14,7 +14,7 @@ public:
 	vector<int> getCalledBy(int procName);
 	vector<int> getCallsStar(int procName);
 	vector<int> getCalledByStar(int procName);
-	vector<int> Calls::getProcCalledByStmt(int procName);
+	vector<int> getProcCalledByStmt(int procName);
 	vector<int> getAllCalls();
 
 private:

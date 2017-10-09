@@ -34,14 +34,14 @@ public:
 
 	@returns vector string of all constants in PKB
 	*/
-	vector<string> PKB::getAllConstants();
+	vector<string> getAllConstants();
 
 	/**
 	Returns all procedures in PKB
 
 	@returns vector string of all procedures in PKB
 	*/
-	vector<string> PKB::getAllProcedures();
+	vector<string> getAllProcedures();
 	/**
 	Sets statementNum2 to follow statementNum1. Meaning: statementNum2 > statementNum1.
 
@@ -333,7 +333,7 @@ public:
 	Gets all procedures that was called by another procedure
 	@returns a vector containing procedure names of all called procedures
 	*/
-	vector<string> PKB::getAllCalls();
+	vector<string> getAllCalls();
 
 	/**
 	Gets all the statements
