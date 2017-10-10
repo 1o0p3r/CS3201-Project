@@ -185,6 +185,12 @@ bool suchThatAnalyzer::checkClauseBothWild()
 	return false;
 }
 
+vector<string> suchThatAnalyzer::getPKBAllArgValues()
+{
+	//overwrite in child class
+	return vector<string>();
+}
+
 vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
 	unordered_set<string> shortlisted;
 	vector<string> answer;
@@ -207,7 +213,9 @@ void suchThatAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
 	inputHardCodeIndex = 0;
 }
 
-vector<string> suchThatAnalyzer::getUnitTestInputs(int index)
+vector<string> suchThatAnalyzer::getUnitTestInputs()
 {
-	return unitTestInputs[index];
+	vector<string> result = unitTestInputs[inputHardCodeIndex];
+	inputHardCodeIndex++;
+	return result;
 }
