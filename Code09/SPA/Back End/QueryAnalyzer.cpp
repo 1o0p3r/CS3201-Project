@@ -3,7 +3,7 @@
 enum selectValue
 {
 	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
-	prog_lineSelect
+	prog_lineSelect, ifSelect, procedureSelect
 };
 
 enum suchThatValue
@@ -63,6 +63,8 @@ void QueryAnalyzer::initSelectMap()
 	mapSelectValues["variable"] = variableSelect;
 	mapSelectValues["constant"] = constantSelect;
 	mapSelectValues["prog_line"] = prog_lineSelect;
+	mapSelectValues["if"] = ifSelect;
+	mapSelectValues["procedure"] = procedureSelect;
 }
 
 void QueryAnalyzer::initSuchThatMap()
@@ -196,6 +198,14 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 		break;
 
 	case prog_lineSelect: //prog_line , not in use atm
+		break;
+
+	case ifSelect:
+		selectResultInt = pkbReadOnly.getIf();
+		break;
+
+	case procedureSelect:
+		answer = pkbReadOnly.getAllProcedures();
 		break;
 	}
 	if (!selectResultInt.empty())

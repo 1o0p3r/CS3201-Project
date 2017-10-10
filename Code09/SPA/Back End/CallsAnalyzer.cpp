@@ -10,13 +10,14 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgTwoResult(string arg1)
 	vector<vector<string>> callsResult;
 
 	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = unitTestModeOn ? getUnitTestInputs() : getPKBAllArgValues();
-	else
+		pkbResult = unitTestModeOn ? getUnitTestInputs() : getPKBAllArgValues();
+	else {
 		vecOfCandidates.push_back(arg1);
-	for (string candidates : vecOfCandidates) {
-		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalls(candidates);
-		for (string candidatesChosen : pkbCalls) {
-			pkbResult.push_back(candidatesChosen);
+		for (string candidates : vecOfCandidates) {
+			pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalls(candidates);
+			for (string candidatesChosen : pkbCalls) {
+				pkbResult.push_back(candidatesChosen);
+			}
 		}
 	}
 	if (pkbResult.empty())
@@ -71,10 +72,10 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addBothSynResult(string arg1,
 	vecOfCandidates = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getAllCalls();
 	
 	for (string candidates : vecOfCandidates) {
-		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalls(candidates);
+		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalledBy(candidates);
 		for (string candidatesChosen : pkbCalls) {
-			pkbResultForArg1.push_back(candidates);
-			pkbResultForArg2.push_back(candidatesChosen);
+			pkbResultForArg2.push_back(candidates);
+			pkbResultForArg1.push_back(candidatesChosen);
 		}
 	}
 	if (pkbResultForArg1.empty())
@@ -126,6 +127,6 @@ bool CallsAnalyzer::checkClauseBothWild()
 }
 
 vector<string> CallsAnalyzer::getPKBAllArgValues()
-{
+{	//returns all procedure calledBy another procedure
 	return pkbReadOnly.getAllCalls();
 }
