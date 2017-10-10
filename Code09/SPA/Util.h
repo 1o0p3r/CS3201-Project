@@ -17,4 +17,5 @@ public:
 	static vector<int> removeDuplicates(vector<int> input);
 	static vector<string> removeDuplicates(vector<string> input);
 	static vector<string> constructExpression(string expression);
+	static bool isValidExpression(string expression);
 };
