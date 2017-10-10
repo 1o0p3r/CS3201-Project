@@ -24,6 +24,7 @@ using namespace std;
 #define ELSE_B "else{"
 #define SPACE ' '
 #define SEMICOLON ";"
+#define TAB '\t'
 
 bool Parse(string fileName, PKB& pkb) {
 
@@ -76,7 +77,7 @@ bool Parse(string fileName, PKB& pkb) {
 					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
-				} else if (line[i] != SPACE) {
+				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}
 				i++;
@@ -168,7 +169,7 @@ bool Parse(string fileName, PKB& pkb) {
 					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
-				} else if (line[i] != SPACE) {
+				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}
 			}
@@ -232,7 +233,7 @@ bool isAssignStatement(string line) {
 	} else {
 		expression = line.substr(equal + 1, semicolon - (equal + 1));
 		for (int i = semicolon + 1; i < line.size(); i++) {
-			if (line[i] != CB && line[i] != SPACE) {
+			if (line[i] != CB && line[i] != SPACE && line[i] != TAB) {
 				return false;
 			}
 		}
