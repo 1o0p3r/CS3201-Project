@@ -322,7 +322,10 @@ void QueryAnalyzer::solvePatternClause() {
 		}
 		if (!patternResult.empty())
 			insertSTResult(patternResult);
+		if (!hasPatternClause)
+			break;
 	}
+		
 }
 
 vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
@@ -384,6 +387,7 @@ tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string ar
 		entityVector.push_back(patSyn);
 		variableVector.push_back(arg1);
 	}
+	hasPatternClause = containsPattern;
 	return make_tuple(entityVector, variableVector);
 }
 
@@ -425,6 +429,7 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 		entityVector.assign(shortlisted.begin(), shortlisted.end());
 		entityVector.push_back(patSyn);
 	}
+	hasPatternClause = containsPattern;
 	return entityVector;
 }
 
