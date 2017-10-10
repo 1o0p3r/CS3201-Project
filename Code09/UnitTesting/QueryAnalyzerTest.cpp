@@ -200,10 +200,12 @@ public:
 		pkb.setUses(3, "x");
 		pkb.setParent(1, 3);
 		pkb.setParent(1, 2);
-		pkb.setModifies(3, "x");
+		pkb.setModifies(3, "s");
 		pkb.setModifies(2, "z");
-		pkb.addPattern(3, "x", "4*c-x");
-		pkb.addPattern(2,"z",Util::insertBrackets(" 8+ y*c - 3"));
+		pkb.setModifies(1, "s");
+		pkb.setModifies(1, "z");
+		pkb.addPattern(3, "s", "4*c-x");
+		pkb.addPattern(2,"z"," 8+ y*c - 3");
 		vector<vector<string>> clauseResult;
 		vector<string> hardcode;
 		vector<vector<vector<string>>> mergedResult;
@@ -216,7 +218,12 @@ public:
 		// { { "1","1", "a" },{ "2","3","d" } };
 		QueryElement sel("assign", "a", "synonym");
 		
-		QueryElement pat1("v", Util::insertBrackets("4*c-x"), "assign", "a", "synonym", "exact", "empty");
+		QueryElement pat1("v", Util::insertBrackets("4*c-x"),"","assign", "a", "synonym", "exact","", "empty");
+		
+//		QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, 
+//		string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
+
+		//
 		// pattern a(v,"4*c-x")
 		//	QueryElement(string arg1, string arg2, string patternEntity, 
 		//		string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern
