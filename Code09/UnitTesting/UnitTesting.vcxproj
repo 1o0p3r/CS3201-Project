@@ -168,6 +168,8 @@
     <ClCompile Include="FollowTest.cpp" />
     <ClCompile Include="JoinAlgorithmTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
+    <ClCompile Include="NextTest.cpp" />
+    <ClCompile Include="ParentAnalyzerTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="ParentTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
@@ -182,6 +184,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="UsesAnalyzerTest.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
   </ItemGroup>

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <set>
 
 using namespace std;
 
@@ -44,11 +45,14 @@ public:
 	*/
 	vector<int> getChildStar(int statementNum);
 
+	vector<int> Parent::getAllParent();
+
 private:
 	vector<vector<int>> parentTable;
 	vector<int> childTable;
 	vector<vector<int>> parentStarTable;
 	vector<vector<int>> childStarTable;
+	set<int> allParentTable;
 
 	void setChild(int s1, int s2);
 	void setParentStar(int s1, int s2);

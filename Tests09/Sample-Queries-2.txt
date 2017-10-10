@@ -26,12 +26,12 @@ Select c such that Follows*(1, c)
 6 - comment
 stmt a;
 Select a such that Follows(a, 9)
-None
+none
 5000
 7 - comment
 stmt s;
 Select s such that Modifies(s, "i")
-2, 7
+2, 3, 7
 5000
 8 - comment
 variable n;
@@ -51,22 +51,22 @@ i, x, y, z
 11 - comment
 stmt s;
 Select s such that Uses(s, "i")
-7, 11
+3, 7, 11
 5000
 12 - comment
 variable v; assign a;
 Select v such that Uses(a, v) pattern a(_, _"x+1"_)
-9
+x
 5000
 13 - comment
 assign w; variable v;
-Select w such that Modifies(w, v) pattern w(_," 2*y ") 
+Select w such that Modifies(w, v) pattern w(_,_"2*y"_) 
 4
 5000
 14 - comment
 assign a;
 Select a pattern a("z", _"x+i")
-None
+none
 5000
 15 - comment
 assign a;

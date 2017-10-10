@@ -6,6 +6,7 @@
 #include "Modify.h"
 #include "Use.h"
 #include "Calls.h"
+#include "Next.h"
 #include "Util.h"
 
 #include <stdio.h>
@@ -38,6 +39,7 @@ PKB::PKB() {
 	Modify modify;
 	Use use;
 	Calls call;
+	Next next;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;
@@ -166,39 +168,20 @@ vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
 }
 
+vector<int> PKB::getAllParent() {
+	return parent.getAllParent();
+}
+
 void PKB::setModifies(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcModifies(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	vector<string> procIsCalledBy = getCalledBy(procName);
-
-	int currProcIndex;
-	int currVarIndex;
-
-	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		currProcIndex = getProcIndex(procIsCalledBy[i]);
-		modify.setProcModifies(currProcIndex, varIndex);
-	}
-
-	vector<string> procIsCalling = getCalls(procName);
-	vector<string> variablesModified;
-	for (int i = 0; i < procIsCalling.size(); i++) {
-		variablesModified = getProcModifies(procIsCalling[i]);
-		for (int j = 0; j < variablesModified.size(); j++) {
-			currVarIndex = getVarIndex(variablesModified[j]);
-			modify.setProcModifies(procIndex, currVarIndex);
-		}
-
-	}
-	modify.setProcModifies(procIndex, varIndex);
+	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
@@ -240,38 +223,15 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 }
 
 void PKB::setUses(int statementNum, string varName) {
-	addVariable(varName);
 	int index = getVarIndex(varName);
 	use.setUses(statementNum, index, parent.getParentStar(statementNum));
 }
 
 void PKB::setProcUses(string procName, string varName) {
-	addVariable(varName);
-	addProcedure(procName);
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
 
-	vector<string> procIsCalledBy = getCalledBy(procName);
-
-	int currProcIndex;
-	int currVarIndex;
-
-	for (int i = 0; i < procIsCalledBy.size(); i++) {
-		currProcIndex = getProcIndex(procIsCalledBy[i]);
-		use.setProcUses(currProcIndex, varIndex);
-	}
-
-	vector<string> procIsCalling = getCalls(procName);
-	vector<string> variablesUsed;
-	for (int i = 0; i < procIsCalling.size(); i++) {
-		variablesUsed = getProcUses(procIsCalling[i]);
-		for (int j = 0; j < variablesUsed.size(); j++) {
-			currVarIndex = getVarIndex(variablesUsed[j]);
-			use.setProcUses(procIndex, currVarIndex);
-		}
-
-	}
-	use.setProcUses(procIndex, varIndex);
+	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
 }
 
 vector<string> PKB::getUses(int statementNum) {
@@ -297,10 +257,10 @@ vector<string> PKB::getProcUsedBy(string varName) {
 	return convertToProcNames(results);
 }
 
-void PKB::setCalls(string procName1, string procName2) {
+void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
-	call.setCalls(index1, index2);
+	call.setCalls(statementNum, index1, index2);
 }
 
 vector<string> PKB::getCalls(string procName) {
@@ -325,6 +285,22 @@ vector<string> PKB::getCalledByStar(string procName) {
 	int procNameIndex = getProcIndex(procName);
 	vector<int> results = call.getCalledByStar(procNameIndex);
 	return convertToProcNames(Util::removeDuplicates(results));
+}
+
+void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
+	next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
+}
+
+vector<int> PKB::getNext(int stmtNum) {
+	return next.getNext(stmtNum);
+}
+
+vector<int> PKB::getPrevious(int stmtNum) {
+	return next.getPrevious(stmtNum);
+}
+
+vector<int> PKB::getAllNext() {
+	return next.getAllNext();
 }
 
 void PKB::setStatementType(int statementNum, string type) {
@@ -364,9 +340,7 @@ vector<int> PKB::getCall() {
 }
 
 vector<string> PKB::getAllCalls() {
-	set<int> setOfAllCalls = call.getAllCalls();
-	vector<int> results;
-	results.insert(results.end(), setOfAllCalls.begin(), setOfAllCalls.end());
+	vector<int> results = call.getAllCalls();
 	return convertToProcNames(results);
 }
 

@@ -1,6 +1,6 @@
 #include "SuchThatAnalyzer.h"
 
-const string WILDCARD = "wildcard";
+
 
 enum clauseCases 
 {
@@ -21,6 +21,7 @@ suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb)
 	arg2Type = stClause.getSuchThatArg2Type();
 
 	hasSuchThatClause = true;
+	unitTestModeOn = false;
 }
 
 tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClause()
@@ -198,4 +199,16 @@ vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
 	}
 
 	return answer;
+}
+
+void suchThatAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
+{
+	unitTestModeOn = true;
+	unitTestInputs = hcInput;
+	inputHardCodeIndex = 0;
+}
+
+vector<string> suchThatAnalyzer::getUnitTestInputs(int index)
+{
+	return unitTestInputs[index];
 }

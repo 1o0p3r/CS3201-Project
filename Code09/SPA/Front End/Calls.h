@@ -9,12 +9,13 @@ class Calls {
 public:
 	Calls();
 
-	void setCalls(int procName1, int procName2);
+	void setCalls(int statementNum, int procName1, int procName2);
 	vector<int> getCalls(int procName);
 	vector<int> getCalledBy(int procName);
 	vector<int> getCallsStar(int procName);
 	vector<int> getCalledByStar(int procName);
-	set<int> getAllCalls();
+	vector<int> getProcCalledByStmt(int procName);
+	vector<int> getAllCalls();
 
 private:
 
@@ -22,6 +23,7 @@ private:
 	vector<vector<int>> calledByTable;
 	vector<vector<int>> callsStarTable;
 	vector<vector<int>> calledByStarTable;
+	vector <vector<int>> procCalledByStmtTable;
 	set<int> allCallsTable;
 
 	bool isRecursive;
@@ -29,6 +31,7 @@ private:
 	void setCallsStar(int procName1, int procName2);
 	void setCalledBy(int procName1, int procName2);
 	void setCalledByStar(int procName1, int procName2);
+	void setProcCalledByStmt(int procName2, int statementNum);
 
 	void checkIfRecursive();
 	

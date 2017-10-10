@@ -24,6 +24,9 @@
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
+    <ClCompile Include="Back End\ParentAnalyzer.cpp" />
+    <ClCompile Include="Back End\UsesAnalyzer.cpp" />
+    <ClCompile Include="Back End\NextAnalyzer.cpp" />
     <ClCompile Include="suchThatHandler.cpp" />
     <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
@@ -52,11 +55,10 @@
     <ClInclude Include="Front End\Use.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
     <ClInclude Include="Back End\TupleHash.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="Back End\ParentAnalyzer.h" />
+    <ClInclude Include="Back End\UsesAnalyzer.h" />
+    <ClInclude Include="Back End\NextAnalyzer.h" />
     <ClInclude Include="suchThatHandler.h" />
     <ClInclude Include="WithHandler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="SPA.rc" />
   </ItemGroup>
 </Project>

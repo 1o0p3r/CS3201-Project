@@ -5,6 +5,7 @@
 #include "Parent.h"
 #include "Use.h"
 #include "Calls.h"
+#include "Next.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -33,14 +34,14 @@ public:
 
 	@returns vector string of all constants in PKB
 	*/
-	vector<string> PKB::getAllConstants();
+	vector<string> getAllConstants();
 
 	/**
 	Returns all procedures in PKB
 
 	@returns vector string of all procedures in PKB
 	*/
-	vector<string> PKB::getAllProcedures();
+	vector<string> getAllProcedures();
 	/**
 	Sets statementNum2 to follow statementNum1. Meaning: statementNum2 > statementNum1.
 
@@ -230,11 +231,12 @@ public:
 	/**
 	Sets proc1 calls proc2. Implicitly sets calledBy, callsStar and calledByStar using parentStar.
 
+	@parem statementNum statement number of call
 	@param procName1 procedure that is calling another procedure
 	@param procName2 procedure being called
 	@returns void
 	*/
-	void setCalls(string procName1, string procName2);
+	void setCalls(int statementNum, string procName1, string procName2);
 
 	/**
 	Gets the procedures called directly by input procedure
@@ -268,7 +270,40 @@ public:
 	*/
 	vector<string> getCalledByStar(string procName);
 
+	/**
+	Creates the CFG of the program after one parsing
+
+	@param stmtsAndType type of stmt at stmtNum, such as assign, while, etc.
+	@param parentOfStmtVec parent of stmt, where stmt is the location in the vector
+	@returns void
+	*/
+	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines);
+
+	vector<int> getNext(int stmtNum);
+
+	vector<int> getPrevious(int stmtNum);
+
+	vector<int> getAllNext();
+	vector<int> getAllParent();
+
+	/**
+	Sets the stmt type of each stmt
+
+	@param statementNum number of statement
+	@param type type of the statement
+	@returns void
+	*/
 	void setStatementType(int statementNum, string type);
+
+	/**
+	@Niv,
+	Stub functions for Next, 
+	*/
+	//vector<int> getNext(int statementNum);
+	//vector<int> getPrevious(int statementNum);
+	
+	//return all prog_lines that leads to another statement directly executed in the same procedure
+	//vector<int> getAllNext(); //next(n1,n2) , returns all possilble n1 values. 
 
 	/**
 	Gets all the while statements
@@ -298,7 +333,7 @@ public:
 	Gets all procedures that was called by another procedure
 	@returns a vector containing procedure names of all called procedures
 	*/
-	vector<string> PKB::getAllCalls();
+	vector<string> getAllCalls();
 
 	/**
 	Gets all the statements
@@ -359,6 +394,7 @@ private:
 	Modify modify;
 	Use use;
 	Calls call;
+	Next next;
 
 	vector<string> varIndexTable;
 	vector<string> procIndexTable;

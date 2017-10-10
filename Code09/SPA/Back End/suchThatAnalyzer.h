@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <tuple>
 #include <unordered_set>
+#include <assert.h>
 
 using namespace std;
 
@@ -25,9 +26,13 @@ protected:
 	string arg2;
 	string arg2Type;
 	string arg2Entity;
-
 	bool hasSuchThatClause;
 	
+	const string WILDCARD_SYMBOL = "_";
+	const string PROCEDURE = "procedure";
+	const string PROCEDUREARG = "variable";
+	const string WILDCARD = "wildcard";
+
 	bool checkClauseTrue(string arg1, string arg2, int scenarioArg1Arg2);
 	tuple<bool,vector<vector<string>>> addClauseTable(string arg1, string arg2, int scenario);
 	virtual tuple<bool, vector<vector<string>>> addArgTwoResult(string arg1);
@@ -41,9 +46,16 @@ protected:
 
 	vector<string> removeDuplicates(vector<string> clauseResult);
 
+
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
 	tuple<bool, vector<vector<string>>> solveClause();
 	tuple<bool,vector<vector<string>>> solveClauseStmt();
+	
+	int inputHardCodeIndex;
+	bool unitTestModeOn;
+	vector<vector<string>> unitTestInputs;
+	void setUnitTestInputs(vector<vector<string>> hcInput);
+	vector<string> getUnitTestInputs(int index);
 };
 
