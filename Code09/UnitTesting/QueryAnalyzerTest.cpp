@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "QueryAnalyzer.h"
 #include "Util.h"
+#include "Parser.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -353,6 +354,30 @@ public:
 		answer = qa.analyzeClauseResults();
 		hardcode = { "1" };
 		Assert::AreEqual(hardcode[0], answer[0]);
+
+	}
+
+	TEST_METHOD(solveQueryHardCode) {
+		PKB pkb;
+		QueryStatement qs;
+		QueryAnalyzer qa;
+		string filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		//"assign w; variable v; select w such that modifies(w, v) pattern w(_,_\" 2*y \"_)",
+		//		QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, 
+		//		string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
+
+		QueryElement pat1("_", Util::insertBrackets("2*y"), "", "assign", "w", "wildcard", "substring", "", "empty");
+		QueryElement mod1("w","synonym","assign","v","synonym","","Modifies");
+		QueryElement sel1("assign", "w", "synonym");
+		qs.addSelectQuery(sel1);
+		qs.addSuchThatQuery(mod1);
+		qs.addPatternQuery(pat1);
+		qa.setQS(qs);
+		qa.setPKB(pkb);
+		auto result = qa.runQueryEval();
+		vector<string> answer = { {"4"} };
+		Assert::AreEqual(result.size(), answer.size());
 
 
 	}

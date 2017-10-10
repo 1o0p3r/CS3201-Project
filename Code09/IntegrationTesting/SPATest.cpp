@@ -103,7 +103,7 @@ public:
 			//"variable v; Select v such that Uses(\"Second\", v)",
 			//"stmt s; Select s such that Uses(s, \"i\")",
 			//"variable v; assign a; select v such that uses(a, v) pattern a(_, _\"x+1\"_)",
-			"assign w; variable v; select w such that modifies(w, v) pattern w(_,\" 2*y \")",
+			"assign w; variable v; Select w such that Modifies(w, v) Pattern w(_,_\" 2*y \"_)",
 			/*"assign a; select a pattern a(\"z\", _\"x+i\")",
 			"assign a; select a pattern a(_, _\"x + 1\"_)"*/
 		};
