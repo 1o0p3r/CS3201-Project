@@ -30,14 +30,13 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 			procFirstLine = get<0>(procFirstAndLastLines[i]);
 			procLastLine = get<1>(procFirstAndLastLines[i]);
 
-			createCFGTable(stmtsAndType, parentOfStmtVec, procFirstLine, procLastLine);
-			if (stmtsAndType[procLastLine] == 4) {
-				procEndLine[i].insert(get<0>(procFirstAndLastLines[procLastLine]));
+			while (stmtsAndType[procLastLine] == 4) {
+				procFirstLine = get<0>(procFirstAndLastLines[procFirstLine]);
+				procLastLine = get<1>(procFirstAndLastLines[procLastLine]);
 			}
-
-			else {
-				procEndLine[i] = previousTable[0];
-			}
+				
+			createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines, procFirstLine, procLastLine);
+			procEndLine[i] = previousTable[0];
 
 			nextTable.clear();
 			previousTable.clear();
@@ -45,13 +44,14 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	}
 
 	procChecksAreComplete = true;
-	createCFGTable(stmtsAndType, parentOfStmtVec, 1, stmtsAndType.size() - 1);
+	createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines, 1, stmtsAndType.size() - 1);
 }
 
-void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine) {
+void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine) {
 
 	vector<int> nestingLvlParent;
 	vector<int> lastIfLine;
+	set<int> previousCall;
 
 	nextTable.resize(stmtsAndType.size());
 	previousTable.resize(stmtsAndType.size());
@@ -63,6 +63,17 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
 	for (int i = firstLine; i < (lastLine + 1); i++) {
+
+		if (stmtsAndType[i] == 4) {
+			nextTable[i].insert(get<0>(procFirstAndLastLines[i]));
+			previousTable[get<0>(procFirstAndLastLines[i])].insert(i);
+			previousCall = procEndLine[i];
+		}
+
+		if (!previousCall.empty()) {
+			previousTable[i].insert(previousCall.begin(), previousCall.end());
+			previousCall.clear();
+		}
 
 		if (i == (lastLine)) {
 
