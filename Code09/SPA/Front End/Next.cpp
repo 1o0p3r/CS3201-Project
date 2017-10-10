@@ -64,17 +64,6 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 	// 1 = while, 2 = assign, 3 = if, 4 = call, 5 = else
 	for (int i = firstLine; i < (lastLine + 1); i++) {
 
-		if (stmtsAndType[i] == 4) {
-			nextTable[i].insert(get<0>(procFirstAndLastLines[i]));
-			previousTable[get<0>(procFirstAndLastLines[i])].insert(i);
-			previousCall = procEndLine[i];
-		}
-
-		if (!previousCall.empty()) {
-			previousTable[i].insert(previousCall.begin(), previousCall.end());
-			previousCall.clear();
-		}
-
 		if (i == (lastLine)) {
 
 			if (nestingLvl == 0) {
