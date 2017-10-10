@@ -104,6 +104,8 @@ namespace UnitTesting
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+		/*	query = "variable v1,v#; assign put, a#; constant d; call c; Select v1 such that pattern(\"x\"*/
 			
 		}
 		TEST_METHOD(isValidQueryIfsAndProcDeclaration) {
