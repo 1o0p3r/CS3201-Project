@@ -101,9 +101,9 @@ public:
 	
 	vector<vector<vector<string>>> getMergedQueryTable();
 
-	vector<vector<string>> unitTestInputs;
-	void setUnitTestInputs(vector<vector<string>> hcInput);
-	vector<string> getUnitTestInputs(int index);
-	bool unitTestModeOn;
+	//vector<vector<string>> unitTestInputs;
+	//void setUnitTestInputs(vector<vector<string>> hcInput);
+	//vector<string> getUnitTestInputs(int index);
+	//bool unitTestModeOn;
 };
 

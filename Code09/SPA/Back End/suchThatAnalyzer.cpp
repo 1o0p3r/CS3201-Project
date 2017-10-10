@@ -21,6 +21,7 @@ suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb)
 	arg2Type = stClause.getSuchThatArg2Type();
 
 	hasSuchThatClause = true;
+	unitTestModeOn = false;
 }
 
 tuple<bool, vector<vector<string>>> suchThatAnalyzer::solveClause()

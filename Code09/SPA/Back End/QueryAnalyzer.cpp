@@ -3,7 +3,7 @@
 enum selectValue
 {
 	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
-	prog_lineSelect
+	prog_lineSelect, ifSelect
 };
 
 enum suchThatValue
@@ -63,6 +63,7 @@ void QueryAnalyzer::initSelectMap()
 	mapSelectValues["variable"] = variableSelect;
 	mapSelectValues["constant"] = constantSelect;
 	mapSelectValues["prog_line"] = prog_lineSelect;
+	mapSelectValues["if"] = ifSelect;
 }
 
 void QueryAnalyzer::initSuchThatMap()
@@ -120,7 +121,7 @@ QueryAnalyzer::QueryAnalyzer() {
 	hasSTClause = true;
 	hasPatternClause = true;
 
-	unitTestModeOn = false;
+	//unitTestModeOn = false;
 }
 
 void QueryAnalyzer::setPKB(PKB pkb) {
@@ -197,6 +198,10 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 
 	case prog_lineSelect: //prog_line , not in use atm
 		break;
+
+	case ifSelect:
+		selectResultInt = pkbReadOnly.getIf();
+
 	}
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
@@ -1156,13 +1161,13 @@ vector<vector<vector<string>>> QueryAnalyzer::getMergedQueryTable()
 	return mergedQueryTable;
 }
 
-void QueryAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
-{
-	unitTestModeOn = true;
-	unitTestInputs = hcInput;
-}
-
-vector<string> QueryAnalyzer::getUnitTestInputs(int index)
-{
-	return unitTestInputs[index];
-}
+//void QueryAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
+//{
+//	unitTestModeOn = true;
+//	unitTestInputs = hcInput;
+//}
+//
+//vector<string> QueryAnalyzer::getUnitTestInputs(int index)
+//{
+//	return unitTestInputs[index];
+//}
