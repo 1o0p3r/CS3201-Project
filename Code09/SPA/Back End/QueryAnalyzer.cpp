@@ -122,7 +122,6 @@ QueryAnalyzer::QueryAnalyzer() {
 	hasSTClause = true;
 	hasPatternClause = true;
 
-	unitTestModeOn = false;
 }
 
 void QueryAnalyzer::setPKB(PKB pkb) {
@@ -1166,13 +1165,3 @@ vector<vector<vector<string>>> QueryAnalyzer::getMergedQueryTable()
 	return mergedQueryTable;
 }
 
-void QueryAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
-{
-	unitTestModeOn = true;
-	unitTestInputs = hcInput;
-}
-
-vector<string> QueryAnalyzer::getUnitTestInputs(int index)
-{
-	return unitTestInputs[index];
-}
