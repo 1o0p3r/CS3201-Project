@@ -216,7 +216,7 @@ public:
 		// { { "1","1", "a" },{ "2","3","d" } };
 		QueryElement sel("assign", "a", "synonym");
 		
-		QueryElement pat1("v", Util::insertBrackets("4*c-x"), "assign", "a", "synonym", "exact");
+		QueryElement pat1("v", Util::insertBrackets("4*c-x"), "assign", "a", "synonym", "exact", "empty");
 		// pattern a(v,"4*c-x")
 		//	QueryElement(string arg1, string arg2, string patternEntity, 
 		//		string patternSynonym, string patternArg1Type, string patternArg2Type); //Pattern

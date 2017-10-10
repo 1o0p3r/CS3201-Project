@@ -16,7 +16,7 @@ QueryElement::QueryElement(string entity, string synonym, string type)
 	selectType = type;
 }
 
-//Such that
+//Such that: 7 parameteres
 QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel)
 {
 	argumentOneSuchThat = arg1;
@@ -29,18 +29,21 @@ QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, stri
 
 }
 
-//Pattern
-QueryElement::QueryElement(string arg1, string arg2, string patternEntity, string patternSynonym, string argOneType, string argTwoType)
+//Pattern  9 paramaters
+QueryElement::QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, string argOneType, string argTwoType, string argThreeType, string argOneEntity)
 {
 	argumentOnePattern = arg1;
 	argumentTwoPattern = arg2;
+	argumentThreePattern = arg3;
 	patternEnt = patternEntity;
 	patternSyn = patternSynonym;
 	patternArg1Type = argOneType;
 	patternArg2Type = argTwoType;
+	patternArg3Type = argThreeType;
+	patternArg1Ent = argOneEntity;
 }
 
-//With
+//With:8 parameters
 QueryElement::QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
 	argumentOneWith = arg1;
 	argumentTwoWith = arg2;

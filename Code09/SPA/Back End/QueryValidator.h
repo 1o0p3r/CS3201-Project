@@ -30,13 +30,13 @@ private:
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn, string selectType);
-	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addSynonymEntityList();
 
 	bool isValidSelect(vector<string> vectorClauses);
 	bool isValidOthers(vector<string> others);
 	bool isValidPattern(string str, string syn);
+	bool isVariableSynonym(string str);
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
@@ -57,16 +57,19 @@ public:
 	bool isValidWithExtendedRegex(string str);
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
+	bool isValidIfMultiplePatternRegex(string str);
 	bool isValidAttrCompareRegex(string str);
 	bool isValidPatternRegex(string str);
 	bool isValidSelectInitialRegex(string str);
+	bool isValidGeneralPatternRegex(string str);
+	bool isValidWhilePatternRegex(string str);
 	bool isValidPatternExtendedRegex(string str);
 	bool isValidIfPatternRegex(string str);
 	bool isVariable(string str);
 	bool isQuotationIdentRegex(string str);
 	bool isPartialPatternRegex(string str);
+	bool isAssignPatternRegex(string str);
 	bool parseInput(string str);
-	bool isValidModifiesP(string str);
 	bool isEntityAndSynonym(string);
 	bool isValidSuchThat(string str);
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
@@ -79,7 +82,16 @@ public:
 	bool isValidQueryLine(string selectString);
 	bool isValidSynDesignEntity(string syn);
 	bool isValidPatternIter2(string str);
-	bool isValidIfPattern(string str);
+	bool isValidAddAssignPattern(string str, string synPattern);
+	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
+	bool isValidExpr(string str);
+	bool isBalancedParantheses(string str);
+	bool isValidExprUnder(string str);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
+	bool isValidAddWhilePattern(string str, string synPattern);
+	bool isValidAddIfPattern(string str, string synPattern);
+	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
+	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	bool isLeadingAnd(string str);
 	string removeLeadingPatternString(string str);
 	string removeLeadingAnd(string str);
@@ -90,14 +102,19 @@ public:
 	string changeLowerCase(string str);
 	string removeSymbols(string str, string symbolToRemove);
 	string removeDuplicatesWhiteSpaces(string str);
+	string removeOuterParentheses(string str);
 	string trim(string str);
 	string trimPatternArgs(string str);
 
+	bool isString(string str);
+
+	bool isWhiteSpaceTab(string str);
+
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
-	vector<string> extractPatternClauses(string str);
 	vector<string> extractPattern(string str);
 	QueryStatement getQueryStatement();
 	vector<string> splitToSentences(string strToSplit);
 	vector<string> splitBySymbol(string str, char symbol);
+	bool isSubMatchArg2Pattern(string str);
 };

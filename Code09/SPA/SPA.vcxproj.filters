@@ -27,6 +27,8 @@
     <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\UsesAnalyzer.cpp" />
     <ClCompile Include="Back End\NextAnalyzer.cpp" />
+    <ClCompile Include="suchThatHandler.cpp" />
+    <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h" />
@@ -56,5 +58,7 @@
     <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\UsesAnalyzer.h" />
     <ClInclude Include="Back End\NextAnalyzer.h" />
+    <ClInclude Include="suchThatHandler.h" />
+    <ClInclude Include="WithHandler.h" />
   </ItemGroup>
 </Project>

@@ -36,7 +36,9 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
+    <ClCompile Include="suchThatHandler.cpp" />
     <ClCompile Include="Util.cpp" />
+    <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Back End\CallsAnalyzer.h" />
@@ -65,7 +67,13 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="suchThatHandler.h" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="WithHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SPA.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>
