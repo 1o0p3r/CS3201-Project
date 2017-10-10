@@ -87,6 +87,7 @@ public:
 	bool isValidExpr(string str);
 	bool isBalancedParantheses(string str);
 	bool isValidExprUnder(string str);
+	string removeUnderScoreAndQuotation(string str);
 	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	bool isValidAddWhilePattern(string str, string synPattern);
 	bool isValidAddIfPattern(string str, string synPattern);
@@ -109,6 +110,8 @@ public:
 	bool isString(string str);
 
 	bool isWhiteSpaceTab(string str);
+
+	bool isSubstring(string str);
 
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
