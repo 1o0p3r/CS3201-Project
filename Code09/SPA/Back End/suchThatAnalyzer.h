@@ -44,6 +44,8 @@ protected:
 	virtual bool checkClauseWildVariable(string arg2);
 	virtual bool checkClauseBothWild();
 
+
+	virtual vector<string> getPKBAllArgValues();
 	vector<string> removeDuplicates(vector<string> clauseResult);
 
 
@@ -52,10 +54,12 @@ public:
 	tuple<bool, vector<vector<string>>> solveClause();
 	tuple<bool,vector<vector<string>>> solveClauseStmt();
 	
+
 	int inputHardCodeIndex;
 	bool unitTestModeOn;
 	vector<vector<string>> unitTestInputs;
 	void setUnitTestInputs(vector<vector<string>> hcInput);
-	vector<string> getUnitTestInputs(int index);
+	vector<string> getUnitTestInputs();
+	
 };
 

@@ -49,5 +49,28 @@ namespace UnitTesting {
 			actual = { "x", "5", "y" };
 			Assert::IsTrue(actual == Util::constructExpression("((x+5)*y)"));
 		}
+
+		TEST_METHOD(isValidExpression) {
+			Assert::IsTrue(Util::isValidExpression("x+7"));
+			Assert::IsTrue(Util::isValidExpression("(y+5)"));
+			Assert::IsTrue(Util::isValidExpression("(a+		t3)"));
+			Assert::IsTrue(Util::isValidExpression("(a+		t3) * (b)"));
+			Assert::IsTrue(Util::isValidExpression("c4*(a+		t3) * (b)"));
+			Assert::IsTrue(Util::isValidExpression("((ct))+	(a+		t3) * (b)"));
+			Assert::IsFalse(Util::isValidExpression(")(x+7"));
+			Assert::IsFalse(Util::isValidExpression("(x+7"));
+			Assert::IsFalse(Util::isValidExpression("(x++7)"));
+			Assert::IsFalse(Util::isValidExpression("*x+7"));
+			Assert::IsFalse(Util::isValidExpression("*)x+7"));
+			Assert::IsFalse(Util::isValidExpression("x#+7"));
+			Assert::IsFalse(Util::isValidExpression(")(x+7"));
+			Assert::IsFalse(Util::isValidExpression("(x+7)*"));
+			Assert::IsFalse(Util::isValidExpression("X1   X2"));
+			Assert::IsFalse(Util::isValidExpression("XQ - 1A"));
+			Assert::IsFalse(Util::isValidExpression("()"));
+			Assert::IsFalse(Util::isValidExpression("(	)"));
+			Assert::IsFalse(Util::isValidExpression(""));
+		}
+
 	};
 }

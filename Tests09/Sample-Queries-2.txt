@@ -6,17 +6,17 @@ Select w such that Parent(w, 7)
 2 - comment
 assign a;
 Select a such that Parent*(3, a)
-4, 5, 6, 7
+none
 5000
 3 - comment
 if a; stmt b;
 Select a such that Parent*(3,b)
-8
+none
 5000
 4 - comment
 stmt s;
 Select s such that Follows(8, s)
-11
+9
 5000
 5 - comment
 stmt c;
@@ -31,7 +31,7 @@ none
 7 - comment
 stmt s;
 Select s such that Modifies(s, "i")
-2, 3, 7
+2, 7
 5000
 8 - comment
 variable n;
@@ -46,17 +46,17 @@ Select i such that Modifies(a, b)
 10 - comment
 variable v;
 Select v such that Uses("Second", v)
-i, x, y, z
+x, y, z, i
 5000
 11 - comment
 stmt s;
 Select s such that Uses(s, "i")
-3, 7, 11
+7, 11
 5000
 12 - comment
 variable v; assign a;
-Select v such that Uses(a, v) pattern a(_, _"x+1"_)
-x
+Select a such that Uses(a, v) pattern a(_, _"x+1"_)
+9
 5000
 13 - comment
 assign w; variable v;
