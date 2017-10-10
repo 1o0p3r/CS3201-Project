@@ -21,6 +21,7 @@
     <ClCompile Include="UsesAnalyzerTest.cpp" />
     <ClCompile Include="NextTest.cpp" />
     <ClCompile Include="ParentAnalyzerTest.cpp" />
+    <ClCompile Include="CallsAnalyzerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

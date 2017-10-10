@@ -10,11 +10,11 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgTwoResult(string arg1)
 	vector<vector<string>> callsResult;
 
 	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = getPKBAllArgValues();
+		vecOfCandidates = unitTestModeOn ? getUnitTestInputs() : getPKBAllArgValues();
 	else
 		vecOfCandidates.push_back(arg1);
 	for (string candidates : vecOfCandidates) {
-		pkbCalls = pkbReadOnly.getCalls(candidates);
+		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalls(candidates);
 		for (string candidatesChosen : pkbCalls) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -39,11 +39,11 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgOneResult(string arg2)
 	vector<vector<string>> callsResult;
 
 	if (arg2 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllCalls();
+		vecOfCandidates = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getAllCalls();
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
-		pkbCalls = pkbReadOnly.getCalledBy(candidates);
+		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalledBy(candidates);
 		for (string candidatesChosen : pkbCalls) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -68,9 +68,10 @@ tuple<bool, vector<vector<string>>> CallsAnalyzer::addBothSynResult(string arg1,
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> callsResult;
 
-	vecOfCandidates = pkbReadOnly.getAllCalls();
+	vecOfCandidates = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getAllCalls();
+	
 	for (string candidates : vecOfCandidates) {
-		pkbCalls = pkbReadOnly.getCalls(candidates);
+		pkbCalls = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalls(candidates);
 		for (string candidatesChosen : pkbCalls) {
 			pkbResultForArg1.push_back(candidates);
 			pkbResultForArg2.push_back(candidatesChosen);
@@ -92,9 +93,8 @@ bool CallsAnalyzer::checkClauseBothVariables(string arg1, string arg2)
 {
 	
 	auto pkbResult = pkbReadOnly.getCalls(arg1);
-	//TODO: unfinished
 	if (unitTestModeOn)
-		getUnitTestInputs().empty() ? false : true;
+		return getUnitTestInputs().empty() ? false : true;
 	return find(pkbResult.begin(), pkbResult.end(), arg2) == pkbResult.end() ?
 		false : true;
 }
@@ -115,6 +115,9 @@ bool CallsAnalyzer::checkClauseWildVariable(string arg2)
 
 bool CallsAnalyzer::checkClauseBothWild()
 {
+	if (unitTestModeOn)
+		return getUnitTestInputs().empty() ? false : true;
+
 	int minCallStmts = 1;
 	int allCalls = getPKBAllArgValues().size();
 	if (allCalls < minCallStmts)
@@ -124,7 +127,5 @@ bool CallsAnalyzer::checkClauseBothWild()
 
 vector<string> CallsAnalyzer::getPKBAllArgValues()
 {
-	if (unitTestModeOn)
-		getUnitTestInputs();
 	return pkbReadOnly.getAllCalls();
 }
