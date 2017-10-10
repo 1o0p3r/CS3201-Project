@@ -24,6 +24,7 @@ using namespace std;
 #define ELSE_B "else{"
 #define SPACE ' '
 #define SEMICOLON ";"
+#define TAB '\t'
 
 bool Parse(string fileName, PKB& pkb) {
 
@@ -76,7 +77,7 @@ bool Parse(string fileName, PKB& pkb) {
 					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
-				} else if (line[i] != SPACE) {
+				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}
 				i++;
@@ -168,7 +169,7 @@ bool Parse(string fileName, PKB& pkb) {
 					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
-				} else if (line[i] != SPACE) {
+				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}
 			}
@@ -224,22 +225,18 @@ bool isIfStatement(vector<string> line) {
 }
 
 bool isAssignStatement(string line) {
-	int pos = line.find("=");
-	if (pos <= 0 || !Util::isValidName(Util::trim(line.substr(0, pos)))) {
+	int equal = line.find("=");
+	int semicolon = line.find(";");
+	string expression;
+	if (equal <= 0 || semicolon <= 1 || !Util::isValidName(Util::trim(line.substr(0, equal)))) {
 		return false;
 	} else {
-		bool afterSC = false;
-		for (int i = pos + 1; i < line.size(); i++) {
-			string s;
-			s.push_back(line[i]);
-			if (afterSC && line[i] != CB && line[i] != SPACE) {
-				return false;
-			} else if (!afterSC && s == SEMICOLON) {
-				afterSC = true;
-			} else if (!afterSC && !Util::isOperand(line[i]) && !isalpha(line[i]) && !Util::isNumber(s) && line[i] != SPACE) {
+		expression = line.substr(equal + 1, semicolon - (equal + 1));
+		for (int i = semicolon + 1; i < line.size(); i++) {
+			if (line[i] != CB && line[i] != SPACE && line[i] != TAB) {
 				return false;
 			}
 		}
 	}
-	return true;
+	return Util::isValidExpression(expression);
 }

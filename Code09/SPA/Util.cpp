@@ -252,3 +252,36 @@ vector<string> Util::constructExpression(string expression) {
 	}
 	return result;
 }
+
+bool Util::isValidExpression(string expression) {
+	bool expectOperandsNext = false;
+	int bracketCounter = 0;
+	bool expectBrackets = true;
+	for (int i = 0; i < expression.size(); i++) {
+		if (isdigit(expression[i]) && !expectOperandsNext) {
+			while (i < expression.size() && isdigit(expression[i + 1])) {
+				i++;
+			}
+			expectOperandsNext = true;
+			expectBrackets = true;
+		} else if (isalpha(expression[i]) && !expectOperandsNext) {
+			while (i < expression.size() && isalnum(expression[i + 1])) {
+				i++;
+			}
+			expectOperandsNext = true;
+			expectBrackets = true;
+		} else if (expression[i] == '(') {
+			bracketCounter++;
+			expectBrackets = false;
+		} else if (expression[i] == ')' && bracketCounter > 0 && expectBrackets) {
+			bracketCounter--;
+			expectBrackets = true;
+		} else if (expectOperandsNext && Util::isOperand(expression[i])) {
+			expectOperandsNext = false;
+			expectBrackets = true;
+		} else if (expression[i] != ' ' && expression[i] != '\t') {
+			return false;
+		}
+	}
+	return bracketCounter == 0 && expectOperandsNext;
+}
