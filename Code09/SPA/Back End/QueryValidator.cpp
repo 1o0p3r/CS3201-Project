@@ -10,6 +10,8 @@
 #include <sstream>
 #include <algorithm>
 #include <Util.h>
+#include <stack>
+
 
 const int ZERO = 0;
 const int ONE = 1;
@@ -95,7 +97,7 @@ const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
 const string IDENT_STRING_REGEX = "(\\s*(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*)";
 const string QUOTATION_IDENT_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\"" + IDENT_STRING_REGEX + "\"" + SYMBOL_RIGHT_BRACKET_STRING;
 const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
-const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
+const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; 
 const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
 const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*\\s*\"))"; //Nth wrg here either
 const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
@@ -113,8 +115,8 @@ const string WITH_CL_REGEX = WITH_STRING + "\\s+" + ATTRCOND_STRING_REGEX;
 const string TEMPORARY_WITH = SYMBOL_LEFT_BRACKET_STRING + WITH_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string WITH_CL_EXTENDED_REGEX = TEMPORARY_WITH + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY_WITH + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 const string LEAD_TRAIL = "and|\\s+";
-
-
+const string STRING_REGEX = "[a-zA-Z]";
+const string WHITESPACE_TAB_REGEX = "[\\s\\t]";
 //Regexs for such that relationships
 const string TEMP_MODIFIESP_STRING_REGEX = MODIFIES_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
@@ -462,6 +464,9 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 	}
 	else if (isQuotationIdentRegex(arg1)) {
 		arg1StringLiteral = true;
+		//At this pt do some cleaning up
+		arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+		arg1 = Util::trim(arg1);
 	}
 	else if (isVariableSynonym(arg1)) {
 		arg1Variable = true;
@@ -472,18 +477,82 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 	if (isWildcard(arg2)) {
 		arg2UnderScore = true;
 	}
-	else if (isValidExpr(str)) {
+	else if (isValidExpr(arg2)) {
 		arg2Exact = true;
+		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+		arg2 = Util::trim(arg2);
+		arg2 = Util::insertBrackets(arg2);
 	}
-	else if (isValidExprUnder(str)) {
+	else if (isValidExprUnder(arg2)) {
 		arg2Substring = true;
+		arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+		arg2 = Util::trim(arg2);
+		arg2 = removeSymbols(arg2, UNDER_SCORE_STRING);
+		arg2 = Util::trim(arg2);
+		arg2 = Util::insertBrackets(arg2);
 	}
 	else {
 		return false;
 	}
+	if ((arg1Variable == false && arg1Number == false && arg1UnderScore == false && arg1StringLiteral == false) || (arg2UnderScore == false && arg2Exact == false
+		&& arg2Substring)) {
+		return false;
+	}
 
+	//At this pt, arg1 and arg2 must be valid so we call a function
 
+	addAssignPatternQueryElement(arg1, arg2, ASSIGN_STRING, synPattern, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, arg2UnderScore, arg2Exact
+	, arg2Substring);
 }
+
+void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable,
+	bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring) {
+	if (arg1UnderScore) {
+		if (arg2UnderScore) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+		} 
+		else if (arg2Exact) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+		else if (arg2Substring) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+	}
+	else if (arg1Number) {
+		if (arg2UnderScore) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+		else if (arg2Exact) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+		else if (arg2Substring) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+	}
+	else if (arg1Variable) {
+		if (arg2UnderScore) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING);
+		}
+		else if (arg2Exact) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, VARIABLE_STRING);
+		}
+		else if (arg2Substring) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, VARIABLE_STRING);
+		}
+	}
+	else if (arg1StringLiteral) {
+		if (arg2UnderScore) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, STRING_LITERAL, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+		else if (arg2Exact) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, STRING_LITERAL, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+		else if (arg2Substring) {
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, STRING_LITERAL, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
+		}
+	}
+}
+
 
 //This method checks if given string is a well-formed expression
 bool QueryValidator::isValidExpr(string str) {
@@ -493,14 +562,100 @@ bool QueryValidator::isValidExpr(string str) {
 	//Next ensure that within a bracket, it is not empty
 	//Next ensure that when an operator is encountered, LHS can onli be a ')', string/integer. RHS can onli be string/integer '('
 	//Next ensure that when a string/integer is encounter LHS can never be a ')', RHS can never be '('
-
+		
 
 }
 
+//This function takes in a string str and checks if LHS = RHS
+bool QueryValidator::isBalancedParantheses(string str) {
+	stack<char> strStack;
+	string curr, prev;
+
+	for (int i = 0; i < str.length(); i++) {
+		curr = str[i];
+		//If left symbol string is encountered
+		if (curr == SYMBOL_LEFT_BRACKET_STRING) {
+
+		}
+		//If right symbol string is encountered
+		else if (curr == SYMBOL_RIGHT_BRACKET_STRING) {
+
+		}
+		//If a string is encountered
+		else if (isString(curr)) {
+
+		}
+		//If a number is encountered
+		else if (is_number(curr)) {
+
+		}
+		//If a whitespace is encountered
+		else if (isWhiteSpaceTab(curr)) {
+
+		}
+
+	}
+}
 //This method checks if a given string a well-formed expression with underscores at both ends
 bool QueryValidator::isValidExprUnder(string str) {
 
 }
+
+
+
+void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
+
+	//Implies that arg1 is wildcard i.e. _
+	if (arg1Wildcard) {
+		if (arg2Substring) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && arg2FullString) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else {
+			//cout << "Error occured";
+			exit(0);
+		}
+	}
+	else if (arg1Variable) {
+		if (arg2Substring) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && arg2FullString) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else {
+			//cout << "Error occured";
+			exit(0);
+		}
+	}
+	else if (arg1Synonym) {
+		if (arg2Substring) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && arg2FullString) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
+			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
+		}
+		else {
+			//cout << "Error occured";
+			exit(0);
+		}
+	}
+	else {
+		exit(0);
+	}
+}
+
 //This function handles the while pattern scenario
 bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 
@@ -866,59 +1021,6 @@ void QueryValidator::addSelectQueryElement(string ent, string syn, string select
 }
 
 
-//The following function
-void QueryValidator::addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard) {
-
-	//Implies that arg1 is wildcard i.e. _
-	if (arg1Wildcard) {
-		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else {
-			//cout << "Error occured";
-			exit(0);
-		}
-	}
-	else if (arg1Variable) {
-		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING ,ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else {
-			//cout << "Error occured";
-			exit(0);
-		}
-	}
-	else if (arg1Synonym) {
-		if (arg2Substring) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && arg2FullString) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else if (!arg2Substring && !arg2FullString && arg2Wilcard) {
-			queryStatement.addPatternQuery(QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING));
-		}
-		else {
-			//cout << "Error occured";
-			exit(0);
-		}
-	}
-	else {
-		exit(0);
-	}
-}
 
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
@@ -1268,4 +1370,12 @@ bool::QueryValidator::isSubMatchArg2Pattern(string str) {
 	std::cmatch m;
 	regex subMatchRegex(SUB_MATCH_REGEX);
 	regex_match(str, subMatchRegex);
+}
+bool QueryValidator::isString(string str) {
+	regex isStringRegex(STRING_REGEX);
+	return regex_match(str, isStringRegex);
+}
+bool QueryValidator::isWhiteSpaceTab(string str) {
+	regex isWhiteSpaceTabRegex(WHITESPACE_TAB_REGEX);
+	return regex_match(str, isWhiteSpaceTabRegex);
 }

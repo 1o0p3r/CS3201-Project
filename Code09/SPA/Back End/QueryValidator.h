@@ -30,7 +30,6 @@ private:
 
 	//void setSynonymList(vector<SynonymEntityPair> synonymList);
 	void addSelectQueryElement(string ent, string syn, string selectType);
-	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addSynonymEntityList();
 
@@ -84,8 +83,11 @@ public:
 	bool isValidSynDesignEntity(string syn);
 	bool isValidPatternIter2(string str);
 	bool isValidAddAssignPattern(string str, string synPattern);
+	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
 	bool isValidExpr(string str);
+	bool isBalancedParantheses(string str);
 	bool isValidExprUnder(string str);
+	void addPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1Variable, bool arg1Wildcard, bool arg1Synonym, bool arg2Substring, bool arg2FullString, bool arg2Wilcard);
 	bool isValidAddWhilePattern(string str, string synPattern);
 	bool isValidAddIfPattern(string str, string synPattern);
 	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
@@ -103,6 +105,10 @@ public:
 	string removeOuterParentheses(string str);
 	string trim(string str);
 	string trimPatternArgs(string str);
+
+	bool isString(string str);
+
+	bool isWhiteSpaceTab(string str);
 
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);

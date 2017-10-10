@@ -1207,6 +1207,22 @@ namespace UnitTesting
 			expected = "with v1.varName =    v2.varName and v1.varName = \"hello\"";
 			Assert::IsTrue(Util::trim(input) == expected);
 		}
+		TEST_METHOD(isStringRegex) {
+			QueryValidator queryValidator;
+			string input;
 
+			input = "w";
+
+			Assert::IsTrue(queryValidator.isString(input));
+
+		}
+		TEST_METHOD(isNotStringRegex) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "1";
+
+			Assert::IsFalse(queryValidator.isString(input));
+		}
 	};
 }
