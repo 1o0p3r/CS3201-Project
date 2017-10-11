@@ -104,9 +104,17 @@ bool QueryValidator::isValidWith(string str) {
 	//If there is a match with a regex simply proceed to compare
 	if (isValidWithRegex(str) || isValidWithExtendedRegex(str)) {
 		vector<string> vecWith = extractWithClauses(str);
+		//Only need to keep track of prev if vecWith.size() is bigger than 1
+		//value stmt# procName varName prog_line string number
+		//Some examples of cases to consider
+		//with v.value = 1 and v.value = 2 which is invalid
+		//
+		//with s.stmt# = 1 and s.stmt# = v.value is valid 
+		//with p.procName = v.varName and p.procName = v2.varName is valid 
+		//TLDR: Only need to check if same attrName is involved and has multiple with clauses
 
 		//Loop through for every with clauses and compare LHS AND RHS
-		for (size_t i = 0; i < vecWith.size(); i++) {
+		for (size_t i = ZERO; i < vecWith.size(); i++) {
 			//Split the string by equal symbol
 			string currWith = vecWith.at(i);
 			vector<string> argsWith = splitBySymbol(currWith, EQUAL_CHAR);
@@ -137,8 +145,7 @@ bool QueryValidator::isValidWith(string str) {
 				//Gets the attrRef
 				arg1attrName = arg1Vec.at(ONE);
 				arg1AttrRef = true;
-			}
-			else {
+			} else {
 				//Implies that arg1 is either a synonym, stringLiteral or integer
 				arg1Identity = extractIdentity(arg1);
 				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING)) {
@@ -162,7 +169,6 @@ bool QueryValidator::isValidWith(string str) {
 				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING)) {
 					return false;
 				}
-
 			}
 			//Do comparison between LHS and RHS
 			if (isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity)) {
@@ -173,28 +179,41 @@ bool QueryValidator::isValidWith(string str) {
 				if (arg2Identity == STRING_LITERAL) {
 					arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 				}
+				//Checks for corner cases
+				//Additional checks for both sides are string i.e. with "First" == "First"
+				//Redundant query, so no need to add query
+				if (arg1Identity == STRING_LITERAL && arg2Identity == STRING_LITERAL) {
+					if (arg1 == arg2) {
+						continue;
+					}
+				}
+				//Check corner case again where integer = integer
+				if (arg1Identity == NUMBER_STRING && arg2Identity == NUMBER_STRING) {
+					if (arg1 == arg2) {
+						continue;
+					} else {
+						return false;
+					}
+				}
+
 				//If arg1 and 2 are both attrRref
 				if (arg1AttrRef && arg2AttrRef) {
 					addWithQueryElement(arg1, arg2, arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				//Only arg1 is attrRef and arg2 could be 
-				else if (arg1AttrRef && !arg2AttrRef) {
+				} else if (arg1AttrRef && !arg2AttrRef) {
 					addWithQueryElement(arg1, arg2, arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else if (!arg1AttrRef && arg2AttrRef) {
+				} else if (!arg1AttrRef && arg2AttrRef) {
 					addWithQueryElement(arg1, arg2, arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else {
+				} else {
 					addWithQueryElement(arg1, arg2, arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
 				}
-			}
-			else {
+
+				//Basically just need to store arg1, arg2,
+			} else {
 				return false;
 			}
 		}
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -208,8 +227,8 @@ void QueryValidator::addWithQueryElement(string arg1, string arg2, string arg1Ty
 bool QueryValidator::isAttrRef(string arg) {
 	if (isValidAttRefRegex(arg)) {
 		vector<string> argVec = splitBySymbol(arg, DOT_CHAR);
-		string argSyn = argVec.at(0);
-		string argAttrName = argVec.at(1);
+		string argSyn = argVec.at(ZERO);
+		string argAttrName = argVec.at(ONE);
 
 		string argEnt = getCorrespondingEntity(argSyn);
 
@@ -223,13 +242,9 @@ bool QueryValidator::isAttrRef(string arg) {
 		//Only match will be variable
 		else if (argAttrName == VARNAME) {
 			return(argEnt == VARIABLE_STRING);
-		}
-		//Only match will be constant
-		else if (argAttrName == VALUE) {
+		} else if (argAttrName == VALUE) {
 			return(argEnt == CONSTANT_STRING);
-		}
-		//Only matches will be stmt i.e. assign, while, if
-		else if (argAttrName == STMTNUM) {
+		} else if (argAttrName == STMTNUM) {
 			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING) || (argEnt == CALL_STRING)) {
 				return true;
 			}
@@ -255,9 +270,7 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			string arg2Type = withClauseTypeBank[arg2AttrName];
 
 			return (arg1Type == arg2Type);
-		}
-		//else RHS is not an attrRef
-		else {
+		} else {
 			//LHS IS attrRef, RHS is not attrRef
 			string arg1Type = withClauseTypeBank[arg1AttrName];
 			//RHS is not attrRef, so it can be either a synonym, stringliteral or integer
@@ -266,17 +279,14 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 
 			return(arg1Type == arg2Type);
 		}
-	}
-	//else if LHS is not an attrRef
-	else {
+	} else {
 		//If LHS IS not attrRef, RHS is an attrRef
 		if (arg2AttrRef) {
 			string arg1Type = withClauseTypeBank[arg1Identity];
 			string arg2Type = withClauseTypeBank[arg2AttrName];
 
 			return (arg1Type == arg2Type);
-		}
-		else {
+		} else {
 			//LHS and RHS are both not attrRef, means arg1 and arg 2 are both default things like n,1,"hi"
 
 			//First check: if arg1 identity is number
@@ -284,38 +294,26 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 				//If both are numbers and are not equal to each other
 				if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2)) {
 					return false;
-				}
-				else if ((arg2Identity == NUMBER_STRING) && (arg1 == arg2)) {
+				} else if ((arg2Identity == NUMBER_STRING) && (arg1 == arg2)) {
 					return true;
-				}
-				else if ((arg2Identity == PROG_LINE_STRING)) {
+				} else if ((arg2Identity == PROG_LINE_STRING)) {
 					return true;
-				}
-				//Arg2Identity must be a string, so must be a mismatch
-				else {
+				} else {
 					return false;
 				}
-			}
-			else if (arg1Identity == PROG_LINE_STRING) {
+			} else if (arg1Identity == PROG_LINE_STRING) {
 				//Arg 1 is progline and arg2 is number
 				if (arg2Identity == NUMBER_STRING) {
 					return true;
-				}
-				//Arg1 is progline and arg2 is progLine
-				else if (arg2Identity == PROG_LINE_STRING) {
+				} else if (arg2Identity == PROG_LINE_STRING) {
 					return true;
-				}
-				//Arg2 must be a string
-				else {
+				} else {
 					return false;
 				}
-			}
-			//Arg1 is a string, only other match is a string
-			else {
+			} else {
 				if (arg2Identity != STRING_LITERAL) {
 					return false;
-				}
-				else {
+				} else {
 					return true;
 				}
 			}
@@ -328,12 +326,9 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 string QueryValidator::extractIdentity(string arg) {
 	if (isQuotationIdentRegex(arg)) {
 		return STRING_LITERAL;
-	}
-	else if (is_number(arg)) {
+	} else if (is_number(arg)) {
 		return NUMBER_STRING;
-	}
-	//Else must be synonym
-	else {
+	} else {
 		if (isValidSynonym(arg)) {
 			string toReturn = getCorrespondingEntity(arg);
 			return toReturn;

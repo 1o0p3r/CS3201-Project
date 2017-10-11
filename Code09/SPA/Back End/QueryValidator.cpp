@@ -60,6 +60,7 @@ const string PROG_LINE_STRING = "prog_line";
 const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
+const string TAB_STRING = "\\t";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -295,6 +296,7 @@ bool QueryValidator::parseDeclaration(vector<string> splitString) {
 		synonymsStr += splitString.at(i);
 	}
 	synonymsStr = removeSymbols(synonymsStr, WHITESPACE_STRING);
+	synonymsStr = removeSymbols(synonymsStr, TAB_STRING);
 	//Split the synonymsStr by comma to obtain relevant synonyms create object SynonymEntityPair and places in the "EntTable"
 	vector<string> synonymsAttached = splitBySymbol(synonymsStr, SYMBOL_COMMA);
 	synonymAndEntityList.push_back(SynonymEntityPair(reqEntity, synonymsAttached));
@@ -459,7 +461,7 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 		arg2Substring = true;
 		arg2 = removeUnderScoreAndQuotation(arg2);
 		arg2 = removeSymbols(arg2, WHITESPACE_STRING);
-		
+		arg2 = removeSymbols(arg2, TAB_STRING);
 		arg2 = Util::insertBrackets(arg2);
 	} else {
 		return false;
