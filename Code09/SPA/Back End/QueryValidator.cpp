@@ -1056,7 +1056,8 @@ vector<string> QueryValidator::extractPattern(string str) {
 	//While pos is not end of string
 	while (pos != string::npos) {
 		//Try to find the next occurence of pattern
-		size_t found = curr.find(PATTERN_STRING, pos + ONE);
+		size_t initFound = curr.find(PATTERN_STRING);
+		size_t found = curr.find(PATTERN_STRING, initFound + ONE);
 
 		//Means end of string, so just push in and break
 		if (found == string::npos) {
@@ -1133,7 +1134,17 @@ bool QueryValidator::isValidAttrCompareRegex(string str) {
 }
 bool QueryValidator::isValidLeadTrail(string str) {
 	str = Util::trim(str);
-	return (str == AND_STRING);
+	if (str == AND_STRING) {
+		return true;
+	}
+	else {
+		if (str == "") {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 bool QueryValidator::isValidAttRefRegex(string str) {
 	regex attrRefRegex(ATTRREF_STRING_REGEX);
