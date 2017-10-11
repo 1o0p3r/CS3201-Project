@@ -1,7 +1,7 @@
 #include "WithHandler.h"
 #include <QueryValidator.h>
 #include <vector>
-
+#include <Util.h>
 const int ZERO = 0;
 const int ONE = 1;
 const string WITH_STRING = "with";
@@ -99,7 +99,7 @@ WithHandler::WithHandler()
 //This method checks if the with clauses is a valid with clause by initially checking with the regex 
 //Then proceed to check if LHS = RHS in terms of type
 bool QueryValidator::isValidWith(string str) {
-	str = trim(str);
+	str = Util::trim(str);
 
 	//If there is a match with a regex simply proceed to compare
 	if (isValidWithRegex(str) || isValidWithExtendedRegex(str)) {
@@ -124,8 +124,8 @@ bool QueryValidator::isValidWith(string str) {
 			//Checks if it is a prog_line as well
 			//Then proceed to check LHS and RHS
 
-			arg1 = trim(arg1);
-			arg2 = trim(arg2);
+			arg1 = Util::trim(arg1);
+			arg2 = Util::trim(arg2);
 			//Implies that e.g. v.varName as a whole is a valid, so i can go and get its respective entity, synonym, etc
 			if (isAttrRef(arg1)) {
 				//Split by dot
