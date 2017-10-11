@@ -15,10 +15,10 @@ string Util::insertBrackets(string input) {
 	int index = 0;
 	while (index < results.size()) {
 		if (results[index] == '*') {
-			if (results[index - 1] != ')' && results[index] != '(') {
+			if (results[index - 1] != ')' && results[index + 1] != '(') {
 				results.insert(index + 2, ")");
 				results.insert(index - 1, "(");
-			} else if (results[index + 1] != ')') {
+			} else if (results[index + 1] != '(') {
 				int counter = 1;
 				int back = index - 1;
 				while (counter > 0) {
@@ -31,7 +31,7 @@ string Util::insertBrackets(string input) {
 				}
 				results.insert(index + 2, ")");
 				results.insert(back, "(");
-			} else if (results[index - 1] != '(') {
+			} else if (results[index - 1] != ')') {
 				int counter = 1;
 				int front = index + 1;
 				while (counter > 0) {

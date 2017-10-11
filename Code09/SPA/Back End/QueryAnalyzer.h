@@ -100,10 +100,5 @@ public:
 			vector<vector<string>> clauseTable, int clausetableJoinIndex, int qaTableLoc1, int qaTableLoc2);
 	
 	vector<vector<vector<string>>> getMergedQueryTable();
-
-	vector<vector<string>> unitTestInputs;
-	void setUnitTestInputs(vector<vector<string>> hcInput);
-	vector<string> getUnitTestInputs(int index);
-	bool unitTestModeOn;
 };
 

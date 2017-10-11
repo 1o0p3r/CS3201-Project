@@ -10,6 +10,7 @@ namespace UnitTesting {
 	TEST_CLASS(UtilTest) {
 	public:
 		TEST_METHOD(insertBrackets) {
+			Assert::AreEqual(string("(a*((x+y)))"), Util::insertBrackets("a*(x+y)"));
 			Assert::AreEqual(string("(((x*y)*h)*f)"), Util::insertBrackets("x * y * h * f"));
 			Assert::AreEqual(string("(((x*y)*h)+(f*g))"), Util::insertBrackets("x*y*h+f*g"));
 			Assert::AreEqual(string("((x-y)+z)"), Util::insertBrackets("x-y+z"));

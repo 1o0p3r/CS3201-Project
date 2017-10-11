@@ -122,7 +122,6 @@ QueryAnalyzer::QueryAnalyzer() {
 	hasSTClause = true;
 	hasPatternClause = true;
 
-	unitTestModeOn = false;
 }
 
 void QueryAnalyzer::setPKB(PKB pkb) {
@@ -323,7 +322,10 @@ void QueryAnalyzer::solvePatternClause() {
 		}
 		if (!patternResult.empty())
 			insertSTResult(patternResult);
+		if (!hasPatternClause)
+			break;
 	}
+		
 }
 
 vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
@@ -385,6 +387,7 @@ tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string ar
 		entityVector.push_back(patSyn);
 		variableVector.push_back(arg1);
 	}
+	hasPatternClause = containsPattern;
 	return make_tuple(entityVector, variableVector);
 }
 
@@ -426,6 +429,7 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 		entityVector.assign(shortlisted.begin(), shortlisted.end());
 		entityVector.push_back(patSyn);
 	}
+	hasPatternClause = containsPattern;
 	return entityVector;
 }
 
@@ -1166,13 +1170,3 @@ vector<vector<vector<string>>> QueryAnalyzer::getMergedQueryTable()
 	return mergedQueryTable;
 }
 
-void QueryAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
-{
-	unitTestModeOn = true;
-	unitTestInputs = hcInput;
-}
-
-vector<string> QueryAnalyzer::getUnitTestInputs(int index)
-{
-	return unitTestInputs[index];
-}
