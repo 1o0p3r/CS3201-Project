@@ -50,6 +50,8 @@ PKB::PKB() {
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
+	vector<vector<int>> whilePatternTable;
+	vector<vector<int>> ifPatternTable;
 	set<string> allVariables;
 	set<string> allConstants;
 	set<string> allProcedures;
@@ -102,13 +104,39 @@ void PKB::addProcedure(string p) {
 	getProcIndex(p);
 }
 
-void PKB::addPattern(int statementNum, string leftVariable, string rightExpression) {
+void PKB::addAssignPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
 	tuple<int, string> entry = { statementNum, Util::insertBrackets(rightExpression) };
 	if (patternTable.size() <= varIndex) {
 		patternTable.resize(varIndex + 1);
 	}
 	patternTable[varIndex].push_back(entry);
+}
+
+void PKB::addWhilePattern(int statementNum, string variable) {
+	int varIndex = getVarIndex(variable);
+	if (whilePatternTable.size() <= varIndex) {
+		whilePatternTable.resize(varIndex + 1);
+	}
+	whilePatternTable[varIndex].push_back(statementNum);
+}
+
+vector<int> PKB::getPatternWhile(string variable) {
+	int varIndex = getVarIndex(variable);
+	return whilePatternTable[varIndex];
+}
+
+void PKB::addIfPattern(int statementNum, string variable) {
+	int varIndex = getVarIndex(variable);
+	if (ifPatternTable.size() <= varIndex) {
+		ifPatternTable.resize(varIndex + 1);
+	}
+	ifPatternTable[varIndex].push_back(statementNum);
+}
+
+vector<int> PKB::getPatternIf(string variable) {
+	int varIndex = getVarIndex(variable);
+	return ifPatternTable[varIndex];
 }
 
 vector<tuple<int, string>> PKB::getPattern(string varName) {

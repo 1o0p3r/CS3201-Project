@@ -375,12 +375,36 @@ public:
 	void addConstant(string c);
 
 	/**
-	Adds a pattern to PKB
+	Adds a assign pattern to PKB
 	@param StatementNum Statement Number of the expression
 	@param leftVariable the modified variable
 	@param rightExpression the expression on the right side of "="
 	*/
-	void addPattern(int statementNum, string leftVariable, string rightExpression);
+	void addAssignPattern(int statementNum, string leftVariable, string rightExpression);
+	/**
+	Adds a while pattern to PKB
+	@param StatementNum Statement Number of the while
+	@param variable the modified variable
+	*/
+	void addWhilePattern(int statementNum, string variable);
+	/**
+	Gets all the while statement number that contains a variable
+	@param variable name of variable
+	@returns a vector containing all the statement number for the input variable
+	*/
+	vector<int> getPatternWhile(string variable);
+	/**
+	Adds a if pattern to PKB
+	@param StatementNum Statement Number of the if
+	@param variable the modified variable
+	*/
+	void addIfPattern(int statementNum, string variable);
+	/**
+	Gets all the if statement number that contains a variable
+	@param variable name of variable
+	@returns a vector containing all the statement number for the input variable
+	*/
+	vector<int> getPatternIf(string variable);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
@@ -405,6 +429,8 @@ private:
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
+	vector<vector<int>> whilePatternTable;
+	vector<vector<int>> ifPatternTable;
 
 	set<string> allVariables;
 	set<string> allConstants;

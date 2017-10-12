@@ -205,8 +205,8 @@ public:
 		pkb.setModifies(2, "z");
 		pkb.setModifies(1, "s");
 		pkb.setModifies(1, "z");
-		pkb.addPattern(3, "s", "4*c-x");
-		pkb.addPattern(2,"z"," 8+ y*c - 3");
+		pkb.addAssignPattern(3, "s", "4*c-x");
+		pkb.addAssignPattern(2,"z"," 8+ y*c - 3");
 		vector<vector<string>> clauseResult;
 		vector<string> hardcode;
 		vector<vector<vector<string>>> mergedResult;
