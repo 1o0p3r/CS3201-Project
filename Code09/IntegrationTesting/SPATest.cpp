@@ -102,10 +102,10 @@ public:
 			"assign a; variable b; while i; Select i such that Modifies(a, b)",
 			"variable v; Select v such that Uses(\"Second\", v)",
 			"stmt s; Select s such that Uses(s, \"i\")",
-			"variable v; assign a; select v such that uses(a, v) pattern a(_, _\"x+1\"_)",
+			"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
 			"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
-			"assign a; select a pattern a(\"z\", _\"x+i\")",
-			"assign a; select a pattern a(_, _\"x + 1\"_)"
+			"assign a; Select a pattern a(\"z\", _\"x+i\")",
+			"assign a; Select a pattern a(_, _\"x + 1\"_)"
 		};
 		vector<vector<string>> expected = {
 			{ "3" },
@@ -120,7 +120,7 @@ public:
 			{ "i", "x", "y", "z" },
 			{ "11", "3", "7" },
 			{ "x" },
-			{ },
+			{},
 			{},
 			{ "9" }
 		};
