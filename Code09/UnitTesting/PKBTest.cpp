@@ -17,11 +17,11 @@ public:
 		Assert::AreEqual(results[0], pkb.getAllConstants()[0]);
 		Assert::AreEqual(results[1], pkb.getAllConstants()[1]);
 	}
-	TEST_METHOD(addPattern) {
+	TEST_METHOD(addAssignPattern) {
 		PKB pkb;
-		pkb.addPattern(1, "x", "5");
-		pkb.addPattern(3, "y", "2");
-		pkb.addPattern(4, "x", "x*y+1");
+		pkb.addAssignPattern(1, "x", "5");
+		pkb.addAssignPattern(3, "y", "2");
+		pkb.addAssignPattern(4, "x", "x*y+1");
 		Assert::AreEqual(1, get<0>(pkb.getPattern("x")[0]));
 		string exp = "5";
 		Assert::AreEqual(exp, get<1>(pkb.getPattern("x")[0]));

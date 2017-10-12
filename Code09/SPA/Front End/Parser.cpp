@@ -122,12 +122,13 @@ bool Parse(string fileName, PKB& pkb) {
 						return false;
 					}
 				}
-				pkb.addPattern(lineCounter, var, expression);
+				pkb.addAssignPattern(lineCounter, var, expression);
 				isNewContainer = false;
 				isSameLevel = true;
 			} else if (isIfStatement(nextLine)) {
 				pkb.setStatementType(lineCounter, IF);
 				string var = nextLine[1];
+				pkb.addIfPattern(lineCounter, var);
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
@@ -141,6 +142,7 @@ bool Parse(string fileName, PKB& pkb) {
 				} else {
 					var = nextLine[1].substr(0, nextLine[1].size() - 1);
 				}
+				pkb.addWhilePattern(lineCounter, var);
 				pkb.setStatementType(lineCounter, WHILE);
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
