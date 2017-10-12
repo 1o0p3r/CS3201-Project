@@ -336,7 +336,7 @@ bool QueryValidator::isValidSynDesignEntity(string synPattern) {
 //pattern a(,) pattern(,)
 //pattern ifs(,,) and pattern a()
 //pattern w(_,_) and pattern a() pattern ifs(,,)
-bool QueryValidator::isValidPatternIter2(string str) {
+bool QueryValidator::isValidPattern(string str) {
 	//First Util::trim it
 	str = Util::trim(str);
 
@@ -790,14 +790,6 @@ bool QueryValidator::isVariableArg1(string arg1) {
 bool QueryValidator::isWildcard(string arg) {
 	return (arg == UNDER_SCORE_STRING);
 }
-//This function checks if the given arg2 of pattern is of a substring type i.e. _"x+y"_
-bool QueryValidator::isSubstringArg2(string arg2) {
-	string substringPattern = "_\".+\"_";
-	std::regex pattern(substringPattern);
-	std::smatch sm;
-
-	return std::regex_match(arg2, sm, pattern);
-}
 //This function takes in an argument(2) and checks if it is an exact string
 bool QueryValidator::isExactString(string arg2) {
 	if ((arg2.at(ZERO) == DOUBLE_QUOTATION) && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
@@ -808,7 +800,6 @@ bool QueryValidator::isExactString(string arg2) {
 	}
 	return true;
 }
-
 //This function function checks for the select portion of the select query and ensure that the synonym
 bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 	//First element of this vector gives the select clause
@@ -880,7 +871,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 				}
 			}
 			else if (vec.at(i).find(PATTERN_STRING) != std::string::npos) {
-				if (!isValidPatternIter2(vec.at(i))) {
+				if (!isValidPattern(vec.at(i))) {
 					return false;
 				}
 			}
@@ -931,7 +922,7 @@ bool QueryValidator::isValidSynonym(string syn) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
 		vector<string> tempVec = tempPair.getSynonymList();
 		for (size_t j = ZERO; j < tempVec.size(); j++) {
-			if (changeLowerCase(tempVec.at(j)) == changeLowerCase(syn)) {
+			if (tempVec.at(j) == syn) {
 				return true;
 			}
 		}
@@ -1098,10 +1089,6 @@ string QueryValidator::removeOuterParentheses(string str) {
 string QueryValidator::trim(string str) {
 	return regex_replace(str, regex("^ +| +$|( ) +"), "$1");
 }
-string QueryValidator::changeLowerCase(string str) {
-	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-	return str;
-}
 //Takes in a string and check if it matches the declaration regex
 //Returns true if matches, else false
 bool QueryValidator::isValidDeclarationRegex(string str) {
@@ -1187,12 +1174,6 @@ bool QueryValidator::isPartialPatternRegex(string str) {
 bool QueryValidator::isAssignPatternRegex(string str) {
 	regex assignPatternRegex(ASSIGN_PATTERN_REGEX);
 	return regex_match(str, assignPatternRegex);
-}
-string QueryValidator::trimPatternArgs(string str) {
-	int idxLeft = str.find(SYMBOL_LEFT_BRACKET_STRING);
-	str = str.substr(idxLeft + ONE, str.length() - idxLeft - TWO);
-	str = removeSymbols(str, WHITESPACE_STRING);
-	return str;
 }
 bool::QueryValidator::isSubMatchArg2Pattern(string str) {
 	std::cmatch m;

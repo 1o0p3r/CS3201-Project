@@ -508,23 +508,7 @@ namespace UnitTesting
 			Assert::IsTrue(vecStr == expectedVecStr);
 
 		}
-		//This checks if we get the correct corresponding entity
-		TEST_METHOD(is_number) {
-			QueryValidator queryValidator;
-			string str;
-
-			str = "123";
-			Assert::IsTrue(queryValidator.is_number(str));
-
-			str = "1";
-			Assert::IsTrue(queryValidator.is_number(str));
-
-			str = "aaa";
-			Assert::IsFalse(queryValidator.is_number(str));
-			
-			str = "b";
-			Assert::IsFalse(queryValidator.is_number(str));
-		}
+		
 		TEST_METHOD(removeDuplicatesWhiteSpaces) {
 			QueryValidator queryValidator;
 			string str;
@@ -902,24 +886,6 @@ namespace UnitTesting
 			str = "Select \@";
 			Assert::IsFalse(queryValidator.isValidSelectInitialRegex(str));
 		}
-
-		TEST_METHOD(isValidPatternArgsTrim) {
-			QueryValidator queryValidator;
-			string str;
-			string expectedStr;
-
-			str = "pattern a(s, _\"x\"_)";
-			expectedStr = "s,_\"x\"_";
-			Assert::IsTrue(queryValidator.trimPatternArgs(str) == expectedStr);
-
-			str = "pattern a(s, _\"x+y\"_)";
-			expectedStr = "s,_\"x+y\"_";
-			Assert::IsTrue(queryValidator.trimPatternArgs(str) == expectedStr);
-
-			str = "pattern a(s, _\"x+y\"_ )";
-			expectedStr = "s,_\"x+y\"_";
-			Assert::IsTrue(queryValidator.trimPatternArgs(str) == expectedStr);
-		}
 		TEST_METHOD(isValidWhilePattern) {
 			QueryValidator queryValidator;
 			string str;
@@ -1175,23 +1141,6 @@ namespace UnitTesting
 			input = "          with v1.varName =    v2.varName and v1.varName = \"hello\"			             ";
 			expected = "with v1.varName =    v2.varName and v1.varName = \"hello\"";
 			Assert::IsTrue(Util::trim(input) == expected);
-		}
-		TEST_METHOD(isStringRegex) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "w";
-
-			Assert::IsTrue(queryValidator.isString(input));
-
-		}
-		TEST_METHOD(isNotStringRegex) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "1";
-
-			Assert::IsFalse(queryValidator.isString(input));
 		}
 	};
 }
