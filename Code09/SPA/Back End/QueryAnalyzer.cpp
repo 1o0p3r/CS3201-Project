@@ -1,5 +1,24 @@
 #include "QueryAnalyzer.h"
 
+const string DELIMITER = ",";
+const string SYNONYM = "synonym";
+const string WILDCARD = "wildcard";
+const string WILDCARD_SYMBOL = "_";
+const int ARGONE = 0;
+const int ARGTWO = 1;
+const int TABLELOC = 0;
+const int SYNVECLOC = 1;
+const int SYNENTITY = 2;
+const int SYNPOS = 1;
+const int VECINTERSECTION = 0;
+const int TTMINDEX = 1;
+const int STRINDEX = 2;
+const int SAMETABLE = 0;
+const int TWO_DISJOINT_TABLE = 1;
+const int VECTRESULT = 1;
+const int BOOLRESULT = 0;
+const int NOSYNENTRY = -1;
+
 enum selectValue
 {
 	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
@@ -39,6 +58,11 @@ enum patternValues
 	assign_, while_, if_
 };
 
+enum resultType
+{
+	undefinedResultType, synonymResult, tupleResult, booleanResult
+};
+
 enum patternExpType
 {
 	undefinedExpression, exact, substring, _wildcard_
@@ -48,6 +72,7 @@ static map<string, selectValue> mapSelectValues;
 static map<string, suchThatValue> mapSuchThatValues;
 static map<string, parentSynType> mapParentSynTypeValues;
 static map<string, patternValues> mapPatternValues;
+static map<string, resultType > mapResultTypeValues;
 
 void QueryAnalyzer::initMapPatternExpType() {
 	mapPatternExpType["exact"] = exact;
@@ -96,20 +121,12 @@ void QueryAnalyzer::initPatternValueMap() {
 	mapPatternValues["if"] = if_;
 }
 
-const string SYNONYM = "synonym";
-const string WILDCARD = "wildcard";
-const string WILDCARD_SYMBOL = "_";
-const int ARGONE = 0;
-const int ARGTWO = 1;
-const int TABLEPOS = 0;
-const int SYNPOS = 1;
-const int VECINTERSECTION = 0;
-const int TTMINDEX = 1;
-const int STRINDEX = 2;
-const int SAMETABLE = 0;
-const int TWO_DISJOINT_TABLE = 1;
-const int VECTRESULT = 1;
-const int BOOLRESULT = 0;
+void QueryAnalyzer::initResultTypeMap()
+{	
+	mapResultTypeValues["synonym"] = synonymResult;
+	mapResultTypeValues["BOOLEAN"] = booleanResult;
+	mapResultTypeValues["tuple"] = tupleResult;
+}
 
 QueryAnalyzer::QueryAnalyzer() {
 	initSelectMap();
@@ -117,8 +134,10 @@ QueryAnalyzer::QueryAnalyzer() {
 	initParentSynTypeMap();
 	initPatternValueMap();
 	initMapPatternExpType();
+	initResultTypeMap();
 	vector<string> result;
 	synTableMap = unordered_map<string, tuple<int, int>>();
+	selectSynMap = unordered_map<int, int>();
 	hasSTClause = true;
 	hasPatternClause = true;
 
@@ -133,7 +152,6 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 }
 
 vector<string> QueryAnalyzer::runQueryEval() {
-	vector<string> result;
 	synTableMap = unordered_map<string, tuple<int, int>>();
 	mergedQueryTable = vector<vector<vector<string>>>();
 	hasSTClause = true;
@@ -141,7 +159,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	findQueryElements();
 	solveSTClause();
 	solvePatternClause();
-	result = analyzeClauseResults();
+	vector<string> result = analyzeClauseResults();
 	return result;
 }
 
@@ -153,21 +171,150 @@ void QueryAnalyzer::findQueryElements() {
 	patternElements = qsReadOnly.getPatternQueryElement();
 }
 
-vector<string> QueryAnalyzer::analyzeClauseResults() {
-	vector<string> answer;
-	if (!hasSTClause || !hasPatternClause)
-		return{};
-
+void QueryAnalyzer::selectSynonym(vector<string> &answer)
+{
 	string selectEntity = selectElement.getSelectEntity();
 	string selectSyn = selectElement.getSelectSynonym();
 	auto search = synTableMap.find(selectSyn);
 	if (search != synTableMap.end()) {
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
-				.at(get<ARGTWO>(search->second));
+		                         .at(get<ARGTWO>(search->second));
 		answer = removeVectDuplicates(answer);
 		answer = analyzeSelect(answer, selectEntity);
 	} else {
 		answer = analyzeSelect(answer, selectEntity);
+	}
+}
+
+void QueryAnalyzer::setClauseFalse()
+{ 
+	hasPatternClause, hasSTClause = false; //future implementation, include with
+}
+
+void QueryAnalyzer::selectTuple(vector<string> &answer)
+{
+	auto tupleSynonyms = selectElement.getSelectSynonym();
+	auto tupleEntity = selectElement.getSelectEntity();
+	auto synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	auto synonymEntities = Util::splitLine(tupleEntity, ',');
+	vector<vector<tuple<int,int,string>>> synLoc;
+	vector<vector<string>> synTableConcatEntries;
+
+
+	//init mapping of synonyms from same table
+	for (int i = 0; i < synonymTokens.size(); i++) {
+		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
+		if (searchInQueryTable != synTableMap.end()) {
+			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second));
+			if (searchInSelectSynMap == selectSynMap.end()) {
+				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), synLoc.size()));
+			}
+			synLoc[searchInSelectSynMap->second].push_back(make_tuple(
+					get<TABLELOC>(searchInQueryTable->second),
+					get<SYNVECLOC>(searchInQueryTable->second),
+					synonymEntities[i]));
+		} else {
+			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i]) });
+		}
+	}
+
+	
+	for (auto commonTableSyn : synLoc) {
+		vector<string> vecAppendedSynValues;
+		//synonym exists in intermediate table
+		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {
+			int numVecElements = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size();
+			vecAppendedSynValues = vector<string>();
+			vector<vector<int>> columnToKeep;
+
+			//find intersection of vector and design entity
+			int ccsLoc = 0;
+			for (auto concatSyn : commonTableSyn) { //elements in vector
+				vector<string> synEntityVec = analyzeSelect({}, get<SYNENTITY>(concatSyn));
+				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
+					make_move_iterator(synEntityVec.end()));
+				for (int i = 0; i < numVecElements; i++) {
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][i];
+					if (synEntitySet.find(element) != synEntitySet.end())
+							columnToKeep[ccsLoc].push_back(i);
+				}
+				ccsLoc++;
+			}
+			vector<int> columnResult = columnToKeep.front(); //init for merging vecs
+			for (int i=1; i<columnToKeep.size();i++) {
+				columnResult = intersectionT(columnResult, columnToKeep[i]);
+			}
+			
+			//terminating condition
+			if (columnResult.empty()) {
+				setClauseFalse();
+				answer = {};
+			}
+
+			//append values to vector
+			for (const auto& entry : columnResult) {
+				string appendSynValue;
+				for (auto concatSyn : commonTableSyn) {
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][entry];
+					appendSynValue.append(element);
+					appendSynValue.append(DELIMITER);		
+				}
+				appendSynValue.pop_back(); //remove last delimiter ","
+				vecAppendedSynValues.push_back(appendSynValue);
+			}
+		} else {
+			vecAppendedSynValues = analyzeSelect({}, get<SYNENTITY>(commonTableSyn.front()));
+		}
+		synTableConcatEntries.push_back(vecAppendedSynValues);
+
+	}
+
+	vector<string> vecToCartProd;
+	//cartesian product synonyms.
+	for (int i = 0; i < synTableConcatEntries.size(); i++) {
+		auto result = cross(synTableConcatEntries[i],vecToCartProd);
+		vector<string> vecCartProdstring;
+		string concatCartProdString;
+		for(auto& j : result) {
+			concatCartProdString.append(get<0>(j))
+				.append(",")
+				.append(get<1>(j));
+			vecCartProdstring.push_back(concatCartProdString);
+		}
+		vecToCartProd = vecCartProdstring;
+	}
+	answer = vecToCartProd;
+}
+
+bool QueryAnalyzer::isQueryFalse()
+{
+	if (!hasSTClause || !hasPatternClause)
+		return true;
+	return false;
+}
+
+vector<string> QueryAnalyzer::analyzeClauseResults() {
+	vector<string> answer;
+	string resultEntity = selectElement.getSelectType();
+	if (isQueryFalse())
+		if (resultEntity == "BOOLEAN")
+			answer.push_back("false");
+		else
+			return {};
+
+	switch(mapResultTypeValues[resultEntity])
+	{
+		case booleanResult:
+			answer.push_back("true");
+			break;
+
+		case synonymResult:
+			selectSynonym(answer);
+			break;
+		
+		case tupleResult:
+			selectTuple(answer);
+			break;
 	}
 	return answer;
 }
@@ -211,23 +358,23 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
 	if (!queryResult.empty()) {
-		answer = intersection(answer, queryResult);
+		answer = intersectionT(answer, queryResult);
 	}
 	return answer;
 }
 
-vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
-{
-
-	vector<string> v3;
-
-	sort(v1.begin(), v1.end());
-	sort(v2.begin(), v2.end());
-
-	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
-
-	return v3;
-}
+//vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
+//{
+//
+//	vector<string> v3;
+//
+//	sort(v1.begin(), v1.end());
+//	sort(v2.begin(), v2.end());
+//
+//	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
+//
+//	return v3;
+//}
 
 
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {

@@ -12,7 +12,9 @@
 #include "ModifiesAnalyzer.h"
 #include "UsesAnalyzer.h"
 #include "TupleHash.h"
+#include "Util.h"
 
+#include <numeric>
 #include <iterator>
 #include <algorithm>
 #include <sstream>
@@ -39,6 +41,7 @@ public:
 	vector<QueryElement> patternElements;
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
+	unordered_map<int, int> selectSynMap;
 
 	PKB pkbReadOnly;
 	bool hasSTClause;
@@ -49,12 +52,18 @@ public:
 	void initSuchThatMap();
 	void initParentSynTypeMap();
 	void initPatternValueMap();
+	void initResultTypeMap();
 
 
 	void findQueryElements();
+	void selectSynonym(vector<string> &answer);
+	void setClauseFalse();
+	void selectTuple(vector<string> &answer);
+	bool isQueryFalse();
+	
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(vector<string> answer, string selectEntity);
-	vector<string> intersection(vector<string> v1, vector<string> v2);
+	//vector<string> intersection(vector<string> v1, vector<string> v2);
 	vector<string> removeVectDuplicates(vector<string> selectClause);
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
