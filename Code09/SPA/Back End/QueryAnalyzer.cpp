@@ -22,7 +22,7 @@ const int NOSYNENTRY = -1;
 enum selectValue
 {
 	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
-	prog_lineSelect, ifSelect, procedureSelect
+	prog_lineSelect, ifSelect, procedureSelect, callSelect, stmtLstSelect
 };
 
 enum suchThatValue
@@ -90,6 +90,9 @@ void QueryAnalyzer::initSelectMap()
 	mapSelectValues["prog_line"] = prog_lineSelect;
 	mapSelectValues["if"] = ifSelect;
 	mapSelectValues["procedure"] = procedureSelect;
+	mapSelectValues["call"] = callSelect;
+	mapSelectValues["stmtLst"] = stmtLstSelect;
+
 }
 
 void QueryAnalyzer::initSuchThatMap()
@@ -269,19 +272,21 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 
 	}
 
-	vector<string> vecToCartProd;
+	vector<string> vecToCartProd = synTableConcatEntries.front;
 	//cartesian product synonyms.
-	for (int i = 0; i < synTableConcatEntries.size(); i++) {
-		auto result = cross(synTableConcatEntries[i],vecToCartProd);
-		vector<string> vecCartProdstring;
-		string concatCartProdString;
-		for(auto& j : result) {
-			concatCartProdString.append(get<0>(j))
-				.append(",")
-				.append(get<1>(j));
-			vecCartProdstring.push_back(concatCartProdString);
+	if (!vecToCartProd.empty()) {
+		for (int i = 1; i < synTableConcatEntries.size(); i++) {
+			auto result = cross(vecToCartProd, synTableConcatEntries[i]);
+			vector<string> vecCartProdstring;
+			for (auto& j : result) {
+				string concatCartProdString;
+				concatCartProdString.append(get<0>(j))
+					.append(",")
+					.append(get<1>(j));
+				vecCartProdstring.push_back(concatCartProdString);
+			}
+			vecToCartProd = vecCartProdstring;
 		}
-		vecToCartProd = vecCartProdstring;
 	}
 	answer = vecToCartProd;
 }
@@ -298,17 +303,16 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	string resultEntity = selectElement.getSelectType();
 	if (isQueryFalse())
 		if (resultEntity == "BOOLEAN")
-			answer.push_back("false");
+			return{ "false" };
 		else
 			return {};
 
 	switch(mapResultTypeValues[resultEntity])
 	{
 		case booleanResult:
-			answer.push_back("true");
-			break;
+			return{ "true" };
 
-		case synonymResult:
+		case synonymResult: 
 			selectSynonym(answer);
 			break;
 		
@@ -344,6 +348,7 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 		break;
 
 	case prog_lineSelect: //prog_line , not in use atm
+		selectResultInt = pkbReadOnly.getAllStmt();
 		break;
 
 	case ifSelect:
@@ -352,6 +357,13 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 
 	case procedureSelect:
 		answer = pkbReadOnly.getAllProcedures();
+		break;
+
+	case callSelect:
+		selectResultInt = pkbReadOnly.getCall();
+		break;
+
+	case stmtLstSelect: //unimplemented stmt# of the first Stmt in the list
 		break;
 	}
 	if (!selectResultInt.empty())
