@@ -61,7 +61,7 @@ x
 13 - comment
 assign w; variable v;
 Select w such that Modifies(w, v) pattern w(_,_"2*y"_) 
-none
+4
 5000
 14 - comment
 assign a;
