@@ -192,7 +192,7 @@ string Util::getExpression(string line) {
 	}
 	string result = "";
 	for (int i = 0; i < back; i++) {
-		if (line[i] != ' ') {
+		if (line[i] != ' ' && line[i]  != '\t') {
 			result.push_back(line[i]);
 		}
 	}
