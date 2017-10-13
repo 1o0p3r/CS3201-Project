@@ -110,6 +110,11 @@ string QueryElement::getPatternArg2()
 	return argumentTwoPattern;
 }
 
+string QueryElement::getPatternArg3()
+{
+	return argumentThreePattern;
+}
+
 string QueryElement::getPatternEntity()
 {
 	return patternEnt;
@@ -121,6 +126,14 @@ string QueryElement::getPatternArg1Type()
 string QueryElement::getPatternArg2Type() 
 {
 	return patternArg2Type;
+}
+string QueryElement::getPatternArg3Type()
+{
+	return patternArg3Type;
+}
+string QueryElement::getPatternArg1Ent()
+{
+	return patternArg1Ent;
 }
 string QueryElement::getPatternSynonym()
 {
