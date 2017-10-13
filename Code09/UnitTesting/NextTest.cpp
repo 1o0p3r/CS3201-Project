@@ -69,7 +69,7 @@ namespace UnitTesting
 			Assert::IsTrue(next.getProcEndLine(2) == vector<int>{4});
 		}
 
-		
+		/*
 		TEST_METHOD(checkProcEndLineWMultipleProc) {
 
 		Next next;
@@ -81,6 +81,6 @@ namespace UnitTesting
 		Assert::IsTrue(next.getProcEndLine(2) == vector<int>{6});
 		Assert::IsTrue(next.getProcEndLine(4) == vector<int>{6});
 		}
-		
+		*/
 	};
 }
