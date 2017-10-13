@@ -59,10 +59,13 @@ public:
 
 	string getPatternArg1();
 	string getPatternArg2();
+	string getPatternArg3();
 	string getPatternEntity();
 	string getPatternSynonym();
 	string getPatternArg1Type();
 	string getPatternArg2Type();
+	string getPatternArg3Type();
+	string getPatternArg1Ent();
 
 };
 

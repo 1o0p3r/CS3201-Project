@@ -246,48 +246,7 @@ namespace UnitTesting
 			str = "stmt s, w, a";
 			Assert::IsTrue(queryValidator.isEntityAndSynonym(str));
 		}
-		TEST_METHOD(isValidRemoveSymbols){
-			QueryValidator queryValidator;
-			string str, expectedStr;
 
-			str = "s, w";
-			expectedStr = "s,w";
-			Assert::IsTrue(queryValidator.removeSymbols(str, WHITESPACE__STRING) == expectedStr);
-			str = " s    ,    w";
-			expectedStr = "s,w";
-			Assert::IsTrue(queryValidator.removeSymbols(str, WHITESPACE__STRING) == expectedStr);
-
-			str = "\"wewewewe\"";
-			expectedStr = "wewewewe";
-			Assert::IsTrue(queryValidator.removeSymbols(str, DOUBLE_QUOTATION_STRING) == expectedStr);
-
-		}
-		TEST_METHOD(isValidQuotationIDENT) {
-			QueryValidator queryValidator;
-			string str;
-			
-			str = "\"x\"";
-			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
-
-			str = "\"		x\"";
-			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
-
-			str = "\"		FREEE1234			\"";
-			Assert::IsTrue(queryValidator.isQuotationIdentRegex(str));
-		}
-		TEST_METHOD(isValidOuterParenthesesRemoval) {
-			QueryValidator queryValidator;
-			string str;
-			string expected;
-
-			str = "(x+y)";
-			expected = "x+y";
-			Assert::IsTrue(queryValidator.removeOuterParentheses(str) == expected);
-
-			str = "(_ , \"(x+y\")";
-			expected = "_ , \"(x+y\"";
-			Assert::IsTrue(queryValidator.removeOuterParentheses(str) == expected);
-		}
 		TEST_METHOD(isValidAssignPatternRegex) {
 			QueryValidator queryValidator;
 			string str;
@@ -507,24 +466,6 @@ namespace UnitTesting
 			temp = vecStr;
 			Assert::IsTrue(vecStr == expectedVecStr);
 
-		}
-		
-		TEST_METHOD(removeDuplicatesWhiteSpaces) {
-			QueryValidator queryValidator;
-			string str;
-			string expected;
-
-			str = "This is a      dummy     string";
-			expected = "This is a dummy string";
-			Assert::IsTrue(queryValidator.removeDuplicatesWhiteSpaces(str) == expected);
-			
-			str = "stmt    S;     while w; Select S such    that Follows(s   ,4)";
-			expected = "stmt S; while w; Select S such that Follows(s ,4)";
-			Assert::IsTrue(queryValidator.removeDuplicatesWhiteSpaces(str) == expected);
-
-			str = " stmt s;  while  w; Select s such  that  Follows(  s,4) pattern a(_,   \"x\")";
-			expected = " stmt s; while w; Select s such that Follows( s,4) pattern a(_, \"x\")";
-			Assert::IsTrue(queryValidator.removeDuplicatesWhiteSpaces(str) == expected);
 		}
 		TEST_METHOD(isValidDeclarationRegex) {
 			QueryValidator queryValidator;
@@ -757,70 +698,6 @@ namespace UnitTesting
 
 		}
 
-		TEST_METHOD(isValidExtractPattern) {
-			QueryValidator queryValidator;
-			string str;
-
-			vector<string> expectedVec;
-			vector<string> returnedVec;
-
-			str = "pattern a(a, _) pattern ifs(_,_,_) and pattern a(_,_)";
-			expectedVec.push_back("pattern a(a, _)");
-			expectedVec.push_back(" pattern ifs(_,_,_)");
-			expectedVec.push_back(" and pattern a(_,_)");
-
-			returnedVec = queryValidator.extractPattern(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-			
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
-			expectedVec.push_back("pattern a(a, \"x\")a()");
-			expectedVec.push_back(" pattern ifs(_,_,_)");
-			expectedVec.push_back(" and pattern a(_,_)");
-
-			returnedVec = queryValidator.extractPattern(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "pattern a(a, \"x\")a() pattern ifs(_,_,_) and pattern a(_,_)";
-			expectedVec.push_back("pattern a(a, \"x\")a()");
-			expectedVec.push_back(" pattern ifs(_,_,_)");
-			expectedVec.push_back(" and pattern a(_,_)");
-
-			returnedVec = queryValidator.extractPattern(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-		}
-
-		TEST_METHOD(isValidGeneralPattern) {
-			QueryValidator queryValidator;
-			string str;
-
-			str = "pattern a(_,_)";
-			Assert::IsTrue(queryValidator.isValidGeneralPatternRegex(str));
-
-			
-			str = "pattern a(_,\"(x+y)\")";
-			Assert::IsTrue(queryValidator.isValidGeneralPatternRegex(str));
-
-		}
-
-		TEST_METHOD(isInValidGeneralPattern) {
-			QueryValidator queryValidator;
-			string str;
-
-			str = "pattern # a(_,_)";
-			Assert::IsFalse(queryValidator.isValidGeneralPatternRegex(str));
-
-
-		}
 		TEST_METHOD(isValidIfPatternRegex) {
 			QueryValidator queryValidator;
 			string str;
@@ -860,21 +737,6 @@ namespace UnitTesting
 
 			str = "pattern ifs(@,_,_)";
 			Assert::IsFalse(queryValidator.isValidIfPatternRegex(str));
-		}
-		TEST_METHOD(isValidRemoveLeadingPatternString) {
-			QueryValidator queryValidator;
-			string str;
-			string expected;
-
-			str = "pattern ifs(@,_,_)";
-			expected = "ifs(@,_,_)";
-			Assert::IsTrue(queryValidator.removeLeadingPatternString(str) == expected);
-
-			str = "pattern ifs     (	x,   _   ,     _			)";
-			expected = "ifs     (	x,   _   ,     _			)";
-			Assert::IsTrue(queryValidator.removeLeadingPatternString(str) == expected);
-
-
 		}
 		TEST_METHOD(isValidSelectInitialRegex) {
 			QueryValidator queryValidator;
@@ -917,60 +779,6 @@ namespace UnitTesting
 
 			str = "w#(_,2)";
 			Assert::IsFalse(queryValidator.isValidWhilePatternRegex(str));
-		}
-		TEST_METHOD(isValidAttRef) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "p.procName";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "v.varName";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "c.value";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "a.stmt#";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "w.stmt#";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "i.stmt#";
-			Assert::IsTrue(queryValidator.isValidAttRefRegex(input));
-			
-			input = "P.PROCNAME";
-			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
-			
-			input = "p. procName";
-			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
-			
-			input = "p.pr0cName";
-			Assert::IsFalse(queryValidator.isValidAttRefRegex(input));
-
-		}
-		TEST_METHOD(isValidAttrCompare) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "p.procName = v.varName";
-			Assert::IsTrue(queryValidator.isValidAttrCompareRegex(input));
-
-			input = "p.procName = \"hello\"";
-			Assert::IsTrue(queryValidator.isValidAttrCompareRegex(input));
-
-		}
-		TEST_METHOD(isValidAttrCond) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "p.procName = v.varName";
-			Assert::IsTrue(queryValidator.isValidAttrCondRegex(input));
-
-			input = "p.procName = \"hello\"";
-			Assert::IsTrue(queryValidator.isValidAttrCondRegex(input));
-
 		}
 		TEST_METHOD(isValidWithClause) {
 			QueryValidator queryValidator;
@@ -1068,9 +876,6 @@ namespace UnitTesting
 
 			input = "with         p.procName = v2.varName      and v2.varName = \"hello\"    and i.stmt# = 5 and v1.varName = v2.varName";
 			Assert::IsTrue(queryValidator.isValidWithRegex(input));
-
-	//		input = "with v1.varName = v2.varName and v1.varName = \"hello\" with v3.varName = \"hi\"";
-//			Assert::IsTrue(queryValidator.isValidWithExtendedRegex(input));
 		}
 
 		TEST_METHOD(isValidWithClauseExtended) {
@@ -1109,38 +914,6 @@ namespace UnitTesting
 
 			input = "andpattern a(_,_)";
 			Assert::IsFalse(queryValidator.isPartialPatternRegex(input));
-		}
-		TEST_METHOD(isValidRemoveLeadingAnd) {
-			QueryValidator queryValidator;
-			string input;
-			string expected;
-
-			input = "and pattern a(_,_)";
-			expected = "pattern a(_,_)";
-			Assert::IsTrue(queryValidator.removeLeadingAnd(input) == expected);
-
-
-			input = "and			pattern		 a(_,_)";
-			expected = "pattern		 a(_,_)";
-			Assert::IsTrue(queryValidator.removeLeadingAnd(input) == expected);
-		}
-		TEST_METHOD(isValidTrim) {
-			QueryValidator queryValidator;
-			string input;
-			string expected;
-			input = "          with v1.varName = v2.varName and v1.varName = \"hello\"              ";
-			expected = "with v1.varName = v2.varName and v1.varName = \"hello\"";
-			Assert::IsTrue(Util::trim(input) == expected);
-
-
-			input = "          with v1.varName = v2.varName and v1.varName = \"hello\"              ";
-			expected = "with v1.varName = v2.varName and v1.varName = \"hello\"";
-			Assert::IsTrue(Util::trim(input) == expected);
-
-
-			input = "          with v1.varName =    v2.varName and v1.varName = \"hello\"			             ";
-			expected = "with v1.varName =    v2.varName and v1.varName = \"hello\"";
-			Assert::IsTrue(Util::trim(input) == expected);
 		}
 	};
 }
