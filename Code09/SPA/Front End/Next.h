@@ -28,5 +28,5 @@ private:
 	vector<set<int>> procEndLine;
 	bool procChecksAreComplete;
 
-	void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
+	void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines, int firstLine, int lastLine);
 };

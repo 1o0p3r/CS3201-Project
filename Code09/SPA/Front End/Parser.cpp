@@ -54,7 +54,7 @@ bool Parse(string fileName, PKB& pkb) {
 			Parent.push_back(prevFollow);
 			isSameLevel = false;
 			isNewContainer = true;
-		} else if (isProcedure(nextLine)) {
+		} else if (isProcedure(nextLine) && Parent.size() == 0 && nestLevel == 0) {
 			if (lineCounter > 1) {
 				pkb.setLastline(procName, lastLine);
 			}
@@ -86,6 +86,11 @@ bool Parse(string fileName, PKB& pkb) {
 				line = line.substr(i, line.size());
 				if (!isElseStatement(Util::splitLine(line, ' '))) {
 					return false;
+				} else {
+					nestLevel++;
+					Parent.push_back(prevFollow);
+					isSameLevel = false;
+					isNewContainer = true;
 				}
 			}
 			lineCounter--;

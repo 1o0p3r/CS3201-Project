@@ -1,37 +1,38 @@
-procedure Pikachu {
-	a = 10;
-	b = 2*a;
-	c = b-2;
-	if a then {
-		while b {
-			d = c+a;
-			j = i*10*d;
-			a = a-1;}
-			while a {
-				e = j*d;}}
+procedure Apple {
+	x = 1 ;
+	while li3m {
+		y = x + l0l ;
+	}
+	
+	if pop then {
+		pop = l0l * (li3m + x) - y ;
+		if y then {
+			y         =     	5423214548         ;
+		}
+		else {
+			call Pear ;
+		}
+	}
 	else {
-			k = c*a;
-			m = k-a;
-			while b{
-				x=i*10;
-				if x then {
-					y = x+m;
-					i = i*t-5;
-					j = j*(k+4);
-					if c then {
-						m = x+a*y+5;}
-					else{
-						y = x-y-j;}
-					while a{
-						e = j*d;}
-					m = a*x;
-					y = y+10;}
-				else{ 
-					j = a+c; }
-				k = k-m;}
-			t = a+y;}}
+	
+		li3m = pop;
+	}
+	k = 2;
+}
 			
 			
 			
-			
-			
+procedure Pear{
+if=90;
+if if then{
+ggg=80;
+if=ggg+4;}
+else{
+if Y2K then{
+boom=1;
+}else{
+boom=0;}}}
+procedure Nana {
+	call Apple;
+	call Pear;
+}
