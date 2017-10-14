@@ -16,6 +16,7 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
 		pkbParent = pkbReadOnly.getChild(candidates);
+		pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
 		for (int candidatesChosen : pkbParent) {
 			pkbResult.push_back(to_string(candidatesChosen));
 		}
@@ -45,6 +46,7 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
 		pkbParent = pkbReadOnly.getParent(candidates);
+		pkbParent = validatePKBResultsInt(arg1Entity, pkbParent);
 		for (int candidatesChosen : pkbParent) {
 			pkbResult.push_back(to_string(candidatesChosen));
 		}
@@ -69,9 +71,12 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> parentResult;
 
+	
 	vecOfCandidates = pkbReadOnly.getAllStmt();
+	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	for (int candidates : vecOfCandidates) {
 		pkbParent = pkbReadOnly.getChild(candidates);
+		pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
 		for (int candidatesChosen : pkbParent) {
 			pkbResultForArg1.push_back(to_string(candidates));
 			pkbResultForArg2.push_back(to_string(candidatesChosen));

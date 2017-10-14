@@ -25,11 +25,11 @@ public:
 			//"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
 			//"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
 			//"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
-			"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(wew, as1)",
+			//"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(wew, as1)",
 			//"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(2, as1)",
 			//"stmt sTwo; assign as1; while wew; Select wew such that Parent*(wew, 3)",
 			//"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(as1, 3)",
-			//"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(pOne, \"y\")",
+			"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(pOne, \"y\")",
 			//"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
 			//"assign a; procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
 			//"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
@@ -47,11 +47,11 @@ public:
 			//{"10", "2", "4"},
 			//{ "5" },
 			//{  },
-			{ "3" },		//Wrong results obtained: returned all assignments
+			//{ "3" },	
 			//{ "3" },
 			//{ "2" },
 			//{},
-			//{ "Nana", "Apple" },	//Results obtained: Apple
+			{ "Nana", "Apple" },	//Results obtained: Apple , PKB error pkb ModifiedBy(2) returns only procedure apple
 			//{ "Apple",  "Nana", "Pear"},
 			//{},
 			//{ "Apple", "Nana", "Pear" },

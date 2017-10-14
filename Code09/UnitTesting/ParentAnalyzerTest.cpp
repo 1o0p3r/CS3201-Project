@@ -80,7 +80,7 @@ public:
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
 		clauseResult = ParentAnalyzer(intSyn, pkb).solveClause();
-		hardcode = { { "5","6","a" } };
+		hardcode = { { "5","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -88,7 +88,7 @@ public:
 			}
 
 
-		QueryElement synInt("a", "synonym", "assign", "7", "integer", "assign", "Parent");
+		QueryElement synInt("a", "synonym", "while", "7", "integer", "assign", "Parent");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synInt);
 		qa.setQS(qs);
@@ -100,13 +100,13 @@ public:
 				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
 			}
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Parent");
+		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Parent");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
 		clauseResult = ParentAnalyzer(synSyn, pkb).solveClause();
-		hardcode = { { "1","1","1","4","4","6","a" },
-		{ "2","3","4","5","6","7","b" } };
+		hardcode = { { "1","1","4","6","a" },
+		{ "2","3","5","7","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -114,7 +114,7 @@ public:
 			}
 
 
-		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "Parent");
+		QueryElement synWild("a", "synonym", "while", "_", "wildcard", "assign", "Parent");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
@@ -132,7 +132,7 @@ public:
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);
 		clauseResult = ParentAnalyzer(wildSyn, pkb).solveClause();
-		hardcode = { { "2","3","4","5","6","7","a" } };
+		hardcode = { { "2","3","5","7","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
