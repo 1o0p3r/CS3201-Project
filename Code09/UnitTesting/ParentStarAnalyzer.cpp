@@ -75,12 +75,12 @@ public:
 		clauseResult = ParentStarAnalyzer(intInt, pkb).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement intSyn("4", "int", "assign", "a", "synonym", "assign", "ParentStar");
+		QueryElement intSyn("4", "int", "while", "a", "synonym", "assign", "ParentStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(intSyn, pkb).solveClause();
-		hardcode = { {"5","6","7","a"} };
+		hardcode = { {"5","7","a"} };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -88,7 +88,7 @@ public:
 			}
 
 
-		QueryElement synInt("a", "synonym", "assign", "7", "integer", "assign", "ParentStar");
+		QueryElement synInt("a", "synonym", "while", "7", "integer", "assign", "ParentStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synInt);
 		qa.setQS(qs);
@@ -100,13 +100,13 @@ public:
 				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
 			}
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "ParentStar");
+		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "ParentStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(synSyn, pkb).solveClause();
-		hardcode = { { "1","1","1","1","1","1","4","4","4","6","a" },
-					{ "2","3","4","5","6","7","5","6","7","7","b" } };
+		hardcode = { { "1","1","1","1","4","4","6","a" },
+					{ "2","3","5","7","5","7","7","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -114,7 +114,7 @@ public:
 			}
 
 
-		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "ParentStar");
+		QueryElement synWild("a", "synonym", "while", "_", "wildcard", "assign", "ParentStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
@@ -127,12 +127,12 @@ public:
 			}
 	
 
-		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "ParentStar");
+		QueryElement wildSyn("_", "wildcard", "", "a", "synonym", "assign", "ParentStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(wildSyn, pkb).solveClause();
-		hardcode = { { "2","3","4","5","6","7","a" } };
+		hardcode = { { "2","3","5","7","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {

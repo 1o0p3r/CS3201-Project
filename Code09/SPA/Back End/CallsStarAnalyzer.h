@@ -18,6 +18,6 @@ protected:
 	bool checkClauseVariableWild(string arg1) override;
 	bool checkClauseWildVariable(string arg2) override;
 	bool checkClauseBothWild() override;
-
 	vector<string> getPKBAllArgValues() override;
+
 };

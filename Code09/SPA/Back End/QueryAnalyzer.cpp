@@ -165,9 +165,9 @@ void QueryAnalyzer::selectSynonym(vector<string> &answer)
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
 		                         .at(get<ARGTWO>(search->second));
 		answer = removeVectDuplicates(answer);
-		answer = analyzeSelect(answer, selectEntity);
+		answer = validateResult(answer, selectEntity);
 	} else {
-		answer = analyzeSelect(answer, selectEntity);
+		answer = validateResult(answer, selectEntity);
 	}
 }
 
@@ -215,7 +215,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			//find intersection of vector and design entity
 			int ccsLoc = 0;
 			for (auto concatSyn : commonTableSyn) { //elements in vector
-				vector<string> synEntityVec = analyzeSelect({}, get<SYNENTITY>(concatSyn));
+				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn));
 				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
 					make_move_iterator(synEntityVec.end()));
 				for (int i = 0; i < numVecElements; i++) {
@@ -248,7 +248,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				vecAppendedSynValues.push_back(appendSynValue);
 			}
 		} else {
-			vecAppendedSynValues = analyzeSelect({}, get<SYNENTITY>(commonTableSyn.front()));
+			vecAppendedSynValues = validateResult({}, get<SYNENTITY>(commonTableSyn.front()));
 		}
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
@@ -305,7 +305,7 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	return answer;
 }
 
-vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string selectEntity) {
+vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string selectEntity) {
 	vector<int> selectResultInt;
 	vector<string> answer;
 
