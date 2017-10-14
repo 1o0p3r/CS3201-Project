@@ -29,7 +29,7 @@ public:
 	@returns void
 	*/
 	void setProcUses(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt);
-
+	void setProcUses(int procName, int varName);
 	/*
 	Gets variables used by statementNum
 
@@ -70,7 +70,6 @@ private:
 	vector<set<int>> procUsedByTable; //proc modified by vars
 
 	void setUses(int statementNum, int varName);
-	void setProcUses(int procName, int varName);
 	void setUsedBy(int varName, int statementNum);
 	void setProcUsedBy(int procName, int varName);
 };

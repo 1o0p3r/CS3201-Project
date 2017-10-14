@@ -45,5 +45,12 @@ public:
 		Assert::IsTrue(pkb.getUses(10) == vector<string>{"x", "z"});
 		Assert::IsTrue(pkb.getWhile() == vector<int>{4, 14});
 	}
+	TEST_METHOD(Test) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-1.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getProcModifiedBy("y") == vector<string>{"Apple", "Nana"});
+	}
+
 	};
 }

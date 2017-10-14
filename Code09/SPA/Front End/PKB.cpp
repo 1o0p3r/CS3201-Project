@@ -289,6 +289,18 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
 	call.setCalls(statementNum, index1, index2);
+	if (index2 < index1) {
+		vector<int> modifies = modify.getProcModifies(index2);
+		for each (int var in modifies) {
+			modify.setProcModifies(index1, var);
+			modify.setModifies(statementNum, var, parent.getParentStar(statementNum));
+		}
+		vector<int> uses = use.getProcUses(index2);
+		for each (int var in uses) {
+			use.setProcUses(index1, var);
+			use.setUses(statementNum, var, parent.getParentStar(statementNum));
+		}
+	}
 }
 
 vector<string> PKB::getCalls(string procName) {

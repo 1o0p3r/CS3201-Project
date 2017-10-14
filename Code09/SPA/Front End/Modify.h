@@ -29,6 +29,7 @@ public:
 	@returns void
 	*/
 	void setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt);
+	void setProcModifies(int procName, int varName);
 
 	/*
 	Gets variables modified by statementNum
@@ -70,7 +71,6 @@ private:
 	vector<set<int>> procModifiedByTable; //proc modified by vars
 
 	void setModifies(int statementNum, int varName);
-	void setProcModifies(int procName, int varName);
 	void setModifiedBy(int varName, int statementNum);
 	void setProcModifiedBy(int procName, int varName);
 

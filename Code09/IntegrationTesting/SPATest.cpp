@@ -51,13 +51,13 @@ public:
 			{ "3" },
 			{ "2" },
 			{},
-			{ "Nana", "Apple" },	//Results obtained: Apple
+			{ "Apple", "Nana" },
 			{ "Apple",  "Nana", "Pear"},
 			{},
 			{ "Apple", "Nana", "Pear" },
 			{ "boom", "ggg", "if" },
-			{ "Apple", "Nana" },	//Results obtained: Apple
-			{ "8"},			//Results obtained: Empty
+			{ "Apple", "Nana" },
+			{ "8" },			//Results obtained: Empty
 			{ "Y2K", "ggg" , "if"},
 			{},
 			{},		
