@@ -67,5 +67,14 @@ public:
 	string getPatternArg3Type();
 	string getPatternArg1Ent();
 
+	string getWithArg1();
+	string getWithArg2();
+	string getWithArg1Type();
+	string getWithArg2Type();
+	string getWithArg1Ent();
+	string getWithArg2Ent();
+	string getWithArg1Syn();
+	string getWithArg2Syn();
+
 };
 
