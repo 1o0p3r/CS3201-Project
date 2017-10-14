@@ -31,7 +31,7 @@ class QueryAnalyzer
 public:
 	QueryAnalyzer();
 
-	void setPKB(PKB pkb);
+	void setPKB(PKB &pkb);
 	void setQS(QueryStatement qs);
 	vector<string> runQueryEval();
 //private:
@@ -43,7 +43,7 @@ public:
 	unordered_map<string, tuple<int,int>> synTableMap;
 	unordered_map<int, int> selectSynMap;
 
-	PKB pkbReadOnly;
+	PKB pkbPtr;
 	bool hasSTClause;
 	bool hasPatternClause;
 
