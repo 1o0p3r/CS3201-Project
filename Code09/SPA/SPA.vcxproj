@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
+    <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
@@ -36,12 +37,14 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
+    <ClCompile Include="PatternAnalyzer.cpp" />
     <ClCompile Include="suchThatHandler.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Back End\CallsAnalyzer.h" />
+    <ClInclude Include="Back End\CallsStarAnalyzer.h" />
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
     <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
     <ClInclude Include="Back End\ModifiesAnalyzer.h" />
@@ -67,6 +70,7 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
+    <ClInclude Include="PatternAnalyzer.h" />
     <ClInclude Include="suchThatHandler.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WithHandler.h" />

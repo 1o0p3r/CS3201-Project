@@ -1,9 +1,28 @@
 #include "QueryAnalyzer.h"
 
+const string DELIMITER = ",";
+const string SYNONYM = "synonym";
+const string WILDCARD = "wildcard";
+const string WILDCARD_SYMBOL = "_";
+const int ARGONE = 0;
+const int ARGTWO = 1;
+const int TABLELOC = 0;
+const int SYNVECLOC = 1;
+const int SYNENTITY = 2;
+const int SYNPOS = 1;
+const int VECINTERSECTION = 0;
+const int TTMINDEX = 1;
+const int STRINDEX = 2;
+const int SAMETABLE = 0;
+const int TWO_DISJOINT_TABLE = 1;
+const int VECTRESULT = 1;
+const int BOOLRESULT = 0;
+const int NOSYNENTRY = -1;
+
 enum selectValue
 {
 	undefinedSelect, stmtSelect, assignSelect, whileSelect, variableSelect, constantSelect,
-	prog_lineSelect, ifSelect, procedureSelect
+	prog_lineSelect, ifSelect, procedureSelect, callSelect, stmtLstSelect
 };
 
 enum suchThatValue
@@ -39,6 +58,11 @@ enum patternValues
 	assign_, while_, if_
 };
 
+enum resultType
+{
+	undefinedResultType, synonymResult, tupleResult, booleanResult
+};
+
 enum patternExpType
 {
 	undefinedExpression, exact, substring, _wildcard_
@@ -48,6 +72,7 @@ static map<string, selectValue> mapSelectValues;
 static map<string, suchThatValue> mapSuchThatValues;
 static map<string, parentSynType> mapParentSynTypeValues;
 static map<string, patternValues> mapPatternValues;
+static map<string, resultType > mapResultTypeValues;
 
 void QueryAnalyzer::initMapPatternExpType() {
 	mapPatternExpType["exact"] = exact;
@@ -65,6 +90,9 @@ void QueryAnalyzer::initSelectMap()
 	mapSelectValues["prog_line"] = prog_lineSelect;
 	mapSelectValues["if"] = ifSelect;
 	mapSelectValues["procedure"] = procedureSelect;
+	mapSelectValues["call"] = callSelect;
+	mapSelectValues["stmtLst"] = stmtLstSelect;
+
 }
 
 void QueryAnalyzer::initSuchThatMap()
@@ -96,20 +124,12 @@ void QueryAnalyzer::initPatternValueMap() {
 	mapPatternValues["if"] = if_;
 }
 
-const string SYNONYM = "synonym";
-const string WILDCARD = "wildcard";
-const string WILDCARD_SYMBOL = "_";
-const int ARGONE = 0;
-const int ARGTWO = 1;
-const int TABLEPOS = 0;
-const int SYNPOS = 1;
-const int VECINTERSECTION = 0;
-const int TTMINDEX = 1;
-const int STRINDEX = 2;
-const int SAMETABLE = 0;
-const int TWO_DISJOINT_TABLE = 1;
-const int VECTRESULT = 1;
-const int BOOLRESULT = 0;
+void QueryAnalyzer::initResultTypeMap()
+{	
+	mapResultTypeValues["synonym"] = synonymResult;
+	mapResultTypeValues["BOOLEAN"] = booleanResult;
+	mapResultTypeValues["tuple"] = tupleResult;
+}
 
 QueryAnalyzer::QueryAnalyzer() {
 	initSelectMap();
@@ -117,15 +137,17 @@ QueryAnalyzer::QueryAnalyzer() {
 	initParentSynTypeMap();
 	initPatternValueMap();
 	initMapPatternExpType();
+	initResultTypeMap();
 	vector<string> result;
 	synTableMap = unordered_map<string, tuple<int, int>>();
+	selectSynMap = unordered_map<int, int>();
 	hasSTClause = true;
 	hasPatternClause = true;
 
 }
 
-void QueryAnalyzer::setPKB(PKB pkb) {
-	pkbReadOnly = pkb;
+void QueryAnalyzer::setPKB(PKB &pkb) {
+	pkbPtr = pkb;
 }
 
 void QueryAnalyzer::setQS(QueryStatement qs){
@@ -133,7 +155,6 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 }
 
 vector<string> QueryAnalyzer::runQueryEval() {
-	vector<string> result;
 	synTableMap = unordered_map<string, tuple<int, int>>();
 	mergedQueryTable = vector<vector<vector<string>>>();
 	hasSTClause = true;
@@ -141,7 +162,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	findQueryElements();
 	solveSTClause();
 	solvePatternClause();
-	result = analyzeClauseResults();
+	vector<string> result = analyzeClauseResults();
 	return result;
 }
 
@@ -153,21 +174,151 @@ void QueryAnalyzer::findQueryElements() {
 	patternElements = qsReadOnly.getPatternQueryElement();
 }
 
-vector<string> QueryAnalyzer::analyzeClauseResults() {
-	vector<string> answer;
-	if (!hasSTClause || !hasPatternClause)
-		return{};
-
+void QueryAnalyzer::selectSynonym(vector<string> &answer)
+{
 	string selectEntity = selectElement.getSelectEntity();
 	string selectSyn = selectElement.getSelectSynonym();
 	auto search = synTableMap.find(selectSyn);
 	if (search != synTableMap.end()) {
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
-				.at(get<ARGTWO>(search->second));
+		                         .at(get<ARGTWO>(search->second));
 		answer = removeVectDuplicates(answer);
 		answer = analyzeSelect(answer, selectEntity);
 	} else {
 		answer = analyzeSelect(answer, selectEntity);
+	}
+}
+
+void QueryAnalyzer::setClauseFalse()
+{ 
+	hasPatternClause, hasSTClause = false; //future implementation, include with
+}
+
+void QueryAnalyzer::selectTuple(vector<string> &answer)
+{
+	auto tupleSynonyms = selectElement.getSelectSynonym();
+	auto tupleEntity = selectElement.getSelectEntity();
+	auto synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	auto synonymEntities = Util::splitLine(tupleEntity, ',');
+	vector<vector<tuple<int,int,string>>> synLoc;
+	vector<vector<string>> synTableConcatEntries;
+
+
+	//init mapping of synonyms from same table
+	for (int i = 0; i < synonymTokens.size(); i++) {
+		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
+		if (searchInQueryTable != synTableMap.end()) {
+			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second));
+			if (searchInSelectSynMap == selectSynMap.end()) {
+				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), synLoc.size()));
+			}
+			synLoc[searchInSelectSynMap->second].push_back(make_tuple(
+					get<TABLELOC>(searchInQueryTable->second),
+					get<SYNVECLOC>(searchInQueryTable->second),
+					synonymEntities[i]));
+		} else {
+			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i]) });
+		}
+	}
+
+	
+	for (auto commonTableSyn : synLoc) {
+		vector<string> vecAppendedSynValues;
+		//synonym exists in intermediate table
+		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {
+			int numVecElements = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size();
+			vecAppendedSynValues = vector<string>();
+			vector<vector<int>> columnToKeep;
+
+			//find intersection of vector and design entity
+			int ccsLoc = 0;
+			for (auto concatSyn : commonTableSyn) { //elements in vector
+				vector<string> synEntityVec = analyzeSelect({}, get<SYNENTITY>(concatSyn));
+				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
+					make_move_iterator(synEntityVec.end()));
+				for (int i = 0; i < numVecElements; i++) {
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][i];
+					if (synEntitySet.find(element) != synEntitySet.end())
+							columnToKeep[ccsLoc].push_back(i);
+				}
+				ccsLoc++;
+			}
+			vector<int> columnResult = columnToKeep.front(); //init for merging vecs
+			for (int i=1; i<columnToKeep.size();i++) {
+				columnResult = intersectionT(columnResult, columnToKeep[i]);
+			}
+			
+			//terminating condition
+			if (columnResult.empty()) {
+				setClauseFalse();
+				answer = {};
+			}
+
+			//append values to vector
+			for (const auto& entry : columnResult) {
+				string appendSynValue;
+				for (auto concatSyn : commonTableSyn) {
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][entry];
+					appendSynValue.append(element);
+					appendSynValue.append(DELIMITER);		
+				}
+				appendSynValue.pop_back(); //remove last delimiter ","
+				vecAppendedSynValues.push_back(appendSynValue);
+			}
+		} else {
+			vecAppendedSynValues = analyzeSelect({}, get<SYNENTITY>(commonTableSyn.front()));
+		}
+		synTableConcatEntries.push_back(vecAppendedSynValues);
+
+	}
+
+	vector<string> vecToCartProd = synTableConcatEntries.front();
+	//cartesian product synonyms.
+	if (!vecToCartProd.empty()) {
+		for (int i = 1; i < synTableConcatEntries.size(); i++) {
+			auto result = cross(vecToCartProd, synTableConcatEntries[i]);
+			vector<string> vecCartProdstring;
+			for (auto& j : result) {
+				string concatCartProdString;
+				concatCartProdString.append(get<0>(j))
+					.append(",")
+					.append(get<1>(j));
+				vecCartProdstring.push_back(concatCartProdString);
+			}
+			vecToCartProd = vecCartProdstring;
+		}
+	}
+	answer = vecToCartProd;
+}
+
+bool QueryAnalyzer::isQueryFalse()
+{
+	if (!hasSTClause || !hasPatternClause)
+		return true;
+	return false;
+}
+
+vector<string> QueryAnalyzer::analyzeClauseResults() {
+	vector<string> answer;
+	string resultEntity = selectElement.getSelectType();
+	if (isQueryFalse())
+		if (resultEntity == "BOOLEAN")
+			return{ "false" };
+		else
+			return {};
+
+	switch(mapResultTypeValues[resultEntity])
+	{
+		case booleanResult:
+			return{ "true" };
+
+		case synonymResult: 
+			selectSynonym(answer);
+			break;
+		
+		case tupleResult:
+			selectTuple(answer);
+			break;
 	}
 	return answer;
 }
@@ -178,56 +329,64 @@ vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string s
 
 	switch (mapSelectValues[selectEntity]) {
 	case stmtSelect: //stmt
-		selectResultInt = pkbReadOnly.getAllStmt();
+		selectResultInt = pkbPtr.getAllStmt();
 		break;
 	case assignSelect: //assign
-		selectResultInt = pkbReadOnly.getAssign();
+		selectResultInt = pkbPtr.getAssign();
 		break;
 
 	case whileSelect: //while
-		selectResultInt = pkbReadOnly.getWhile();
+		selectResultInt = pkbPtr.getWhile();
 		break;
 
 	case variableSelect: //variable
-		answer = pkbReadOnly.getAllVariables();
+		answer = pkbPtr.getAllVariables();
 		break;
 
 	case constantSelect: //constant
-		answer = pkbReadOnly.getAllConstants();
+		answer = pkbPtr.getAllConstants();
 		break;
 
 	case prog_lineSelect: //prog_line , not in use atm
+		selectResultInt = pkbPtr.getAllStmt();
 		break;
 
 	case ifSelect:
-		selectResultInt = pkbReadOnly.getIf();
+		selectResultInt = pkbPtr.getIf();
 		break;
 
 	case procedureSelect:
-		answer = pkbReadOnly.getAllProcedures();
+		answer = pkbPtr.getAllProcedures();
+		break;
+
+	case callSelect:
+		selectResultInt = pkbPtr.getCall();
+		break;
+
+	case stmtLstSelect: //unimplemented stmt# of the first Stmt in the list
 		break;
 	}
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
 	if (!queryResult.empty()) {
-		answer = intersection(answer, queryResult);
+		answer = intersectionT(answer, queryResult);
 	}
 	return answer;
 }
 
-vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
-{
-
-	vector<string> v3;
-
-	sort(v1.begin(), v1.end());
-	sort(v2.begin(), v2.end());
-
-	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
-
-	return v3;
-}
+//vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
+//{
+//
+//	vector<string> v3;
+//
+//	sort(v1.begin(), v1.end());
+//	sort(v2.begin(), v2.end());
+//
+//	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
+//
+//	return v3;
+//}
 
 
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
@@ -257,42 +416,44 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
 		switch (evaluateSTRelation) {
 			case modifies:
-				clauseResult = ModifiesAnalyzer(stClause, pkbReadOnly).solveClause();
+				clauseResult = ModifiesAnalyzer(stClause, pkbPtr).solveClause();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
-				clauseResult = UsesAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = UsesAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
-				clauseResult = ParentAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = ParentAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parentStar:
-				clauseResult = ParentStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = ParentStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case follows:
-				clauseResult = FollowsAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = FollowsAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
-				clauseResult = FollowsStarAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = FollowsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case calls:
-				clauseResult = CallsAnalyzer(stClause, pkbReadOnly).solveClauseStmt();
+				clauseResult = CallsAnalyzer(stClause, pkbPtr).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case callsStar:
-				break;
+				clauseResult = CallsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
 				break;
 			case nextStar:
@@ -316,6 +477,7 @@ void QueryAnalyzer::solvePatternClause() {
 				patternResult = solveAssignPattern(patternClause);
 				break;
 			case while_:
+				patternResult = solveWhilePattern(patternClause);
 				break;
 			case if_:
 				break;
@@ -351,14 +513,18 @@ vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternCla
 	return patternAssignResult;
 }
 
+vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
+{
+}
+
 tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
 		string patExp, string patType, string patSyn) {
 	vector<tuple<int, string>> pkbPatResult;
 	bool containsPattern = false;
 	vector<string> entityVector;
 	vector<string> variableVector;
-	for (string candidates : pkbReadOnly.getAllVariables()) {
-		pkbPatResult = pkbReadOnly.getPattern(candidates);
+	for (string candidates : pkbPtr.getAllVariables()) {
+		pkbPatResult = pkbPtr.getPattern(candidates);
 		for (tuple<int, string> evalPattExpression : pkbPatResult) {
 			switch (mapPatternExpType[patType]) {
 				case _wildcard_:
@@ -399,11 +565,11 @@ vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp,
 	unordered_set<string> shortlisted; // for removing duplicates
 	vector<string> listOfCandidates;
 	if (arg1 == WILDCARD_SYMBOL) 
-		listOfCandidates = pkbReadOnly.getAllVariables();
+		listOfCandidates = pkbPtr.getAllVariables();
 	else
 		listOfCandidates.push_back(arg1);
 	for (string candidates : listOfCandidates) {
-		pkbPatResult = pkbReadOnly.getPattern(candidates);
+		pkbPatResult = pkbPtr.getPattern(candidates);
 		for (tuple<int, string> evalPattExpression : pkbPatResult) {
 			switch (mapPatternExpType[patType]) {
 				case _wildcard_:
@@ -663,22 +829,22 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //
 //	switch (scenario) {
 //		case intString:
-//			resultArg1Param = pkbReadOnly.getUses(stoi(arg1));
+//			resultArg1Param = pkbPtr.getUses(stoi(arg1));
 //			if (find(resultArg1Param.begin(), resultArg1Param.end(), arg2) 
 //				== resultArg1Param.end())
 //				hasSTClause = false;
 //			break;
 //		case intWild_:
-//			if (pkbReadOnly.getUses(stoi(arg1)).empty())
+//			if (pkbPtr.getUses(stoi(arg1)).empty())
 //				hasSTClause = false;
 //			break;
 //		case wildString:
-//			if (pkbReadOnly.getUsedBy(arg2).empty())
+//			if (pkbPtr.getUsedBy(arg2).empty())
 //				hasSTClause = false;
 //			break;
 //		case wildWild_:
-//			if (pkbReadOnly.getAssign().empty() && pkbReadOnly.getIf().empty() 
-//				&& pkbReadOnly.getWhile().empty())
+//			if (pkbPtr.getAssign().empty() && pkbPtr.getIf().empty() 
+//				&& pkbPtr.getWhile().empty())
 //				hasSTClause = false;
 //			break;
 //	}
@@ -692,15 +858,15 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //	vector<vector<string>> usesResult;
 //	vector<string> candidates;
 //	vector<int> candidatesInt;
-//	vector<int> allIf = pkbReadOnly.getIf();
-//	vector<int> allWhile = pkbReadOnly.getWhile();
-//	vector<int> allAssign = pkbReadOnly.getAssign();
+//	vector<int> allIf = pkbPtr.getIf();
+//	vector<int> allWhile = pkbPtr.getWhile();
+//	vector<int> allAssign = pkbPtr.getAssign();
 //	unordered_set<string> shortlisted;
 //
 //
 //	switch (scenario) {
 //		case intSyn:
-//			pkbUsesResultString = pkbReadOnly.getUses(stoi(arg1));
+//			pkbUsesResultString = pkbPtr.getUses(stoi(arg1));
 //			if (pkbUsesResultString.empty()) {
 //				hasSTClause = false;
 //			}
@@ -710,7 +876,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //			}
 //			break;
 //		case synString:
-//			pkbUsesResultInt = pkbReadOnly.getUsedBy(arg2);
+//			pkbUsesResultInt = pkbPtr.getUsedBy(arg2);
 //			if (pkbUsesResultInt.empty()) {
 //				hasSTClause = false;
 //			} else {
@@ -721,9 +887,9 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //			}
 //			break;
 //		case synSyn_: //how to solve pairing (1,"a"), (1,"x")
-//			candidates = pkbReadOnly.getAllVariables();
+//			candidates = pkbPtr.getAllVariables();
 //			for (string interviewee : candidates) {
-//				pkbUsesResultInt = pkbReadOnly.getUsedBy(interviewee);
+//				pkbUsesResultInt = pkbPtr.getUsedBy(interviewee);
 //				for (int shortlistedInterviewee : pkbUsesResultInt) {
 //					vectorToAdd.push_back(to_string(shortlistedInterviewee));
 //					vectorToAdd2.push_back(interviewee);
@@ -739,9 +905,9 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //			}
 //			break;
 //		case synWild_:
-//			candidates = pkbReadOnly.getAllVariables();
+//			candidates = pkbPtr.getAllVariables();
 //			for (string interviewee : candidates) {
-//				pkbUsesResultInt = pkbReadOnly.getUsedBy(interviewee);
+//				pkbUsesResultInt = pkbPtr.getUsedBy(interviewee);
 //				for (int shortlistedInterviewee : pkbUsesResultInt) {
 //					shortlisted.insert(to_string(shortlistedInterviewee));
 //				}
@@ -756,11 +922,11 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //			break;
 //		case wildSyn_:
 //			candidatesInt.reserve(allIf.size() + allWhile.size() + allAssign.size());
-//			candidatesInt = pkbReadOnly.getAssign();
+//			candidatesInt = pkbPtr.getAssign();
 //			candidatesInt.insert(candidatesInt.end(), allIf.begin(), allIf.end());
 //			candidatesInt.insert(candidatesInt.end(), allWhile.begin(), allWhile.end());
 //			for (int interviewee : candidatesInt) {
-//				pkbUsesResultString = pkbReadOnly.getUses(interviewee);
+//				pkbUsesResultString = pkbPtr.getUses(interviewee);
 //				for (string shortlistedInterviewee : pkbUsesResultString) {
 //					shortlisted.insert(shortlistedInterviewee);
 //				}
@@ -851,7 +1017,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //}
 //
 //bool QueryAnalyzer::isParent(string arg1, string arg2) {
-//	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+//	vector<int> childOfArg1 = pkbPtr.getChild(stoi(arg1));
 //	//if arg1 is not a parent of arg2
 //	if (!(find(childOfArg1.begin(), childOfArg1.end(), stoi(arg2)) != childOfArg1.end()))
 //		hasSTClause = false;
@@ -860,7 +1026,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //
 //vector<string> QueryAnalyzer::evalParentIntSyn(string arg1, string arg2) {
 //	vector<string> parentIntSyn;
-//	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+//	vector<int> childOfArg1 = pkbPtr.getChild(stoi(arg1));
 //	if (!childOfArg1.empty()) {
 //		for (int child : childOfArg1)
 //			parentIntSyn.push_back(to_string(child));
@@ -873,7 +1039,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //}
 //
 //bool QueryAnalyzer::hasChildOfArg1(string arg1) {
-//	vector<int> childOfArg1 = pkbReadOnly.getChild(stoi(arg1));
+//	vector<int> childOfArg1 = pkbPtr.getChild(stoi(arg1));
 //	if (childOfArg1.empty())
 //		hasSTClause = false;
 //	return hasSTClause;
@@ -881,7 +1047,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //
 //vector<string> QueryAnalyzer::hasParentOfArg2(string arg1,string arg2) {
 //	vector<string> parentSynInt;
-//	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
+//	vector<int> parentOfArg2 = pkbPtr.getParent(stoi(arg2));
 //	if (!parentOfArg2.empty()) {
 //		for (int parent : parentOfArg2)
 //			parentSynInt.push_back(to_string(parent));
@@ -898,11 +1064,11 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //	//possible type of synonym = stmt, while, if , prog_line
 //	int arg1Entity = mapParentSynTypeValues[arg1EntityType];
 //	int arg2Entity = mapParentSynTypeValues[arg2EntityType];
-//	vector<int> allWhiles = pkbReadOnly.getWhile();
-//	vector<int> allIfs = pkbReadOnly.getIf();
+//	vector<int> allWhiles = pkbPtr.getWhile();
+//	vector<int> allIfs = pkbPtr.getIf();
 //	vector<int> allStmt;
 //	vector<int> allStmtChild;
-//	vector<int> allAssign = pkbReadOnly.getAssign();
+//	vector<int> allAssign = pkbPtr.getAssign();
 //	vector<tuple<string,string>> result;
 //	vector<int> arg1Candidates;
 //	vector<int> arg2Candidates;
@@ -944,7 +1110,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //	vector<tuple<string, string>> evalArg2Results;
 //	vector<tuple<string, string>> evalResults;
 //	for (int candidate : arg1Candidates) {
-//		childCandidates = pkbReadOnly.getChild(candidate);
+//		childCandidates = pkbPtr.getChild(candidate);
 //		if (!childCandidates.empty()) {
 //			for (int children : childCandidates)
 //				evalArg1Results.push_back(make_tuple(to_string(candidate), to_string(children)));
@@ -952,7 +1118,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //	}
 //	
 //	for (int candidate : arg2Candidates) {
-//		parentCandidates = pkbReadOnly.getParent(candidate);
+//		parentCandidates = pkbPtr.getParent(candidate);
 //		if (!childCandidates.empty()) {
 //			for (int parents : parentCandidates)
 //				evalArg2Results.push_back(make_tuple(to_string(parents), to_string(candidate)));
@@ -999,11 +1165,11 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //vector<string> QueryAnalyzer::evalParentSynWild(string arg1, string arg1Type)
 //{
 //	int arg1Entity = mapParentSynTypeValues[arg1Type];
-//	vector<int> allWhiles = pkbReadOnly.getWhile();
-//	vector<int> allIfs = pkbReadOnly.getIf();
+//	vector<int> allWhiles = pkbPtr.getWhile();
+//	vector<int> allIfs = pkbPtr.getIf();
 //	vector<int> allStmt;
 //	vector<int> arg1Candidates;
-//	vector<int> allAssign = pkbReadOnly.getAssign();
+//	vector<int> allAssign = pkbPtr.getAssign();
 //	vector<string> result;
 //
 //	//setting values for allstmt
@@ -1020,7 +1186,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //{	vector<int> childCandidates;
 //	vector<string> evalArg1Results;
 //	for (int candidate : arg1Candidates) {
-//		childCandidates = pkbReadOnly.getChild(candidate);
+//		childCandidates = pkbPtr.getChild(candidate);
 //		if (!childCandidates.empty()) {
 //			evalArg1Results.push_back(to_string(candidate));
 //		}
@@ -1034,13 +1200,13 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //
 //vector<string> QueryAnalyzer::evalParentWildSyn(string arg2, string arg2Type) {
 //	int arg2Entity = mapParentSynTypeValues[arg2Type];
-//	vector<int> allWhiles = pkbReadOnly.getWhile();
-//	vector<int> allIfs = pkbReadOnly.getIf();
+//	vector<int> allWhiles = pkbPtr.getWhile();
+//	vector<int> allIfs = pkbPtr.getIf();
 //	vector<int> allStmt;
 //	vector<int> arg2Candidates;
 //	vector<string> result;
 //	vector<int> allStmtChild;
-//	vector<int> allAssign = pkbReadOnly.getAssign();
+//	vector<int> allAssign = pkbPtr.getAssign();
 //
 //	//setting values for allstmt
 //	allStmt.reserve(allWhiles.size() + allIfs.size());
@@ -1060,7 +1226,7 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //	vector<int> parentCandidates;
 //	vector<string> evalArg2Results;
 //	for (int candidate : arg2Candidates) {
-//		parentCandidates = pkbReadOnly.getParent(candidate);
+//		parentCandidates = pkbPtr.getParent(candidate);
 //		if (!parentCandidates.empty()) {
 //			evalArg2Results.push_back(to_string(candidate));
 //		}
@@ -1073,15 +1239,15 @@ void QueryAnalyzer::insertNoCommonSynToTable(vector<vector<string>> stResult,
 //}
 //
 //bool QueryAnalyzer::hasParentForArg2(string arg2) {
-//	vector<int> parentOfArg2 = pkbReadOnly.getParent(stoi(arg2));
+//	vector<int> parentOfArg2 = pkbPtr.getParent(stoi(arg2));
 //	if (parentOfArg2.empty())
 //		hasSTClause = false;
 //	return hasSTClause;
 //}
 //
 //bool QueryAnalyzer::hasParentStmts() {
-//	vector<int> allWhiles = pkbReadOnly.getWhile();
-//	vector<int> allIfs = pkbReadOnly.getIf();
+//	vector<int> allWhiles = pkbPtr.getWhile();
+//	vector<int> allIfs = pkbPtr.getIf();
 //	if (allWhiles.empty() && allIfs.empty())
 //		hasSTClause = false;
 //	return hasSTClause;

@@ -12,7 +12,10 @@
 #include "ModifiesAnalyzer.h"
 #include "UsesAnalyzer.h"
 #include "TupleHash.h"
+#include "Util.h"
+#include "CallsStarAnalyzer.h"
 
+#include <numeric>
 #include <iterator>
 #include <algorithm>
 #include <sstream>
@@ -29,7 +32,7 @@ class QueryAnalyzer
 public:
 	QueryAnalyzer();
 
-	void setPKB(PKB pkb);
+	void setPKB(PKB &pkb);
 	void setQS(QueryStatement qs);
 	vector<string> runQueryEval();
 //private:
@@ -39,8 +42,9 @@ public:
 	vector<QueryElement> patternElements;
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
+	unordered_map<int, int> selectSynMap;
 
-	PKB pkbReadOnly;
+	PKB pkbPtr;
 	bool hasSTClause;
 	bool hasPatternClause;
 
@@ -49,16 +53,23 @@ public:
 	void initSuchThatMap();
 	void initParentSynTypeMap();
 	void initPatternValueMap();
+	void initResultTypeMap();
 
 
 	void findQueryElements();
+	void selectSynonym(vector<string> &answer);
+	void setClauseFalse();
+	void selectTuple(vector<string> &answer);
+	bool isQueryFalse();
+	
 	vector<string> analyzeClauseResults();
 	vector<string> analyzeSelect(vector<string> answer, string selectEntity);
-	vector<string> intersection(vector<string> v1, vector<string> v2);
+	//vector<string> intersection(vector<string> v1, vector<string> v2);
 	vector<string> removeVectDuplicates(vector<string> selectClause);
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
 	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
+	vector<vector<string>> solveWhilePattern(QueryElement patternClause);
 	tuple<vector<string>, vector<string>> solvePatAssignSyn(string arg1, 
 			string patExp, string patType, string patSyn);
 	vector<string> validatedPatAssignSyn(string arg1, string patExp,

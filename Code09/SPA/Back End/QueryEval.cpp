@@ -657,7 +657,7 @@ vector<int> QueryEval::intersectionIntVect(vector<int> &v1, vector<int> &v2)
 /* Old Pattern Code Snippet for after evalPatternValues case wildcard,variable
 							for (int j = 0; j < evalVarPatterns.size(); j++) {
 							patternVarStmtValues = vector<int>();
-							pkbPattern = pkbReadOnly.getPattern(evalVarPatterns[j]);
+							pkbPattern = pkbPtr.getPattern(evalVarPatterns[j]);
 							for (tuple<int,string> evalPattExpression : pkbPattern ) {
 								// to check if it is sufficient for 1 variable to satisfy pattern constraint
 								switch (mapPatternExpType[patternElements[i].getPatternArg2Type()]) {
