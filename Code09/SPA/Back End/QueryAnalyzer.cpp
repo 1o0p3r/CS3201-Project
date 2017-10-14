@@ -477,6 +477,7 @@ void QueryAnalyzer::solvePatternClause() {
 				patternResult = solveAssignPattern(patternClause);
 				break;
 			case while_:
+				patternResult = solveWhilePattern(patternClause);
 				break;
 			case if_:
 				break;
@@ -510,6 +511,10 @@ vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternCla
 			patternAssignResult.push_back(validatedPatResult);
 	}
 	return patternAssignResult;
+}
+
+vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
+{
 }
 
 tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 

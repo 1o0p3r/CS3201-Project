@@ -37,6 +37,7 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
+    <ClCompile Include="PatternAnalyzer.cpp" />
     <ClCompile Include="suchThatHandler.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="WithHandler.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
+    <ClInclude Include="PatternAnalyzer.h" />
     <ClInclude Include="suchThatHandler.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="WithHandler.h" />

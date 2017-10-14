@@ -13,6 +13,7 @@
 #include "UsesAnalyzer.h"
 #include "TupleHash.h"
 #include "Util.h"
+#include "CallsStarAnalyzer.h"
 
 #include <numeric>
 #include <iterator>
@@ -68,6 +69,7 @@ public:
 	vector<vector<vector<string>>> solveSTClause();
 	void solvePatternClause();
 	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
+	vector<vector<string>> solveWhilePattern(QueryElement patternClause);
 	tuple<vector<string>, vector<string>> solvePatAssignSyn(string arg1, 
 			string patExp, string patType, string patSyn);
 	vector<string> validatedPatAssignSyn(string arg1, string patExp,
