@@ -1,0 +1,100 @@
+1 - Follows* Valid query
+stmt sOne, sTwo;
+Select sOne such that Follows*(1, sOne)
+10, 2, 4
+5000
+2 - Follows Valid query with whitespacing before left bracket
+stmt sOne, sTwo;
+stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)
+5
+5000
+3 - Follows with same line
+stmt OneTwo;
+Select BOOLEAN such that Follows(3,3)
+None
+5000
+4 - Parent* Valid query
+stmt sTwo; assign as1; while wew;
+Select as1 such that Parent* (wew, as1)
+3
+5000
+5 - Parent Valid query
+stmt sTwo; assign as1; while wew;
+Select as1 such that Parent* (2, as1)
+3
+5000
+6 - Parent Valid query
+stmt sTwo; assign as1; while wew;
+Select wew such that Parent*(wew, 3)
+2
+5000
+7 - Parent Valid query
+stmt sTwo; assign as1; while wew;
+Select as1 such that Parent*(as1, 3)
+None
+5000
+8 - Modifies Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select pOne such that Modifies(pOne, "y")
+Nana, Apple
+5000
+9 - Modifies Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select pOne such that Modifies(cTwo, "  y")
+Apple, Nana, Pear
+5000
+10 - Modifies inValid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select cOne such that Modifies(cOne, "if")
+None
+5000
+11 - Modifies Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select pOne such that Modifies("Pear", "if")
+Apple, Nana, Pear
+5000
+12 - Modifies Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select v such that Modifies(8, v)
+boom, ggg, if
+5000
+13 - Uses Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select a such that Uses(pOne, "y")
+Apple, Nana
+5000
+14 - Uses Valid query
+assign a; procedure pOne; call cOne, cTwo; 
+Select cTwo such that Uses(cTwo,  " ggg")
+8
+5000
+15 - Uses Valid query
+assign a; procedure pOne; call cOne, cTwo; stmt s; variable v;
+Select v such that Uses(8, v)
+Y2K, ggg, if
+5000
+16 - Uses inValid query
+assign a; procedure pOne; call cOne, cTwo; stmt s;
+Select BOOLEAN such that Uses(a, pOne)
+None
+5000
+17 - Uses Valid query
+assign a; procedure pOne; call cOne, cTwo; stmt s;
+Select BOOLEAN such that Uses("Pear", "if")
+None
+5000
+18 - Valid Pattern query
+assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;
+Select a2 pattern a2(_,  _"x"_)
+3,5
+5000
+19 - Valid Pattern query
+assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;
+Select wews such that Parent*(wews, a2) pattern a2("y", _)
+2
+5000
+20 - Valid Pattern query
+assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;
+Select ifs such that Follows*(ifs, a2) pattern a2("if", _)
+12
+5000
