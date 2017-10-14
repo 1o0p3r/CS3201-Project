@@ -515,6 +515,7 @@ vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternCla
 
 vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
 {
+	return vector<vector<string>>();
 }
 
 tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
