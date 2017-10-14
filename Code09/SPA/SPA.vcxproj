@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
+    <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Back End\CallsAnalyzer.h" />
+    <ClInclude Include="Back End\CallsStarAnalyzer.h" />
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
     <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
     <ClInclude Include="Back End\ModifiesAnalyzer.h" />

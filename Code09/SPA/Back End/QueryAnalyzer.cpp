@@ -451,7 +451,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case callsStar:
-				break;
+				clauseResult = CallsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
 				break;
 			case nextStar:
