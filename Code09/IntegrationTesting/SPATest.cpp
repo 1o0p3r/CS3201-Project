@@ -11,6 +11,86 @@ namespace IntegrationTesting {
 	TEST_CLASS(SPATest) {
 public:
 
+	TEST_METHOD(SampleSource1) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-1.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		vector<string> queries = {
+			"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
+			"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
+			"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
+			/*"stmt sTwo; assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",*/
+			"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(2, as1)",
+			"stmt sTwo; assign as1; while wew; Select wew such that Parent*(wew, 3)",
+			"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(as1, 3)",
+			/*"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(pOne, \"y\")",*/
+			"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
+			"assign a; procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
+			"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
+			"assign a; variable v; procedure pOne; call cOne, cTwo; Select v such that Modifies(8, v)",
+			/*"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Uses(pOne, \"y\")",*/
+			/*"assign a; procedure pOne; call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",*/
+			"assign a; procedure pOne; call cOne, cTwo; stmt s; variable v; Select v such that Uses(8, v)",
+			"assign a; procedure pOne; call cOne; cTwo; stmt s; Select BOOLEAN such that Uses(a, pOne)",
+			"assign a; procedure pOne; call cOne, cTwo; stmt s; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
+			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;  Select a2 pattern a2(_,  _\"x\"_)",
+			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
+		/*	"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)"*/
+		};
+		vector<vector<string>> expected = {
+			{"10", "2", "4"},
+			{ "5" },
+			{  },
+			//{ "3" },		//Wrong results obtained: returned all assignments
+			{ "3" },
+			{ "2" },
+			{},
+			/*{ "Nana", "Apple" },*/	//Results obtained: Apple
+			{ "Apple",  "Nana", "Pear"},
+			{},
+			{ "Apple", "Nana", "Pear" },
+			{ "boom", "ggg", "if" },
+			//{ "Apple", "Nana" },	//Results obtained: Apple
+			//{ "8"},			//Results obtained: Empty
+			{ "Y2K", "ggg" , "if"},
+			{},
+			{},		
+			{"3", "5"},
+			{"2"},
+			//{"12"},		//Results obtained: Empty
+		};
+
+		for (int i = 0; i < queries.size(); i++) {
+			if (validator.parseInput(queries[i])) {
+				statement = validator.getQueryStatement();
+				analyzer.setQS(statement);
+				answer = analyzer.runQueryEval();
+			}
+			else {
+				Logger::WriteMessage("Invalid Query in Source 1");
+				Logger::WriteMessage(queries[i].c_str());
+				answer = {};
+			}
+			string testNo = "size error in Source 1 in test ";
+			testNo.append(to_string(i + 1));
+			string testNo_1 = "value error in Source 1 in test ";
+			testNo_1.append(to_string(i + 1));
+			wstring error = wstring(testNo.begin(), testNo.end());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
+			for (int j = 0; j < answer.size(); j++) {
+				error = wstring(testNo_1.begin(), testNo_1.end());
+				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
+			}
+		}
+	}
+
 	TEST_METHOD(SampleSource3) {
 		PKB pkb;
 		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";

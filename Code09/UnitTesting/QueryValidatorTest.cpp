@@ -522,7 +522,7 @@ namespace UnitTesting
 			str = "such that Parent(3,_)";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
-			str = "such that Parent*(3,_)";
+			str = "such that Parent* (3,_)";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
 			str = "such that Follows(s,4)";
@@ -642,13 +642,6 @@ namespace UnitTesting
 			expectedVec.clear();
 			returnedVec.clear();
 
-			str = "such that Modifies (\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
-			expectedVec.push_back("Follows(s,3)");
-			expectedVec.push_back("Next(8,9)");
-			expectedVec.push_back("Uses(3,4)");
-			expectedVec.push_back("Parent(5,7)");
-			returnedVec = queryValidator.extractSuchThatClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
 		}
 		TEST_METHOD(isValidExtractWithClauses) {
 			QueryValidator queryValidator;
