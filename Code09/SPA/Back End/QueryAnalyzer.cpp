@@ -1,23 +1,5 @@
 #include "QueryAnalyzer.h"
-
-const string DELIMITER = ",";
-const string SYNONYM = "synonym";
-const string WILDCARD = "wildcard";
-const string WILDCARD_SYMBOL = "_";
-const int ARGONE = 0;
-const int ARGTWO = 1;
-const int TABLELOC = 0;
-const int SYNVECLOC = 1;
-const int SYNENTITY = 2;
-const int SYNPOS = 1;
-const int VECINTERSECTION = 0;
-const int TTMINDEX = 1;
-const int STRINDEX = 2;
-const int SAMETABLE = 0;
-const int TWO_DISJOINT_TABLE = 1;
-const int VECTRESULT = 1;
-const int BOOLRESULT = 0;
-const int NOSYNENTRY = -1;
+#include "PatternAnalyzer.h"
 
 enum selectValue
 {
@@ -474,12 +456,12 @@ void QueryAnalyzer::solvePatternClause() {
 		evaluatePatternRelation = mapPatternValues[patternClauseType];
 		switch (evaluatePatternRelation) {
 			case assign_:
-				patternResult = solveAssignPattern(patternClause);
-				break;
-			case while_:
-				patternResult = solveWhilePattern(patternClause);
-				break;
-			case if_:
+				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause,pkbPtr).solvePatternAssign());
+				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternAssign());
+			break;
+			case while_: case if_:
+				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
+				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
 				break;
 		}
 		if (!patternResult.empty())

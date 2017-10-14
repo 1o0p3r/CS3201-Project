@@ -21,7 +21,6 @@
     <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryElement.cpp" />
-    <ClCompile Include="Back End\QueryEval.cpp" />
     <ClCompile Include="Back End\QueryStatement.cpp" />
     <ClCompile Include="Back End\QueryValidator.cpp" />
     <ClCompile Include="Back End\Relationship.cpp" />
@@ -43,6 +42,7 @@
     <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Abstract_QA_API.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
     <ClInclude Include="Back End\CallsStarAnalyzer.h" />
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
@@ -53,7 +53,6 @@
     <ClInclude Include="Back End\ParentStarAnalyzer.h" />
     <ClInclude Include="Back End\QueryAnalyzer.h" />
     <ClInclude Include="Back End\QueryElement.h" />
-    <ClInclude Include="Back End\QueryEval.h" />
     <ClInclude Include="Back End\QueryStatement.h" />
     <ClInclude Include="Back End\QueryValidator.h" />
     <ClInclude Include="Back End\Relationship.h" />

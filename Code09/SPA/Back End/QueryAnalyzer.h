@@ -14,6 +14,7 @@
 #include "TupleHash.h"
 #include "Util.h"
 #include "CallsStarAnalyzer.h"
+#include "Abstract_QA_API.h"
 
 #include <numeric>
 #include <iterator>
