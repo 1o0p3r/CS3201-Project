@@ -135,6 +135,38 @@ string QueryElement::getPatternArg1Ent()
 {
 	return patternArg1Ent;
 }
+string QueryElement::getWithArg1()
+{
+	return argumentOneWith;
+}
+string QueryElement::getWithArg2()
+{
+	return argumentTwoWith;
+}
+string QueryElement::getWithArg1Type()
+{
+	return argumentOneTypeWith;
+}
+string QueryElement::getWithArg2Type()
+{
+	return argumentTwoTypeWith;
+}
+string QueryElement::getWithArg1Ent()
+{
+	return argumentOneEntWith;
+}
+string QueryElement::getWithArg2Ent()
+{
+	return argumentTwoEntWith;
+}
+string QueryElement::getWithArg1Syn()
+{
+	return argumentOneSynWith;
+}
+string QueryElement::getWithArg2Syn()
+{
+	return argumentTwoSynWith;
+}
 string QueryElement::getPatternSynonym()
 {
 	return patternSyn;
