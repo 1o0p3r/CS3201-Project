@@ -1,10 +1,8 @@
 #include "Use.h"
-#include <string>
-#include <set>
 
 Use::Use() {
 
-	vector<set<int>> usesTable; //vector of string, at stmt can be a container stmt
+	vector<set<int>> usesTable;
 	vector<set<int>> usedByTable;
 	vector<set<int>> procUsesTable;
 	vector<set<int>> procUsedByTable;

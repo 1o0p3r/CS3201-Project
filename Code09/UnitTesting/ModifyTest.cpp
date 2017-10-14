@@ -13,6 +13,10 @@ namespace UnitTesting
 		TEST_METHOD(setModifiesCorrectly_wParent) { //set modifies for stmt and parent correctly
 
 			Modify modify;
+			vector<int> procCalledBy = {};
+			vector<int> procCalls = {};
+			vector<int> procCalledByStmt = {};
+
 			vector<int> parentStar;
 			parentStar.push_back(1);
 
@@ -22,11 +26,11 @@ namespace UnitTesting
 			Assert::AreEqual(1, modify.getModifiedBy(2)[0]); //var 2 modified by parent 1
 			Assert::AreEqual(2, modify.getModifiedBy(2)[1]); //var 2 modified by stmt 2
 			
-			modify.setProcModifies(1, 2);
+			modify.setProcModifies(1, 2, procCalledBy, procCalls, procCalledByStmt);
 			Assert::AreEqual(modify.getProcModifies(1)[0], 2);
 			Assert::AreEqual(modify.getProcModifiedBy(2)[0], 1);
 			
-			modify.setProcModifies(1, 1);
+			modify.setProcModifies(1, 1, procCalledBy, procCalls, procCalledByStmt);
 			Assert::IsTrue(modify.getProcModifies(1) == vector<int>{1, 2});
 			Assert::AreEqual(modify.getProcModifiedBy(1)[0], 1);
 		}
@@ -47,9 +51,12 @@ namespace UnitTesting
 		TEST_METHOD(procModifiesTablesAddCorrectly) { //values are significant in proc set
 
 			Modify modify;
+			vector<int> procCalledBy = {};
+			vector<int> procCalls = {};
+			vector<int> procCalledByStmt = {};
 
-			modify.setProcModifies(1, 2);
-			modify.setProcModifies(2, 2);
+			modify.setProcModifies(1, 2, procCalledBy, procCalls, procCalledByStmt);
+			modify.setProcModifies(2, 2, procCalledBy, procCalls, procCalledByStmt);
 			Assert::AreEqual(2, modify.getProcModifies(1)[0]); //proc 1 modifies var 2
 			Assert::AreEqual(2, modify.getProcModifies(2)[0]); //proc 2 modifies var 2
 			Assert::IsTrue(modify.getProcModifies(1).size() == 1); 
@@ -82,11 +89,12 @@ namespace UnitTesting
 			vector<int> proc2Calls = {};
 			vector<int> proc1CalledByStmt = {};
 			vector<int> proc2CalledByStmt = { 2 };
+			vector<int> parentStarOfStmt = {};
 
-			modify.setModifies(1, 1);
-			modify.setModifies(2, 2);
-			modify.setModifies(3, 3);
-			modify.setModifies(4, 4);
+			modify.setModifies(1, 1, parentStarOfStmt);
+			modify.setModifies(2, 2, parentStarOfStmt);
+			modify.setModifies(3, 3, parentStarOfStmt);
+			modify.setModifies(4, 4, parentStarOfStmt);
 
 
 			modify.setProcModifies(1, 1, proc1CalledBy, proc1Calls, proc1CalledByStmt);
