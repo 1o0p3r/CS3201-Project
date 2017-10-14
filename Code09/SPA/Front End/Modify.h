@@ -47,7 +47,7 @@ public:
 	vector<int> getModifiedBy(int varName);
 
 	/*
-	Gets variables modified by statementNum
+	Gets variables modified by procName
 
 	@param procName
 	@returns vector<int> of variables modified by procName
@@ -55,7 +55,7 @@ public:
 	vector<int> getProcModifies(int procName);
 
 	/*
-	Gets variables modified by statementNum
+	Gets procedures modified by statementNum
 
 	@param varName
 	@returns vector<int> of procedures that modified varName

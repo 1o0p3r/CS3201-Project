@@ -13,6 +13,10 @@ namespace UnitTesting
 		TEST_METHOD(setUsesCorrectly_wParent) {
 
 			Use use;
+			vector<int> procCalledBy = {};
+			vector<int> procCalls = {};
+			vector<int> procCalledByStmt = {};
+
 			vector<int> parentStar;
 			parentStar.push_back(1);
 
@@ -22,11 +26,11 @@ namespace UnitTesting
 			Assert::AreEqual(1, use.getUsedBy(2)[0]); //var 2 used by parent 1
 			Assert::AreEqual(2, use.getUsedBy(2)[1]); //var 2 used by stmt 2
 
-			use.setProcUses(1, 2);
+			use.setProcUses(1, 2, procCalledBy, procCalls, procCalledByStmt);
 			Assert::AreEqual(use.getProcUses(1)[0], 2);
 			Assert::AreEqual(use.getProcUsedBy(2)[0], 1);
 
-			use.setProcUses(1, 1);
+			use.setProcUses(1, 1, procCalledBy, procCalls, procCalledByStmt);
 			Assert::IsTrue(use.getProcUses(1) == vector<int>{1, 2});
 			Assert::AreEqual(use.getProcUsedBy(1)[0], 1);
 
@@ -51,8 +55,12 @@ namespace UnitTesting
 		TEST_METHOD(procUsesTablesAddCorrectly) { //values are significant in proc set
 
 			Use use;
-			use.setProcUses(1, 2);
-			use.setProcUses(2, 2);
+			vector<int> procCalledBy = {};
+			vector<int> procCalls = {};
+			vector<int> procCalledByStmt = {};
+
+			use.setProcUses(1, 2, procCalledBy, procCalls, procCalledByStmt);
+			use.setProcUses(2, 2, procCalledBy, procCalls, procCalledByStmt);
 
 			Assert::AreEqual(2, use.getProcUses(1)[0]); //proc 1 modifies var 2
 			Assert::AreEqual(2, use.getProcUses(2)[0]); //proc 2 modifies var 2
@@ -63,14 +71,18 @@ namespace UnitTesting
 		TEST_METHOD(checkUsesSizeAndBoundaryAreCorrect) {
 
 			Use use;
+			vector<int> procCalledBy = {};
+			vector<int> procCalls = {};
+			vector<int> procCalledByStmt = {};
+
 			Assert::AreEqual(use.getUses(0) == vector<int>(), true);
 			Assert::IsTrue(use.getUses(0).size() == 0);
 
-			use.setProcUses(1, 2);
+			use.setProcUses(1, 2, procCalledBy, procCalls, procCalledByStmt);
 			Assert::IsTrue(use.getProcUses(1).size() == 1);
-			use.setProcUses(1, 3);
+			use.setProcUses(1, 3, procCalledBy, procCalls, procCalledByStmt);
 			Assert::IsTrue(use.getProcUses(1).size() == 2);
-			use.setProcUses(1, 2);
+			use.setProcUses(1, 2, procCalledBy, procCalls, procCalledByStmt);
 			Assert::IsTrue(use.getProcUses(1).size() == 2); //should be able to add twice, but not duplicated
 			Assert::IsTrue(use.getProcUses(1) == vector<int>{2, 3});
 			Assert::IsTrue(use.getProcUses(2) == vector<int>(), false); //should not exist
