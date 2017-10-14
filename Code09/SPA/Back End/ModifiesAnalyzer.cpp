@@ -150,13 +150,18 @@ bool ModifiesAnalyzer::checkClauseBothWild()
 
 vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
 {	
+	vector<string> pkbResult;
 	if (unitTestModeOn) {
 		auto result = (unitTestInputs[inputHardCodeIndex]);
 		inputHardCodeIndex++;
 		return result;
 	}
-	return (arg1Type == PROCEDUREARG) ? pkbReadOnly.getProcModifies(arg1):
-			pkbReadOnly.getModifies(stoi(arg1));
+	if (arg1Type == PROCEDUREARG)
+		return pkbReadOnly.getProcModifies(arg1);
+	else {
+		pkbResult = pkbReadOnly.getModifies(stoi(arg1));
+	}
+	return pkbResult;
 }
 
 //@param: must be procedure entity for Arg1
@@ -174,6 +179,7 @@ vector<string> ModifiesAnalyzer::getModifiesResultAddArg1(string arg2, string ar
 		pkbResult = pkbReadOnly.getProcModifiedBy(arg2);
 	else {
 		pkbResultInt = pkbReadOnly.getModifiedBy(arg2);
+		pkbResultInt = validatePKBResultsInt(arg1Entity, pkbResultInt);
 		for (int entryToString : pkbResultInt)
 			pkbResult.push_back(to_string(entryToString));
 	}

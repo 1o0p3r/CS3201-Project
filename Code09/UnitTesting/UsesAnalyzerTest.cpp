@@ -51,7 +51,7 @@ public:
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
 		clauseResult = UsesAnalyzer(synSyn, pkb).solveClause();
-		hardcode = { { "1","2","4","2","4","a" },{ "x","x","x","y","y","b" } };
+		hardcode = { { "1","4","4","a" },{ "x","x","y","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
