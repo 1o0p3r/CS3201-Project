@@ -35,7 +35,6 @@ bool Parse(string fileName, PKB& pkb) {
 	int lineCounter = 0;
 	bool isSameLevel = false;	//is same nesting level
 	bool isNewContainer = true;
-	int nestLevel = 0;
 	int prevFollow;
 	int lastLine;
 	bool toSetFirstLine;
@@ -50,11 +49,10 @@ bool Parse(string fileName, PKB& pkb) {
 			lineCounter--;
 		} else if (isElseStatement(nextLine)) {
 			lineCounter--;
-			nestLevel++;
 			Parent.push_back(prevFollow);
 			isSameLevel = false;
 			isNewContainer = true;
-		} else if (isProcedure(nextLine) && Parent.size() == 0 && nestLevel == 0) {
+		} else if (isProcedure(nextLine) && Parent.size() == 0) {
 			if (lineCounter > 1) {
 				pkb.setLastline(procName, lastLine);
 			}
@@ -67,14 +65,12 @@ bool Parse(string fileName, PKB& pkb) {
 			Parent.push_back(0);
 			isNewContainer = true;
 			isSameLevel = false;
-			nestLevel++;
 			toSetFirstLine = true;
 		} else if (startsWithBrackets(nextLine)) {
 			int i = 0;
 			while (i < line.size()) {
 				if (line[i] == CB) {
 					isSameLevel = false;
-					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
 				} else if (line[i] != SPACE && line[i] != TAB) {
@@ -87,7 +83,6 @@ bool Parse(string fileName, PKB& pkb) {
 				if (!isElseStatement(Util::splitLine(line, ' '))) {
 					return false;
 				} else {
-					nestLevel++;
 					Parent.push_back(prevFollow);
 					isSameLevel = false;
 					isNewContainer = true;
@@ -106,7 +101,7 @@ bool Parse(string fileName, PKB& pkb) {
 					pkb.setFollows(prevFollow, lineCounter);
 				}
 			}
-			if (nestLevel > 1) {
+			if (Parent.size() > 1) {
 				pkb.setParent(Parent.back(), lineCounter);
 			}
 			if (isAssignStatement(line)) {
@@ -137,7 +132,6 @@ bool Parse(string fileName, PKB& pkb) {
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
-				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isWhileStatement(nextLine)) {
@@ -152,7 +146,6 @@ bool Parse(string fileName, PKB& pkb) {
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
-				nestLevel++;
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isCallStatement(nextLine)) {
@@ -173,7 +166,6 @@ bool Parse(string fileName, PKB& pkb) {
 			for (int i = line.size() - 1; i >= 0; i--) {
 				if (line[i] == CB) {
 					isSameLevel = false;
-					nestLevel--;
 					prevFollow = Parent.back();
 					Parent.pop_back();
 				} else if (line[i] != SPACE && line[i] != TAB) {
@@ -183,7 +175,7 @@ bool Parse(string fileName, PKB& pkb) {
 		}
 	}
 	pkb.setLastline(procName, lineCounter);
-	if (nestLevel == 0 && Parent.size() == 0) {
+	if (Parent.size() == 0) {
 		return true;
 	} else {
 		return false;

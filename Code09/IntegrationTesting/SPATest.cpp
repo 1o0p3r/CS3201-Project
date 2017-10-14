@@ -46,7 +46,7 @@ public:
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
 			{ "5" },
-			{  },
+			{ "FALSE" },
 			{ "3" },		//Wrong results obtained: returned all assignments
 			{ "3" },
 			{ "2" },

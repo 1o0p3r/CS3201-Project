@@ -20,7 +20,7 @@ public:
 
 		//test wildcard true
 		QueryElement intWild("3", "number", "", "_", "wildcard", "", "Modifies");
-		pkbHardCode = { {"true"} };
+		pkbHardCode = { {"TRUE"} };
 		ModifiesAnalyzer testWild(intWild, pkb);
 		testWild.setUnitTestInputs(pkbHardCode);
 		clauseResult = testWild.solveClause();

@@ -303,14 +303,14 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	string resultEntity = selectElement.getSelectType();
 	if (isQueryFalse())
 		if (resultEntity == "BOOLEAN")
-			return{ "false" };
+			return{ "FALSE" };
 		else
 			return {};
 
 	switch(mapResultTypeValues[resultEntity])
 	{
 		case booleanResult:
-			return{ "true" };
+			return{ "TRUE" };
 
 		case synonymResult: 
 			selectSynonym(answer);
