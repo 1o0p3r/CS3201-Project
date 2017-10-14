@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "TupleHash.h"
 #include "PKB.h"
 #include "QueryElement.h"
 #include <vector>
@@ -45,9 +45,12 @@ protected:
 	virtual bool checkClauseBothWild();
 
 
-	virtual vector<string> getPKBAllArgValues();
+
+	vector<int> validatePKBResultsInt(string ent, vector<int> validateVec);
+	vector<string> validatePKBResultsString(string ent, vector<string> validateVec);
 	vector<string> removeDuplicates(vector<string> clauseResult);
 
+	virtual vector<string> getPKBAllArgValues();
 
 public:
 	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "SuchThatAnalyzer.h"
 class ParentStarAnalyzer :
 	public suchThatAnalyzer

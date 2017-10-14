@@ -1,23 +1,5 @@
 #include "QueryAnalyzer.h"
-
-const string DELIMITER = ",";
-const string SYNONYM = "synonym";
-const string WILDCARD = "wildcard";
-const string WILDCARD_SYMBOL = "_";
-const int ARGONE = 0;
-const int ARGTWO = 1;
-const int TABLELOC = 0;
-const int SYNVECLOC = 1;
-const int SYNENTITY = 2;
-const int SYNPOS = 1;
-const int VECINTERSECTION = 0;
-const int TTMINDEX = 1;
-const int STRINDEX = 2;
-const int SAMETABLE = 0;
-const int TWO_DISJOINT_TABLE = 1;
-const int VECTRESULT = 1;
-const int BOOLRESULT = 0;
-const int NOSYNENTRY = -1;
+#include "PatternAnalyzer.h"
 
 enum selectValue
 {
@@ -183,9 +165,9 @@ void QueryAnalyzer::selectSynonym(vector<string> &answer)
 		answer = mergedQueryTable.at(get<ARGONE>(search->second))
 		                         .at(get<ARGTWO>(search->second));
 		answer = removeVectDuplicates(answer);
-		answer = analyzeSelect(answer, selectEntity);
+		answer = validateResult(answer, selectEntity);
 	} else {
-		answer = analyzeSelect(answer, selectEntity);
+		answer = validateResult(answer, selectEntity);
 	}
 }
 
@@ -233,7 +215,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			//find intersection of vector and design entity
 			int ccsLoc = 0;
 			for (auto concatSyn : commonTableSyn) { //elements in vector
-				vector<string> synEntityVec = analyzeSelect({}, get<SYNENTITY>(concatSyn));
+				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn));
 				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
 					make_move_iterator(synEntityVec.end()));
 				for (int i = 0; i < numVecElements; i++) {
@@ -266,7 +248,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				vecAppendedSynValues.push_back(appendSynValue);
 			}
 		} else {
-			vecAppendedSynValues = analyzeSelect({}, get<SYNENTITY>(commonTableSyn.front()));
+			vecAppendedSynValues = validateResult({}, get<SYNENTITY>(commonTableSyn.front()));
 		}
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
@@ -323,7 +305,7 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	return answer;
 }
 
-vector<string> QueryAnalyzer::analyzeSelect(vector<string> queryResult, string selectEntity) {
+vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string selectEntity) {
 	vector<int> selectResultInt;
 	vector<string> answer;
 
@@ -474,12 +456,12 @@ void QueryAnalyzer::solvePatternClause() {
 		evaluatePatternRelation = mapPatternValues[patternClauseType];
 		switch (evaluatePatternRelation) {
 			case assign_:
-				patternResult = solveAssignPattern(patternClause);
-				break;
-			case while_:
-				patternResult = solveWhilePattern(patternClause);
-				break;
-			case if_:
+				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause,pkbPtr).solvePatternAssign());
+				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternAssign());
+			break;
+			case while_: case if_:
+				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
+				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
 				break;
 		}
 		if (!patternResult.empty())

@@ -1,0 +1,30 @@
+#pragma once
+
+#include <numeric>
+#include <iterator>
+#include <algorithm>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+
+const string DELIMITER = ",";
+const string SYNONYM = "synonym";
+const string WILDCARD = "wildcard";
+const string WILDCARD_SYMBOL = "_";
+const int ARGONE = 0;
+const int ARGTWO = 1;
+const int TABLELOC = 0;
+const int SYNVECLOC = 1;
+const int SYNENTITY = 2;
+const int SYNPOS = 1;
+const int VECINTERSECTION = 0;
+const int TTMINDEX = 1;
+const int STRINDEX = 2;
+const int SAMETABLE = 0;
+const int TWO_DISJOINT_TABLE = 1;
+const int VECTRESULT = 1;
+const int BOOLRESULT = 0;
+const int NOSYNENTRY = -1;

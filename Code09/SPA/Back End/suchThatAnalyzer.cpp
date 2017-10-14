@@ -186,11 +186,37 @@ bool suchThatAnalyzer::checkClauseBothWild()
 	return false;
 }
 
-vector<string> suchThatAnalyzer::getPKBAllArgValues()
+vector<int> suchThatAnalyzer::validatePKBResultsInt(string ent, vector<int> validateVec)
 {
-	//overwrite in child class
-	return vector<string>();
+	vector<int> pkbResult;
+
+	if(ent == "stmt" || ent == "prog_line")  pkbResult = pkbReadOnly.getAllStmt();
+	else if (ent == "assign") pkbResult = pkbReadOnly.getAssign();
+	else if (ent == "while") pkbResult = pkbReadOnly.getWhile();
+	else if (ent == "if") pkbResult = pkbReadOnly.getIf();
+	else if (ent == "call") pkbResult = pkbReadOnly.getCall();
+	
+	if (ent == "constant") {
+		vector<string> pkbStringResult = pkbReadOnly.getAllConstants();
+		for (auto entry : pkbStringResult)
+			pkbResult.push_back(stoi(entry));
+	}
+	return intersectionT(pkbResult, validateVec);
+	
 }
+
+vector<string> suchThatAnalyzer::validatePKBResultsString(string ent, vector<string> validateVec)
+{	
+	vector<string> pkbResult;
+	if(ent == "variable")  
+		pkbResult = pkbReadOnly.getAllVariables();
+	else 
+		pkbResult = pkbReadOnly.getAllProcedures();
+	
+	return intersectionT(pkbResult, validateVec);
+}
+
+
 
 vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
 	unordered_set<string> shortlisted;
@@ -205,6 +231,11 @@ vector<string> suchThatAnalyzer::removeDuplicates(vector<string> clauseResult) {
 	}
 
 	return answer;
+}
+
+vector<string> suchThatAnalyzer::getPKBAllArgValues()
+{	//override in child function
+	return vector<string>();
 }
 
 void suchThatAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
