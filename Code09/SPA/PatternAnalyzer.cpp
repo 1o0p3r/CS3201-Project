@@ -202,7 +202,17 @@ vector<string> PatternAnalyzer::validatedSynIfWhile(string arg1, string patSyn, 
 	vector<string> entityVector;
 	vector<string> variableVector;
 	vector<int> statementResult;
-	getPatSynIfWhile({ arg1 }, &entityVector, &variableVector, &containsPattern);
+	if(arg1 != WILDCARD_SYMBOL)
+		getPatSynIfWhile({ arg1 }, &entityVector, &variableVector, &containsPattern);
+	else if (patSynEnt == "while") statementResult = pkbPtr.getWhile();
+	else if (patSynEnt == "if") statementResult = pkbPtr.getIf();
+
+	if(!statementResult.empty())
+	{
+		for (int element : statementResult)
+			entityVector.push_back(to_string(element));
+		containsPattern = true;
+	}
 
 	if (containsPattern) {
 		entityVector.push_back(patSyn);

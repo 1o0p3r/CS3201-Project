@@ -78,7 +78,6 @@ const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
 const string NUMBER_STRING = "number";
 
-
 const string ATTRNAME_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "procName|varName|value|stmt#" + SYMBOL_RIGHT_BRACKET_STRING;
 const string ATTRREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + "\." + ATTRNAME_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGEX + OR + SYNONYM_STRING_REGEX + OR + QUOTATION_IDENT_STRING_REGEX
@@ -94,8 +93,6 @@ WithHandler::WithHandler()
 {
 
 }
-
-
 
 //This method checks if the with clauses is a valid with clause by initially checking with the regex 
 //Then proceed to check if LHS = RHS in terms of type
@@ -163,8 +160,7 @@ bool QueryValidator::isValidWith(string str) {
 				//Gets the attrRef
 				arg2attrName = arg2Vec.at(ONE);
 				arg2AttrRef = true;
-			}
-			else {
+			} else {
 				arg2Identity = extractIdentity(arg2);
 
 				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING)) {
