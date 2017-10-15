@@ -123,7 +123,6 @@ void PKB::addWhilePattern(int statementNum, string variable) {
 
 vector<int> PKB::getPatternWhile(string variable) {
 	int varIndex = getVarIndex(variable);
-	return whilePatternTable[varIndex];
 	if (varIndex >= whilePatternTable.size()) {
 		return vector<int>{};
 	} else {
