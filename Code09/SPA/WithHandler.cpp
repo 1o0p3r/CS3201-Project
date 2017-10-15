@@ -9,6 +9,7 @@ const string PROCNAME = "procName";
 const string VARNAME = "varName";
 const string VALUE = "value";
 const string STMTNUM = "stmt#";
+const string STMT = "stmt";
 const string STRING_LITERAL = "stringLiteral";
 
 const string STRTYPE = "strType";
@@ -245,7 +246,7 @@ bool QueryValidator::isAttrRef(string arg) {
 		} else if (argAttrName == VALUE) {
 			return(argEnt == CONSTANT_STRING);
 		} else if (argAttrName == STMTNUM) {
-			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING) || (argEnt == CALL_STRING)) {
+			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING) || (argEnt == CALL_STRING) || (argEnt == STMT)) {
 				return true;
 			}
 			else {
