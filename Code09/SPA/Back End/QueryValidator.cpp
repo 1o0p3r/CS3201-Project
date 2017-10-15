@@ -563,14 +563,14 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 	//Returns false if it doesnt matches the while regex
 	if (!isValidWhilePatternRegex(str)) {
 		return false;
-	}
-	else {
+	} else {
 		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
 
 		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
 
-		curr = removeSymbols(curr, SYMBOL_LEFT_BRACKET_STRING);
-		curr = removeSymbols(curr, SYMBOL_RIGHT_BRACKET_STRING);
+		curr = Util::trim(curr);
+
+		curr = curr.substr(ONE, curr.length() - TWO);
 
 		vector<string> whilePatternVec = splitBySymbol(curr, SYMBOL_COMMA);
 		string arg1 = whilePatternVec.at(ZERO);
@@ -586,25 +586,21 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 			arg1UnderScore = true;
 			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (is_number(arg1)) {
+		} else if (is_number(arg1)) {
 			arg1Number = true;
 			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (isQuotationIdentRegex(arg1)) {
+		} else if (isQuotationIdentRegex(arg1)) {
 			arg1StringLiteral = true;
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (isVariableSynonym(arg1)) {
+		} else if (isVariableSynonym(arg1)) {
 			arg1Variable = true;
 			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -620,8 +616,7 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 	//If it does not matches the if regex
 	if (!isValidIfPatternRegex(str)) {
 		return false;
-	}
-	else {
+	} else {
 		//Since regex passed, try and get wad is contained inside the string now
 		//Find the occurence of the first left bracket
 		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
@@ -629,8 +624,8 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 		//So all i need to do is find out what is arg1 
 		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
 		//Remove the brackets
-		curr = removeSymbols(curr, SYMBOL_LEFT_BRACKET_STRING);
-		curr = removeSymbols(curr, SYMBOL_RIGHT_BRACKET_STRING);
+		curr = Util::trim(curr);
+		curr = curr.substr(ONE, curr.length() - TWO);
 
 		vector<string> ifPatternVec = splitBySymbol(curr, SYMBOL_COMMA);
 		string arg1 = ifPatternVec.at(ZERO);
@@ -647,25 +642,21 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 			arg1UnderScore = true;
 			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (is_number(arg1)) {
+		} else if (is_number(arg1)) {
 			arg1Number = true;
 			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (isQuotationIdentRegex(arg1)) {
+		} else if (isQuotationIdentRegex(arg1)) {
 			arg1StringLiteral = true;
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else if (isVariableSynonym(arg1)) {
+		} else if (isVariableSynonym(arg1)) {
 			arg1Variable = true;
 			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
@@ -676,16 +667,13 @@ void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, 
 	if (arg1Underscore) {
 		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
-	}
-	else if (arg1Number) {
+	} else if (arg1Number) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
-	}
-	else if (arg1StringLiteral) {
+	} else if (arg1StringLiteral) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
-	}
-	else if (arg1Variable) {
+	} else if (arg1Variable) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
 	}
@@ -693,19 +681,16 @@ void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, 
 
 void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
-		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
-	}
-	else if (arg1Number) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+	} else if (arg1Number) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
-	}
-	else if (arg1StringLiteral) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+	} else if (arg1StringLiteral) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
-	}
-	else if (arg1Variable) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING);
+	} else if (arg1Variable) {
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
 	}
 }
@@ -713,12 +698,10 @@ bool QueryValidator::isLeadingAnd(string str) {
 	if (str.find(AND_STRING) == ZERO) {
 		if (isPartialPatternRegex(str)) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -744,13 +727,11 @@ bool QueryValidator::isValidLeadingCheck(string str) {
 	string before = str.substr(ZERO, patternFirst);
 	if (patternFirst == ZERO) {
 		return true;
-	}
-	else {
+	} else {
 		if (!isValidLeadTrail(before)) {
 
 			return false;
-		}
-		else {
+		} else {
 			return true;
 		}
 	}
@@ -769,8 +750,7 @@ bool QueryValidator::isWildcard(string arg) {
 bool QueryValidator::isExactString(string arg2) {
 	if ((arg2.at(ZERO) == DOUBLE_QUOTATION) && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 	return true;
@@ -797,12 +777,10 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		string ent = getCorrespondingEntity(syn);
 		addSelectQueryElement(ent, syn, SYNONYM_STRING);
 		return true;
-	}
-	else if (syn == BOOLEAN_STRING) {
+	} else if (syn == BOOLEAN_STRING) {
 		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING);
 		return true;
-	}
-	else {
+	} else {
 		cout << INVALID_SYNONYM_QUERIED_ERROR;
 		return false;
 	}
@@ -822,8 +800,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
 		return true;
-	}
-	else {
+	} else {
 		string selectStr = vec.at(ZERO);
 		selectStr = Util::trim(selectStr);
 		vector<string> vecSplit = splitBySymbol(selectStr, SYMBOL_WHITESPACE);
@@ -839,18 +816,15 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		for (size_t i = ONE; i < vec.size(); i++) {
 			if (vec.at(i).find(SELECT_STRING) != std::string::npos) {
 				return false;
-			}
-			else if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
+			} else if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
 				if (!isValidSuchThat(vec.at(i))) {
 					return false;
 				}
-			}
-			else if (vec.at(i).find(PATTERN_STRING) != std::string::npos) {
+			} else if (vec.at(i).find(PATTERN_STRING) != std::string::npos) {
 				if (!isValidPattern(vec.at(i))) {
 					return false;
 				}
-			}
-			else if (vec.at(i).find(WITH_STRING) != std::string::npos) {
+			} else if (vec.at(i).find(WITH_STRING) != std::string::npos) {
 				if (!isValidWith(vec.at(i))) {
 					return false;
 				}
@@ -865,8 +839,7 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 	if (relationshipTable.isValidArg(rel, type, idx)) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
@@ -934,12 +907,10 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 	if ((posSuchThat != std::string::npos) && (posSuchThat < posPattern) && (posSuchThat < posWith)) {
 		posInterest = posSuchThat;
 		clauseInterest = SUCH_THAT_STRING;
-	}
-	else if ((posPattern != std::string::npos) && (posPattern < posSuchThat) && (posPattern < posWith)) {
+	} else if ((posPattern != std::string::npos) && (posPattern < posSuchThat) && (posPattern < posWith)) {
 		posInterest = posPattern;
 		clauseInterest = PATTERN_STRING;
-	}
-	else if ((posWith != std::string::npos) && (posWith < posSuchThat) && (posWith < posSuchThat)) {
+	} else if ((posWith != std::string::npos) && (posWith < posSuchThat) && (posWith < posSuchThat)) {
 		posInterest = posWith;
 		clauseInterest = WITH_STRING;
 	}
@@ -972,20 +943,17 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 			&& (((nextPosPattern == ZERO) && (nextPosSuchThat < nextPosWith)) || ((nextPosWith == ZERO) && (nextPosSuchThat < nextPosPattern)))) {
 			nextPosInterest = nextPosSuchThat;
 			nextClauseInterest = SUCH_THAT_STRING;
-		}
-		else if ((nextPosPattern != std::string::npos) && (nextPosPattern != ZERO)
+		} else if ((nextPosPattern != std::string::npos) && (nextPosPattern != ZERO)
 			&& (((nextPosSuchThat == ZERO) && (nextPosPattern < nextPosWith)) || ((nextPosWith == ZERO) && (nextPosPattern > nextPosWith)))) {
 			nextPosInterest = nextPosPattern;
 			nextClauseInterest = PATTERN_STRING;
 
-		}
-		else if ((nextPosWith != std::string::npos) && (nextPosWith != ZERO)
+		} else if ((nextPosWith != std::string::npos) && (nextPosWith != ZERO)
 			&& (((nextPosSuchThat == ZERO) && (nextPosPattern > nextPosWith)) || ((nextPosPattern == ZERO) && (nextPosSuchThat > nextPosWith)))) {
 			nextPosInterest = nextPosWith;
 			nextClauseInterest = WITH_STRING;
 
-		}
-		else if (((nextPosSuchThat == ZERO) && (nextPosWith == std::string::npos) && (nextPosPattern == std::string::npos))
+		} else if (((nextPosSuchThat == ZERO) && (nextPosWith == std::string::npos) && (nextPosPattern == std::string::npos))
 			|| ((nextPosPattern == ZERO) && (nextPosSuchThat == std::string::npos) && (nextPosWith == std::string::npos))
 			|| ((nextPosWith == ZERO) && (nextPosSuchThat == std::string::npos) && (nextPosPattern == std::string::npos))) {
 			toPush = curr.substr(ZERO, curr.length());
@@ -993,8 +961,7 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 			toPush = trim(toPush);
 			results.push_back(toPush);
 			break;
-		}
-		else {
+		} else {
 			//Sth went wrong
 			break;
 		}
@@ -1031,8 +998,7 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 		if (found == string::npos) {
 			vecPattern.push_back(curr);
 			break;
-		}
-		else {
+		} else {
 			//curr is now pattern(....)...
 			string currTwo = curr.substr(ZERO, found);
 			size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
@@ -1100,12 +1066,10 @@ bool QueryValidator::isValidLeadTrail(string str) {
 	str = Util::trim(str);
 	if (str == AND_STRING) {
 		return true;
-	}
-	else {
+	} else {
 		if (str == "") {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
