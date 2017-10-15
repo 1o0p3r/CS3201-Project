@@ -213,9 +213,9 @@ public:
 		QueryStatement qs;
 		vector<string> answer;
 		//* implies selected
-		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Uses");
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
-		QueryElement a("d", "synonym", "while", "a", "synonym", "assign", "Parent");
+		QueryElement a("d", "synonym", "while", "f", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
 		QueryElement sel("assign", "a", "synonym");
 		
@@ -242,9 +242,10 @@ public:
 		qa.solvePatternClause();
 		answer = qa.analyzeClauseResults(); */
 		
-		hardcode = { "3" };
+		hardcode = {"3"};
 		Assert::AreEqual(hardcode.size(), answer.size());
 		Assert::AreEqual(hardcode[0], answer[0]);
+
 	}
 	TEST_METHOD(solveClauses) {
 		PKB pkb;
@@ -293,9 +294,9 @@ public:
 		Assert::AreEqual(hardcode.size(), mergedResult.size());
 		*/
 		//QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "Uses");
-		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
-		QueryElement b("d", "synonym", "while", "a", "synonym", "assign", "Parent");
-		// { { "1","1", "d" },{ "2","3","a" } };
+		// { { "1", "1", "1", "a" }, { "c","x","y","b" } }
+		QueryElement b("a", "synonym", "while", "s", "synonym", "assign", "Parent");
+		// { { "1","1", "a" },{ "2","3","s" } };
 
 		qa = QueryAnalyzer();
 		qa.setPKB(pkb);
@@ -305,7 +306,7 @@ public:
 		qa.findQueryElements();
 		mergedResult = qa.solveSTClause();
 
-		hardcode = { {{ "2","3","3","2" }, { "c", "c", "x", "y" }, { "1","1","1","1" } }};
+		hardcode = { { { "1","1","1","1","1","1","a" } ,{ "2","3","2","3","2","3","s" }, { "c", "c", "x","x", "y","y","b" } }};
 		for (int i = 0; i < mergedResult.size(); i++) {
 			for (int j = 0; j < mergedResult.size(); j++) {
 				for (int k = 0; k < mergedResult.size(); k++) {

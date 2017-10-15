@@ -16,6 +16,7 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgTwoResult(string arg1
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
 		pkbFollows = pkbReadOnly.getFollows(candidates);
+		pkbFollows = validatePKBResultsInt(arg2Entity, pkbFollows);
 		if(!pkbFollows.empty())
 			pkbResult.push_back(to_string(pkbFollows.front()));
 	}
@@ -43,6 +44,7 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgOneResult(string arg2
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
 		pkbFollows = pkbReadOnly.getFollowedBy(candidates);
+		pkbFollows = validatePKBResultsInt(arg1Entity, pkbFollows);
 		if (!pkbFollows.empty())
 			pkbResult.push_back(to_string(pkbFollows.front()));
 	}
@@ -67,8 +69,10 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addBothSynResult(string arg
 	vector<vector<string>> followsResult;
 
 	vecOfCandidates = pkbReadOnly.getAllStmt();
+	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	for (int candidates : vecOfCandidates) {
 		pkbFollows = pkbReadOnly.getFollows(candidates);
+		pkbFollows = validatePKBResultsInt(arg2Entity, pkbFollows);
 		if (!pkbFollows.empty()) {
 			pkbResultForArg1.push_back(to_string(candidates));
 			pkbResultForArg2.push_back(to_string(pkbFollows.front()));

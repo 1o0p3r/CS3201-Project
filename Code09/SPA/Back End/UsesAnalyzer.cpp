@@ -141,6 +141,7 @@ vector<string> UsesAnalyzer::getUsesResultAddArg1(string arg2, string arg1Entity
 		pkbResult = pkbReadOnly.getProcUsedBy(arg2);
 	else {
 		pkbResultInt = pkbReadOnly.getUsedBy(arg2);
+		pkbResultInt = validatePKBResultsInt(arg1Entity, pkbResultInt);
 		for (int entryToString : pkbResultInt)
 			pkbResult.push_back(to_string(entryToString));
 	}

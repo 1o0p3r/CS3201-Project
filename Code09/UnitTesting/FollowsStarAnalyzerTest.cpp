@@ -80,7 +80,7 @@ public:
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsStarAnalyzer(intSyn, pkb).solveClause();
-		hardcode = { { "3","4","a" } };
+		hardcode = { { "3","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -105,8 +105,8 @@ public:
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsStarAnalyzer(synSyn, pkb).solveClause();
-		hardcode = { { "2","2","3","5","a" },
-		{ "3","4","4","6","b" } };
+		hardcode = { { "2","a" },
+		{ "3","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {
@@ -132,7 +132,7 @@ public:
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsStarAnalyzer(wildSyn, pkb).solveClause();
-		hardcode = { { "3","4","6","a" } };
+		hardcode = { { "3","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
 			for (int j = 0; j < get<1>(clauseResult)[i].size(); j++) {

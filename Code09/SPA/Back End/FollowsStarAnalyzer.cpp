@@ -15,6 +15,7 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgTwoResult(string 
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
 		pkbFollowsStar = pkbReadOnly.getFollowsStar(candidates);
+		pkbFollowsStar = validatePKBResultsInt(arg2Entity, pkbFollowsStar);
 		for (int candidatesChosen : pkbFollowsStar) {
 			pkbResult.push_back(to_string(candidatesChosen));
 		}
@@ -44,6 +45,7 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgOneResult(string 
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
 		pkbFollowsStar = pkbReadOnly.getFollowedByStar(candidates);
+		pkbFollowsStar = validatePKBResultsInt(arg1Entity, pkbFollowsStar);
 		for (int candidatesChosen : pkbFollowsStar) {
 			pkbResult.push_back(to_string(candidatesChosen));
 		}
@@ -69,8 +71,10 @@ tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addBothSynResult(string
 	vector<vector<string>> followsStarResult;
 
 	vecOfCandidates = pkbReadOnly.getAllStmt();
+	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	for (int candidates : vecOfCandidates) {
 		pkbFollowsStar = pkbReadOnly.getFollowsStar(candidates);
+		pkbFollowsStar = validatePKBResultsInt(arg2Entity, pkbFollowsStar);
 		for (int candidatesChosen : pkbFollowsStar) {
 			pkbResultForArg1.push_back(to_string(candidates));
 			pkbResultForArg2.push_back(to_string(candidatesChosen));
