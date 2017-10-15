@@ -119,35 +119,49 @@ namespace UnitTesting
 			QueryStatement queryStatement;
 
 		
-			query = "variable v1,v#; assign a1,a#; Select v1 pattern a#(v#,_\"x+y\"_) and pattern a1(1, \"(x+y)\")pattern a1(v1, \"x\")";
+			query = "variable v1,v#; assign a1,a#; Select v1 pattern a#(v#,_\"x+y\"_) pattern a1(1, \"(x+y)\")pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
-		
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 pattern w1(\"x\", _)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; if ifs1; constant d; while w1, w2; Select v1 pattern ifs1(\"xor  \", _, _)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
-			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#(v#,_\"x+y\"_)		and pattern a1(1, \"(x+y)\")		pattern a1(v1, \"x\")";
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#(v#,_\"x+y\"_)		and a1(1, \"(x+y)\")		pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
-			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#(v#,_\"x+y\"_)	 pattern a1(1, \"(x+y)\")		pattern a1(v1, \"x\")";
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#(v#,_\"x+y\"_)	 pattern a1(1, \"(x+y)\")		and		 a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
-		
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#(v#,_\"x+y\"_)	 and pattern a1(1, \"(x+y)\")		and		 a1(v1, \"x\")";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#     (v#,_\"x+y\"_)	 pattern a1		(1, \"(x+y)\")		pattern a1		(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#     (	v#		,		_\"x+y\"_		)	 pattern a1		(	 1, \"(x+y)\"	)		pattern a1		(	v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 			
-			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#     (	v#		,		_		\"		x  +y		\"		_		)	 pattern a1		(	 1, \"(x+y)\"	)		pattern a1		(	v1, \"x\")";
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#     (	v#		,		_		\"		x  +y		\"		_		)	 and	 a1		(	 1, \"(x+y)\"	)		pattern a1		(	v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#     (	v#		,		_		\"		(x  +y)*z-     4		\"		_		)	 pattern a1		(	 \"     box \", \"(x+y)\"	)		pattern a1		(	v1, \"   x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1			pattern a#		  (	v#		,		_		    	\"		   	(	x	   +y		)*		z-     4		\"		_		)	 pattern a1		(	 \"     box		\"	,	 \"(x	+	y)	\"	)		pattern a1		(	v1, \"   x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		
 		
 
@@ -283,7 +297,25 @@ namespace UnitTesting
 			Assert::IsFalse(queryValidator.isAssignPatternRegex(str));
 	
 		}
+		TEST_METHOD(testExtractPattern3) {
+			QueryValidator queryValidator;
+			string str;
+			vector<string> expected;
+			vector<string> result;
 
+			str = "pattern a(_,_) and a(_,_) pattern a(_,_)";
+			expected.push_back("pattern a(_,_) ");
+			expected.push_back("and a(_,_)");
+			expected.push_back(" pattern a(_,_)");
+			result = queryValidator.extractPatternClauses(str);
+			Assert::IsTrue(result == expected);
+
+			expected.clear();
+			result.clear();
+
+			str = "			pattern a#(v#,_\"x+y\"_)		and a1(1, \"(x+y)\")		pattern a1(v1, \"x\")";
+			result = queryValidator.extractPatternClauses(str);
+		}
 		TEST_METHOD(testValidSplit) {
 			QueryValidator queryValidator;
 			vector<string> vecStr;

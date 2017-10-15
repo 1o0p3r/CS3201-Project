@@ -43,7 +43,6 @@ private:
 	bool isWhiteSpaceTab(string str);
 	bool isString(string str);
 	bool isBalancedParantheses(string str);
-	bool isValidLeadingCheck(string str);
 	bool isValidLeadTrail(string str);
 	bool is_number(string str);
 	bool isSubstring(string str);
@@ -64,6 +63,10 @@ private:
 	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
 	
 	string extractIdentity(string arg);
+
+
+	vector<string> extractAndPattern(string currTwo, vector<string> VecPattern);
+
 	string removeSymbols(string str, string symbolToRemove);
 	string trim(string str);
 	string removeDuplicatesWhiteSpaces(string str);
@@ -98,10 +101,12 @@ public:
 	bool isValidExpr(string str);
 	bool isValidExprUnder(string str);
 
+	vector<string> extractPatternClauses(string str);
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
-	vector<string> extractPatternClauses(string str);
 	vector<string> splitToSentences(string strToSplit);
 
 	QueryStatement getQueryStatement();
+
+	
 };
