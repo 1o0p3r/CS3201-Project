@@ -187,38 +187,40 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			"while w; Select w such that Parent(w, 7)",
-			"assign a; Select a such that Parent*(3, a)",
-			"if a; stmt b; Select a such that Parent*(3,b)",
-			"stmt s; Select s such that Follows(8, s)",
-			"stmt c; Select c such that Follows*(1, c)",
-			"stmt a; Select a such that Follows(a, 9)",
-			"stmt s; Select s such that Modifies(s, \"i\")",
-			"variable n; Select n such that Modifies(1, n)",
-			"assign a; variable b; while i; Select i such that Modifies(a, b)",
-			"variable v; Select v such that Uses(\"Second\", v)",
-			"stmt s; Select s such that Uses(s, \"i\")",
-			"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
-			"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
-			"assign a; Select a pattern a(\"z\", _\"x+i\")",
-			"assign a; Select a pattern a(_, _\"x + 1\"_)"
+			//"while w; Select w such that Parent(w, 7)",
+			//"assign a; Select a such that Parent*(3, a)",
+			//"if a; stmt b; Select a such that Parent*(3,b)",
+			//"stmt s; Select s such that Follows(8, s)",
+			//"stmt c; Select c such that Follows*(1, c)",
+			//"stmt a; Select a such that Follows(a, 9)",
+			//"stmt s; Select s such that Modifies(s, \"i\")",
+			//"variable n; Select n such that Modifies(1, n)",
+			//"assign a; variable b; while i; Select i such that Modifies(a, b)",
+			//"variable v; Select v such that Uses(\"Second\", v)",
+			//"stmt s; Select s such that Uses(s, \"i\")",
+			//"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
+			//"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
+			//"assign a; Select a pattern a(\"z\", _\"x+i\")",
+			//"assign a; Select a pattern a(_, _\"x + 1\"_)"
+			"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)"
 		};
 		vector<vector<string>> expected = {
-			{ "3" },
-			{ "4", "5", "6", "7" },
-			{ "8" },
-			{ "11" },
-			{ "11", "12", "13", "2", "3", "8" },
-			{},
-			{ "2","3", "7" },
-			{ "x" },
-			{ "3" },
-			{ "i", "x", "y", "z" },
-			{ "11", "3", "7" },
-			{ "x" },
-			{},
-			{},
-			{ "9" }
+			//{ "3" },
+			//{ "4", "5", "6", "7" },
+			//{ "8" },
+			//{ "11" },
+			//{ "11", "12", "13", "2", "3", "8" },
+			//{},
+			//{ "2","3", "7" },
+			//{ "x" },
+			//{ "3" },
+			//{ "i", "x", "y", "z" },
+			//{ "11", "3", "7" },
+			//{ "x" },
+			//{},
+			//{},
+			//{ "9" },
+			{"1","11","12","2","3","4","5","6","8"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

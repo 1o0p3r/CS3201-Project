@@ -588,7 +588,7 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 	 *case 0: hasSyn
 	 *case 1: noSyn
 	 *case 2: hasSyn, hasSyn
-	 *case 3: hasSyn, noSyn -> arg2 present 
+	 *case 3: hasSyn, noSyn -> arg2 present
 	 *case 4: noSyn, hasSyn
 	 *case 5: noSyn, noSyn
 	 */
@@ -598,19 +598,21 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 	auto iteratorMapFindArg1 = synTableMap.find(stResult[ARGONE].back());
 	int scenario = 0;
 	bool hasArg2 = false;
-	
-	if (iteratorMapFindArg1 == synTableMap.end()) { //element not found
-		if (stResult.size() > 1) {
-			scenario += 4;
-			hasArg2 = true;
-			if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
-				scenario += 1;
-			}
+	if (stResult.size() == 1){
+		if (iteratorMapFindArg1 == synTableMap.end()) {
+			scenario += 1;
 		}
-		else {
+	} else if (stResult.size() > 1) {
+		hasArg2 = true;
+		if (iteratorMapFindArg1 == synTableMap.end())
+			scenario += 4;
+		else
+			scenario += 2;
+		if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
 			scenario += 1;
 		}
 	}
+
 	//oneResultArg1Found, oneResultArg1Missing, bothSynFound, arg1Found, arg2Found, noSynFound
 	tableIndex = mergedQueryTable.size();
 	switch (scenario) {
@@ -661,9 +663,9 @@ void QueryAnalyzer::insertArg1Arg2CommonSynTable(vector<vector<string>> stResult
 		case TWO_DISJOINT_TABLE:
 			int clauseTableExists = -1;
 			result = hashJoin(tableToMerge1, get<ARGTWO>(tableLocation1),
-				stResult, ARGONE, get<ARGONE>(tableLocation1), clauseTableExists);
+				stResult, ARGONE, get<ARGONE>(tableLocation1), -1);
 			clauseTableExists = get<ARGONE>(tableLocation2);
-			result = hashJoin(result, get<ARGTWO>(tableLocation1), tableToMerge2,
+			result = hashJoin(result, mergedQueryTable[get<ARGONE>(tableLocation1)].size()-1, tableToMerge2,
 				get<ARGTWO>(tableLocation2), get<ARGONE>(tableLocation1), clauseTableExists);
 			break;
 	}
@@ -1302,13 +1304,27 @@ vector<vector<string>> QueryAnalyzer::hashJoin(vector<vector<string>> queryAnaly
 
 	if (!hashJoinTable.empty()) {
 		//re-map synonym table
+		if (clauseTableLoc != -1) { //table is existing
+			if (clauseTableLoc < qaTableLoc)
+			{
+				int temp = qaTableLoc;
+				qaTableLoc = clauseTableLoc;
+				clauseTableLoc = temp;
+			}				
+			mergedQueryTable.erase(mergedQueryTable.begin() + clauseTableLoc);
+			for (auto entry : synTableMap) { //remap entire synTable for values greater than deleted index
+				if (get<ARGONE>(entry.second) > clauseTableLoc)
+					synTableMap[entry.first] = make_pair(get<ARGONE>(entry.second) - 1, get<ARGTWO>(entry.second));
+			}
+		}
+	
+
+
 		for (int i = 0; i < hashJoinTable.size(); i++) {
 			hashJoinTable[i].push_back(tableKeys[i]);
 			synTableMap[hashJoinTable.at(i).back()] = make_tuple(qaTableLoc, i);
 		}
-		if (clauseTableLoc != -1) { //table is existing
-			mergedQueryTable.erase(mergedQueryTable.begin() + clauseTableLoc);
-		}
+		
 		mergedQueryTable.at(qaTableLoc) = hashJoinTable;
 	}  
 	return hashJoinTable;
