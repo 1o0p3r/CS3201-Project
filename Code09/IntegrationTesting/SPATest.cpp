@@ -60,14 +60,14 @@ public:
 			{},
 			{ "Apple", "Nana" },
 			{ "Apple",  "Nana", "Pear"},
-			{"18","19","8"},
+			{ "18", "19", "8" },
 			{ "Apple", "Nana", "Pear" },
 			{ "boom", "ggg", "if" },
 			{ "Apple", "Nana" },
-			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
+			{ "18", "19", "8" },
 			{ "Y2K", "ggg" , "if"},
 			{},
-			{"TRUE"},		//boolean must always return something, and it is true instead of empty 
+			{ "TRUE" },		
 			{"3", "5"},
 			{"2"},
 			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
@@ -76,7 +76,7 @@ public:
 			{"2"},				//Exception
 			{"Apple", "Nana"},	//Passed
 			{"Apple", "Pear"},	//Passed
-			{"Pear"}			//Size error
+			{"Pear"},			//Size error
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
