@@ -41,7 +41,14 @@ public:
 			"assign a; procedure pOne; call cOne, cTwo; stmt s; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
 			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;  Select a2 pattern a2(_,  _\"x\"_)",
 			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
-			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)"
+			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
+			"assign a2; if ifs; while wews; Select ifs pattern ifs(\"if\", _, _)",
+			"assign a2; if ifs; while wews; variable v; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
+			"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
+			"assign a2; procedure pOne, pTwo; Select pOne such that Calls(pOne, pTwo)",
+			"assign a2; procedure pOne, pTwo; Select pTwo such that Calls(pOne, pTwo) with pOne.procName = \"NaNa\"",
+			"assign a2; procedure pOne, pTwo; Select pTwo such that Calls(pOne, pTwo) with pOne.procName = \"Apple\""
+
 		};
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
@@ -63,7 +70,13 @@ public:
 			{ "TRUE" },		
 			{"3", "5"},
 			{"2"},
-			{},
+			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
+			{"12"},				//Correct
+			{"13"},				//Exception
+			{"2"},				//Exception
+			{"Apple", "Nana"},	//Passed
+			{"Apple", "Pear"},	//Passed
+			{"Pear"},			//Size error
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
