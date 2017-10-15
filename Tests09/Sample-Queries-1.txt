@@ -1,145 +1,135 @@
-1 - comment
-while w;
-Select w such that Parent(w, 7)
+1 - Valid query Single clause Follows*
+stmt sOne, sTwo;
+Select sOne such that Follows*(1, sOne)
+10, 2, 4
+5000
+2 - Valid query Single clause Follows
+stmt sOne, sTwo;
+Select sTwo such that Follows  (sTwo,  6)
 5
 5000
-2 - comment
-stmt s;
-Select s such that Follows(8, s)
-None
+3 - Valid query Single clause BOOLEAN
+stmt OneTwo;
+ Select BOOLEAN such that Follows(3,3)
+False
 5000
-3 - comment
-assign a;
-Select a such that Parent*(5, a)
-6, 7, 8, 10
+4 - Valid query single clause Parent*
+assign as1; while wew;
+ Select as1 such that Parent*   (wew, as1)
+3
 5000
-4 - comment
-stmt c;
-Select c such that Follows*(1, c)
-2, 3, 4
+5 - Valid query single clause Parent*
+assign as1; while wew;
+ Select as1 such that Parent*(2, as1)
+3
 5000
-5 - comment
-stmt s;
-Select s such that Modifies(s, "i")
-17
-5000
-6 - comment
-variable v;
-Select v such that Uses("p", v)
-None
-5000
-7 - comment
-stmt s;
-Select s such that Uses(s, "i")
-7, 14, 17
-5000
-8 - comment
-constant c; assign q; variable c;
-Select c such that Uses(q, c)
-1, 2, 3, 6, 7, 8, 10, 11, 12, 14, 16, 17, 18, 20, 21, 23, 24, 25, 26, 27, 28
-5000
-9 - comment
-variable n;
-Select n such that Modifies( 1, n)
-a
-5000
-10 - comment
-assign a; variable b; while i;
-Select i such that Modifies(a, b)
-5, 13, 22
-5000
-11 - comment
-stmt a;
-Select a such that Follows(a, 9)
-5
-5000
-12 - comment
-stmt b; stmt c;
-Select b such that Follows(b, 27)
-15
-5000
-13 - comment
-assign a;
-Select a pattern a("z", _"x+i")
-None
-5000
-14 - comment
-assign a;
-Select a pattern a(_, _"x + 1"_)
-None
-5000
-15 - comment
-assign a;
-Select a pattern a(_, " k  +  4 ")
-18
-5000
-16 - comment
-assign w; variable v;
-Select w such that Modifies(w, v) pattern w(_," 3 + 2 ") 
-None
-5000
-17 - comment
-assign ifs; variable v; assign a;
-Select v such that Uses(ifs, v) pattern a(_, " k- m")
-k
-5000
-18 - comment
-assign p;  stmt s1; stmt s2; assign a;
-Select p such that Parent(s1, s2) pattern a("z", _"x+i")
-None
-5000
-19 - comment
-if ifs; assign a1, a2; variable v1, v2;
-Select ifs such that Follows*(a1, ifs) pattern a1(_, _"x+1"_)
-None
-5000
-20 - comment
-assign n; stmt s; assign k;
-Select s such that Follows(16, n) and pattern k(_,_"i*t"_) 
-17
-5000
-21 - comment
-stmt n; assign a; 
-Select n such that Follows(1, n) and pattern a(_,_"2*a"_)
+6 - Valid query single clause Parent*
+assign as1; while wew;
+Select wew such that Parent*(wew, 3)
 2
 5000
-22 - comment
-assign ifs; variable v; assign a; variable z
-Select v such that Uses(ifs, z) pattern a(_, _"c*a"_)
-11
+7 - InValid query single clause Parent*
+assign as1; while wew;
+ Select as1 such that Parent*(as1, 3)
+none
 5000
-23 - comment
-stmt k; stmt u;
-Select k such that Parent (0,u)
-None
+8 - Valid query single clause Modifies
+procedure pOne;
+Select pOne such that Modifies(pOne, "y")
+Apple, Nana
 5000
-24 - comment
-assign w; variable v;
-Select w such that Modifies(w, v) pattern w(_,"_a * y_") 
-20
+9 - Valid query single clause Modifies
+procedure pOne; call cOne, cTwo;
+ Select pOne such that Modifies(cTwo, "  y")
+Apple, Nana, Pear
 5000
-25 - comment
-stmt a; stmt c;
-Select a such that Parent(36,c)
-None
+10 - Valid query single clause Modifies
+procedure pOne; call cOne, cTwo;
+Select cOne such that Modifies(cOne, "if")
+18, 19, 8
 5000
-26 - comment
-assign a;
-Select a such that Parent*(a, 2)
-None
+11 - Valid query single clause Modifies
+procedure pOne; call cOne, cTwo;
+ Select pOne such that Modifies("Pear", "if")
+Apple,Nana,Pear
 5000
-27 - comment
-if a; stmt b;
-Select a such that Parent*(a,b)
-4, 15, 19
+12 - Valid query single clause Modifies
+variable v;
+ Select v such that Modifies(8, v)
+boom, ggg, if
 5000
-28 - comment
-if a; stmt b;
-Select a such that Follows*(b,2)
-4, 15, 19
+13 - Valid query single clause Uses
+procedure pOne;
+ Select pOne such that Uses(pOne, "y")
+Apple, Nana
 5000
-29 - comment
-stmt a; stmt c;
-Select a such that Follows*(36,c)
-None
+14 - Valid query single clause Uses
+call cOne, cTwo;
+ Select cTwo such that Uses(cTwo,  " ggg")
+18, 19, 9
+5000
+15 - Valid query single cuase Uses
+variable v;
+ Select v such that Uses(8, v)
+Y2K, ggg, if
+5000
+16 - Invalid query single clause Uses
+assign a; procedure pOne;
+ Select BOOLEAN such that Uses(a, pOne)
+none
+5000
+17 - Valid query single clause Uses
+assign a; procedure pOne;
+ Select BOOLEAN such that Uses("Pear", "if")
+True
+5000
+18 - Valid query single pattern clause
+assign a2; procedure pTwo;
+  Select a2 pattern a2(_,  _"x"_)
+3, 5
+5000
+19 - Valid query multiple clauses
+assign a2; while wews;
+ Select wews such that Parent*(wews, a2) pattern a2("y", _)
+2
+5000
+20 - Valid query multiple clauses
+assign a2; if ifs;
+ Select ifs such that Follows*(ifs, a2) pattern a2("if", _)
+none
+5000
+21 - Valid query if pattern clause
+assign a2; if ifs;
+ Select ifs pattern ifs("if", _, _)
+12
+5000
+22 - Valid query multiple clauses
+assign a2; if ifs;
+ Select ifs pattern ifs(_, _, _) such that Modifies(a2, "ggg")
+12, 15, 4, 6
+5000
+23 - Valid query while pattern clause
+assign a2; if ifs; while wews; variable v;
+ Select wews pattern wews(v, _)
+2
+5000
+24 - Valid query single clause Calls
+procedure pOne, pTwo;
+ Select pOne such that Calls(pOne, pTwo)
+Apple, Nana
+5000
+25 - Valid query multiple clauses
+assign a2; procedure pOne; variable v;
+ Select a2 such that Modifies(a2, v) pattern a2(_, _"x"_) and a2("y", _)
+3
+5000
+26 - Valid query multiple clauses
+stmt s; assign a2; procedure pOne; variable v; if ifs;
+ Select a2 such that Parent*(12,a2) pattern a2("boom",_) pattern a2(_, "1")
+16
+5000
+27 - Valid query multiple clauses
+stmt s; assign a2; procedure pOne; variable v; if ifs;
+Select pOne such that Modifies(pOne, "li3m") and Uses(pOne,_) 
+Apple ,Nana
 5000
