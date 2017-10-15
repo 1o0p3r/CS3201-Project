@@ -25,29 +25,28 @@ public:
 				"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
 				"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
 				"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
-				"stmt sTwo; assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",
-				"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(2, as1)",
-				"stmt sTwo; assign as1; while wew; Select wew such that Parent*(wew, 3)",
-				"stmt sTwo; assign as1; while wew; Select as1 such that Parent*(as1, 3)",
-				"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(pOne, \"y\")",
-				"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
-				"assign a; procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
-				"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
-				"assign a; variable v; procedure pOne; call cOne, cTwo; Select v such that Modifies(8, v)",
-				"assign a; procedure pOne; call cOne, cTwo; Select pOne such that Uses(pOne, \"y\")",
-				"assign a; procedure pOne; call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",
-				"assign a; procedure pOne; call cOne, cTwo; stmt s; variable v; Select v such that Uses(8, v)",
-				"assign a; procedure pOne; call cOne; cTwo; stmt s; Select BOOLEAN such that Uses(a, pOne)",
-				"assign a; procedure pOne; call cOne, cTwo; stmt s; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
-				"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;  Select a2 pattern a2(_,  _\"x\"_)",
-				"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
-				"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
-				"assign a2; if ifs; while wews; Select ifs pattern ifs(\"if\", _, _)",
-				"assign a2; if ifs; while wews; variable v; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
+				"assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",
+				"assign as1; while wew; Select as1 such that Parent*(2, as1)",
+				"assign as1; while wew; Select wew such that Parent*(wew, 3)",
+				"assign as1; while wew; Select as1 such that Parent*(as1, 3)",
+				"procedure pOne; Select pOne such that Modifies(pOne, \"y\")",
+				"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
+				"procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
+				"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
+				"variable v; Select v such that Modifies(8, v)",
+				"procedure pOne; Select pOne such that Uses(pOne, \"y\")",
+				"call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",
+				"variable v; Select v such that Uses(8, v)",
+				"assign a; procedure pOne; Select BOOLEAN such that Uses(a, pOne)",
+				"assign a; procedure pOne; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
+				"assign a2; procedure pTwo;  Select a2 pattern a2(_,  _\"x\"_)",
+				"assign a2; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
+				"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
+				"assign a2; if ifs; Select ifs pattern ifs(\"if\", _, _)",
+				"assign a2; if ifs; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
 				"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
-				"assign a2; procedure pOne, pTwo; Select pOne such that Calls(pOne, pTwo)",
-
-				"assign a2; procedure pOne; variable v; Select a2 such that Modifies(a2, v) pattern a2(_, _\"x\"_) pattern a2(\"y\", _)",
+				"procedure pOne, pTwo; Select pOne such that Calls(pOne, pTwo)",
+				"assign a2; procedure pOne; variable v; Select a2 such that Modifies(a2, v) pattern a2(_, _\"x\"_) and a2(\"y\", _)",
 				"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")", 
 				"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) "
 		};
@@ -76,7 +75,6 @@ public:
 			{"12","15","4","6"},				//Exception
 			{"2"},				//Exception
 			{"Apple", "Nana"},	//Passed
-
 			{"3"},		//Passed
 			{"16"},		//Passed
 			{"Apple", "Nana"}
