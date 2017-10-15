@@ -22,7 +22,7 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			/*"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
+			"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
 			"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
 			"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
 			"stmt sTwo; assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",
@@ -41,7 +41,7 @@ public:
 			"assign a; procedure pOne; call cOne, cTwo; stmt s; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
 			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews;  Select a2 pattern a2(_,  _\"x\"_)",
 			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
-			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",*/
+			"assign a2; procedure pTwo; call calls#; stmt s#; if ifs; while wews; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
 			"assign a2; if ifs; while wews; Select ifs pattern ifs(\"if\", _, _)",
 			"assign a2; if ifs; while wews; variable v; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
 			"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
@@ -51,26 +51,26 @@ public:
 
 		};
 		vector<vector<string>> expected = {
-			//{"10", "2", "4"},
-			//{ "5" },
-			//{ "FALSE" },
-			//{ "3" },		
-			//{ "3" },
-			//{ "2" },
-			//{},
-			//{ "Apple", "Nana" },
-			//{ "Apple",  "Nana", "Pear"},
-			//{"18","19","8"},
-			//{ "Apple", "Nana", "Pear" },
-			//{ "boom", "ggg", "if" },
-			//{ "Apple", "Nana" },
-			//{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
-			//{ "Y2K", "ggg" , "if"},
-			//{},
-			//{"TRUE"},		//boolean must always return something, and it is true instead of empty 
-			//{"3", "5"},
-			//{"2"},
-			//{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
+			{"10", "2", "4"},
+			{ "5" },
+			{ "FALSE" },
+			{ "3" },		
+			{ "3" },
+			{ "2" },
+			{},
+			{ "Apple", "Nana" },
+			{ "Apple",  "Nana", "Pear"},
+			{"18","19","8"},
+			{ "Apple", "Nana", "Pear" },
+			{ "boom", "ggg", "if" },
+			{ "Apple", "Nana" },
+			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
+			{ "Y2K", "ggg" , "if"},
+			{},
+			{"TRUE"},		//boolean must always return something, and it is true instead of empty 
+			{"3", "5"},
+			{"2"},
+			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
 			{"12"},				//Correct
 			{"13"},				//Exception
 			{"2"},				//Exception
