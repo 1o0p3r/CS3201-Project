@@ -47,23 +47,23 @@ public:
 			{"10", "2", "4"},
 			{ "5" },
 			{ "FALSE" },
-			{ "3" },		//Wrong results obtained: returned all assignments
+			{ "3" },
 			{ "3" },
 			{ "2" },
 			{},
 			{ "Apple", "Nana" },
 			{ "Apple",  "Nana", "Pear"},
-			{},
+			{ "18", "19", "8" },
 			{ "Apple", "Nana", "Pear" },
 			{ "boom", "ggg", "if" },
 			{ "Apple", "Nana" },
-			{ "8" },			//Results obtained: Empty
+			{ "18", "19", "8" },
 			{ "Y2K", "ggg" , "if"},
 			{},
-			{},		
+			{ "TRUE" },		
 			{"3", "5"},
 			{"2"},
-			{"12"},		//Results obtained: Empty
+			{},
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
