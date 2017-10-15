@@ -124,6 +124,11 @@ void PKB::addWhilePattern(int statementNum, string variable) {
 vector<int> PKB::getPatternWhile(string variable) {
 	int varIndex = getVarIndex(variable);
 	return whilePatternTable[varIndex];
+	if (varIndex >= whilePatternTable.size()) {
+		return vector<int>{};
+	} else {
+		return whilePatternTable[varIndex];
+	}
 }
 
 void PKB::addIfPattern(int statementNum, string variable) {
@@ -136,7 +141,11 @@ void PKB::addIfPattern(int statementNum, string variable) {
 
 vector<int> PKB::getPatternIf(string variable) {
 	int varIndex = getVarIndex(variable);
-	return ifPatternTable[varIndex];
+	if (varIndex >= ifPatternTable.size()) {
+		return vector<int>{};
+	} else {
+		return ifPatternTable[varIndex];
+	}
 }
 
 vector<tuple<int, string>> PKB::getPattern(string varName) {
