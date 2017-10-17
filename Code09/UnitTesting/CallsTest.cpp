@@ -42,5 +42,16 @@ namespace UnitTesting
 					throw invalid_argument("Procedure calls itself. Program is recursive");
 			});
 		}
+
+		TEST_METHOD(setCallsStarCorrectly) {
+
+			Calls call;
+
+			call.setCalls(1, 1, 2);
+			call.setCalls(5, 2, 4);
+			call.setCalls(10, 3, 2);
+			call.setCalls(13, 3, 1);
+			Assert::IsTrue(call.getCalledByStar(4) == vector<int>{2, 1, 3});
+		}
 	};
 }

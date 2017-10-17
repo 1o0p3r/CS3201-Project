@@ -57,6 +57,13 @@ void Calls::setCallsStar(int procName1, int procName2) {
 	for (int i = 0; i < procCalledBy.size(); i++) {
 		callsStarTable[procCalledBy[i]].push_back(procName2);
 	}
+
+	vector<int> procIsCalling = getCalls(procName2);
+
+	for (int i = 0; i < procIsCalling.size(); i++) {
+		callsStarTable[procName1].push_back(procIsCalling[i]);
+		calledByStarTable[procIsCalling[i]].push_back(procName1); //edit properly in proper method
+	}
 }
 
 void Calls::setCalledByStar(int procName1, int procName2) {

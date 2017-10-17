@@ -41,6 +41,7 @@ public:
 	QueryElement selectElement;
 	vector<QueryElement> stElements;
 	vector<QueryElement> patternElements;
+	vector<QueryElement> withElements;
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
 	unordered_map<int, int> selectSynMap;
@@ -48,6 +49,7 @@ public:
 	PKB pkbPtr;
 	bool hasSTClause;
 	bool hasPatternClause;
+	bool hasWithClause;
 
 	void initMapPatternExpType();
 	void initSelectMap();
