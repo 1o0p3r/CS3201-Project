@@ -956,5 +956,34 @@ namespace UnitTesting
 			input = "andpattern a(_,_)";
 			Assert::IsFalse(queryValidator.isPartialPatternRegex(input));
 		}
+
+		TEST_METHOD(testTupleMethod) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "<a,b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "< a , b >";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a ,b >";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a , b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a , b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "b.stmt#";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a, s.stmt#>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<	a, s.stmt#	, c.procName , b	>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+		}
 	};
 }

@@ -62,6 +62,8 @@ const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
 const string TAB_STRING = "\\t";
+const string COMMA_STRING = ",";
+const string TUPLE_STRING = "tuple";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -84,6 +86,7 @@ const string PROCNAME = "procName";
 const string VARNAME = "varName";
 const string VALUE = "value";
 const string STMTNUM = "stmt#";
+const string STMT_STRING = "stmt";
 const string STRING_LITERAL = "stringLiteral";
 
 const string STRTYPE = "strType";
@@ -176,10 +179,14 @@ const string SUB_MATCH_REGEX = "([\\w][\\w\\d\#]*\\s+[\\w][\\w\\d\#]*)";
 const string IF_PATTERN_AND_REGEX = SYMBOL_LEFT_BRACKET_STRING + IF_PATTERN_REGEX + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + "\\s+" + SYMBOL_RIGHT_BRACKET_STRING + "{0,1}"
 + SYMBOL_RIGHT_BRACKET_STRING + IF_PATTERN_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
 const string PARTIAL_PATTERN_REGEX = "(and\\s+)(.+)";
-const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*||(BOOLEAN)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-
+const string ELEM_REGEX = SYMBOL_LEFT_BRACKET_STRING  + IDENT_STRING_REGEX + OR + ATTRREF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+const string TUPLE_REGEX = ELEM_REGEX + OR + SYMBOL_LEFT_BRACKET_STRING + "\\<" + "\\s*" + ELEM_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + "," + "\\s*" + ELEM_REGEX + + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + "\\>" + SYMBOL_RIGHT_BRACKET;
+const string ONLY_TUPLE_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\\<" + "\\s*" + ELEM_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + "," + "\\s*" + ELEM_REGEX + +"\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + "\\>" + SYMBOL_RIGHT_BRACKET;
+//const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*|(BOOLEAN)" + OR + ATTRREF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
+const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + "BOOLEAN" + OR + TUPLE_REGEX + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING;
 using namespace std;
+
 QueryValidator::QueryValidator()
 {
 	//Add in the elements into the unordered map that will be used for with clauses
@@ -191,6 +198,10 @@ QueryValidator::QueryValidator()
 	withClauseTypeBank[STRING_LITERAL] = STRTYPE;
 	withClauseTypeBank[NUMBER_STRING] = INTTYPE;
 
+	attrNameBank[PROCNAME] = { PROCEDURE_STRING, CALL_STRING };
+	attrNameBank[VARNAME] = { VARIABLE_STRING };
+	attrNameBank[VALUE] = { CONSTANT_STRING };
+	attrNameBank[STMTNUM] = { STMT_STRING, ASSIGN_STRING, IF_STRING, WHILE_STRING, CALL_STRING };
 }
 //With a given str, loop thru to find ;
 bool QueryValidator::parseInput(string str) {
@@ -748,24 +759,119 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		return false;
 	}
 
-	vector<string> selectClauseSplit = splitBySymbol(selectClause, SYMBOL_WHITESPACE);
-	string syn = selectClauseSplit.at(ONE);
-	vector<string> tempVec;
-	tempVec.push_back(syn);
+	string resultCl = selectClause.substr(SELECT_STRING.length(), selectClause.length() - SELECT_STRING.length());
+	resultCl = Util::trim(resultCl);
 
-	if (isValidSynonym(syn)) {
-		//Add to the tree Select clause
-		//I neeed entity and synonym, synonym is now valid and can be used, nw i need toget corresponding entity
-		string ent = getCorrespondingEntity(syn);
-		addSelectQueryElement(ent, syn, SYNONYM_STRING, EMPTY_STRING);
+	//If its a synonym
+	if (isIdent(resultCl) && isValidSynonym(resultCl)) {
+		string ent = getCorrespondingEntity(resultCl);
+		addSelectQueryElement(ent, resultCl, SYNONYM_STRING, SYNONYM_STRING);
 		return true;
-	} else if (syn == BOOLEAN_STRING) {
+	} else if (resultCl == BOOLEAN_STRING) {
 		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING, EMPTY_STRING);
 		return true;
+	} else if (isAttrRef(resultCl)) {
+		//Example p.procName, c.value etc
+		vector<string> resultVec = splitBySymbol(resultCl, DOT_CHAR);
+		string syn = resultVec.at(ZERO);
+		string attrName = resultVec.at(ONE);
+		//First check that synonym is declared and is a corresponding entity
+		if (isValidSynonym(syn) && isValidCorrespondingEntity(syn, attrName)) {
+			string ent = getCorrespondingEntity(syn);
+			addSelectQueryElement(ent, syn, attrName, attrName);
+			return true;
+		} else {
+			return false;
+		}
+	} else if(isOnlyTuple(resultCl)) {
+		//First of all remove all whitespaces
+		resultCl = removeSymbols(resultCl, WHITESPACE_STRING);		//a,b.stmt#,c,d
+		//Then remove the '<' and '>'
+		resultCl = resultCl.substr(ONE, resultCl.length() - TWO);
+		vector<string> resultVec = splitBySymbol(resultCl, SYMBOL_COMMA);
+		if (isValidCorrespondingTupleEntities(resultVec)) {
+			string allSyn = extractAllSyn(resultVec);		// a,b,c,d
+			string allEnt = extractAllEnt(resultVec);
+			string allSynAttr = extractAllSynAttr(resultVec);
+			addSelectQueryElement(allEnt, allSyn, TUPLE_STRING, allSynAttr);
+			return true;
+		}
+		else {
+			return false;
+		}
 	} else {
-		cout << INVALID_SYNONYM_QUERIED_ERROR;
 		return false;
 	}
+}
+string QueryValidator::extractAllSynAttr(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string attrName = tempVec.at(ONE);
+			toReturn += attrName + COMMA_STRING;
+		} else {
+			toReturn += resultVec.at(i);
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+bool QueryValidator::isValidCorrespondingTupleEntities(vector<string> resultVec) {
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string syn = tempVec.at(ZERO);
+			string attrName = tempVec.at(ONE);
+			if (!isValidCorrespondingEntity(syn, attrName)) {
+				return false;
+			}
+		} else {
+			string ent = getCorrespondingEntity(resultVec.at(i));
+			if (ent == INVALID_STRING) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+string QueryValidator::extractAllEnt(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size(); i ++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string ent = getCorrespondingEntity(tempVec.at(ZERO));
+			toReturn += ent + COMMA_STRING;
+		} else {
+			string ent = getCorrespondingEntity(resultVec.at(i));
+			toReturn += ent + COMMA_STRING;
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+string QueryValidator::extractAllSyn(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size();  i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			toReturn += tempVec.at(ZERO) + COMMA_STRING;
+		}
+		else {
+			toReturn += resultVec.at(i) + COMMA_STRING;
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName) {
+	string ent = getCorrespondingEntity(synonym);
+	
+	vector<string> permittedEntities = attrNameBank[attrName];
+
+	for (size_t i = 0; i < permittedEntities.size(); i++) {
+		if (permittedEntities[i] == ent) {
+			return true;
+		}
+	}
+	return false;
 }
 void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
 	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
@@ -1131,4 +1237,16 @@ bool QueryValidator::isWhiteSpaceTab(string str) {
 bool QueryValidator::isSubstring(string str) {
 	regex subStringRegex(SUBSTRING_REGEX);
 	return regex_match(str, subStringRegex);
+}
+bool QueryValidator::isValidTuple(string str) {
+	regex tupleRegex(TUPLE_REGEX);
+	return regex_match(str, tupleRegex);
+}
+bool QueryValidator::isIdent(string str) {
+	regex identRegex(IDENT_STRING_REGEX);
+	return regex_match(str, identRegex);
+}
+bool QueryValidator::isOnlyTuple(string str) {
+	regex onlyTupleRegex(ONLY_TUPLE_REGEX);
+	return regex_match(str, onlyTupleRegex);
 }
