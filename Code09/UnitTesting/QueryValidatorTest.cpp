@@ -171,6 +171,10 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "procedure p; constant c; assign a; Select BOOLEAN pattern a(_,_) with p.procName = \"First\"";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -545,7 +549,7 @@ namespace UnitTesting
 
 
 		}
-		TEST_METHOD(testValidSuchThatRegex) {
+		TEST_METHOD(testSuchThatRegex) {
 			QueryValidator queryValidator;
 			string str;
 
@@ -582,6 +586,8 @@ namespace UnitTesting
 			str = "such that Follows*(_,_   )";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
+			str = "such that Follows(_,_) Modifies(2,4)";
+			Assert::IsFalse(queryValidator.isValidSuchThatRegex(str));
 		}
 		TEST_METHOD(testValidSuchThatRegexExtended) {
 			QueryValidator queryValidator;
@@ -607,6 +613,9 @@ namespace UnitTesting
 
 			str = "such that Modifies(uses, \"Next\") and Follows(s,3) such that Next(6, Parent)";
 			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+		
+			str = "such that Modifies(uses, \"Next\") Follows(s,3)";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
 		}
 		TEST_METHOD(testInValidSuchThatRegexExtended) {
 			QueryValidator queryValidator;

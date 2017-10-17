@@ -70,6 +70,11 @@ string QueryElement::getSelectType()
 	return selectType;
 }
 
+string QueryElement::getSynAtrr()
+{
+	return synAttr;
+}
+
 string QueryElement::getSuchThatArg1()
 {
 	return argumentOneSuchThat;
