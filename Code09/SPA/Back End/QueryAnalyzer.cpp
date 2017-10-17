@@ -125,6 +125,7 @@ QueryAnalyzer::QueryAnalyzer() {
 	selectSynMap = unordered_map<int, int>();
 	hasSTClause = true;
 	hasPatternClause = true;
+	hasWithClause = true;
 
 }
 
@@ -143,10 +144,11 @@ void QueryAnalyzer::solveWithClause()
 		auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
 		withResult = get<VECTRESULT>(clauseResult);
 		hasWithClause = get<BOOLRESULT>(clauseResult);
-		if (!withResult.empty())
-			insertSTResult(withResult);
 		if (!hasWithClause)
 			break;
+		if (!withResult.empty())
+			insertSTResult(withResult);
+
 	}
 	
 }
@@ -156,6 +158,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	mergedQueryTable = vector<vector<vector<string>>>();
 	hasSTClause = true;
 	hasPatternClause = true;
+	hasWithClause = true;
 	findQueryElements();
 	solveWithClause();
 	solveSTClause();
@@ -292,7 +295,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 
 bool QueryAnalyzer::isQueryFalse()
 {
-	if (!hasSTClause || !hasPatternClause)
+	if (!hasSTClause || !hasPatternClause || !hasWithClause)
 		return true;
 	return false;
 }
@@ -410,6 +413,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	vector<vector<string>> stResult;
 	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
+	if (isQueryFalse())
+		return {{{}}};
+
 	for (QueryElement stClause : stElements) {
 		stClauseType = stClause.getSuchThatRel();
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
@@ -468,23 +474,27 @@ void QueryAnalyzer::solvePatternClause() {
 	string patternClauseType;
 	vector<vector<string>> patternResult;
 	int evaluatePatternRelation;
-	for (QueryElement patternClause : patternElements) {
-		patternClauseType = patternClause.getPatternEntity();
-		evaluatePatternRelation = mapPatternValues[patternClauseType];
-		switch (evaluatePatternRelation) {
+
+	if (!isQueryFalse()) {
+
+		for (QueryElement patternClause : patternElements) {
+			patternClauseType = patternClause.getPatternEntity();
+			evaluatePatternRelation = mapPatternValues[patternClauseType];
+			switch (evaluatePatternRelation) {
 			case assign_:
-				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause,pkbPtr).solvePatternAssign());
+				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternAssign());
 				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternAssign());
-			break;
+				break;
 			case while_: case if_:
 				patternResult = get<VECTRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
 				hasPatternClause = get<BOOLRESULT>(PatternAnalyzer(patternClause, pkbPtr).solvePatternIfWhile());
 				break;
+			}
+			if (!patternResult.empty())
+				insertSTResult(patternResult);
+			if (!hasPatternClause)
+				break;
 		}
-		if (!patternResult.empty())
-			insertSTResult(patternResult);
-		if (!hasPatternClause)
-			break;
 	}
 		
 }

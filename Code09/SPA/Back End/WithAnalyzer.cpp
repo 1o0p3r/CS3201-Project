@@ -22,7 +22,7 @@ WithAnalyzer::WithAnalyzer(QueryElement withClause, PKB &pkb)
 	pkbPtr = pkb;
 	arg1 = withClause.getWithArg1Syn();
 	arg1Type = withClause.getWithArg1Type();
-	arg1Ent = withClause.getPatternArg1Ent();
+	arg1Ent = withClause.getWithArg1Ent();
 	arg2 = withClause.getWithArg2Syn();
 	arg2Type = withClause.getWithArg2Type();
 	arg2Ent = withClause.getWithArg2Ent();
@@ -60,7 +60,10 @@ tuple<bool, vector<vector<string>>> WithAnalyzer::analyze()
 	}
 	clauseResult[0] = intersectionT(clauseResult[0], clauseResult[1]);
 	clauseResult[1] = clauseResult[0];
-	addSynToVec(clauseResult,candidateList, candidateListSyn,containsWith);
+	if (clauseResult[0].size() == 0)
+		return make_tuple(containsWith, vector<vector<string>>());
+	else
+		addSynToVec(clauseResult,candidateList, candidateListSyn,containsWith);
 	return make_tuple(containsWith, clauseResult);
 }
 
@@ -68,7 +71,7 @@ vector<string> WithAnalyzer::getStmtResults(string ent)
 {
 	vector<int> pkbResult;
 	vector<string> pkbStringResult;
-	if (ent == "stmt" || ent == "prog_line")  pkbResult = pkbPtr.getAllStmt();
+	if (ent == "stmt#" || ent == "prog_line" || ent == "stmt")  pkbResult = pkbPtr.getAllStmt();
 	else if (ent == "assign") pkbResult = pkbPtr.getAssign();
 	else if (ent == "while") pkbResult = pkbPtr.getWhile();
 	else if (ent == "if") pkbResult = pkbPtr.getIf();
@@ -94,7 +97,7 @@ void WithAnalyzer::addSynToVec(vector<vector<string>> &clauseResult, const vecto
 	for(int i=0; i<clauseResult.size();i++)
 	{
 		if (!clauseResult[i].empty()) {
-			if (argSynTypeMap[candidateList[i]] != stringLiteral || argSynTypeMap[candidateList[i]] != integer)
+			if (argSynTypeMap[candidateList[i]] != stringLiteral && argSynTypeMap[candidateList[i]] != integer)
 				clauseResult[i].push_back(candidateListSyn[i]);
 			else
 				toDelete.push_back(i);
