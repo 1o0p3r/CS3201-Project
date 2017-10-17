@@ -7,8 +7,6 @@
 #include "Calls.h"
 #include "Next.h"
 
-#include <stdio.h>
-#include <iostream>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -21,6 +19,11 @@ class VarTable;  // no need to #include "VarTable.h" as all I need is pointer
 class PKB {
 public:
 	PKB();
+	/**
+	@param statementNum the first statment of the else container
+	@returns void
+	 */
+	void insertElse(int statementNum);
 
 	/**
 	Returns all variables in PKB
@@ -426,6 +429,7 @@ private:
 	vector<int> assignTable;
 	vector<int> ifTable;
 	vector<int> callTable;
+	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
@@ -435,6 +439,7 @@ private:
 	set<string> allVariables;
 	set<string> allConstants;
 	set<string> allProcedures;
+	set<int> elseSet;
 
 	int getVarIndex(string varName);
 	int getProcIndex(string varName);

@@ -9,8 +9,6 @@
 #include "Next.h"
 #include "Util.h"
 
-#include <stdio.h>
-#include <iostream>
 #include <string>
 #include <vector>
 #include <set>
@@ -47,6 +45,7 @@ PKB::PKB() {
 	vector<int> assignTable;
 	vector<int> ifTable;
 	vector<int> callTable;
+	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<vector<tuple<int, string>>> patternTable;
@@ -55,8 +54,13 @@ PKB::PKB() {
 	set<string> allVariables;
 	set<string> allConstants;
 	set<string> allProcedures;
+	set<int> elseSet;
 
 	initTypeMap();
+}
+
+void PKB::insertElse(int statementNum) {
+	elseSet.insert(statementNum);
 }
 
 int PKB::getVarIndex(string varName) {
@@ -353,18 +357,25 @@ vector<int> PKB::getAllNext() {
 
 void PKB::setStatementType(int statementNum, string type) {
 	// 1 = while, 2 = assign, 3 = if, 4 = call
+	if (statementNum >= typeTable.size()) {
+		typeTable.resize(statementNum + 1);
+	}
 	switch (mapTypeValues[type]) {
 	case _while: 
 		whileTable.push_back(statementNum);
+		typeTable[statementNum] = _while;
 		break;
 	case assign: 
 		assignTable.push_back(statementNum);
+		typeTable[statementNum] = assign;
 		break;
 	case _if: 
 		ifTable.push_back(statementNum);
+		typeTable[statementNum] = _if;
 		break;
 	case _call:
 		callTable.push_back(statementNum);
+		typeTable[statementNum] = _call;
 		break;
 	default:
 		break;

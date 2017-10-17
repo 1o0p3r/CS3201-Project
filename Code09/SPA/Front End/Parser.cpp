@@ -48,6 +48,7 @@ bool Parse(string fileName, PKB& pkb) {
 		if (nextLine.size() == 0) {
 			lineCounter--;
 		} else if (isElseStatement(nextLine)) {
+			pkb.insertElse(lineCounter);
 			lineCounter--;
 			Parent.push_back(prevFollow);
 			isSameLevel = false;
@@ -86,6 +87,7 @@ bool Parse(string fileName, PKB& pkb) {
 					Parent.push_back(prevFollow);
 					isSameLevel = false;
 					isNewContainer = true;
+					pkb.insertElse(lineCounter);
 				}
 			}
 			lineCounter--;
