@@ -55,9 +55,9 @@ private:
 
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
 	
-	void addSelectQueryElement(string ent, string syn, string selectType);
+	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
-	void addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
+	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
 	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
@@ -105,7 +105,6 @@ public:
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
 	vector<string> splitToSentences(string strToSplit);
-
 	QueryStatement getQueryStatement();
 
 	

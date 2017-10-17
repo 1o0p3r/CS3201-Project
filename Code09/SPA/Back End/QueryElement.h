@@ -28,9 +28,6 @@ private:
 	string patternArg3Type;
 	string patternArg1Ent;
 	
-	
-	string argumentOneWith;
-	string argumentTwoWith;
 	string argumentOneTypeWith;
 	string argumentTwoTypeWith;
 	string argumentOneEntWith;
@@ -43,17 +40,20 @@ public:
 	QueryElement();
 
 	
-	QueryElement(string entity, string synonym, string type);
+
+	QueryElement(string entity, string synonym, string type, string attrName);
 	
 	
+
+	//Such that clauses
+	//procedure p, variable v
+	//E.g. such that Modifies(p,v)
+	//arg1 = p arg1Type = synonym arg1Ent = procedure	arg2 = v	arg2Type = synonym	arg2Entity = variable	rel = Modifies
 	QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel); // such that
 	
-	
-
-
 	//Pattern Clauses
 	//E.g. pattern a2(_, "x")
-	//arg1 = "_"	arg2 = "x"	arg3 = "empty"	patternEntity = assign	patternSynonym = a2	patternArg1Type = wildcard	patternArg2Type	= 
+	//arg1 = "_"	arg2 = "x"	arg3 = "empty"	patternEntity = assign	patternSynonym = a2	patternArg1Type = wildcard	patternArg2Type	= variable patternArg3Type = empty	patternent1 = assign
 	QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
 	
 	//With Clauses
@@ -63,7 +63,7 @@ public:
 	//arg 1 = p.procName	arg2 = v.varName	arg1Type = procName		arg2Type = varName		arg1Ent = procedure		arg2Ent = variable		arg1Syn = p		arg1Syn = v
 	//arg1Type = prog_line	arg2Type = number	arg1Syn = n		arg2Syn = 1
 	//arg1Type and arg2Type = prog_line/varName/procName/value/stmt#/stringLiteral/number
-	QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn); //With
+	QueryElement(string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn); //With
 
 	string getSelectEntity();
 	string getSelectSynonym();
@@ -88,8 +88,6 @@ public:
 	string getPatternArg3Type();
 	string getPatternArg1Ent();
 
-	string getWithArg1();
-	string getWithArg2();
 	string getWithArg1Type();
 	string getWithArg2Type();
 	string getWithArg1Ent();

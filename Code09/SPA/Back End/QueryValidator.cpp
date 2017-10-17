@@ -757,18 +757,18 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		//Add to the tree Select clause
 		//I neeed entity and synonym, synonym is now valid and can be used, nw i need toget corresponding entity
 		string ent = getCorrespondingEntity(syn);
-		addSelectQueryElement(ent, syn, SYNONYM_STRING);
+		addSelectQueryElement(ent, syn, SYNONYM_STRING, EMPTY_STRING);
 		return true;
 	} else if (syn == BOOLEAN_STRING) {
-		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING);
+		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING, EMPTY_STRING);
 		return true;
 	} else {
 		cout << INVALID_SYNONYM_QUERIED_ERROR;
 		return false;
 	}
 }
-void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType) {
-	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType));
+void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
+	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
 }
 
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {

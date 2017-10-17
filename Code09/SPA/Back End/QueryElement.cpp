@@ -9,11 +9,12 @@ QueryElement::QueryElement()
 
 //Select
 //type can be synonym, tuple, BOOLEAN
-QueryElement::QueryElement(string entity, string synonym, string type)
+QueryElement::QueryElement(string entity, string synonym, string type, string attrName)
 {
 	ent = entity;
 	syn = synonym;
 	selectType = type;
+	synAttr = attrName;
 }
 
 //Such that: 7 parameteres
@@ -44,9 +45,7 @@ QueryElement::QueryElement(string arg1, string arg2, string arg3, string pattern
 }
 
 //With:8 parameters
-QueryElement::QueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
-	argumentOneWith = arg1;
-	argumentTwoWith = arg2;
+QueryElement::QueryElement(string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
 	argumentOneTypeWith = arg1Type;
 	argumentTwoTypeWith = arg2Type;
 	argumentOneEntWith = ent1Type;
@@ -139,14 +138,6 @@ string QueryElement::getPatternArg3Type()
 string QueryElement::getPatternArg1Ent()
 {
 	return patternArg1Ent;
-}
-string QueryElement::getWithArg1()
-{
-	return argumentOneWith;
-}
-string QueryElement::getWithArg2()
-{
-	return argumentTwoWith;
 }
 string QueryElement::getWithArg1Type()
 {
