@@ -217,7 +217,7 @@ public:
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement a("d", "synonym", "while", "f", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("assign", "a", "synonym");
+		QueryElement sel("assign", "a", "synonym", "empty");
 		
 		QueryElement pat1("v", Util::insertBrackets("4*c-x"),"","assign", "a", "synonym", "exact","", "empty");
 		
@@ -342,7 +342,7 @@ public:
 		// { { "1", "2", "3", "1", "3", "1", "2", "a" }, { "c","c","c","x","x","y","y","b" } }
 		QueryElement a("a", "synonym", "while", "d", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
-		QueryElement sel("while", "a", "synonym");
+		QueryElement sel("while", "a", "synonym", "empty");
 
 		qa.setPKB(pkb);
 
@@ -370,7 +370,7 @@ public:
 
 		QueryElement pat1("_", Util::insertBrackets("2*y"), "", "assign", "w", "wildcard", "exact", "", "empty");
 		QueryElement mod1("w","synonym","assign","v","synonym","","Modifies");
-		QueryElement sel1("assign", "w", "synonym");
+		QueryElement sel1("assign", "w", "synonym", "empty");
 		qs.addSelectQuery(sel1);
 		qs.addSuchThatQuery(mod1);
 		qs.addPatternQuery(pat1);

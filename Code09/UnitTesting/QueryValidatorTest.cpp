@@ -171,6 +171,10 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "procedure p; constant c; assign a; Select BOOLEAN pattern a(_,_) with p.procName = \"First\"";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -209,7 +213,7 @@ namespace UnitTesting
 
 			query = "stmt s; assign a; procedure p; while w; if i;  call c; variable v; Select BOOLEAN such that Modifies(3, \"a\") and Modifies(a, v) and Modifies(\"x\", \"x\") and Modifies(s, v) such that Modifies(w, v) and Modifies(i, v) and  Modifies(p, v)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			selectQueryElement = QueryElement("empty", "empty", "BOOLEAN");
+			selectQueryElement = QueryElement("empty", "empty", "BOOLEAN", "empty");
 			expectedQueryStatement.addSelectQuery(selectQueryElement);
 			suchThatQueryElement = QueryElement("3", "number", "empty", "a", "variable", "empty", "Modifies");
 			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
@@ -242,7 +246,7 @@ namespace UnitTesting
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\")";
 			queryValidator.parseInput(query);
 			queryStatement = queryValidator.getQueryStatement();
-			expectedSelectQueryElement = QueryElement("variable", "v1", "synonym");
+			expectedSelectQueryElement = QueryElement("variable", "v1", "synonym", "empty");
 		}
 		//This test method assumes that the input is already grammatically correct i.e. no commas out of nowhere
 		TEST_METHOD(testValidParseEntityAndSynonym) {
@@ -545,7 +549,7 @@ namespace UnitTesting
 
 
 		}
-		TEST_METHOD(testValidSuchThatRegex) {
+		TEST_METHOD(testSuchThatRegex) {
 			QueryValidator queryValidator;
 			string str;
 
@@ -582,6 +586,8 @@ namespace UnitTesting
 			str = "such that Follows*(_,_   )";
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
+			str = "such that Follows(_,_) Modifies(2,4)";
+			Assert::IsFalse(queryValidator.isValidSuchThatRegex(str));
 		}
 		TEST_METHOD(testValidSuchThatRegexExtended) {
 			QueryValidator queryValidator;
@@ -607,6 +613,9 @@ namespace UnitTesting
 
 			str = "such that Modifies(uses, \"Next\") and Follows(s,3) such that Next(6, Parent)";
 			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+		
+			str = "such that Modifies(uses, \"Next\") Follows(s,3)";
+			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
 		}
 		TEST_METHOD(testInValidSuchThatRegexExtended) {
 			QueryValidator queryValidator;
