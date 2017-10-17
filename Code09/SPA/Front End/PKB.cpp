@@ -339,8 +339,30 @@ vector<string> PKB::getCalledByStar(string procName) {
 	return convertToProcNames(Util::removeDuplicates(results));
 }
 
-void PKB::createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines) {
-	next.createCFGTable(stmtsAndType, parentOfStmtVec, procFirstAndLastLines);
+void PKB::createCFG() {
+
+	vector<int> parentOfStmtVec;
+	parentOfStmtVec.push_back(0);
+
+	for (int i = 1; i < typeTable.size() + 1; i++) {
+
+		if (elseSet.count(i)) {
+			typeTable[i] = 5;
+		}
+
+		vector<int> parentOfI;
+		parentOfI = parent.getParent(i);
+		if (parentOfI.empty())
+			parentOfStmtVec.push_back(0);
+		else
+			parentOfStmtVec.push_back(parentOfI[0]);
+	}
+
+	for (int i = 0; i < procIndexTable.size(); i++) {
+		int firstLine = getFirstline(procIndexTable[i]);
+		int lastLine = getFirstline(procIndexTable[i]);
+		next.createCFGTable(typeTable, parentOfStmtVec, firstLine, lastLine);
+	}
 }
 
 vector<int> PKB::getNext(int stmtNum) {

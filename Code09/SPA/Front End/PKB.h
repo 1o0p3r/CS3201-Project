@@ -276,11 +276,9 @@ public:
 	/**
 	Creates the CFG of the program after one parsing
 
-	@param stmtsAndType type of stmt at stmtNum, such as assign, while, etc.
-	@param parentOfStmtVec parent of stmt, where stmt is the location in the vector
 	@returns void
 	*/
-	void createCFG(vector<int> stmtsAndType, vector<int> parentOfStmtVec, vector<tuple<int, int>> procFirstAndLastLines);
+	void createCFG();
 
 	vector<int> getNext(int stmtNum);
 
