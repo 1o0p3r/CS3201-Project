@@ -48,6 +48,7 @@ PKB::PKB() {
 	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
+	vector<int> statementList;
 	vector<vector<tuple<int, string>>> patternTable;
 	vector<vector<int>> whilePatternTable;
 	vector<vector<int>> ifPatternTable;
@@ -60,7 +61,16 @@ PKB::PKB() {
 }
 
 void PKB::insertElse(int statementNum) {
+	this->insertStatementList(statementNum);
 	elseSet.insert(statementNum);
+}
+
+void PKB::insertStatementList(int statementNum) {
+	statementList.push_back(statementNum);
+}
+
+vector<int> PKB::getStatementList() {
+	return statementList;
 }
 
 int PKB::getVarIndex(string varName) {
