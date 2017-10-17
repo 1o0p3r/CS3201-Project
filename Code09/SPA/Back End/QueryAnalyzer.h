@@ -13,6 +13,7 @@
 #include "UsesAnalyzer.h"
 #include "TupleHash.h"
 #include "Util.h"
+#include "WithAnalyzer.h"
 #include "CallsStarAnalyzer.h"
 #include "Abstract_QA_API.h"
 
@@ -35,6 +36,7 @@ public:
 
 	void setPKB(PKB &pkb);
 	void setQS(QueryStatement qs);
+	void solveWithClause();
 	vector<string> runQueryEval();
 //private:
 	QueryStatement qsReadOnly;
