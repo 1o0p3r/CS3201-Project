@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Back End\AnalyzerFactory.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
     <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
@@ -19,6 +20,7 @@
     <ClCompile Include="Back End\NextAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\PatternAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryAnalyzer.cpp" />
     <ClCompile Include="Back End\QueryElement.cpp" />
     <ClCompile Include="Back End\QueryStatement.cpp" />
@@ -26,8 +28,11 @@
     <ClCompile Include="Back End\Relationship.cpp" />
     <ClCompile Include="Back End\RelationshipTable.cpp" />
     <ClCompile Include="Back End\suchThatAnalyzer.cpp" />
+    <ClCompile Include="Back End\suchThatHandler.cpp" />
     <ClCompile Include="Back End\SynonymEntityPair.cpp" />
     <ClCompile Include="Back End\UsesAnalyzer.cpp" />
+    <ClCompile Include="Back End\WithAnalyzer.cpp" />
+    <ClCompile Include="Back End\WithHandler.cpp" />
     <ClCompile Include="Front End\Calls.cpp" />
     <ClCompile Include="Front End\Follow.cpp" />
     <ClCompile Include="Front End\Modify.cpp" />
@@ -36,13 +41,11 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
-    <ClCompile Include="PatternAnalyzer.cpp" />
-    <ClCompile Include="suchThatHandler.cpp" />
     <ClCompile Include="Util.cpp" />
-    <ClCompile Include="WithHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Abstract_QA_API.h" />
+    <ClInclude Include="Back End\Abstract_QA_API.h" />
+    <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
     <ClInclude Include="Back End\CallsStarAnalyzer.h" />
     <ClInclude Include="Back End\FollowsAnalyzer.h" />
@@ -51,6 +54,7 @@
     <ClInclude Include="Back End\NextAnalyzer.h" />
     <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\ParentStarAnalyzer.h" />
+    <ClInclude Include="Back End\PatternAnalyzer.h" />
     <ClInclude Include="Back End\QueryAnalyzer.h" />
     <ClInclude Include="Back End\QueryElement.h" />
     <ClInclude Include="Back End\QueryStatement.h" />
@@ -58,9 +62,12 @@
     <ClInclude Include="Back End\Relationship.h" />
     <ClInclude Include="Back End\RelationshipTable.h" />
     <ClInclude Include="Back End\suchThatAnalyzer.h" />
+    <ClInclude Include="Back End\suchThatHandler.h" />
     <ClInclude Include="Back End\SynonymEntityPair.h" />
     <ClInclude Include="Back End\TupleHash.h" />
     <ClInclude Include="Back End\UsesAnalyzer.h" />
+    <ClInclude Include="Back End\WithAnalyzer.h" />
+    <ClInclude Include="Back End\WithHandler.h" />
     <ClInclude Include="Front End\Calls.h" />
     <ClInclude Include="Front End\Follow.h" />
     <ClInclude Include="Front End\Modify.h" />
@@ -69,10 +76,7 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
-    <ClInclude Include="PatternAnalyzer.h" />
-    <ClInclude Include="suchThatHandler.h" />
     <ClInclude Include="Util.h" />
-    <ClInclude Include="WithHandler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DC21A1EA-D2C6-4D14-A2B4-E025B64BDE81}</ProjectGuid>

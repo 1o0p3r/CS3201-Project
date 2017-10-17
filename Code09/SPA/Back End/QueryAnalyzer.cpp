@@ -154,6 +154,7 @@ void QueryAnalyzer::findQueryElements() {
 	selectElement = qsReadOnly.getSelectQueryElement();
 	stElements = qsReadOnly.getSuchThatQueryElement(); 
 	patternElements = qsReadOnly.getPatternQueryElement();
+	withElements = qsReadOnly.getWithQueryElement();
 }
 
 void QueryAnalyzer::selectSynonym(vector<string> &answer)
@@ -173,7 +174,7 @@ void QueryAnalyzer::selectSynonym(vector<string> &answer)
 
 void QueryAnalyzer::setClauseFalse()
 { 
-	hasPatternClause, hasSTClause = false; //future implementation, include with
+	hasWithClause,hasPatternClause,hasSTClause = false; //future implementation, include with
 }
 
 void QueryAnalyzer::selectTuple(vector<string> &answer)

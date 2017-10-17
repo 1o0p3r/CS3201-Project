@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+using namespace std;
+
 const string DELIMITER = ",";
 const string SYNONYM = "synonym";
 const string WILDCARD = "wildcard";
