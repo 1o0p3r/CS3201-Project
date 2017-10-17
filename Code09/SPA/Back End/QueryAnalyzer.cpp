@@ -136,12 +136,28 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 	qsReadOnly = qs;
 }
 
+void QueryAnalyzer::solveWithClause()
+{
+	vector<vector<string>> withResult;
+	for (QueryElement withClause : withElements) {
+		auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
+		withResult = get<VECTRESULT>(clauseResult);
+		hasWithClause = get<BOOLRESULT>(clauseResult);
+		if (!withResult.empty())
+			insertSTResult(withResult);
+		if (!hasWithClause)
+			break;
+	}
+	
+}
+
 vector<string> QueryAnalyzer::runQueryEval() {
 	synTableMap = unordered_map<string, tuple<int, int>>();
 	mergedQueryTable = vector<vector<vector<string>>>();
 	hasSTClause = true;
 	hasPatternClause = true;
 	findQueryElements();
+	solveWithClause();
 	solveSTClause();
 	solvePatternClause();
 	vector<string> result = analyzeClauseResults();
