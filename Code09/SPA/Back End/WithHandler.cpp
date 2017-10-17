@@ -330,5 +330,8 @@ string QueryValidator::extractIdentity(string arg) {
 			string toReturn = getCorrespondingEntity(arg);
 			return toReturn;
 		}
+		else {
+			return INVALID_STRING;
+		}
 	}
 }
