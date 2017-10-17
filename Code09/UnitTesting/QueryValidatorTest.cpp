@@ -203,6 +203,9 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "procedure pro1, pro2; Select pro1 with pro2.procName = Pear such that Calls(pro1,pro2) with pro1.procName = \"Nana\"";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testValidQueryIfsAndProcDeclaration) {
 			QueryValidator queryValidator;
