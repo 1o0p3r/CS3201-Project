@@ -44,16 +44,6 @@ namespace UnitTesting
 			Assert::IsTrue(next.getPrevious(3) == vector<int>{2, 4});
 		}
 
-		TEST_METHOD(checkLastLine) {
-
-			Next next;
-			vector<int> stmtsAndType = { 0, 2, 1, 2 };
-			vector<int> parentOfStmtVec = { 0, 0, 0, 2 };
-
-			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 3);
-			Assert::IsTrue(next.getPrevious(0) == vector<int>{2});
-		}
-
 		TEST_METHOD(lastLineinElse) {
 
 			Next next;

@@ -31,7 +31,7 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		if (i == (lastLine)) {
 
 			if (nestingLvl == 0) {
-				previousTable[0].insert(i); //last line of every proc
+				
 			}
 
 			else {
@@ -50,15 +50,12 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 							nextTable[lastLineIf].insert(nestingLvlParent[nestingLvl]);
 						}
 						nextTable[i].insert(nestingLvlParent[nestingLvl]);
-						previousTable[0].insert(nestingLvlParent[nestingLvl]);
 						nestingLvl--;
 					}
 
 					else if (stmtsAndType[nestingLvlParent[nestingLvl]] == 3 && parentOfStmtVec[i] != nestingLvlParent[nestingLvl]) {
 						nextTable[lastIfLine[nestingLvl]].insert(i);
-						allNextTable.insert(lastIfLine[nestingLvl]) ;
-						previousTable[0].insert(lastIfLine[nestingLvl]);
-						previousTable[0].insert(i);
+						allNextTable.insert(lastIfLine[nestingLvl]);
 						nestingLvl--;
 					}
 				}
