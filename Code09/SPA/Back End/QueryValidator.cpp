@@ -64,6 +64,7 @@ const string CALL_STRING = "call";
 const string TAB_STRING = "\\t";
 const string COMMA_STRING = ",";
 const string TUPLE_STRING = "tuple";
+const string ATTRREF_STRING = "attrRef";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -761,6 +762,8 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 
 	string resultCl = selectClause.substr(SELECT_STRING.length(), selectClause.length() - SELECT_STRING.length());
 	resultCl = Util::trim(resultCl);
+	resultCl = removeSymbols(resultCl, WHITESPACE_STRING);
+	resultCl = removeSymbols(resultCl, TAB_STRING);
 
 	//If its a synonym
 	if (isIdent(resultCl) && isValidSynonym(resultCl)) {
@@ -778,14 +781,13 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		//First check that synonym is declared and is a corresponding entity
 		if (isValidSynonym(syn) && isValidCorrespondingEntity(syn, attrName)) {
 			string ent = getCorrespondingEntity(syn);
-			addSelectQueryElement(ent, syn, attrName, attrName);
+			addSelectQueryElement(ent, syn, ATTRREF_STRING, attrName);
 			return true;
 		} else {
 			return false;
 		}
 	} else if(isOnlyTuple(resultCl)) {
-		//First of all remove all whitespaces
-		resultCl = removeSymbols(resultCl, WHITESPACE_STRING);		//a,b.stmt#,c,d
+		//a,b.stmt#,c,d
 		//Then remove the '<' and '>'
 		resultCl = resultCl.substr(ONE, resultCl.length() - TWO);
 		vector<string> resultVec = splitBySymbol(resultCl, SYMBOL_COMMA);
@@ -811,7 +813,7 @@ string QueryValidator::extractAllSynAttr(vector<string> resultVec) {
 			string attrName = tempVec.at(ONE);
 			toReturn += attrName + COMMA_STRING;
 		} else {
-			toReturn += resultVec.at(i);
+			toReturn += SYNONYM_STRING + COMMA_STRING;
 		}
 	}
 	return toReturn.substr(ZERO, toReturn.length() - ONE);
@@ -826,6 +828,7 @@ bool QueryValidator::isValidCorrespondingTupleEntities(vector<string> resultVec)
 				return false;
 			}
 		} else {
+			
 			string ent = getCorrespondingEntity(resultVec.at(i));
 			if (ent == INVALID_STRING) {
 				return false;
