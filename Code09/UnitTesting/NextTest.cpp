@@ -16,7 +16,7 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 2, 2, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 0, 0 };
-			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 3); //, vector<tuple<int, int>> procFirstAndLastLines
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 3);
 			Assert::AreEqual(2, next.getNext(1)[0]);
 		}
 
@@ -25,7 +25,6 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 1, 1, 2, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 1, 2, 1 };
-			vector<tuple<int, int>> procFirstAndLastLines = {};
 
 			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 4);
 			Assert::IsTrue(next.getNext(2) == vector<int>{3, 4});
@@ -36,7 +35,6 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 2, 3, 1, 2, 5, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 0, 2, 3, 2, 0 };
-			vector<tuple<int, int>> procFirstAndLastLines = {};
 
 			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 6);
 			Assert::IsTrue(next.getNext(2) == vector<int>{3, 5});
@@ -51,10 +49,20 @@ namespace UnitTesting
 			Next next;
 			vector<int> stmtsAndType = { 0, 2, 1, 2 };
 			vector<int> parentOfStmtVec = { 0, 0, 0, 2 };
-			vector<tuple<int, int>> procFirstAndLastLines = {};
 
 			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 3);
 			Assert::IsTrue(next.getPrevious(0) == vector<int>{2});
+		}
+
+		TEST_METHOD(lastLineinElse) {
+
+			Next next;
+			vector<int> stmtsAndType = { 0, 2, 1, 2, 3, 2, 5, 1, 2, 3, 2, 5 };
+			vector<int> parentOfStmtVec = { 0, 0, 0, 2, 2, 4, 4, 2, 7, 7, 9, 9 };
+
+			next.createCFGTable(stmtsAndType, parentOfStmtVec, 1, 11);
+			Assert::IsTrue(next.getNext(10) == vector<int>{2, 7});
+			Assert::IsTrue(next.getNext(11) == vector<int>{2, 7});
 		}
 	};
 }
