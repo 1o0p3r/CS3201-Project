@@ -229,27 +229,12 @@ bool QueryValidator::isAttrRef(string arg) {
 
 		string argEnt = getCorrespondingEntity(argSyn);
 
-		//Only match will be procedure
-		if (argAttrName == PROCNAME) {
-			//Can be either call or procedure
-			if (argEnt == PROCEDURE_STRING || argEnt == CALL_STRING) {
-				return true;
-			}
+		if (isValidCorrespondingEntity(argSyn, argAttrName)) {
+			return true;
 		}
-		//Only match will be variable
-		else if (argAttrName == VARNAME) {
-			return(argEnt == VARIABLE_STRING);
-		} else if (argAttrName == VALUE) {
-			return(argEnt == CONSTANT_STRING);
-		} else if (argAttrName == STMTNUM) {
-			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING) || (argEnt == CALL_STRING) || (argEnt == STMT)) {
-				return true;
-			}
-			else {
-				return false;
-			}
+		else {
+			return false;
 		}
-		return false;
 	}
 	else {
 		return false;

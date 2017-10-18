@@ -163,7 +163,7 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 		
-		
+			
 
 		}
 		TEST_METHOD(testQueryWith) {
@@ -204,6 +204,40 @@ namespace UnitTesting
 			queryStatement = queryValidator.getQueryStatement();
 
 			query = "procedure pro1, pro2; Select pro1 with pro2.procName = Pear such that Calls(pro1,pro2) with pro1.procName = \"Nana\"";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; variable v1,v#; assign a1,a#; constant d; while w1, w2; Select		 v1	 with v1.procName = \"hi\"";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+		}
+		TEST_METHOD(testQueryTuple) {
+
+			QueryValidator queryValidator;
+			string query;
+			QueryStatement queryStatement;
+
+			query = "procedure p; constant c; prog_line n; Select <p,c> with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select  <p,	c > with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; stmt s; prog_line n; Select < p.procName, c.value, s > with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; stmt s; prog_line n; Select p.procName with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < p.procName, c.value, s, v, v.varName > with n=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < c.procName, c.value, s, v, v.varName > with n=1";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 		}
@@ -955,6 +989,35 @@ namespace UnitTesting
 
 			input = "andpattern a(_,_)";
 			Assert::IsFalse(queryValidator.isPartialPatternRegex(input));
+		}
+
+		TEST_METHOD(testTupleMethod) {
+			QueryValidator queryValidator;
+			string input;
+
+			input = "<a,b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "< a , b >";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a ,b >";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a , b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a , b>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "b.stmt#";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<a, s.stmt#>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
+
+			input = "<	a, s.stmt#	, c.procName , b	>";
+			Assert::IsTrue(queryValidator.isValidTuple(input));
 		}
 	};
 }

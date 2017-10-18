@@ -40,6 +40,15 @@ public:
 	QueryElement();
 
 	
+	//Select
+	//E.g. assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < p.procName, c.value, s, v, v.varName > with n=1
+	//Ent = procedure,constant,stmt,variable,variable	 synonym = p,c,s,v,v		type = tuple	synAttr = 	procName,value,synonym,synonym,varName
+	//E.g. procedure p; constant c; prog_line n; Select  <p,	c > with n=1
+	//Ent = procedure,constant		synonym = p,c		type = tuple	synAttrr = synonym,synonym
+	//procedure p; constant c; prog_line n; Select BOOLEAN with n=1
+	//Ent = empty	synonym = empty		type = BOOLEAN		attrName = empty
+	//E.G. procedure p; constant c; stmt s; prog_line n; Select p.procName with n=1
+	//Ent = procedure	Synonym = p		type = attrRef	attrName = procName
 
 	QueryElement(string entity, string synonym, string type, string attrName);
 	

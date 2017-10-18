@@ -22,11 +22,21 @@ private:
 	vector<string> validEntities = { "stmt", "assign", "while",
 		"variable", "constant", "prog_line", "procedure", "stmtLst", "call", "if"};
 	unordered_map<string, string> withClauseTypeBank;
+	unordered_map<string, vector<string>> attrNameBank;
 	vector<string> declarationString;
 	vector<string> queryString;
 	void addSynonymEntityList();
 
 	bool isValidSelect(vector<string> vectorClauses);
+
+	string extractAllSynAttr(vector<string> resultVec);
+
+	bool isValidCorrespondingTupleEntities(vector<string> resultVec);
+
+	string extractAllEnt(vector<string> resultCl);
+
+	string extractAllSyn(vector<string> resultVec);
+
 	bool isValidOthers(vector<string> others);
 	bool isVariableSynonym(string str);
 	bool isValidSynonym(string syn);
@@ -47,6 +57,7 @@ private:
 	bool isValidLeadTrail(string str);
 	bool is_number(string str);
 	bool isSubstring(string str);
+	
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
 	bool isValidAttrCompareRegex(string str);
@@ -101,12 +112,17 @@ public:
 	bool isExactString(string arg2);
 	bool isValidExpr(string str);
 	bool isValidExprUnder(string str);
+	bool isValidTuple(string str);
+
+	bool isIdent(string str);
+
+	bool isOnlyTuple(string str);
 
 	vector<string> extractPatternClauses(string str);
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
 	vector<string> splitToSentences(string strToSplit);
 	QueryStatement getQueryStatement();
-
+	bool isValidCorrespondingEntity(string synonym, string attrName);
 	
 };
