@@ -40,14 +40,14 @@ namespace UnitTesting
 			query = "assign a; Select a pattern b#(_, _\"f - d + b - l\"_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
-			
+		/*	
 			query = "prog_line pl, p#; constant c; Select c such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();
+			queryStatement = queryValidator.getQueryStatement();*/
 
-			query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
+		/*	query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();
+			queryStatement = queryValidator.getQueryStatement();*/
 
 			query = "assign a; prog_line pl, p#; constant c, d; Select p# such that Follows(a,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
