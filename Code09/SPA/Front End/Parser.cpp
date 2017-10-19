@@ -36,7 +36,6 @@ bool Parse(string fileName, PKB& pkb) {
 	bool isSameLevel = false;	//is same nesting level
 	bool isNewContainer = true;
 	int prevFollow;
-	int lastLine;
 	bool toSetFirstLine;
 	tuple<string, string> temp;
 	vector<int> Parent;
@@ -54,10 +53,10 @@ bool Parse(string fileName, PKB& pkb) {
 			isSameLevel = false;
 			isNewContainer = true;
 		} else if (isProcedure(nextLine) && Parent.size() == 0) {
-			if (lineCounter > 1) {
-				pkb.setLastline(procName, lastLine);
-			}
 			lineCounter--;
+			if (lineCounter > 1) {
+				pkb.setLastline(procName, lineCounter);
+			}
 			if (nextLine.size() == 3) {
 				procName = nextLine[1];
 			} else {
@@ -178,6 +177,7 @@ bool Parse(string fileName, PKB& pkb) {
 	}
 	pkb.setLastline(procName, lineCounter);
 	if (Parent.size() == 0) {
+		pkb.createCFG();
 		return true;
 	} else {
 		return false;

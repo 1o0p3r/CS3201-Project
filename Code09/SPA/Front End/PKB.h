@@ -447,4 +447,13 @@ private:
 	void addProcedure(string p);
 
 	void initTypeMap();
+	void whileCFG(int & i);
+	void assignCFG(int & i);
+	void ifCFG(int & i);
+	void callCFG(int & i);
+	void processNext(int & i);
+	bool contains(vector<int> list, int i);
+	vector<int>goBack;
+	int state = 0;
+	int lastLineOfIf;
 };

@@ -9,11 +9,10 @@ Next::Next() {
 
 	vector<set<int>> nextTable;
 	vector<set<int>> previousTable;
-	vector<set<int>> nextStarTable;
-	vector<set<int>> previousStarTable;
 	set<int> allNextTable;
 }
 
+/*
 void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine) {
 
 	vector<int> nestingLvlParent;
@@ -123,16 +122,40 @@ void Next::createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec,
 		previousTable[i + 1].insert(i);
 	}
 }
+*/
+
+void Next::setNext(int stmtNum1, int stmtNum2) {
+	if (nextTable.size() <= stmtNum1) {
+		nextTable.resize(stmtNum1 + 1);
+	}
+	nextTable[stmtNum1].insert(stmtNum2);
+	setPrevious(stmtNum2, stmtNum1);
+}
+
+void Next::setPrevious(int stmtNum1, int stmtNum2) {
+	if (previousTable.size() <= stmtNum1) {
+		previousTable.resize(stmtNum1 + 1);
+	}
+	previousTable[stmtNum1].insert(stmtNum2);
+}
 
 vector<int> Next::getNext(int stmtNum) {
 	vector<int> nextTableV;
-	nextTableV.insert(nextTableV.end(), nextTable[stmtNum].begin(), nextTable[stmtNum].end());
+	if (stmtNum >= nextTable.size()) {
+		nextTableV = {};
+	} else {
+		nextTableV.insert(nextTableV.end(), nextTable[stmtNum].begin(), nextTable[stmtNum].end());
+	}
 	return nextTableV;
 }
 
 vector<int> Next::getPrevious(int stmtNum) {
 	vector<int> previousTableV;
-	previousTableV.insert(previousTableV.end(), previousTable[stmtNum].begin(), previousTable[stmtNum].end());
+	if (stmtNum >= previousTable.size()) {
+		previousTableV = {};
+	} else {
+		previousTableV.insert(previousTableV.end(), previousTable[stmtNum].begin(), previousTable[stmtNum].end());
+	}
 	return previousTableV;
 }
 

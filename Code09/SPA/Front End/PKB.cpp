@@ -340,29 +340,107 @@ vector<string> PKB::getCalledByStar(string procName) {
 }
 
 void PKB::createCFG() {
-
-	vector<int> parentOfStmtVec;
-	parentOfStmtVec.push_back(0);
-
-	for (int i = 1; i < typeTable.size() + 1; i++) {
-
-		if (elseSet.count(i)) {
-			typeTable[i] = 5;
+	int i = 1;
+	while (i < typeTable.size()) {
+		if (next.getNext(i).empty()) {
+			processNext(i);
+		} else {
+			i++;
 		}
-
-		vector<int> parentOfI;
-		parentOfI = parent.getParent(i);
-		if (parentOfI.empty())
-			parentOfStmtVec.push_back(0);
-		else
-			parentOfStmtVec.push_back(parentOfI[0]);
 	}
+}
 
-	for (int i = 0; i < procIndexTable.size(); i++) {
-		int firstLine = getFirstline(procIndexTable[i]);
-		int lastLine = getFirstline(procIndexTable[i]);
-		next.createCFGTable(typeTable, parentOfStmtVec, firstLine, lastLine);
+void PKB::processNext(int& i) {
+	switch (typeTable[i]) {
+	case _while:
+		whileCFG(i);
+		break;
+	case assign:
+		assignCFG(i);
+		break;
+	case _if:
+		ifCFG(i);
+		break;
+	case _call:
+		callCFG(i);
+	default:
+		break;
 	}
+}
+
+void PKB::whileCFG(int& i) {
+	int current = i;
+	goBack.push_back(i);
+	next.setNext(i, i + 1);
+	i++;
+	while (contains(parent.getParentStar(i), goBack.back())) {
+		state = _while;
+		processNext(i);
+	}
+	if (i < typeTable.size()) {
+		next.setNext(current, i);
+	}
+	state = 0;
+}
+
+void PKB::assignCFG(int& i) {
+	if (state == _while && ( i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
+		next.setNext(i, goBack.back());
+		goBack.pop_back();
+	} else if (state == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i) == elseSet.end()) || (parent.getParent(i + 1)[0] != goBack.back()))) {
+		lastLineOfIf = i;
+		goBack.pop_back();
+	} else if (i < typeTable.size() - 1){
+		next.setNext(i, i + 1);
+	}
+	i++;
+}
+
+void PKB::ifCFG(int& i) {
+	goBack.push_back(i);
+	int current = i;
+	next.setNext(i, i + 1);
+	i++;
+	while (contains(parent.getParentStar(i), current) && (elseSet.find(i) == elseSet.end())) {
+		state = _if;
+		processNext(i);
+	}
+	int store = lastLineOfIf;
+	while (contains(parent.getParentStar(i), current)) {
+		state = _if;
+		processNext(i);
+	}
+	if (i < typeTable.size()) {
+		next.setNext(store, i);
+		next.setNext(lastLineOfIf, i);
+	}
+	state = 0;
+}
+
+void PKB::callCFG(int& i) {
+	int proc = call.getStmtCallProc(i);
+	int firstline = firstlineTable[proc];
+	int lastline = lastlineTable[proc];
+	next.setNext(i, firstline);
+	if (state == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
+		next.setNext(lastline, goBack.back());
+		goBack.pop_back();
+	} else if (state == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i) == elseSet.end()) || (parent.getParent(i + 1)[0] != goBack.back()))) {
+		lastLineOfIf = lastline;
+		goBack.pop_back();
+	} else if (i < typeTable.size() - 1) {
+		next.setNext(lastline, i + 1);
+	}
+	i++;
+}
+
+bool PKB::contains(vector<int> list, int i) {
+	for each (int j in list) {
+		if (i == j) {
+			return true;
+		}
+	}
+	return false;
 }
 
 vector<int> PKB::getNext(int stmtNum) {
