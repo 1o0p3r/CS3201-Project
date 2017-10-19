@@ -40,6 +40,7 @@ RelationshipTable::RelationshipTable() {
 	vector<string> affectsArg1;
 	vector<string> affectsArg2;
 
+
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
 		"string", "number" };

@@ -229,6 +229,7 @@ bool QueryValidator::isValidSuchThat(string str) {
 	}
 	return true;
 }
+
 bool QueryValidator::isCornerRelation(string relation) {
 	return ((relation == FOLLOWS_STRING) || (relation == FOLLOWS_STAR_STRING) || (relation == PARENT_STRING) | (relation == PARENT_STAR_STRING) | (relation == AFFECTS_STRING));
 }
