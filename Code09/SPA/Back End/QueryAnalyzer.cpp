@@ -209,15 +209,24 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	//init mapping of synonyms from same table
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
-		if (searchInQueryTable != synTableMap.end()) {
+		if (searchInQueryTable != synTableMap.end()) { //if synonym in immediate table
+			vector<tuple<int, int, string>> selectSynTableAttr;
 			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second));
-			if (searchInSelectSynMap == selectSynMap.end()) {
+			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
 				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), synLoc.size()));
-			}
-			synLoc[searchInSelectSynMap->second].push_back(make_tuple(
+				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
 					synonymEntities[i]));
+				synLoc.push_back(selectSynTableAttr);
+			} else {
+				//insert synonym results at common table row 
+				int insertAtRow = searchInSelectSynMap->second;
+				synLoc[insertAtRow].push_back(make_tuple(
+					get<TABLELOC>(searchInQueryTable->second),
+					get<SYNVECLOC>(searchInQueryTable->second),
+					synonymEntities[i]));
+			}
 		} else {
 			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i]) });
 		}
@@ -233,17 +242,19 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			vector<vector<int>> columnToKeep;
 
 			//find intersection of vector and design entity
-			int ccsLoc = 0;
+		
 			for (auto concatSyn : commonTableSyn) { //elements in vector
-				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn));
+				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn)); //empty vector instead of {}
 				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
 					make_move_iterator(synEntityVec.end()));
+				vector<int> elementNumsToKeep;
 				for (int i = 0; i < numVecElements; i++) {
 					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][i];
 					if (synEntitySet.find(element) != synEntitySet.end())
-							columnToKeep[ccsLoc].push_back(i);
+							elementNumsToKeep.push_back(i);
 				}
-				ccsLoc++;
+				columnToKeep.push_back(elementNumsToKeep);
+			
 			}
 			vector<int> columnResult = columnToKeep.front(); //init for merging vecs
 			for (int i=1; i<columnToKeep.size();i++) {
@@ -256,6 +267,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				answer = {};
 			}
 
+			//TODO: fix bug from here.
 			//append values to vector
 			for (const auto& entry : columnResult) {
 				string appendSynValue;
@@ -283,7 +295,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			for (auto& j : result) {
 				string concatCartProdString;
 				concatCartProdString.append(get<0>(j))
-					.append(",")
+					.append(DELIMITER)
 					.append(get<1>(j));
 				vecCartProdstring.push_back(concatCartProdString);
 			}
