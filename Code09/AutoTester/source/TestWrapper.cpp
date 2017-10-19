@@ -24,7 +24,10 @@ TestWrapper::TestWrapper() {
 
 // method for parsing the SIMPLE source
 void TestWrapper::parse(std::string filename) {
-	Parse(filename, pkb);
+	if (!Parse(filename, pkb)) {
+		cout << "Parsing failed." << "\n";
+		exit(-1);
+	};
 	analyzer.setPKB(pkb);
 }
 
