@@ -1089,6 +1089,7 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 		size_t foundAnd = curr.find(AND_STRING, ONE);
 		//Means end of string, so just push in and break
 		if (found == string::npos && foundAnd == string::npos) {
+			curr = Util::trim(curr);
 			if (curr == "") {
 				break;
 			}
@@ -1099,12 +1100,20 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 			string currTwo = curr.substr(ZERO, found);
 			size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
 			currTwo = currTwo.substr(ZERO, lastBracket + ONE);
-
+			currTwo = Util::trim(currTwo);
 			if (currTwo.find(AND_STRING) == string::npos) {
+				if (lastBracket == string::npos) {
+					throw ("INVALID BRACKET EXCEPTION");
+					exit(0);
+				}
 				vecPattern.push_back(currTwo);
 				curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
 				pos = lastBracket + ONE;
 			} else {
+				if (lastBracket == string::npos) {
+					throw ("INVALID BRACKET EXCEPTION");
+					
+				}
 				vecPattern = extractAndPattern(currTwo, vecPattern);
 				curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
 				pos = lastBracket + ONE;
