@@ -49,6 +49,7 @@ const string PROG_LINE_STRING = "prog_line";
 const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
+const string AFFECTS_STRING = "Affects";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -210,6 +211,10 @@ bool QueryValidator::isValidSuchThat(string str) {
 					arg2Valid = false;
 				}
 			}
+		/*	if (isCornerRelations(relation)) {
+
+			}
+*/
 			//If both are valid and true, create the clause
 			if (arg1Valid && arg2Valid) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
@@ -223,6 +228,9 @@ bool QueryValidator::isValidSuchThat(string str) {
 		return false;
 	}
 	return true;
+}
+bool QueryValidator::isCornerRelation(string relation) {
+	return ((relation == FOLLOWS_STRING) || (relation == FOLLOWS_STAR_STRING) || (relation == PARENT_STRING) | (relation == PARENT_STAR_STRING) | (relation == AFFECTS_STRING));
 }
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string arg1Ent, string arg2Ent) {
 

@@ -95,6 +95,7 @@ public:
 	bool isValidSelectInitialRegex(string str);
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThat(string str);
+	bool isCornerRelation(string relation);
 	bool isValidSuchThatRegex(string str);
 	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
