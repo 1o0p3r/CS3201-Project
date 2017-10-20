@@ -67,7 +67,7 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") such that Parent(1, w1) and Uses(1,v1) such that Follows(a1, _)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
 		
 			/*query = "assign a; variable v; Select a pattern a(_,_) and a(v,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
