@@ -21,7 +21,7 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
-			/*query = "stmt s; Select s";
+			query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 			
@@ -40,14 +40,14 @@ namespace UnitTesting
 			query = "assign a; Select a pattern b#(_, _\"f - d + b - l\"_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
-		/*	
+			
 			query = "prog_line pl, p#; constant c; Select c such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
 
-		/*	query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
+			query = "prog_line pl, p#; constant c, d; Select p# such that Follows(c,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "assign a; prog_line pl, p#; constant c, d; Select p# such that Follows(a,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -69,16 +69,57 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 		
-			/*query = "assign a; variable v; Select a pattern a(_,_) and a(v,_)";
+			query = "assign a; variable v; Select a pattern a(_,_) and a(v,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
 
-			/*query = "assign a; variable v; Select a pattern a(,) and pattern(v,_)";
+			query = "stmt s; Select s such that Follows(s,s)";
 			Assert::IsFalse(queryValidator.parseInput(query));
-			*/
 
-			query = "assign a; variable v; Select a pattern a(_,_) and pattern a(v,_)";
+			query = "assign a; stmt s; Select s such that Follows(a,a)";
 			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; Select s such that Follows(*s,s)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "assign a; stmt s; Select s such that Follows*(a,a)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "assign a;stmt s; Select s such that Parent(a,a)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; Select s such that Parent(s,s)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "assign a; stmt s; Select s such that Parent*(a,a)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; Select s such that Parent*(s,s)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Parent*(ifs,ifs)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Next*(ifs,ifs)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Next*(ifs,ifs)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Calls(\"aa\",\"a\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Calls(\"a\",\"a\")";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Calls*(\"a\",\"a\")";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Modifies(\"First\",\"Second\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
+			query = "stmt s; if ifs; Select s such that Modifies(\"First\",\"First\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
 
 		}
 		TEST_METHOD(testQueryAll) {
@@ -130,9 +171,19 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+
+			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_\"(x+y)\"_";
+			Assert::IsFalse(queryValidator.parseInput(query));
 		
-		/*	query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_)";
+			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_\"(x+y)";
+			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(v,_)";
@@ -157,7 +208,13 @@ namespace UnitTesting
 
 			query = "variable v; assign a, a#; Select v pattern a#(\"aa\",_) and a(v,_\"(x+y)*z\"_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a; variable v; Select a pattern a(,) and pattern(v,_)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "assign a; variable v; Select a pattern a(_,_) and pattern a(v,_)";
+			Assert::IsFalse(queryValidator.parseInput(query));
 
 			query = "variable v; assign a, a#; Select v pattern a#(\"aa\",_) and a(v,_\"(x+y)*z\"_) and a(v,_\"x\"_";
 			Assert::IsFalse(queryValidator.parseInput(query));
@@ -166,7 +223,6 @@ namespace UnitTesting
 			query = "variable v; assign a, a#; Select v pattern a#(\"aa\",_) and a(v,_\"(x+y)*z\"_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
-
 
 			query = "variable v1,v#; assign a1,a#; Select v1 pattern a#(v#,_\"x+y\"_) pattern a1(1, \"(x+y)\")pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));

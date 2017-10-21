@@ -64,6 +64,10 @@ private:
 	bool isQuotationIdentRegex(string str);
 	bool isValidGeneralPatternRegex(string str);
 	bool isValidIfMultiplePatternRegex(string str);
+	bool isStmtTypes(string str);
+	bool isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
+	bool isCornerRelation(string relation);
+	bool isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent);
 
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
 	
@@ -95,7 +99,7 @@ public:
 	bool isValidSelectInitialRegex(string str);
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThat(string str);
-	bool isCornerRelation(string relation);
+
 	bool isValidSuchThatRegex(string str);
 	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
@@ -116,7 +120,6 @@ public:
 	bool isValidTuple(string str);
 
 	bool isIdent(string str);
-
 	bool isOnlyTuple(string str);
 
 	vector<string> extractPatternClauses(string str);
