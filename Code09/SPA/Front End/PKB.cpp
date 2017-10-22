@@ -31,7 +31,7 @@ void PKB::initTypeMap() { //to check with pql whether QS uses these strings in t
 }
 
 PKB::PKB() {
-	
+
 	Follow follow;
 	Parent parent;
 	Modify modify;
@@ -69,7 +69,7 @@ int PKB::getVarIndex(string varName) {
 
 	if (find(varIndexTable.begin(), varIndexTable.end(), varName) != varIndexTable.end())
 		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
-	
+
 	else {
 		varIndexTable.push_back(varName);
 		return find(varIndexTable.begin(), varIndexTable.end(), varName) - varIndexTable.begin();
@@ -92,7 +92,7 @@ int PKB::getProcIndex(string procName) {
 vector<string> PKB::getAllVariables() {
 
 	vector<string> result;
-	result.insert(result.end(), allVariables. begin(), allVariables.end());
+	result.insert(result.end(), allVariables.begin(), allVariables.end());
 	return result;
 }
 
@@ -340,6 +340,7 @@ vector<string> PKB::getCalledByStar(string procName) {
 }
 
 void PKB::createCFG() {
+	state.push_back(0);
 	int i = 1;
 	while (i < typeTable.size()) {
 		if (next.getNext(i).empty()) {
@@ -369,52 +370,79 @@ void PKB::processNext(int& i) {
 }
 
 void PKB::whileCFG(int& i) {
+	state.push_back(_while);
 	int current = i;
 	goBack.push_back(i);
 	next.setNext(i, i + 1);
 	i++;
 	while (contains(parent.getParentStar(i), goBack.back())) {
-		state = _while;
 		processNext(i);
 	}
 	if (i < typeTable.size()) {
 		next.setNext(current, i);
 	}
-	state = 0;
+	state.pop_back();
 }
 
 void PKB::assignCFG(int& i) {
-	if (state == _while && ( i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
+	if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
 		next.setNext(i, goBack.back());
 		goBack.pop_back();
-	} else if (state == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i) == elseSet.end()) || (parent.getParent(i + 1)[0] != goBack.back()))) {
+	} else if (state.back() == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i + 1) != elseSet.end()) || (parent.getParent(i + 1)[0] != ifParent.back()))) {
 		lastLineOfIf = i;
-		goBack.pop_back();
-	} else if (i < typeTable.size() - 1){
+		ifParent.pop_back();
+	} else if (i < typeTable.size() - 1 && (find(firstlineTable.begin(), firstlineTable.end(), i + 1) == firstlineTable.end())) {
 		next.setNext(i, i + 1);
 	}
 	i++;
 }
 
 void PKB::ifCFG(int& i) {
-	goBack.push_back(i);
+	state.push_back(_if);
+	ifParent.push_back(i);
 	int current = i;
 	next.setNext(i, i + 1);
 	i++;
 	while (contains(parent.getParentStar(i), current) && (elseSet.find(i) == elseSet.end())) {
-		state = _if;
 		processNext(i);
 	}
+	ifParent.push_back(current);
 	int store = lastLineOfIf;
+	next.setNext(current, i);
 	while (contains(parent.getParentStar(i), current)) {
-		state = _if;
 		processNext(i);
 	}
-	if (i < typeTable.size()) {
-		next.setNext(store, i);
-		next.setNext(lastLineOfIf, i);
+	state.pop_back();
+	int nextLine;
+	if (elseSet.find(i) != elseSet.end()) {
+		ifHolder.push_back(store);
+		ifHolder.push_back(lastLineOfIf);
+	} else if (i < typeTable.size()) {
+		if (state.back() == _while) {
+			nextLine = goBack.back();
+			goBack.pop_back();
+		} else {
+			nextLine = i;
+		}
+		if (find(firstlineTable.begin(), firstlineTable.end(), nextLine) == firstlineTable.end()) {
+			next.setNext(store, nextLine);
+			next.setNext(lastLineOfIf, nextLine);
+			for each (int line in ifHolder) {
+				next.setNext(line, nextLine);
+			}
+			ifHolder.clear();
+		} else if (!next.getNext(nextLine - 1).empty()) {
+			vector<int> nextLines = next.getNext(nextLine - 1);
+			for each (int line in nextLines) {
+				next.setNext(store, line);
+				next.setNext(lastLineOfIf, line);
+				for each (int line in ifHolder) {
+					next.setNext(line, line);
+				}
+			}
+			ifHolder.clear();
+		}
 	}
-	state = 0;
 }
 
 void PKB::callCFG(int& i) {
@@ -422,12 +450,12 @@ void PKB::callCFG(int& i) {
 	int firstline = firstlineTable[proc];
 	int lastline = lastlineTable[proc];
 	next.setNext(i, firstline);
-	if (state == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
+	if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
 		next.setNext(lastline, goBack.back());
 		goBack.pop_back();
-	} else if (state == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i) == elseSet.end()) || (parent.getParent(i + 1)[0] != goBack.back()))) {
+	} else if (state.back() == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i + 1) != elseSet.end()) || (parent.getParent(i + 1)[0] != ifParent.back()))) {
 		lastLineOfIf = lastline;
-		goBack.pop_back();
+		ifParent.pop_back();
 	} else if (i < typeTable.size() - 1) {
 		next.setNext(lastline, i + 1);
 	}
@@ -461,15 +489,15 @@ void PKB::setStatementType(int statementNum, string type) {
 		typeTable.resize(statementNum + 1);
 	}
 	switch (mapTypeValues[type]) {
-	case _while: 
+	case _while:
 		whileTable.push_back(statementNum);
 		typeTable[statementNum] = _while;
 		break;
-	case assign: 
+	case assign:
 		assignTable.push_back(statementNum);
 		typeTable[statementNum] = assign;
 		break;
-	case _if: 
+	case _if:
 		ifTable.push_back(statementNum);
 		typeTable[statementNum] = _if;
 		break;
@@ -513,7 +541,7 @@ vector<int> PKB::getAllStmt() {
 	result.insert(result.end(), _while.begin(), _while.end());
 	result.insert(result.end(), assign.begin(), assign.end());
 	result.insert(result.end(), _if.begin(), _if.end());
-	result.insert(result.end(), _call.begin(), _call .end());
+	result.insert(result.end(), _call.begin(), _call.end());
 	return result;
 }
 

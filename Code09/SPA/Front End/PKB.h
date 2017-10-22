@@ -453,7 +453,9 @@ private:
 	void callCFG(int & i);
 	void processNext(int & i);
 	bool contains(vector<int> list, int i);
-	vector<int>goBack;
-	int state = 0;
+	vector<int> goBack;
+	vector<int> state;
 	int lastLineOfIf;
+	vector<int> ifHolder;
+	vector<int> ifParent;
 };
