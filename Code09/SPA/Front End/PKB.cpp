@@ -58,6 +58,7 @@ PKB::PKB() {
 	set<string> allConstants;
 	set<string> allProcedures;
 	set<int> elseSet;
+	vector<int> statementProcedureTable;
 
 	initTypeMap();
 }
@@ -360,13 +361,13 @@ void PKB::processNext(int& i) {
 		whileCFG(i);
 		break;
 	case assign:
-		assignCFG(i);
+		assignCallCFG(i);
 		break;
 	case _if:
 		ifCFG(i);
 		break;
 	case _call:
-		callCFG(i);
+		assignCallCFG(i);
 	default:
 		break;
 	}
@@ -387,7 +388,7 @@ void PKB::whileCFG(int& i) {
 	state.pop_back();
 }
 
-void PKB::assignCFG(int& i) {
+void PKB::assignCallCFG(int& i) {
 	if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
 		next.setNext(i, goBack.back());
 		goBack.pop_back();
@@ -434,35 +435,8 @@ void PKB::ifCFG(int& i) {
 				next.setNext(line, nextLine);
 			}
 			ifHolder.clear();
-		} else if (!next.getNext(nextLine - 1).empty()) {
-			vector<int> nextLines = next.getNext(nextLine - 1);
-			for each (int line in nextLines) {
-				next.setNext(store, line);
-				next.setNext(lastLineOfIf, line);
-				for each (int line in ifHolder) {
-					next.setNext(line, line);
-				}
-			}
-			ifHolder.clear();
 		}
 	}
-}
-
-void PKB::callCFG(int& i) {
-	int proc = call.getStmtCallProc(i);
-	int firstline = firstlineTable[proc];
-	int lastline = lastlineTable[proc];
-	next.setNext(i, firstline);
-	if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (parent.getParent(i + 1)[0] != goBack.back()))) {
-		next.setNext(lastline, goBack.back());
-		goBack.pop_back();
-	} else if (state.back() == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i + 1) != elseSet.end()) || (parent.getParent(i + 1)[0] != ifParent.back()))) {
-		lastLineOfIf = lastline;
-		ifParent.pop_back();
-	} else if (i < typeTable.size() - 1) {
-		next.setNext(lastline, i + 1);
-	}
-	i++;
 }
 
 bool PKB::contains(vector<int> list, int i) {
@@ -574,8 +548,15 @@ int PKB::getLastline(string procName) {
 	return lastlineTable[procIndex];
 }
 
+void PKB::setProcedure(int stmtNum, string procedure) {
+	if (statementProcedureTable.size() <= stmtNum) {
+		statementProcedureTable.resize(stmtNum + 1);
+	}
+	statementProcedureTable[stmtNum] = getProcIndex(procedure);
+}
+
 bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
-	if (typeTable[statementNum1] != assign || typeTable[statementNum2] != assign) {
+	if (typeTable[statementNum1] != assign || typeTable[statementNum2] != assign || statementProcedureTable[statementNum1] != statementProcedureTable[statementNum2]) {
 		return false;
 	}
 	vector<int> variables = getIntersection(modify.getModifies(statementNum1), use.getUses(statementNum2));
@@ -592,13 +573,7 @@ bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
 				for each (int statement in next.getNext(current)) {
 					if (statement == statementNum2) {
 						return true;
-					} else if (typeTable[statement] == _call) {
-						statement = lastlineTable[call.getStmtCallProc(statement)];
-						if (explored.find(statement) == explored.end()) {
-							nextFrontier.push_back(statement);
-							explored.insert(statement);
-						}
-					} else if (typeTable[statement] == assign && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+					} else if ((typeTable[statement] == _call || typeTable[statement] == assign) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
 						nextFrontier.push_back(statement);
 						explored.insert(statement);
 					} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {

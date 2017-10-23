@@ -102,6 +102,7 @@ bool Parse(string fileName, PKB& pkb) {
 					pkb.setFollows(prevFollow, lineCounter);
 				}
 			}
+			pkb.setProcedure(lineCounter, procName);
 			if (Parent.size() > 1) {
 				pkb.setParent(Parent.back(), lineCounter);
 			}

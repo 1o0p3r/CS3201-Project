@@ -376,6 +376,11 @@ public:
 	@returns the statement number of the last line
 	*/
 	int getLastline(string procName);
+	/*
+	Set the statement to be in the procedure
+	@returns void
+	*/
+	void setProcedure(int stmtNum, string procedure);
 	/**
 	Checks if Affects(statement 1, statement 2), statement 1 != statement 2
 	@param statementNum1 statement number 1
@@ -463,9 +468,8 @@ private:
 
 	void initTypeMap();
 	void whileCFG(int & i);
-	void assignCFG(int & i);
+	void assignCallCFG(int & i);
 	void ifCFG(int & i);
-	void callCFG(int & i);
 	void processNext(int & i);
 	bool contains(vector<int> list, int i);
 	vector<int> goBack;
@@ -474,4 +478,5 @@ private:
 	vector<int> ifHolder;
 	vector<int> ifParent;
 	vector<int> getIntersection(vector<int> v1, vector<int> v2);
+	vector<int> statementProcedureTable;
 };
