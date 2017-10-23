@@ -23,6 +23,7 @@
     <ClCompile Include="ParentAnalyzerTest.cpp" />
     <ClCompile Include="CallsAnalyzerTest.cpp" />
     <ClCompile Include="PatternAnalyzerTest.cpp" />
+    <ClCompile Include="AffectsTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

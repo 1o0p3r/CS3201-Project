@@ -279,9 +279,17 @@ public:
 	@returns void
 	*/
 	void createCFG();
-
+	/**
+	Gets the statements that are the next of the input statement
+	@param stmtNum input statementNum
+	@returns a vector containing the statment numbers that are the next of the input statement
+	*/
 	vector<int> getNext(int stmtNum);
-
+	/**
+	Gets the statements that are the previous of the input statement
+	@param stmtNum input statementNum
+	@returns a vector containing the statment numbers that are the previous of the input statement
+	*/
 	vector<int> getPrevious(int stmtNum);
 
 	vector<int> getAllNext();
@@ -368,6 +376,13 @@ public:
 	@returns the statement number of the last line
 	*/
 	int getLastline(string procName);
+	/**
+	Checks if Affects(statement 1, statement 2), statement 1 != statement 2
+	@param statementNum1 statement number 1
+	@param statementNum2 statement number 2
+	@returns true if Affects(statement 1, statement 2) is true
+	*/
+	bool getAffectsTwoLiterals(int statementNum1, int statementNum2);
 
 	/**
 	Add a Constant to PKB
@@ -458,4 +473,5 @@ private:
 	int lastLineOfIf;
 	vector<int> ifHolder;
 	vector<int> ifParent;
+	vector<int> getIntersection(vector<int> v1, vector<int> v2);
 };

@@ -14,6 +14,9 @@
 #include <set>
 #include <map>
 #include <tuple>
+#include <iterator>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -569,4 +572,51 @@ void PKB::setLastline(string procName, int lastline) {
 int PKB::getLastline(string procName) {
 	int procIndex = getProcIndex(procName);
 	return lastlineTable[procIndex];
+}
+
+bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
+	if (typeTable[statementNum1] != assign || typeTable[statementNum2] != assign) {
+		return false;
+	}
+	vector<int> variables = getIntersection(modify.getModifies(statementNum1), use.getUses(statementNum2));
+	if (variables.empty()) {
+		return false;
+	}
+	for each (int var in variables) {
+		vector<int> frontier;
+		frontier.push_back(statementNum1);
+		while (!frontier.empty()) {
+			vector<int> nextFrontier;
+			set<int> explored;
+			for each (int current in frontier) {
+				for each (int statement in next.getNext(current)) {
+					if (statement == statementNum2) {
+						return true;
+					} else if (typeTable[statement] == _call) {
+						statement = lastlineTable[call.getStmtCallProc(statement)];
+						if (explored.find(statement) == explored.end()) {
+							nextFrontier.push_back(statement);
+							explored.insert(statement);
+						}
+					} else if (typeTable[statement] == assign && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+						nextFrontier.push_back(statement);
+						explored.insert(statement);
+					} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
+						nextFrontier.push_back(statement);
+						explored.insert(statement);
+					}
+				}
+			}
+			frontier = nextFrontier;
+		}
+		return false;
+	}
+}
+
+vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
+	vector<int> result;
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
+	return result;
 }
