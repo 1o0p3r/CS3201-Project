@@ -49,11 +49,9 @@ public:
 			"assign a2; procedure pOne; variable v; Select a2 such that Modifies(a2, v) pattern a2(_, _\"x\"_) and a2(\"y\", _)",
 			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")",
 			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) ",
-		//	"stmt s; Select s with s.stmt# = 5",
-		//	"procedure pro1, pro2; Select pro1 with pro2.procName = Pear such that Calls(pro1,pro2) with pro1.procName = \"Nana\"", //exception
-		//	"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\"",
-		//	"assign a; variable v; Select a with  pattern a(_,_) and pattern a(v,_)"
-
+			"stmt s; Select s with s.stmt# = 5",
+			"procedure pro1, pro2; Select pro1 with pro2.procName = Pear such that Calls(pro1,pro2) with pro1.procName = \"Nana\"" //exception
+			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\""
 		};
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
@@ -83,8 +81,8 @@ public:
 			{"3"},		//Passed
 			{"16"},		//Passed
 			{"Apple", "Nana"},
-		//	{"5"},
-		//	{"Nana"}
+			{"5"},
+			{"Nana"}
 
 		};
 
@@ -207,7 +205,7 @@ public:
 			"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
 			"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
 			"assign a; Select a pattern a(\"z\", _\"x+i\")",
-			"assign a; Select a pattern a(_, _\"x + 1\"_)",
+			"assign a; Select a pattern a(_, _\"x + 1\"_)"
 			"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)"
 		};
 		vector<vector<string>> expected = {

@@ -67,7 +67,7 @@ bool Parse(string fileName, PKB& pkb) {
 			pkb.setFirstline(procName, lineCounter + 1);
 			isNewContainer = true;
 			isSameLevel = false;
-		} else if (startsWithBrackets(nextLine)) {
+		} else if (startsWithBrackets(nextLine) && !isNewContainer) {
 			int i = 0;
 			while (i < line.size()) {
 				if (line[i] == CB) {
@@ -165,9 +165,13 @@ bool Parse(string fileName, PKB& pkb) {
 			// after all statements, check for '}'s at the end
 			for (int i = line.size() - 1; i >= 0; i--) {
 				if (line[i] == CB) {
-					isSameLevel = false;
-					prevFollow = Parent.back();
-					Parent.pop_back();
+					if (isNewContainer) {
+						return false;
+					} else {
+						isSameLevel = false;
+						prevFollow = Parent.back();
+						Parent.pop_back();
+					}
 				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}
