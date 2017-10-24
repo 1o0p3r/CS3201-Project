@@ -41,6 +41,7 @@ const string MODIFIES_STRING = "Modifies";
 const string USES_STRING = "Uses";
 const string CALLS_STRING = "Calls";
 const string NEXT_STRING = "Next";
+const string AFFECTS_STRING = "Affects";
 const string UNDER_SCORE_STRING = "_";
 const string WILDCARD_STRING = "wildcard";
 const string CONSTANT_STRING = "constant";
@@ -147,6 +148,10 @@ const string NEXT_STRING_REGEX = NEXT_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRI
 + "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 const string NEXTT_STRING_REGEX = NEXT_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string AFFECTS_STRING_REGEX = AFFECTS_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string AFFECTST_STRING_REGEX = AFFECTS_STRING + +" \\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
 const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
@@ -160,6 +165,8 @@ const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRAC
 + OR + SYMBOL_LEFT_BRACKET_STRING + CALLST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + MODIFIESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + SYMBOL_RIGHT_BRACKET_STRING;
 
 const string RELCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + AND_STRING + "*" + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
@@ -186,8 +193,9 @@ const string TUPLE_REGEX = ELEM_REGEX + OR + SYMBOL_LEFT_BRACKET_STRING + "\\<" 
 const string ONLY_TUPLE_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\\<" + "\\s*" + ELEM_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + "," + "\\s*" + ELEM_REGEX + +"\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + "\\>" + SYMBOL_RIGHT_BRACKET;
 //const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*|(BOOLEAN)" + OR + ATTRREF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + "BOOLEAN" + OR + TUPLE_REGEX + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING;
-using namespace std;
+const string INVALID_BRACKET_EXEPTION = "Invalid Bracket Exception";
 
+using namespace std;
 QueryValidator::QueryValidator()
 {
 	//Add in the elements into the unordered map that will be used for with clauses
@@ -340,6 +348,9 @@ bool QueryValidator::isValidPattern(string str) {
 	//Extract out all the pattern
 	vector<string> vecPattern = extractPatternClauses(str);
 
+	if (vecPattern[ZERO] == INVALID_BRACKET_EXEPTION) {
+		return false;
+	}
 	for (size_t i = ZERO; i < vecPattern.size(); i++) {
 		string currentStr = vecPattern.at(i);
 		//Do Util::trimming on this string
@@ -1074,42 +1085,59 @@ vector<string> QueryValidator::extractWithClauses(string str) {
 }
 
 vector<string> QueryValidator::extractPatternClauses(string str) {
-	//These are some example strings: 
-	//pattern a(_,_) pattern ifs(_,_)
-	//pattern a(_,_) and ifs(_,_) pattern ifs(_,_)
-	//pattern a(_,_) pattern ifs(_,_) and ifs(_,_)
+	
 	size_t pos = ZERO;
 	string curr = str;
 	vector<string> vecPattern;
-	//While pos is not end of string
-	while (pos != string::npos) {
-		//Try to find the next occurence of pattern
-		size_t initFound = curr.find(PATTERN_STRING);
-		size_t found = curr.find(PATTERN_STRING, initFound + ONE);
-		size_t foundAnd = curr.find(AND_STRING, ONE);
-		//Means end of string, so just push in and break
-		if (found == string::npos && foundAnd == string::npos) {
-			if (curr == "") {
+	try {
+		//These are some example strings: 
+		//pattern a(_,_) pattern ifs(_,_)
+		//pattern a(_,_) and ifs(_,_) pattern ifs(_,_)
+		//pattern a(_,_) pattern ifs(_,_) and ifs(_,_)
+		//While pos is not end of string
+		while (pos != string::npos) {
+			//Try to find the next occurence of pattern
+			size_t initFound = curr.find(PATTERN_STRING);
+			size_t found = curr.find(PATTERN_STRING, initFound + ONE);
+			size_t foundAnd = curr.find(AND_STRING, ONE);
+			//Means end of string, so just push in and break
+			if (found == string::npos && foundAnd == string::npos) {
+				curr = Util::trim(curr);
+				if (curr == "") {
+					break;
+				}
+				vecPattern.push_back(curr);
 				break;
 			}
-			vecPattern.push_back(curr);
-			break;
-		} else {
-			//curr is now pattern(....)...
-			string currTwo = curr.substr(ZERO, found);
-			size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
-			currTwo = currTwo.substr(ZERO, lastBracket + ONE);
-
-			if (currTwo.find(AND_STRING) == string::npos) {
-				vecPattern.push_back(currTwo);
-				curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
-				pos = lastBracket + ONE;
-			} else {
-				vecPattern = extractAndPattern(currTwo, vecPattern);
-				curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
-				pos = lastBracket + ONE;
+			else {
+				//curr is now pattern(....)...
+				string currTwo = curr.substr(ZERO, found);
+				size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
+				currTwo = currTwo.substr(ZERO, lastBracket + ONE);
+				currTwo = Util::trim(currTwo);
+				if (currTwo.find(AND_STRING) == string::npos) {
+					if (lastBracket == string::npos) {
+						throw (INVALID_BRACKET_EXEPTION);
+					}
+					vecPattern.push_back(currTwo);
+					curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
+					pos = lastBracket + ONE;
+				}
+				else {
+					if (lastBracket == string::npos) {
+						throw (INVALID_BRACKET_EXEPTION);
+					}
+					vecPattern = extractAndPattern(currTwo, vecPattern);
+					curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
+					pos = lastBracket + ONE;
+				}
 			}
 		}
+	}
+	catch (string INVALID_BRACKET_EXEPTION) {
+		cout << INVALID_BRACKET_EXEPTION;
+		vector<string> invalidVec = { INVALID_BRACKET_EXEPTION };
+		return invalidVec;
 	}
 	return vecPattern;
 }

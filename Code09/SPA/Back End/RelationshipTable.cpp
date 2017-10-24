@@ -15,6 +15,8 @@ RelationshipTable::RelationshipTable() {
 	const string CALLS_STRING = "Calls";
 	const string NEXT_STAR_STRING = "Next*";
 	const string CALLS_STAR_STRING = "Calls*";
+	const string AFFECTS_STRING = "Affects";
+	const string AFFECTS_STAR_STRING = "Affects*";
 
 	//variables to be used to add to relationship table
 	vector<string> modifiesArg1;
@@ -35,6 +37,9 @@ RelationshipTable::RelationshipTable() {
 	vector<string> callsArg2;
 	vector<string> callsStarArg1;
 	vector<string> callsStarArg2;
+	vector<string> affectsArg1;
+	vector<string> affectsArg2;
+
 
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
@@ -94,6 +99,16 @@ RelationshipTable::RelationshipTable() {
 	callsStarArg2 = callsArg2;
 	Relationship relationCallsStar = Relationship(NUM_TWO, callsStarArg1, callsStarArg2);
 	relationshipTable[CALLS_STAR_STRING] = relationCallsStar;
+
+	//Adds the relationship of Affects to table
+	affectsArg1 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
+	affectsArg2 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
+	Relationship relationAffects = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	relationshipTable[AFFECTS_STRING] = relationAffects;
+
+	//Adds the relationship of Affects* to table
+	Relationship relationAffectsT = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	relationshipTable[AFFECTS_STAR_STRING] = relationAffectsT;
 
 }
 

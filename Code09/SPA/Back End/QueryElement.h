@@ -49,7 +49,6 @@ public:
 	//Ent = empty	synonym = empty		type = BOOLEAN		attrName = empty
 	//E.G. procedure p; constant c; stmt s; prog_line n; Select p.procName with n=1
 	//Ent = procedure	Synonym = p		type = attrRef	attrName = procName
-
 	QueryElement(string entity, string synonym, string type, string attrName);
 	
 	
