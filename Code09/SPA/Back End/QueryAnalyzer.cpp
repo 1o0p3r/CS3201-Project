@@ -196,14 +196,32 @@ void QueryAnalyzer::setClauseFalse()
 	hasWithClause,hasPatternClause,hasSTClause = false; //future implementation, include with
 }
 
+vector<string> QueryAnalyzer::rearrange(vector<string> cartVec, 
+		vector<string> selectOrder, const unordered_map<string, int>& cartMap) {
+	vector<string> result;
+	for(auto entry: cartVec) {
+		vector<string> cartToken = Util::splitLine(entry, ',');
+		string reorderedTuple;
+		for(auto candidate: selectOrder) {
+			reorderedTuple.append(cartToken[cartMap.find(candidate)->second]);
+			reorderedTuple.append(",");
+		}
+		reorderedTuple.pop_back();
+		result.push_back(reorderedTuple);
+	}
+	return result;
+
+}
+
 void QueryAnalyzer::selectTuple(vector<string> &answer)
 {
 	auto tupleSynonyms = selectElement.getSelectSynonym();
 	auto tupleEntity = selectElement.getSelectEntity();
-	auto synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
 	auto synonymEntities = Util::splitLine(tupleEntity, ',');
 	vector<vector<tuple<int,int,string>>> synLoc;
 	vector<vector<string>> synTableConcatEntries;
+	unordered_map<string, int> synCartMap;
 
 
 	//init mapping of synonyms from same table
@@ -232,8 +250,16 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		}
 	}
 
-	
+	int k = 0;
 	for (auto commonTableSyn : synLoc) {
+
+		//record arrangement of synonym for rearrangement after cartesian product
+		for (auto entry : commonTableSyn) {
+			string synonym = mergedQueryTable[get<TABLELOC>(entry)][get<SYNVECLOC>(entry)].back();
+			synCartMap.insert(make_pair(synonym, k));
+			k++;
+		}
+
 		vector<string> vecAppendedSynValues;
 		//synonym exists in intermediate table
 		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {
@@ -302,7 +328,11 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			vecToCartProd = vecCartProdstring;
 		}
 	}
+	
+	vecToCartProd = rearrange(vecToCartProd,synonymTokens,synCartMap);
 	answer = vecToCartProd;
+
+
 }
 
 bool QueryAnalyzer::isQueryFalse()

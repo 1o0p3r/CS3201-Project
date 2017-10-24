@@ -64,6 +64,7 @@ public:
 	void findQueryElements();
 	void selectSynonym(vector<string> &answer);
 	void setClauseFalse();
+	vector<string> rearrange(vector<string>, vector<string>, const unordered_map<string,int> &);
 	void selectTuple(vector<string> &answer);
 	bool isQueryFalse();
 	
