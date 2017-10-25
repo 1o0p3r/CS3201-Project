@@ -560,32 +560,66 @@ bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
 		return false;
 	}
 	vector<int> variables = getIntersection(modify.getModifies(statementNum1), use.getUses(statementNum2));
-	if (variables.empty()) {
+	if (variables.size() != 1) {
 		return false;
 	}
-	for each (int var in variables) {
-		vector<int> frontier;
-		frontier.push_back(statementNum1);
-		while (!frontier.empty()) {
-			vector<int> nextFrontier;
-			set<int> explored;
-			for each (int current in frontier) {
-				for each (int statement in next.getNext(current)) {
-					if (statement == statementNum2) {
-						return true;
-					} else if ((typeTable[statement] == _call || typeTable[statement] == assign) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
-						nextFrontier.push_back(statement);
-						explored.insert(statement);
-					} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
-						nextFrontier.push_back(statement);
-						explored.insert(statement);
-					}
+	int var = variables[0];
+	vector<int> frontier;
+	frontier.push_back(statementNum1);
+	while (!frontier.empty()) {
+		vector<int> nextFrontier;
+		set<int> explored;
+		for each (int current in frontier) {
+			for each (int statement in next.getNext(current)) {
+				if (statement == statementNum2) {
+					return true;
+				} else if ((typeTable[statement] == _call || typeTable[statement] == assign) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+					nextFrontier.push_back(statement);
+					explored.insert(statement);
+				} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
+					nextFrontier.push_back(statement);
+					explored.insert(statement);
 				}
 			}
-			frontier = nextFrontier;
 		}
-		return false;
+		frontier = nextFrontier;
 	}
+	return false;
+}
+
+vector<int> PKB::getAffectsFirstLiteral(int statementNum) {
+	if (typeTable[statementNum] != assign) {
+		return vector<int>{};
+	}
+	int var = modify.getModifies(statementNum)[0];
+	vector<int> results;
+	vector<int> frontier;
+	frontier.push_back(statementNum);
+	while (!frontier.empty()) {
+		vector<int> nextFrontier;
+		set<int> explored;
+		for each (int current in frontier) {
+			for each (int statement in next.getNext(current)) {
+				if ((typeTable[statement] == _call) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+					nextFrontier.push_back(statement);
+					explored.insert(statement);
+				} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
+					nextFrontier.push_back(statement);
+					explored.insert(statement);
+				} else if (typeTable[statement] == assign && explored.find(statement) == explored.end()) {
+					if (contains(use.getUses(statement), var)) {
+						results.push_back(statement);
+					}
+					if (modify.getModifies(statement)[0] != var) {
+						nextFrontier.push_back(statement);
+					}
+					explored.insert(statement);
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return results;
 }
 
 vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {

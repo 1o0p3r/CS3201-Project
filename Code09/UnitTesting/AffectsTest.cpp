@@ -17,6 +17,7 @@ public:
 		Assert::IsFalse(pkb.getAffectsTwoLiterals(2, 4));
 		Assert::IsFalse(pkb.getAffectsTwoLiterals(1, 3));
 		Assert::IsTrue(pkb.getAffectsTwoLiterals(1, 4));
+		Assert::IsTrue(pkb.getAffectsTwoLiterals(3, 4));
 
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
@@ -25,6 +26,24 @@ public:
 		Assert::IsTrue(pkb.getAffectsTwoLiterals(4, 9));
 		Assert::IsTrue(pkb.getAffectsTwoLiterals(1, 11));
 		Assert::IsTrue(pkb.getAffectsTwoLiterals(5, 11));
+	}
+
+	TEST_METHOD(getAffectsFirstLiteral) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(1) == vector<int>{4});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(2) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(3) == vector<int>{4});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(4) == vector<int>{4});
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(1) == vector<int>{4, 9, 11, 13});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(5) == vector<int>{6, 11});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(9) == vector<int>{11, 13});
+		Assert::IsTrue(pkb.getAffectsFirstLiteral(6) == vector<int>{});
 	}
 	};
 }

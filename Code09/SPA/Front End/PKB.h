@@ -376,11 +376,13 @@ public:
 	@returns the statement number of the last line
 	*/
 	int getLastline(string procName);
+
 	/*
 	Set the statement to be in the procedure
 	@returns void
 	*/
 	void setProcedure(int stmtNum, string procedure);
+
 	/**
 	Checks if Affects(statement 1, statement 2), statement 1 != statement 2
 	@param statementNum1 statement number 1
@@ -388,6 +390,13 @@ public:
 	@returns true if Affects(statement 1, statement 2) is true
 	*/
 	bool getAffectsTwoLiterals(int statementNum1, int statementNum2);
+
+	/**
+	Gets Affects(statement, synonym)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that is affected by the literal
+	*/
+	vector<int> getAffectsFirstLiteral(int statementNum);
 
 	/**
 	Add a Constant to PKB
