@@ -566,9 +566,9 @@ bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
 	int var = variables[0];
 	vector<int> frontier;
 	frontier.push_back(statementNum1);
+	set<int> explored;
 	while (!frontier.empty()) {
 		vector<int> nextFrontier;
-		set<int> explored;
 		for each (int current in frontier) {
 			for each (int statement in next.getNext(current)) {
 				if (statement == statementNum2) {
@@ -595,9 +595,9 @@ vector<int> PKB::getAffectsFirstLiteral(int statementNum) {
 	vector<int> results;
 	vector<int> frontier;
 	frontier.push_back(statementNum);
+	set<int> explored;
 	while (!frontier.empty()) {
 		vector<int> nextFrontier;
-		set<int> explored;
 		for each (int current in frontier) {
 			for each (int statement in next.getNext(current)) {
 				if ((typeTable[statement] == _call) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
@@ -622,6 +622,41 @@ vector<int> PKB::getAffectsFirstLiteral(int statementNum) {
 	return results;
 }
 
+vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
+	if (typeTable[statementNum] != assign) {
+		return vector<int>{};
+	}
+	vector<int> variables = use.getUses(statementNum);
+	vector<int> results;
+	for each (int var in variables) {
+		vector<int> frontier;
+		frontier.push_back(statementNum);
+		set<int> explored;
+		while (!frontier.empty()) {
+			vector<int> nextFrontier;
+			for each (int current in frontier) {
+				for each (int statement in next.getPrevious(current)) {
+					if ((typeTable[statement] == _call) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+						nextFrontier.push_back(statement);
+						explored.insert(statement);
+					} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
+						nextFrontier.push_back(statement);
+						explored.insert(statement);
+					} else if (typeTable[statement] == assign && explored.find(statement) == explored.end()) {
+						if (modify.getModifies(statement)[0] != var) {
+							nextFrontier.push_back(statement);
+						} else {
+							results.push_back(statement);
+						}
+						explored.insert(statement);
+					}
+				}
+			}
+			frontier = nextFrontier;
+		}
+	}
+	return results;
+}
 vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	vector<int> result;
 	sort(v1.begin(), v1.end());

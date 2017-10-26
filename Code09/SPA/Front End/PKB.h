@@ -399,6 +399,13 @@ public:
 	vector<int> getAffectsFirstLiteral(int statementNum);
 
 	/**
+	Gets Affects(synonym, statement)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that affects the literal
+	*/
+	vector<int> getAffectsSecondLiteral(int statementNum);
+
+	/**
 	Add a Constant to PKB
 	@param c the constant name
 	*/
@@ -486,6 +493,7 @@ private:
 	int lastLineOfIf;
 	vector<int> ifHolder;
 	vector<int> ifParent;
+	
 	vector<int> getIntersection(vector<int> v1, vector<int> v2);
 	vector<int> statementProcedureTable;
 };
