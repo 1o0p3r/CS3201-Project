@@ -502,6 +502,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
+				clauseResult = NextAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case nextStar:
 				break;

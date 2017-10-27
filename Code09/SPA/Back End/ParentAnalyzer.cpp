@@ -43,9 +43,7 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	vector<vector<string>> parentResult;
 
 	if (arg2 == WILDCARD_SYMBOL) {
-		vecOfCandidates = pkbReadOnly.getWhile();
-		vector<int> temp = pkbReadOnly.getIf();
-		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+		vecOfCandidates = pkbReadOnly.getAllStmt();
 	} else
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
