@@ -178,7 +178,72 @@ public:
 			}
 		}
 	}
+	TEST_METHOD(SampleSourceNext) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-Next.txt";
+		Assert::IsTrue(Parse(filename, pkb));
 
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		vector<string> queries = {
+			"stmt s;Select s such that Next(2,3)",
+			"stmt s;Select s such that Next(26,s)", 
+			"stmt s;Select s such that Next(s,33)",
+			"stmt s1,s2;Select s1 such that Next(s1,s2)",
+			"stmt s; Select s such that Next(s,s)",
+			"while w; Select w such that Next(w, 38)",
+			"while w;Select w such that Next(38,w)",
+			"while w1,w2;Select w1 such that Next(w1,w2)",
+			"while w;Select w such that Next(w,w)",
+			"assign a;Select a such that Next(1,a)"
+		};
+
+		vector<vector<string>> expected = {
+			{"8", "17", "27", "34", "37", "40", "1", "2", "4", "6", "9",
+			"10", "12", "14", "16", "18", "23", "24", "25", "28", "29", "31",
+			"32", "36", "38", "42", "43", "44", "5", "11", "13", "21", "26",
+			"30", "41", "3", "7", "15", "19", "20", "22", "33", "35", "39"}, //correct
+			{"27", "29"},	//Returning every stmt*/
+			{"15", "17", "25", "27", "31", "32"},	//Returning evety stmt
+			{ "8", "17", "27", "34", "37", "40", "1", "2", "4", "6", "9",
+			"10", "12", "14", "16", "18", "23", "24", "25", "28", "29", "31",
+			"32", "36", "38", "42", "43", "5", "11", "13", "21", "26",
+			"30", "41", "3", "7", "15", "19", "20", "22", "33", "35", "39" }, //Returning evety stmt
+			{}, //Correct
+			{"37"},	//Obtained : 8 17 27 34 37 40
+			{"37"}, //Obtained : 8 17 27 34 37 40
+			{"34"}, // Obtained : 8 17 27 34 37 40
+			{},	//Correct
+			{"2"} // Obtained 22 integers
+		};
+		
+		for (int i = 0; i < queries.size(); i++) {
+			if (validator.parseInput(queries[i])) {
+				statement = validator.getQueryStatement();
+				analyzer.setQS(statement);
+				answer = analyzer.runQueryEval();
+			}
+			else {
+				Logger::WriteMessage("Invalid Query in Source 3");
+				Logger::WriteMessage(queries[i].c_str());
+				answer = {};
+			}
+			string testNo = "size error in Source 3 in test ";
+			testNo.append(to_string(i + 1));
+			string testNo_1 = "value error in Source 3 in test ";
+			testNo_1.append(to_string(i + 1));
+			wstring error = wstring(testNo.begin(), testNo.end());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
+			for (int j = 0; j < answer.size(); j++) {
+				error = wstring(testNo_1.begin(), testNo_1.end());
+				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
+			}
+		}
+	}
 	TEST_METHOD(SampleSource2) {
 		PKB pkb;
 		string filename = "..\\..\\Tests09\\Sample-Source-2.txt";
@@ -249,6 +314,7 @@ public:
 			}
 		}
 	}
+
 	};
 }
 

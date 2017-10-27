@@ -1,0 +1,76 @@
+procedure One {
+	a = 1;
+	b = 2;
+	call Two;
+	c = 3;
+	if d then {
+		k = c + b;
+		call Two;
+		while p {
+			p = k + 1;
+			k = 10;
+		}
+		if z then {
+			q = z + p;
+			if l then {
+				r = l + k;
+				call Two;
+			}
+			else {
+				o = o + q;
+				while e {
+					f = h + y;
+					call Two;
+				}
+			}
+		}
+		else {
+			call Two;
+			if m then {
+				call Two;
+				i = 71;
+			}
+			else {
+				j = w;
+			}
+			t = x + u;
+		}
+	}
+	else {
+		if n then {
+			while k {
+				n = o;
+			}
+		}
+		else {
+			o = p;
+			if v then{
+				v = c;
+			}
+			else {
+				s = w + x + u + z;
+			}
+		}
+	}
+	call Two;
+	while g {
+		call Two;
+		z = i;
+	}
+	while i {
+		z = k + m;
+	}
+	call Two;
+	while k {
+		if b then {
+			b = c;
+		}
+		else {
+			c = d;
+		}
+	}
+}
+
+procedure Two {
+	test = only;
+}
