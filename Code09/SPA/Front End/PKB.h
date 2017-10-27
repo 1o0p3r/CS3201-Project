@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <unordered_map>
 
 using namespace std;
 typedef short PROC;
@@ -453,6 +454,8 @@ public:
 	*/
 	vector<int> getPatternIf(string variable);
 	tuple<vector<int>, vector<string>> getAllPatternIf();
+	tuple<vector<int>, vector<string>> getPatternVariable(string varName);
+	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
