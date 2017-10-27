@@ -40,10 +40,6 @@ namespace UnitTesting
 			query = "stmt s; Select s such that Follows(s,4)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
-			
-			query = "assign a;variable v; Select v such that Uses(\"       Second\", v)  pattern a(,) and pattern a(v,_)";
-			Assert::IsFalse(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();
 
 			query = "   while w   ; assign a   ; Select w such that Follows(w, a)  ";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -133,6 +129,17 @@ namespace UnitTesting
 			query = "stmt s; if ifs; Select s such that Modifies(\"First\",\"First\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
 
+			query = "stmt s1,s2; Select s1 such that Parent(_,s1) and Parent(_,_)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "stmt s1,s2; Select s1 such that Parent(_,s1) and Parent(s1,s2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "stmt s1,s2; Select s1 such that Parent(_,s1) and Parent(_,s2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 
@@ -153,6 +160,10 @@ namespace UnitTesting
 			queryStatement = queryValidator.getQueryStatement();
 
 			query = "while w; assign a; Select w such that Follows(\"w\", a) pattern a(_, \"x\")";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a;variable v; Select v such that Uses(\"       Second\", v)  pattern a(,) and pattern a(v,_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
