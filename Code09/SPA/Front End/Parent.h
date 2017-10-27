@@ -47,6 +47,10 @@ public:
 
 	vector<int> Parent::getAllParent();
 
+	int getParentCount();
+
+	int getParentStarCount();
+
 private:
 	vector<vector<int>> parentTable;
 	vector<int> childTable;
@@ -57,4 +61,6 @@ private:
 	void setChild(int s1, int s2);
 	void setParentStar(int s1, int s2);
 	void setChildStar(int s1, int s2);
+	int parentCount;
+	int parentStarCount;
 };

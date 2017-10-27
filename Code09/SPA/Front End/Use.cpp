@@ -6,6 +6,8 @@ Use::Use() {
 	vector<set<int>> usedByTable;
 	vector<set<int>> procUsesTable;
 	vector<set<int>> procUsedByTable;
+	int useCount = 0;
+	int procUseCount = 0;
 }
 
 void Use::setUses(int statementNum, int varName, vector<int> parentStarOfStmt) {
@@ -33,7 +35,7 @@ void Use::setUses(int statementNum, int varName) {
 
 	if (statementNum >= usesTable.size())
 		usesTable.resize(statementNum + 1);
-
+	useCount++;
 	usesTable[statementNum].insert(varName);
 	setUsedBy(varName, statementNum);
 }
@@ -84,7 +86,7 @@ void Use::setProcUses(int procName, int varName) {
 
 		procUsesTable[procName].insert(varName);
 	}
-
+	procUseCount++;
 	setProcUsedBy(varName, procName);
 }
 
@@ -137,4 +139,12 @@ vector<int> Use::getProcUsedBy(int varName) {
 	} else {
 		return vector<int>();
 	}
+}
+
+int Use::getUseCount() {
+	return useCount;
+}
+
+int Use::getProcUseCount() {
+	return procUseCount;
 }

@@ -5,6 +5,8 @@ Follow::Follow() {
 	vector<int> followedByTable;
 	vector<vector<int>> followsStarTable;
 	vector<vector<int>> followedByStarTable;
+	int followsCount = 0;
+	int followStarCount = 0;
 }
 
 void Follow::setFollows(int s1, int s2) {
@@ -19,6 +21,7 @@ void Follow::setFollows(int s1, int s2) {
 		followsTable.resize(s1 + 1);
 	}
 	followsTable[s1] = s2;
+	followsCount++;
 	setFollowedBy(s2, s1);
 	setFollowsStar(s1, s2);
 	vector<int> holder = getFollowedBy(s1);
@@ -43,6 +46,7 @@ void Follow::setFollowsStar(int s1, int s2) {
 	if (followsStarTable.size() <= s1) {
 		followsStarTable.resize(s1 + 1);
 	}
+	followStarCount++;
 	followsStarTable[s1].push_back(s2);
 	setFollowedByStar(s2, s1);
 }
@@ -96,4 +100,12 @@ vector<int> Follow::getFollowedByStar(int statementNum) {
 	} else {
 		return vector<int>();
 	}
+}
+
+int Follow::getFollowsCount() {
+	return followsCount;
+}
+
+int Follow::getFollowStarCount() {
+	return followStarCount;
 }

@@ -430,6 +430,7 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternWhile(string variable);
+	tuple<vector<int>, vector<string>> getAllPatternWhile();
 	/**
 	Adds a if pattern to PKB
 	@param StatementNum Statement Number of the if
@@ -442,12 +443,28 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternIf(string variable);
+	tuple<vector<int>, vector<string>> getAllPatternIf();
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
 	@returns a vector of tuple containing all the (statement number, expression) pairs for the input variable
 	*/
-	vector<tuple<int, string>> getPattern(string varName);
+	tuple<vector<int>, vector<string>> getPattern(string varName);
+	int getFollowsCount();
+
+	int getFollowStarCount();
+
+	int getParentCount();
+
+	int getParentStarCount();
+
+	int getModifyCount();
+
+	int getProcModifyCount();
+
+	int getUseCount();
+
+	int getProcUseCount();
 
 private:
 	Follow follow;
@@ -466,7 +483,8 @@ private:
 	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
-	vector<vector<tuple<int, string>>> patternTable;
+	vector<tuple<vector<int>, vector<string>>> patternTable;
+	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
 	vector<vector<int>> whilePatternTable;
 	vector<vector<int>> ifPatternTable;
 
@@ -495,5 +513,6 @@ private:
 	vector<int> ifParent;
 	
 	vector<int> getIntersection(vector<int> v1, vector<int> v2);
+	
 	vector<int> statementProcedureTable;
 };

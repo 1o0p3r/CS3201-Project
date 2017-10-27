@@ -62,6 +62,10 @@ public:
 	*/
 	vector<int> getProcUsedBy(int varName);
 
+	int getUseCount();
+
+	int getProcUseCount();
+
 private:
 
 	vector<set<int>> usesTable; //stmt modifies var or container stmt modifes vars
@@ -72,4 +76,6 @@ private:
 	void setUses(int statementNum, int varName);
 	void setUsedBy(int varName, int statementNum);
 	void setProcUsedBy(int procName, int varName);
+	int useCount;
+	int procUseCount;
 };

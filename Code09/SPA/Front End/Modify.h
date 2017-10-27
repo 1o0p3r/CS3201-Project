@@ -63,6 +63,10 @@ public:
 	*/
 	vector<int> getProcModifiedBy(int varName);
 
+	int getModifyCount();
+
+	int getProcModifyCount();
+
 private:
 
 	vector<set<int>> modifiesTable; //stmt modifies var or container stmt modifes vars
@@ -73,5 +77,6 @@ private:
 	void setModifies(int statementNum, int varName);
 	void setModifiedBy(int varName, int statementNum);
 	void setProcModifiedBy(int procName, int varName);
-
+	int modifyCount;
+	int procModifyCount;
 };

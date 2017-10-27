@@ -7,6 +7,8 @@ Modify::Modify() {
 	vector<set<int>> modifiedByTable;
 	vector<set<int>> procModifiesTable;
 	vector<set<int>> procModifiedByTable;
+	int modifyCount = 0;
+	int procModifyCount = 0;
 } 
 
 void Modify::setModifies(int statementNum, int varName, vector<int> parentStarOfStmt) {
@@ -32,6 +34,7 @@ void Modify::setModifies(int statementNum, int varName) {
 	if (modifiesTable.size() <= statementNum) {
 		modifiesTable.resize(statementNum + 1);
 	}
+	modifyCount++;
 	modifiesTable[statementNum].insert(varName);
 	setModifiedBy(varName, statementNum);
 }
@@ -68,6 +71,7 @@ void Modify::setProcModifies(int procName, int varName) {
 	if (procModifiesTable.size() <= procName) {
 		procModifiesTable.resize(procName + 1);
 	}
+	procModifyCount++;
 	procModifiesTable[procName].insert(varName);
 	setProcModifiedBy(varName, procName);
 }
@@ -117,4 +121,12 @@ vector<int> Modify::getProcModifiedBy(int varName) {
 	} else {
 		return vector<int>();
 	}
+}
+
+int Modify::getModifyCount() {
+	return modifyCount;
+}
+
+int Modify::getProcModifyCount() {
+	return procModifyCount;
 }

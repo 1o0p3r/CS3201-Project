@@ -16,6 +16,7 @@
 #include <tuple>
 #include <iterator>
 #include <algorithm>
+#include <unordered_map>
 
 
 using namespace std;
@@ -51,7 +52,8 @@ PKB::PKB() {
 	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
-	vector<vector<tuple<int, string>>> patternTable;
+	vector<tuple<vector<int>, vector<string>>> patternTable;
+	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
 	vector<vector<int>> whilePatternTable;
 	vector<vector<int>> ifPatternTable;
 	set<string> allVariables;
@@ -114,11 +116,15 @@ void PKB::addProcedure(string p) {
 
 void PKB::addAssignPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
-	tuple<int, string> entry = { statementNum, Util::insertBrackets(rightExpression) };
+	string expression = Util::insertBrackets(rightExpression);
 	if (patternTable.size() <= varIndex) {
 		patternTable.resize(varIndex + 1);
 	}
-	patternTable[varIndex].push_back(entry);
+	get<0>(patternTable[varIndex]).push_back(statementNum);
+	get<1>(patternTable[varIndex]).push_back(expression);
+	tuple<vector<int>, vector<string>> current = expressionTable[expression];
+	get<0>(current).push_back(statementNum);
+	get<1>(current).push_back(leftVariable);
 }
 
 void PKB::addWhilePattern(int statementNum, string variable) {
@@ -138,6 +144,18 @@ vector<int> PKB::getPatternWhile(string variable) {
 	}
 }
 
+tuple<vector<int>, vector<string>> PKB::getAllPatternWhile() {
+	vector<int> statements;
+	vector<string> variables;
+	for (int i = 0; i < whilePatternTable.size(); i++) {
+		for each (int line in whilePatternTable[i]) {
+			statements.push_back(line);
+			variables.push_back(varIndexTable[i]);
+		}
+	}
+	return tuple<vector<int>, vector<string>> {statements, variables};
+}
+
 void PKB::addIfPattern(int statementNum, string variable) {
 	int varIndex = getVarIndex(variable);
 	if (ifPatternTable.size() <= varIndex) {
@@ -155,9 +173,25 @@ vector<int> PKB::getPatternIf(string variable) {
 	}
 }
 
-vector<tuple<int, string>> PKB::getPattern(string varName) {
+tuple<vector<int>, vector<string>> PKB::getAllPatternIf() {
+	vector<int> statements;
+	vector<string> variables;
+	for (int i = 0; i < ifPatternTable.size(); i++) {
+		for each (int line in ifPatternTable[i]) {
+			statements.push_back(line);
+			variables.push_back(varIndexTable[i]);
+		}
+	}
+	return tuple<vector<int>, vector<string>> {statements, variables};
+}
+
+tuple<vector<int>, vector<string>> PKB::getPatternVariable(string varName) {
 	int varIndex = getVarIndex(varName);
 	return patternTable[varIndex];
+}
+
+tuple<vector<int>, vector<string>> PKB::getPatternExpression(string expression) {
+	return expressionTable[expression];
 }
 
 vector<string> PKB::getAllConstants() {
@@ -663,4 +697,36 @@ vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	sort(v2.begin(), v2.end());
 	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
 	return result;
+}
+
+int PKB::getFollowsCount() {
+	return follow.getFollowsCount();
+}
+
+int PKB::getFollowStarCount() {
+	return follow.getFollowStarCount();
+}
+
+int PKB::getParentCount() {
+	return parent.getParentCount();
+}
+
+int PKB::getParentStarCount() {
+	return parent.getParentStarCount();
+}
+
+int PKB::getModifyCount() {
+	return modify.getModifyCount();
+}
+
+int PKB::getProcModifyCount() {
+	return modify.getProcModifyCount();
+}
+
+int PKB::getUseCount() {
+	return use.getUseCount();
+}
+
+int PKB::getProcUseCount() {
+	return use.getProcUseCount();
 }
