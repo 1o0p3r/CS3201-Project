@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include <string>
 
+
+
 RelationshipTable::RelationshipTable() {
 	const int NUM_ONE = 1;
 	const int NUM_TWO = 2;
@@ -66,13 +68,13 @@ RelationshipTable::RelationshipTable() {
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
-	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wilcard", "number" };
+	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wildcard", "number" };
 	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
-	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wilcard", "number" };
+	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wildcard", "number" };
 	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
