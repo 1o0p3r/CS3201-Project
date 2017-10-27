@@ -147,6 +147,7 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -208,6 +209,15 @@ namespace UnitTesting
 			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_\"(x+y)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "variable v; assign a, a#; Select v pattern a#(_,\"x+y\"_) and a(_,\"x\")";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "variable v; assign a, a#, Select v pattern a#(_, __\"x+y\"_)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "variable v; assign a, a#, Select v pattern a#(_, _\"_x+y\"_)";
+			Assert::IsFalse(queryValidator.parseInput(query));
 
 			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(v,_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
