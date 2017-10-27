@@ -2,6 +2,8 @@
 #include <unordered_map>
 #include <string>
 
+
+
 RelationshipTable::RelationshipTable() {
 	const int NUM_ONE = 1;
 	const int NUM_TWO = 2;
@@ -15,6 +17,8 @@ RelationshipTable::RelationshipTable() {
 	const string CALLS_STRING = "Calls";
 	const string NEXT_STAR_STRING = "Next*";
 	const string CALLS_STAR_STRING = "Calls*";
+	const string AFFECTS_STRING = "Affects";
+	const string AFFECTS_STAR_STRING = "Affects*";
 
 	//variables to be used to add to relationship table
 	vector<string> modifiesArg1;
@@ -35,6 +39,9 @@ RelationshipTable::RelationshipTable() {
 	vector<string> callsArg2;
 	vector<string> callsStarArg1;
 	vector<string> callsStarArg2;
+	vector<string> affectsArg1;
+	vector<string> affectsArg2;
+
 
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
@@ -61,13 +68,13 @@ RelationshipTable::RelationshipTable() {
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
-	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wilcard", "number" };
+	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wildcard", "number" };
 	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
-	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wilcard", "number" };
+	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wildcard", "number" };
 	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
 	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
@@ -94,6 +101,16 @@ RelationshipTable::RelationshipTable() {
 	callsStarArg2 = callsArg2;
 	Relationship relationCallsStar = Relationship(NUM_TWO, callsStarArg1, callsStarArg2);
 	relationshipTable[CALLS_STAR_STRING] = relationCallsStar;
+
+	//Adds the relationship of Affects to table
+	affectsArg1 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
+	affectsArg2 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
+	Relationship relationAffects = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	relationshipTable[AFFECTS_STRING] = relationAffects;
+
+	//Adds the relationship of Affects* to table
+	Relationship relationAffectsT = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	relationshipTable[AFFECTS_STAR_STRING] = relationAffectsT;
 
 }
 

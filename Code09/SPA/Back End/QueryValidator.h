@@ -11,6 +11,7 @@
 using std::string;
 using std::vector;
 
+
 class QueryValidator
 {
 private:
@@ -21,11 +22,21 @@ private:
 	vector<string> validEntities = { "stmt", "assign", "while",
 		"variable", "constant", "prog_line", "procedure", "stmtLst", "call", "if"};
 	unordered_map<string, string> withClauseTypeBank;
+	unordered_map<string, vector<string>> attrNameBank;
 	vector<string> declarationString;
 	vector<string> queryString;
 	void addSynonymEntityList();
 
 	bool isValidSelect(vector<string> vectorClauses);
+
+	string extractAllSynAttr(vector<string> resultVec);
+
+	bool isValidCorrespondingTupleEntities(vector<string> resultVec);
+
+	string extractAllEnt(vector<string> resultCl);
+
+	string extractAllSyn(vector<string> resultVec);
+
 	bool isValidOthers(vector<string> others);
 	bool isVariableSynonym(string str);
 	bool isValidSynonym(string syn);
@@ -46,18 +57,23 @@ private:
 	bool isValidLeadTrail(string str);
 	bool is_number(string str);
 	bool isSubstring(string str);
+	
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
 	bool isValidAttrCompareRegex(string str);
 	bool isQuotationIdentRegex(string str);
 	bool isValidGeneralPatternRegex(string str);
 	bool isValidIfMultiplePatternRegex(string str);
+	bool isStmtTypes(string str);
+	bool isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
+	bool isCornerRelation(string relation);
+	bool isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent);
 
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
 	
-	void addSelectQueryElement(string ent, string syn, string selectType);
+	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
-	void addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
+	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
 	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
@@ -83,6 +99,7 @@ public:
 	bool isValidSelectInitialRegex(string str);
 	bool isValidDeclarationRegex(string str);
 	bool isValidSuchThat(string str);
+
 	bool isValidSuchThatRegex(string str);
 	bool isValidSuchThaExtendedRegex(string str);
 	bool isValidWithRegex(string str);
@@ -100,13 +117,16 @@ public:
 	bool isExactString(string arg2);
 	bool isValidExpr(string str);
 	bool isValidExprUnder(string str);
+	bool isValidTuple(string str);
+
+	bool isIdent(string str);
+	bool isOnlyTuple(string str);
 
 	vector<string> extractPatternClauses(string str);
 	vector<string> extractSuchThatClauses(string str);
 	vector<string> extractWithClauses(string str);
 	vector<string> splitToSentences(string strToSplit);
-
 	QueryStatement getQueryStatement();
-
+	bool isValidCorrespondingEntity(string synonym, string attrName);
 	
 };

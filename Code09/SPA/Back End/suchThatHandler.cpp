@@ -24,11 +24,12 @@ const string COMMA_WHITESPACE_STRING = ", ";
 const string FOLLOWS_STRING = "Follows";
 const string FOLLOWS_STAR_STRING = "Follows*";
 const string PARENT_STRING = "Parent";
-const string PARENT_STAR_STRING = "Parent";
+const string PARENT_STAR_STRING = "Parent*";
 const string MODIFIES_STRING = "Modifies";
 const string USES_STRING = "Uses";
 const string CALLS_STRING = "Calls";
 const string NEXT_STRING = "Next";
+const string NEXT_STAR_STRING = "Next*";
 const string UNDER_SCORE_STRING = "_";
 const string WILDCARD_STRING = "wildcard";
 const string CONSTANT_STRING = "constant";
@@ -49,6 +50,9 @@ const string PROG_LINE_STRING = "prog_line";
 const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
+const string AFFECTS_STRING = "Affects";
+const string AFFECTS_STAR_STRING = "Affects*";
+const string STMT_STRING = "stmt";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -210,6 +214,11 @@ bool QueryValidator::isValidSuchThat(string str) {
 					arg2Valid = false;
 				}
 			}
+
+			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
+				return false;
+			}
+			
 			//If both are valid and true, create the clause
 			if (arg1Valid && arg2Valid) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
@@ -223,6 +232,41 @@ bool QueryValidator::isValidSuchThat(string str) {
 		return false;
 	}
 	return true;
+}
+
+bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
+	if (!arg1_STRING_LITERAL && !arg2_STRING_LITERAL) {
+		if (isSameArgType(arg1, arg1Ent, arg2, arg2Ent) && !isCornerRelation(relation)) {
+			return false;
+			//Possible combinations a,a	s,s	ifs,ifs, calls,calls	
+		}
+		return true;
+	} else if(arg1_STRING_LITERAL && arg2_STRING_LITERAL && !isCornerRelation(relation)) {
+		if (arg1 == arg2) {
+			return false;
+		} else {
+			return true;
+		}
+	} else {
+		return true;
+	}
+}
+bool QueryValidator::isCornerRelation(string relation) {
+	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING)) {
+		return true;
+	}
+	return false;
+	//return ((relation == FOLLOWS_STRING) || (relation == FOLLOWS_STAR_STRING) || (relation == PARENT_STRING) | (relation == PARENT_STAR_STRING) | (relation == AFFECTS_STRING));
+}
+bool QueryValidator::isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent) {
+	if (isStmtTypes(arg1Ent) && (arg1Ent == arg2Ent) && (arg1 == arg2)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+bool QueryValidator::isStmtTypes(string str) {
+	return (str == ASSIGN_STRING || str == STMT_STRING || str == WHILE_STRING || str == IF_STRING || str == CALLS_STRING);
 }
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string arg1Ent, string arg2Ent) {
 

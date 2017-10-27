@@ -24,6 +24,15 @@ public:
 	@returns void
 	 */
 	void insertElse(int statementNum);
+	/**
+	@param statementNum the first statement of the statement list
+	@returns void
+	 */
+	void insertStatementList(int statementNum);
+	/**
+	@returns vector of statement numbers which are the first lines of all statement lists
+	 */
+	vector<int> getStatementList();
 
 	/**
 	Returns all variables in PKB
@@ -485,6 +494,7 @@ private:
 	vector<int> lastlineTable;
 	vector<tuple<vector<int>, vector<string>>> patternTable;
 	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
+	vector<int> statementList;
 	vector<vector<int>> whilePatternTable;
 	vector<vector<int>> ifPatternTable;
 

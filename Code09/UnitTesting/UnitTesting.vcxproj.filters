@@ -24,6 +24,7 @@
     <ClCompile Include="CallsAnalyzerTest.cpp" />
     <ClCompile Include="PatternAnalyzerTest.cpp" />
     <ClCompile Include="AffectsTest.cpp" />
+    <ClCompile Include="SelectTupleTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

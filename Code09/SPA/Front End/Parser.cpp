@@ -36,7 +36,7 @@ bool Parse(string fileName, PKB& pkb) {
 	bool isSameLevel = false;	//is same nesting level
 	bool isNewContainer = true;
 	int prevFollow;
-	bool toSetFirstLine;
+	int lastLine;
 	tuple<string, string> temp;
 	vector<int> Parent;
 
@@ -57,16 +57,18 @@ bool Parse(string fileName, PKB& pkb) {
 			if (lineCounter > 1) {
 				pkb.setLastline(procName, lineCounter);
 			}
+			pkb.insertStatementList(lineCounter);
+			lineCounter--;
 			if (nextLine.size() == 3) {
 				procName = nextLine[1];
 			} else {
 				procName = nextLine[1].substr(0, nextLine[1].size() - 1);
 			}
 			Parent.push_back(0);
+			pkb.setFirstline(procName, lineCounter + 1);
 			isNewContainer = true;
 			isSameLevel = false;
-			toSetFirstLine = true;
-		} else if (startsWithBrackets(nextLine)) {
+		} else if (startsWithBrackets(nextLine) && !isNewContainer) {
 			int i = 0;
 			while (i < line.size()) {
 				if (line[i] == CB) {
@@ -91,10 +93,6 @@ bool Parse(string fileName, PKB& pkb) {
 			}
 			lineCounter--;
 		} else {
-			if (toSetFirstLine) {
-				pkb.setFirstline(procName, lineCounter);
-				toSetFirstLine = false;
-			}
 			if (!isNewContainer) {
 				if (isSameLevel) {
 					pkb.setFollows(lineCounter - 1, lineCounter);
@@ -128,6 +126,7 @@ bool Parse(string fileName, PKB& pkb) {
 				isNewContainer = false;
 				isSameLevel = true;
 			} else if (isIfStatement(nextLine)) {
+				pkb.insertStatementList(lineCounter + 1);
 				pkb.setStatementType(lineCounter, IF);
 				string var = nextLine[1];
 				pkb.addIfPattern(lineCounter, var);
@@ -137,6 +136,7 @@ bool Parse(string fileName, PKB& pkb) {
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isWhileStatement(nextLine)) {
+				pkb.insertStatementList(lineCounter + 1);
 				string var;
 				if (nextLine.size() == 3) {
 					var = nextLine[1];
@@ -167,9 +167,13 @@ bool Parse(string fileName, PKB& pkb) {
 			// after all statements, check for '}'s at the end
 			for (int i = line.size() - 1; i >= 0; i--) {
 				if (line[i] == CB) {
-					isSameLevel = false;
-					prevFollow = Parent.back();
-					Parent.pop_back();
+					if (isNewContainer) {
+						return false;
+					} else {
+						isSameLevel = false;
+						prevFollow = Parent.back();
+						Parent.pop_back();
+					}
 				} else if (line[i] != SPACE && line[i] != TAB) {
 					break;
 				}

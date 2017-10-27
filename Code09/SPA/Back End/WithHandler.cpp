@@ -195,13 +195,13 @@ bool QueryValidator::isValidWith(string str) {
 
 				//If arg1 and 2 are both attrRref
 				if (arg1AttrRef && arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
 				} else if (arg1AttrRef && !arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
 				} else if (!arg1AttrRef && arg2AttrRef) {
-					addWithQueryElement(arg1, arg2, arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
 				} else {
-					addWithQueryElement(arg1, arg2, arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
 				}
 
 				//Basically just need to store arg1, arg2,
@@ -214,9 +214,9 @@ bool QueryValidator::isValidWith(string str) {
 		return false;
 	}
 }
-void QueryValidator::addWithQueryElement(string arg1, string arg2, string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
+void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
 	string arg2Synonym) {
-	QueryElement queryElement = QueryElement(arg1, arg2, arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym);
+	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym);
 
 	queryStatement.addWithQuery(queryElement);
 }
@@ -229,27 +229,12 @@ bool QueryValidator::isAttrRef(string arg) {
 
 		string argEnt = getCorrespondingEntity(argSyn);
 
-		//Only match will be procedure
-		if (argAttrName == PROCNAME) {
-			//Can be either call or procedure
-			if (argEnt == PROCEDURE_STRING || argEnt == CALL_STRING) {
-				return true;
-			}
+		if (isValidCorrespondingEntity(argSyn, argAttrName)) {
+			return true;
 		}
-		//Only match will be variable
-		else if (argAttrName == VARNAME) {
-			return(argEnt == VARIABLE_STRING);
-		} else if (argAttrName == VALUE) {
-			return(argEnt == CONSTANT_STRING);
-		} else if (argAttrName == STMTNUM) {
-			if ((argEnt == ASSIGN_STRING) || (argEnt == WHILE_STRING) || (argEnt == IF_STRING) || (argEnt == CALL_STRING) || (argEnt == STMT)) {
-				return true;
-			}
-			else {
-				return false;
-			}
+		else {
+			return false;
 		}
-		return false;
 	}
 	else {
 		return false;
@@ -329,6 +314,9 @@ string QueryValidator::extractIdentity(string arg) {
 		if (isValidSynonym(arg)) {
 			string toReturn = getCorrespondingEntity(arg);
 			return toReturn;
+		}
+		else {
+			return INVALID_STRING;
 		}
 	}
 }

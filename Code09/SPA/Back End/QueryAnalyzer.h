@@ -13,6 +13,7 @@
 #include "UsesAnalyzer.h"
 #include "TupleHash.h"
 #include "Util.h"
+#include "WithAnalyzer.h"
 #include "CallsStarAnalyzer.h"
 #include "Abstract_QA_API.h"
 
@@ -35,12 +36,14 @@ public:
 
 	void setPKB(PKB &pkb);
 	void setQS(QueryStatement qs);
+	void solveWithClause();
 	vector<string> runQueryEval();
 //private:
 	QueryStatement qsReadOnly;
 	QueryElement selectElement;
 	vector<QueryElement> stElements;
 	vector<QueryElement> patternElements;
+	vector<QueryElement> withElements;
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
 	unordered_map<int, int> selectSynMap;
@@ -48,6 +51,7 @@ public:
 	PKB pkbPtr;
 	bool hasSTClause;
 	bool hasPatternClause;
+	bool hasWithClause;
 
 	void initMapPatternExpType();
 	void initSelectMap();
@@ -60,6 +64,7 @@ public:
 	void findQueryElements();
 	void selectSynonym(vector<string> &answer);
 	void setClauseFalse();
+	vector<string> rearrange(vector<string>, vector<string>, const unordered_map<string,int> &);
 	void selectTuple(vector<string> &answer);
 	bool isQueryFalse();
 	
