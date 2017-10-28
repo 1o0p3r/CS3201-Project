@@ -58,32 +58,32 @@ tuple<vector<string>, vector<string>> PatternAnalyzer::solvePatSynAssign(string 
 	bool containsPattern = false;
 	vector<string> entityVector;
 	vector<string> variableVector;
-	for (string candidates : pkbPtr.getAllVariables()) {
-		pkbPatResult = pkbPtr.getPattern(candidates);
-		for (tuple<int, string> evalPattExpression : pkbPatResult) {
-			switch (mapPatternExpType[patType]) {
-			case _wildcard_:
-				entityVector.push_back(to_string(get<0>(evalPattExpression)));
-				variableVector.push_back(candidates);
-				containsPattern = true;
-				break;
-			case substring:
-				if (get<1>(evalPattExpression).find(patExp) != string::npos) {
-					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-					variableVector.push_back(candidates);
-					containsPattern = true;
-				}
-				break;
-			case exact:
-				if (get<1>(evalPattExpression) == patExp) {
-					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-					variableVector.push_back(candidates);
-					containsPattern = true;
-				}
-				break;
-			}
-		}
-	}
+	//for (string candidates : pkbPtr.getAllVariables()) {
+	//	pkbPatResult = pkbPtr.getPattern(candidates);
+	//	for (tuple<int, string> evalPattExpression : pkbPatResult) {
+	//		switch (mapPatternExpType[patType]) {
+	//		case _wildcard_:
+	//			entityVector.push_back(to_string(get<0>(evalPattExpression)));
+	//			variableVector.push_back(candidates);
+	//			containsPattern = true;
+	//			break;
+	//		case substring:
+	//			if (get<1>(evalPattExpression).find(patExp) != string::npos) {
+	//				entityVector.push_back(to_string(get<0>(evalPattExpression)));
+	//				variableVector.push_back(candidates);
+	//				containsPattern = true;
+	//			}
+	//			break;
+	//		case exact:
+	//			if (get<1>(evalPattExpression) == patExp) {
+	//				entityVector.push_back(to_string(get<0>(evalPattExpression)));
+	//				variableVector.push_back(candidates);
+	//				containsPattern = true;
+	//			}
+	//			break;
+	//		}
+	//	}
+	//}
 	if (containsPattern) {
 		entityVector.push_back(patSyn);
 		variableVector.push_back(arg1);
@@ -100,10 +100,7 @@ vector<string> PatternAnalyzer::validatedPatSynAssign(string arg1, string patExp
 	bool containsPattern = false;
 	vector<int> entityVector;
 	
-	if (arg1 == WILDCARD_SYMBOL)
-		listOfCandidates = pkbPtr.getAllVariables();
-	else
-		listOfCandidates.push_back(arg1);
+	listOfCandidates.push_back(arg1);
 	for (string candidates : listOfCandidates) {
 		pkbStmtResult = get<GETSTMTS>(pkbPtr.getPatternVariable(candidates));
 		if (entityVector.empty()) {
