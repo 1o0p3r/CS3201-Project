@@ -434,7 +434,6 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 
 	//Then for each arg, check wad type they are
 	bool arg1UnderScore = false;
-	bool arg1Number = false;
 	bool arg1Variable = false;
 	bool arg1StringLiteral = false;
 	bool arg2UnderScore = false;
@@ -443,8 +442,6 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 
 	if (isWildcard(arg1)) {
 		arg1UnderScore = true;
-	} else if (is_number(arg1)) {
-		arg1Number = true;
 	} else if (isQuotationIdentRegex(arg1)) {
 		arg1StringLiteral = true;
 		//At this pt do some cleaning up
@@ -471,19 +468,19 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 	} else {
 		return false;
 	}
-	if ((!arg1Variable && !arg1Number && !arg1UnderScore && !arg1StringLiteral) || (!arg2UnderScore && !arg2Exact
+	if ((!arg1Variable && !arg1UnderScore && !arg1StringLiteral) || (!arg2UnderScore && !arg2Exact
 		&& !arg2Substring)) {
 		return false;
 	}
 
 	//At this pt, arg1 and arg2 must be valid so we call a function
 
-	addAssignPatternQueryElement(arg1, arg2, ASSIGN_STRING, synPattern, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, arg2UnderScore, arg2Exact
+	addAssignPatternQueryElement(arg1, arg2, ASSIGN_STRING, synPattern, arg1UnderScore, arg1Variable, arg1StringLiteral, arg2UnderScore, arg2Exact
 		, arg2Substring);
 	return true;
 }
 
-void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable,
+void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Variable,
 	bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring) {
 	if (arg1UnderScore) {
 		if (arg2UnderScore) {
@@ -494,17 +491,6 @@ void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, stri
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Substring) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
-		}
-	} else if (arg1Number) {
-		if (arg2UnderScore) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
-		} else if (arg2Exact) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
-		} else if (arg2Substring) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, NUMBER_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		}
 	} else if (arg1Variable) {
@@ -600,27 +586,22 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 		arg1 = Util::trim(arg1);
 
 		bool arg1UnderScore = false;
-		bool arg1Number = false;
 		bool arg1Variable = false;
 		bool arg1StringLiteral = false;
 
 		if (isWildcard(arg1)) {
 			arg1UnderScore = true;
-			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
-			return true;
-		} else if (is_number(arg1)) {
-			arg1Number = true;
-			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else if (isQuotationIdentRegex(arg1)) {
 			arg1StringLiteral = true;
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
-			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else if (isVariableSynonym(arg1)) {
 			arg1Variable = true;
-			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else {
 			return false;
@@ -656,27 +637,22 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 
 		//Possible identities of arg1 entRef: stringliterals, synonym variable, number, underscore_String
 		bool arg1UnderScore = false;
-		bool arg1Number = false;
 		bool arg1Variable = false;
 		bool arg1StringLiteral = false;
 
 		if (isWildcard(arg1)) {
 			arg1UnderScore = true;
-			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
-			return true;
-		} else if (is_number(arg1)) {
-			arg1Number = true;
-			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else if (isQuotationIdentRegex(arg1)) {
 			arg1StringLiteral = true;
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
-			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else if (isVariableSynonym(arg1)) {
 			arg1Variable = true;
-			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Number, arg1Variable, arg1StringLiteral, synPattern);
+			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else {
 			return false;
@@ -684,13 +660,10 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 	}
 }
 //This functions takes in arg1 and 4 boolean and 1 string and creates a	QueryElement to be added to the QueryStatement
-void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
+void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	//If arg1 is a boolean, just add
 	if (arg1Underscore) {
 		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
-		queryStatement.addPatternQuery(ifQueryElement);
-	} else if (arg1Number) {
-		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
 	} else if (arg1StringLiteral) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
@@ -701,12 +674,9 @@ void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, 
 	}
 }
 
-void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
+void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
 		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
-		queryStatement.addPatternQuery(whileQueryElement);
-	} else if (arg1Number) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, NUMBER_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
 	} else if (arg1StringLiteral) {
 		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
