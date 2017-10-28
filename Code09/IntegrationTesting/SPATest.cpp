@@ -330,10 +330,17 @@ public:
 			"stmt s; Select s such that Follows(3,s)",
 			"stmt s; Select s such that Follows*(1,s)",
 			"stmt s; Select s such that Parent(s, 6)",
-			"stmt s; Select s such that Parent*(s, 6)",
-			"while w; Select w such that Parent*(w, 6)",
-			"assign a; Select a pattern a(_, _\"y\"_)",
-			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)",
+			"stmt s; Select s such that Parent*(s, 6)", //check parent*
+			"while w; Select w such that Parent*(w, 6)", //narrow parent* by type
+			"variable v; Select v such that Modifies(6, v)", //check call stmt modifies
+			"variable v; Select v such that Modifies(8, v)", //check container stmt modifies
+			"procedure p; if ifs; Select <p, ifs> such that Modifies (p, \"a\")," //narrow search in proc by type
+			"call calls; procedure p; Select calls such that Calls(p, calls)", //find call stmt in proc that calls other proc
+			"procedure p; Select p such that Calls (p, p)", //should return nothing
+			"procedure p; stmt s; Select s with p.procName = \"jedi\" such that Modifies(p, \"k\")",
+			"assign a; Select a pattern a(_, _\"y\"_)", //check pattern is working
+			"assign a; Select a pattern a(\"k\", _\"n * e\"_)", //check if AST brackets are correct
+			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)", //check merging
 			"assign a; Select a such that Next(6,a)"
 		};
 		vector<vector<string>> expected = {
@@ -343,7 +350,14 @@ public:
 			{ "4" },
 			{ "2", "4" },
 			{ "4" },
+			{ "e" ,"f", "g", "k", "n", "y" },
+			{ "e" ,"f", "g", "k", "n", "y" },
+			{ "<yoda, 2>" },
+			{ "6", "11" },
+			{},
+			{ "19" },
 			{ "1", "7", "16", "18" },
+			{},
 			{ "2", "15", "17" },
 			{ "4" }
 		};
