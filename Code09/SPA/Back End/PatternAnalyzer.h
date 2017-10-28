@@ -1,6 +1,7 @@
 #include <QueryAnalyzer.h>
 #include <Abstract_QA_API.h>
 
+
 #pragma once
 class PatternAnalyzer
 {
