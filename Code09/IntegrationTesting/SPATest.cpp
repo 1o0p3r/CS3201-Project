@@ -315,6 +315,64 @@ public:
 		}
 	}
 
+	TEST_METHOD(SampleSource4) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-4.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		vector<string> queries = {
+			"stmt s; Select s such that Follows(s,3)",
+			"stmt s; Select s such that Follows(3,s)",
+			"stmt s; Select s such that Follows*(1,s)",
+			"stmt s; Select s such that Parent(s, 6)",
+			"stmt s; Select s such that Parent*(s, 6)",
+			"while w; Select w such that Parent*(w, 6)",
+			"assign a; Select a pattern a(_, _\"y\"_)",
+			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)",
+			"assign a; Select a such that Next(6,a)"
+		};
+		vector<vector<string>> expected = {
+			{},
+			{ "4" },
+			{ "2" },
+			{ "4" },
+			{ "2", "4" },
+			{ "4" },
+			{ "1", "7", "16", "18" },
+			{ "2", "15", "17" },
+			{ "4" }
+		};
+
+		for (int i = 0; i < queries.size(); i++) {
+			if (validator.parseInput(queries[i])) {
+				statement = validator.getQueryStatement();
+				analyzer.setQS(statement);
+				answer = analyzer.runQueryEval();
+			}
+			else {
+				Logger::WriteMessage("Invalid Query in Source 4");
+				Logger::WriteMessage(queries[i].c_str());
+				answer = {};
+			}
+			string testNo = "size error in Source 4 in test ";
+			testNo.append(to_string(i + 1));
+			string testNo_1 = "value error in Source 4 in test ";
+			testNo_1.append(to_string(i + 1));
+			wstring error = wstring(testNo.begin(), testNo.end());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
+			for (int j = 0; j < answer.size(); j++) {
+				error = wstring(testNo_1.begin(), testNo_1.end());
+				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
+			}
+		}
+	}
+
 	};
 }
 
