@@ -49,8 +49,14 @@ private:
 	bool parseQueryLine(string);
 	bool isLeadingAnd(string str);
 	bool isValidAddAssignPattern(string str, string synPattern);
+	
+	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
 	bool isValidAddWhilePattern(string str, string synPattern);
+	
+	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	bool isValidAddIfPattern(string str, string synPattern);
+	
+	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	bool isWhiteSpaceTab(string str);
 	bool isString(string str);
 	bool isBalancedParantheses(string str);
@@ -74,9 +80,6 @@ private:
 	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
-	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
-	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, string synPattern);
-	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Number, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
 	
 	string extractIdentity(string arg);
 

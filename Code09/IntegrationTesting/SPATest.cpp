@@ -55,7 +55,7 @@ public:
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
 			{ "5" },
-			{ "FALSE" },
+			{ "false" },
 			{ "3" },		
 			{ "3" },
 			{ "2" },
@@ -69,7 +69,7 @@ public:
 			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
 			{ "Y2K", "ggg" , "if"},
 			{},
-			{"TRUE"},		//boolean must always return something, and it is true instead of empty 
+			{"true"},		//boolean must always return something, and it is true instead of empty 
 			{"3", "5"},
 			{"2"},
 			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
