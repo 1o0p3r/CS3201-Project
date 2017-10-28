@@ -1,0 +1,38 @@
+procedure yoda {
+	green = x + 1 * y * z;
+	if green then {
+		a = z;
+		while y {
+			x = 5;
+			call jedi;
+		}
+	}
+	else {
+		b = 5 * (6 + y) + d;
+		while b {
+			e = (f + (b + e)) * g;
+			while g {
+				call jedi;
+			}
+		}
+	}
+}
+
+procedure jedi {
+	m = n + 5 * (g + 7);
+	while m {
+		g = x + vader;
+		if vader then {
+			y = y + z;
+			while n {
+				f = 6 + y;
+			}
+		}
+		else {
+			k = m * n * e;
+			while k {
+				e = 4 * (j + k);
+			}
+		}
+	}
+}
