@@ -326,40 +326,68 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			"stmt s; Select s such that Follows(s,3)",
-			"stmt s; Select s such that Follows(3,s)",
-			"stmt s; Select s such that Follows*(1,s)",
-			"stmt s; Select s such that Parent(s, 6)",
-			"stmt s; Select s such that Parent*(s, 6)", //check parent*
-			"while w; Select w such that Parent*(w, 6)", //narrow parent* by type
-			"variable v; Select v such that Modifies(6, v)", //check call stmt modifies
-			"variable v; Select v such that Modifies(8, v)", //check container stmt modifies
-			"procedure p; if ifs; Select <p, ifs> such that Modifies (p, \"a\")," //narrow search in proc by type
-			"call calls; procedure p; Select calls such that Calls(p, calls)", //find call stmt in proc that calls other proc
-			"procedure p; Select p such that Calls (p, p)", //should return nothing
-			"procedure p; stmt s; Select s with p.procName = \"jedi\" such that Modifies(p, \"k\")",
-			"assign a; Select a pattern a(_, _\"y\"_)", //check pattern is working
-			"assign a; Select a pattern a(\"k\", _\"n * e\"_)", //check if AST brackets are correct
-			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)", //check merging
-			"assign a; Select a such that Next(6,a)"
+			"stmt s; Select s such that Follows(s,3)", //1
+			"stmt s; Select s such that Follows(3,s)", //2
+			"stmt s; Select s such that Follows*(1,s)", //3
+			"stmt s; Select s such that Parent(s, 6)", //4
+			"stmt s; Select s such that Parent*(s, 6)", //5 //check parent* 
+			"while w; Select w such that Parent*(w, 6)", //6 //narrow parent* by type
+			"variable v; Select  v such that Modifies(6, v)", //7 //check call stmt modifies
+			"variable v; Select v such that Modifies(8, v)", // 8 //check container stmt modifies
+			"procedure p; if ifs; Select <p, ifs> such that Modifies (p, \"a\")," //9 //narrow search in proc by type
+			"call calls; procedure p; Select calls such that Calls(p, calls)",//10  //find call stmt in proc that calls other proc
+			"procedure p; Select p such that Calls (p, p)", //11 //should return nothing
+			"procedure p; stmt s; Select s with p.procName = \"jedi\" such that Modifies(p, \"k\")", //12
+			"assign a; Select a pattern a(_, _\"y\"_)", //13 //check pattern is working
+			"assign a; Select a pattern a(\"k\", _\"n * e\"_)", //14 //check if AST brackets are correct
+			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)", //15 //check merging
+			"assign a; Select a such that Next(6, a)", //16 //check next function at boundary
+			"assign a; Select a such that Next(11, a)", //17 //check next function at boundary
+			"assign a; Select a such that Next(21, a)", //18 //check next function at boundary
+			"assign a; Select a such that Next(15, a)", //19 //check next function at boundary
+			"assign a; Select a such that Next(18, a)", //20 //check next function at boundary
+			"stmt s; assign a; while w; Select s such that Uses(a, \"y\") with Parent*(w, a) pattern w(\"m\",_)", //21
+			"constant c; Select c", //22
+			"procedure p; stmt s; assign a; Select s such that Modifies(p, \"m\") and Uses(p, \"y\") and Parent(s,a) pattern a(_,_\"y\"_)", //23
+			"assign a; Select a such that Next*(19, a)", //24
+			"assign a; Select BOOLEAN pattern a(\"green\", _\"1 * y * z\"_)", //25
+			"stmt s1, s2; Select s2 such that Parent*(s2, s1) and Modifies(s1, \"k\")", //26
+			"stmt s; if ifs; while w; Select s such that Parent*(ifs, s) and Parent*(w, s)", //27
+			"stmt s; if ifs; while w; Select w such that Parent*(ifs, s) and Parent*(w, s)", //28
+			"stmt s; while w1, w2; if ifs; Select s such that Parent(w1, s) and Parent*(ifs, s) and Parent*(w2, s)", //29
+			"Select s such that Next(ifs, s) and Next(w, s)", //30		
 		};
 		vector<vector<string>> expected = {
-			{},
-			{ "4" },
-			{ "2" },
-			{ "4" },
-			{ "2", "4" },
-			{ "4" },
-			{ "e" ,"f", "g", "k", "n", "y" },
-			{ "e" ,"f", "g", "k", "n", "y" },
-			{ "<yoda, 2>" },
-			{ "6", "11" },
-			{},
-			{ "19" },
-			{ "1", "7", "16", "18" },
-			{},
-			{ "2", "15", "17" },
-			{ "4" }
+			{}, //
+			{ "4" }, //2
+			{ "2" }, //3
+			{ "4" }, //4
+			{ "2", "4" }, //5
+			{ "4" }, //6
+			{ "e" ,"f", "g", "k", "n", "y" }, //7
+			{ "e" ,"f", "g", "k", "n", "y" }, //8
+			{ "<yoda, 2>" }, //9
+			{ "6", "11" }, //10
+			{}, //11
+			{ "19" }, //12
+			{ "1", "7", "16", "18" }, //13
+			{}, //14
+			{ "2", "15", "17" }, //15
+			{ "4" }, //16
+			{ "10", "8" }, //17
+			{ "20", "13" }, //18
+			{ "16", "19" }, //19
+			{ "17", "13" }, //20
+			{ "16", "18" }, //21
+			{ "1", "2", "4", "5", "6", "7" }, //22
+			{ "15", "17" }, //23
+			{ "13", "20", "21" }, //24
+			{ "true" }, //25
+			{ "2", "8", "10" }, //26
+			{ "5", "9", "10", "11", "16", "17", "18", "19", "20", "21" }, //27
+			{ "4", "8", "10", "13", "17", "20" }, //28
+			{ "9", "11", "18", "21" }, //29
+			{ "7", "19" }, //30 
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
