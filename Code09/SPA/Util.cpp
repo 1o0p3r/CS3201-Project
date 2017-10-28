@@ -5,22 +5,18 @@
 #include <set>
 
 string Util::insertBrackets(string input) {
-	string results;
-	for each (char c in input) {
-		if (!isspace(c)) {
-			results.push_back(c);
-		}
-	}
-	//string results = input;
+	string results = input;
 	int index = 0;
 	while (index < results.size()) {
 		if (results[index] == '*') {
+			int front;
+			int back;
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
-				results.insert(index + 2, ")");
-				results.insert(index - 1, "(");
+				front = index + 2;
+				back = index - 1;
 			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 1;
+				back = index - 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -29,11 +25,10 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(index + 2, ")");
-				results.insert(back, "(");
+				front = index + 2;
 			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 1;
+				front = index + 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == '(') {
@@ -42,12 +37,11 @@ string Util::insertBrackets(string input) {
 						counter--;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(index - 1, "(");
+				back = index - 1;
 			} else {
 				int counter = 1;
-				int front = index + 1;
-				int back = index - 1;
+				front = index + 1;
+				back = index - 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == '(') {
@@ -65,9 +59,15 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(back, "(");
 			}
+			while (front < results.size() && isalnum(results[front])) {
+				front++;
+			}
+			while (back > 0 && isalnum(results[back - 1])) {
+				back--;
+			}
+			results.insert(front, ")");
+			results.insert(back, "(");
 			index++;
 		}
 		index++;
@@ -75,12 +75,14 @@ string Util::insertBrackets(string input) {
 	index = 0;
 	while (index < results.size()) {
 		if (results[index] == '+' || results[index] == '-') {
+			int front;
+			int back;
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
-				results.insert(index + 2, ")");
-				results.insert(index - 1, "(");
+				front = index + 2;
+				back = index - 1;
 			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 1;
+				back = index - 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -89,11 +91,10 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(index + 2, ")");
-				results.insert(back, "(");
+				front = index + 2;
 			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 1;
+				front = index + 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == ')') {
@@ -102,12 +103,11 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(index - 1, "(");
+				back = index - 1;
 			} else {
 				int counter = 1;
-				int back = index - 1;
-				int front = index + 1;
+				back = index - 1;
+				front = index + 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -125,9 +125,15 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(back, "(");
 			}
+			while (front < results.size() && isalnum(results[front])) {
+				front++;
+			}
+			while (back > 0 && isalnum(results[back - 1])) {
+				back--;
+			}
+			results.insert(front, ")");
+			results.insert(back, "(");
 			index++;
 		}
 		index++;

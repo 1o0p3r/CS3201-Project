@@ -11,12 +11,14 @@ namespace UnitTesting {
 	public:
 		TEST_METHOD(insertBrackets) {
 			Assert::AreEqual(string("(a*((x+y)))"), Util::insertBrackets("a*(x+y)"));
-			Assert::AreEqual(string("(((x*y)*h)*f)"), Util::insertBrackets("x * y * h * f"));
+			Assert::AreEqual(string("(((x*y)*h)*f)"), Util::insertBrackets("x*y*h*f"));
 			Assert::AreEqual(string("(((x*y)*h)+(f*g))"), Util::insertBrackets("x*y*h+f*g"));
 			Assert::AreEqual(string("((x-y)+z)"), Util::insertBrackets("x-y+z"));
 			Assert::AreEqual(string("((x-(y*g))+z)"), Util::insertBrackets("x-y*g+z"));
 			Assert::AreEqual(string("((((x*y)*g)+z)+k)"), Util::insertBrackets("x*y*g+z+k"));
 			Assert::AreEqual(string("(((x+1))*y)"), Util::insertBrackets("(x+1)*y"));
+			Assert::AreEqual(string("(abc+xyz)"), Util::insertBrackets("abc+xyz"));
+			Assert::AreEqual(string("((abc+((xyz*d5f)*s66))+ds321321515)"), Util::insertBrackets("abc+xyz*d5f*s66+ds321321515"));
 		}
 
 		TEST_METHOD(splitLine) {
