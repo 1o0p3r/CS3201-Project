@@ -225,6 +225,31 @@ tuple<vector<int>, vector<string>> PKB::getPatternExpressionSubstring(string exp
 	return tuple<vector<int>, vector<string>>{ statements, variables };
 }
 
+vector<int> PKB::getPatternVariableExpressionSubstring(string variable, string expression) {
+	vector<int> statements;
+	for (auto i = expressionTable.begin(); i != expressionTable.end(); i++) {
+		if (i->first.find(expression) != string::npos) {
+			for (int j = 0; j < get<1>(i->second).size(); i++) {
+				if (get<1>(i->second)[j] == variable) {
+					statements.push_back(get<0>(i->second)[j]);
+				}
+			}
+		}
+	}
+	return statements;
+}
+
+vector<int> PKB::getPatternVariableExpression(string variable, string expression) {
+	vector<int> results;
+	tuple<vector<int>, vector<string>> tup = getPatternExpression(expression);
+	for (int i = 0; i < get<1>(tup).size(); i++) {
+		if (get<1>(tup)[i] == variable) {
+			results.push_back(get<0>(tup)[i]);
+		}
+	}
+	return results;
+}
+
 vector<string> PKB::getAllConstants() {
 	vector<string> result;
 	result.insert(result.end(), allConstants.begin(), allConstants.end());

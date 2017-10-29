@@ -462,6 +462,8 @@ public:
 	*/
 	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
 	tuple<vector<int>, vector<string>> getPatternExpressionSubstring(string expression);
+	vector<int> getPatternVariableExpressionSubstring(string variable, string expression);
+	vector<int> getPatternVariableExpression(string variable, string expression);
 	int getFollowsCount();
 
 	int getFollowStarCount();
