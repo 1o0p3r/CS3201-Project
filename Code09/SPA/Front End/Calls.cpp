@@ -10,7 +10,8 @@ Calls::Calls() {
 	vector<vector<int>> calledByTable;
 	vector<vector<int>> callsStarTable;
 	vector<vector<int>> calledByStarTable;
-	vector <vector<int>> procCalledByStmtTable;
+	vector<vector<int>> procCalledByStmtTable;
+	vector<int> stmtCallProcTable;
 	set<int> allCallsTable;
 
 	bool isRecursive = false;
@@ -32,6 +33,7 @@ void Calls::setCalls(int statementNum, int procName1, int procName2) {
 	setCallsStar(procName1, procName2);
 	setCalledByStar(procName1, procName2);
 	setProcCalledByStmt(procName2, statementNum);
+	setStmtCallProc(statementNum, procName2);
 	allCallsTable.insert(procName2);
 
 	checkIfRecursive();
@@ -89,6 +91,13 @@ void Calls::setProcCalledByStmt(int procName2, int statementNum) {
 	procCalledByStmtTable[procName2].push_back(statementNum);
 }
 
+void Calls::setStmtCallProc(int statementNum, int procName2) {
+	if (stmtCallProcTable.size() <= statementNum) {
+		stmtCallProcTable.resize(statementNum + 1);
+	}
+	stmtCallProcTable[statementNum] = procName2;
+}
+
 vector<int> Calls::getCalls(int procName) {
 
 	if (callsTable.size() > procName) {
@@ -141,6 +150,15 @@ vector<int> Calls::getProcCalledByStmt(int procName) {
 	}
 	else {
 		return vector<int>();
+	}
+}
+
+int Calls::getStmtCallProc(int statementNum) {
+	if (stmtCallProcTable.size() > statementNum) {
+		int result = stmtCallProcTable[statementNum];
+		return result;
+	} else {
+		return 0;
 	}
 }
 

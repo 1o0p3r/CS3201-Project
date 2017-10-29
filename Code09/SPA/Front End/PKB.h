@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <unordered_map>
 
 using namespace std;
 typedef short PROC;
@@ -288,9 +289,17 @@ public:
 	@returns void
 	*/
 	void createCFG();
-
+	/**
+	Gets the statements that are the next of the input statement
+	@param stmtNum input statementNum
+	@returns a vector containing the statment numbers that are the next of the input statement
+	*/
 	vector<int> getNext(int stmtNum);
-
+	/**
+	Gets the statements that are the previous of the input statement
+	@param stmtNum input statementNum
+	@returns a vector containing the statment numbers that are the previous of the input statement
+	*/
 	vector<int> getPrevious(int stmtNum);
 
 	vector<int> getAllNext();
@@ -378,6 +387,34 @@ public:
 	*/
 	int getLastline(string procName);
 
+	/*
+	Set the statement to be in the procedure
+	@returns void
+	*/
+	void setProcedure(int stmtNum, string procedure);
+
+	/**
+	Checks if Affects(statement 1, statement 2), statement 1 != statement 2
+	@param statementNum1 statement number 1
+	@param statementNum2 statement number 2
+	@returns true if Affects(statement 1, statement 2) is true
+	*/
+	bool getAffectsTwoLiterals(int statementNum1, int statementNum2);
+
+	/**
+	Gets Affects(statement, synonym)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that is affected by the literal
+	*/
+	vector<int> getAffectsFirstLiteral(int statementNum);
+
+	/**
+	Gets Affects(synonym, statement)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that affects the literal
+	*/
+	vector<int> getAffectsSecondLiteral(int statementNum);
+
 	/**
 	Add a Constant to PKB
 	@param c the constant name
@@ -403,6 +440,7 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternWhile(string variable);
+	tuple<vector<int>, vector<string>> getAllPatternWhile();
 	/**
 	Adds a if pattern to PKB
 	@param StatementNum Statement Number of the if
@@ -415,12 +453,30 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternIf(string variable);
+	tuple<vector<int>, vector<string>> getAllPatternIf();
+	tuple<vector<int>, vector<string>> getPatternVariable(string varName);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
 	@returns a vector of tuple containing all the (statement number, expression) pairs for the input variable
 	*/
-	vector<tuple<int, string>> getPattern(string varName);
+	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
+	tuple<vector<int>, vector<string>> getPatternExpressionSubstring(string expression);
+	int getFollowsCount();
+
+	int getFollowStarCount();
+
+	int getParentCount();
+
+	int getParentStarCount();
+
+	int getModifyCount();
+
+	int getProcModifyCount();
+
+	int getUseCount();
+
+	int getProcUseCount();
 
 private:
 	Follow follow;
@@ -439,8 +495,9 @@ private:
 	vector<int> typeTable;
 	vector<int> firstlineTable;
 	vector<int> lastlineTable;
+	vector<tuple<vector<int>, vector<string>>> patternTable;
+	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
 	vector<int> statementList;
-	vector<vector<tuple<int, string>>> patternTable;
 	vector<vector<int>> whilePatternTable;
 	vector<vector<int>> ifPatternTable;
 
@@ -457,4 +514,18 @@ private:
 	void addProcedure(string p);
 
 	void initTypeMap();
+	void whileCFG(int & i);
+	void assignCallCFG(int & i);
+	void ifCFG(int & i);
+	void processNext(int & i);
+	bool contains(vector<int> list, int i);
+	vector<int> goBack;
+	vector<int> state;
+	int lastLineOfIf;
+	vector<int> ifHolder;
+	vector<int> ifParent;
+	
+	vector<int> getIntersection(vector<int> v1, vector<int> v2);
+	
+	vector<int> statementProcedureTable;
 };

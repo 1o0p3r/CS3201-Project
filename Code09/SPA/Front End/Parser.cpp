@@ -53,8 +53,9 @@ bool Parse(string fileName, PKB& pkb) {
 			isSameLevel = false;
 			isNewContainer = true;
 		} else if (isProcedure(nextLine) && Parent.size() == 0) {
+			lineCounter--;
 			if (lineCounter > 1) {
-				pkb.setLastline(procName, lastLine);
+				pkb.setLastline(procName, lineCounter);
 			}
 			pkb.insertStatementList(lineCounter);
 			lineCounter--;
@@ -99,6 +100,7 @@ bool Parse(string fileName, PKB& pkb) {
 					pkb.setFollows(prevFollow, lineCounter);
 				}
 			}
+			pkb.setProcedure(lineCounter, procName);
 			if (Parent.size() > 1) {
 				pkb.setParent(Parent.back(), lineCounter);
 			}
@@ -180,6 +182,7 @@ bool Parse(string fileName, PKB& pkb) {
 	}
 	pkb.setLastline(procName, lineCounter);
 	if (Parent.size() == 0) {
+		pkb.createCFG();
 		return true;
 	} else {
 		return false;

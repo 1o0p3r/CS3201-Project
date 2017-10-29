@@ -9,16 +9,15 @@ class Next {
 public:
 	Next();
 
-	void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
+	//void createCFGTable(vector<int> stmtsAndType, vector<int> parentOfStmtVec, int firstLine, int lastLine);
+	void setNext(int stmtNum1, int stmtNum2);
 	vector<int> getNext(int stmtNum);
 	vector<int> getPrevious(int stmtNum);
 	vector<int> Next::getAllNext();
 
 private:
-
+	void setPrevious(int stmtNum1, int stmtNum2);
 	vector<set<int>> nextTable;
 	vector<set<int>> previousTable;
-	vector<set<int>> nextStarTable;
-	vector<set<int>> previousStarTable;
 	set<int> allNextTable;
 };

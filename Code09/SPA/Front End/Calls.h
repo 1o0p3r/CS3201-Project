@@ -15,6 +15,7 @@ public:
 	vector<int> getCallsStar(int procName);
 	vector<int> getCalledByStar(int procName);
 	vector<int> getProcCalledByStmt(int procName);
+	int getStmtCallProc(int statementNum);
 	vector<int> getAllCalls();
 
 private:
@@ -23,7 +24,8 @@ private:
 	vector<vector<int>> calledByTable;
 	vector<vector<int>> callsStarTable;
 	vector<vector<int>> calledByStarTable;
-	vector <vector<int>> procCalledByStmtTable;
+	vector<vector<int>> procCalledByStmtTable;
+	vector<int> stmtCallProcTable;
 	set<int> allCallsTable;
 
 	bool isRecursive;
@@ -32,6 +34,7 @@ private:
 	void setCalledBy(int procName1, int procName2);
 	void setCalledByStar(int procName1, int procName2);
 	void setProcCalledByStmt(int procName2, int statementNum);
+	void setStmtCallProc(int statementNum, int procName2);
 
 	void checkIfRecursive();
 	

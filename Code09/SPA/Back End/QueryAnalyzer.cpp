@@ -544,115 +544,115 @@ void QueryAnalyzer::solvePatternClause() {
 		
 }
 
-vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
-	string patSyn = patternClause.getPatternSynonym();
-	string arg1 = patternClause.getPatternArg1();
-	string arg1Type = patternClause.getPatternArg1Type();
-	string patExp = patternClause.getPatternArg2();
-	string patType = patternClause.getPatternArg2Type();
-	tuple<vector<string>, vector<string>> evaluatedPatResult;
-	vector<string> validatedPatResult;
-	vector<vector<string>> patternAssignResult;
-	if (arg1Type == SYNONYM) {
-		evaluatedPatResult = solvePatAssignSyn(arg1, patExp, patType, patSyn);
-		if (!get<ARGONE>(evaluatedPatResult).empty()) {
-			patternAssignResult.push_back(get<ARGONE>(evaluatedPatResult));
-			patternAssignResult.push_back(get<ARGTWO>(evaluatedPatResult));
-		}
-	} else {
-		validatedPatResult = validatedPatAssignSyn(arg1, patExp, patType, patSyn);
-		if (!validatedPatResult.empty())
-			patternAssignResult.push_back(validatedPatResult);
-	}
-	return patternAssignResult;
-}
-
-vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
-{
-	return vector<vector<string>>();
-}
-
-tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
-		string patExp, string patType, string patSyn) {
-	vector<tuple<int, string>> pkbPatResult;
-	bool containsPattern = false;
-	vector<string> entityVector;
-	vector<string> variableVector;
-	for (string candidates : pkbPtr.getAllVariables()) {
-		pkbPatResult = pkbPtr.getPattern(candidates);
-		for (tuple<int, string> evalPattExpression : pkbPatResult) {
-			switch (mapPatternExpType[patType]) {
-				case _wildcard_:
-					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-					variableVector.push_back(candidates);
-					containsPattern = true;
-				break;
-			case substring: 
-				if (get<1>(evalPattExpression).find(patExp) != string::npos) {
-					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-					variableVector.push_back(candidates);
-					containsPattern = true;
-				}
-				break;
-			case exact:
-				if (get<1>(evalPattExpression) == patExp) {
-					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-					variableVector.push_back(candidates);
-					containsPattern = true;
-				}
-				break;
-			}
-		}
-	}
-	if (containsPattern) {
-		entityVector.push_back(patSyn);
-		variableVector.push_back(arg1);
-	}
-	hasPatternClause = containsPattern;
-	return make_tuple(entityVector, variableVector);
-}
-
-vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp, 
-		string patType, string patSyn) {
-	vector<tuple<int, string>> pkbPatResult;
-	bool containsPattern = false;
-	vector<string> entityVector;
-	unordered_set<string> shortlisted; // for removing duplicates
-	vector<string> listOfCandidates;
-	if (arg1 == WILDCARD_SYMBOL) 
-		listOfCandidates = pkbPtr.getAllVariables();
-	else
-		listOfCandidates.push_back(arg1);
-	for (string candidates : listOfCandidates) {
-		pkbPatResult = pkbPtr.getPattern(candidates);
-		for (tuple<int, string> evalPattExpression : pkbPatResult) {
-			switch (mapPatternExpType[patType]) {
-				case _wildcard_:
-					shortlisted.insert(to_string(get<0>(evalPattExpression)));
-					containsPattern = true;
-					break;
-				case substring:
-					if (get<1>(evalPattExpression).find(patExp) != string::npos) {
-						shortlisted.insert(to_string(get<0>(evalPattExpression)));
-						containsPattern = true;
-					}
-					break;
-				case exact:
-					if (get<1>(evalPattExpression) == patExp) {
-						shortlisted.insert(to_string(get<0>(evalPattExpression)));
-						containsPattern = true;
-					}
-					break;
-			}
-		}
-	}
-	if (!shortlisted.empty()) { //removing duplicates
-		entityVector.assign(shortlisted.begin(), shortlisted.end());
-		entityVector.push_back(patSyn);
-	}
-	hasPatternClause = containsPattern;
-	return entityVector;
-}
+//vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
+//	string patSyn = patternClause.getPatternSynonym();
+//	string arg1 = patternClause.getPatternArg1();
+//	string arg1Type = patternClause.getPatternArg1Type();
+//	string patExp = patternClause.getPatternArg2();
+//	string patType = patternClause.getPatternArg2Type();
+//	tuple<vector<string>, vector<string>> evaluatedPatResult;
+//	vector<string> validatedPatResult;
+//	vector<vector<string>> patternAssignResult;
+//	if (arg1Type == SYNONYM) {
+//		evaluatedPatResult = solvePatAssignSyn(arg1, patExp, patType, patSyn);
+//		if (!get<ARGONE>(evaluatedPatResult).empty()) {
+//			patternAssignResult.push_back(get<ARGONE>(evaluatedPatResult));
+//			patternAssignResult.push_back(get<ARGTWO>(evaluatedPatResult));
+//		}
+//	} else {
+//		validatedPatResult = validatedPatAssignSyn(arg1, patExp, patType, patSyn);
+//		if (!validatedPatResult.empty())
+//			patternAssignResult.push_back(validatedPatResult);
+//	}
+//	return patternAssignResult;
+//}
+//
+//vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
+//{
+//	return vector<vector<string>>();
+//}
+//
+//tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
+//		string patExp, string patType, string patSyn) {
+//	vector<tuple<int, string>> pkbPatResult;
+//	bool containsPattern = false;
+//	vector<string> entityVector;
+//	vector<string> variableVector;
+//	for (string candidates : pkbPtr.getAllVariables()) {
+//		pkbPatResult = pkbPtr.getPattern(candidates);
+//		for (tuple<int, string> evalPattExpression : pkbPatResult) {
+//			switch (mapPatternExpType[patType]) {
+//				case _wildcard_:
+//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+//					variableVector.push_back(candidates);
+//					containsPattern = true;
+//				break;
+//			case substring: 
+//				if (get<1>(evalPattExpression).find(patExp) != string::npos) {
+//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+//					variableVector.push_back(candidates);
+//					containsPattern = true;
+//				}
+//				break;
+//			case exact:
+//				if (get<1>(evalPattExpression) == patExp) {
+//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
+//					variableVector.push_back(candidates);
+//					containsPattern = true;
+//				}
+//				break;
+//			}
+//		}
+//	}
+//	if (containsPattern) {
+//		entityVector.push_back(patSyn);
+//		variableVector.push_back(arg1);
+//	}
+//	hasPatternClause = containsPattern;
+//	return make_tuple(entityVector, variableVector);
+//}
+//
+//vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp, 
+//		string patType, string patSyn) {
+//	vector<tuple<int, string>> pkbPatResult;
+//	bool containsPattern = false;
+//	vector<string> entityVector;
+//	unordered_set<string> shortlisted; // for removing duplicates
+//	vector<string> listOfCandidates;
+//	if (arg1 == WILDCARD_SYMBOL) 
+//		listOfCandidates = pkbPtr.getAllVariables();
+//	else
+//		listOfCandidates.push_back(arg1);
+//	for (string candidates : listOfCandidates) {
+//		pkbPatResult = pkbPtr.getPattern(candidates);
+//		for (tuple<int, string> evalPattExpression : pkbPatResult) {
+//			switch (mapPatternExpType[patType]) {
+//				case _wildcard_:
+//					shortlisted.insert(to_string(get<0>(evalPattExpression)));
+//					containsPattern = true;
+//					break;
+//				case substring:
+//					if (get<1>(evalPattExpression).find(patExp) != string::npos) {
+//						shortlisted.insert(to_string(get<0>(evalPattExpression)));
+//						containsPattern = true;
+//					}
+//					break;
+//				case exact:
+//					if (get<1>(evalPattExpression) == patExp) {
+//						shortlisted.insert(to_string(get<0>(evalPattExpression)));
+//						containsPattern = true;
+//					}
+//					break;
+//			}
+//		}
+//	}
+//	if (!shortlisted.empty()) { //removing duplicates
+//		entityVector.assign(shortlisted.begin(), shortlisted.end());
+//		entityVector.push_back(patSyn);
+//	}
+//	hasPatternClause = containsPattern;
+//	return entityVector;
+//}
 
 
 vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {

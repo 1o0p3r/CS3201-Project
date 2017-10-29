@@ -44,11 +44,17 @@ public:
 	*/
 	vector<int> getFollowedByStar(int statementNum);
 
+	int getFollowsCount();
+
+	int getFollowStarCount();
+
 private:
 	vector<int> followsTable;
 	vector<int> followedByTable;
 	vector<vector<int>> followsStarTable;
 	vector<vector<int>> followedByStarTable;
+	int followsCount;
+	int followStarCount;
 
 	void setFollowedBy(int s1, int s2);
 	void setFollowsStar(int s1, int s2);
