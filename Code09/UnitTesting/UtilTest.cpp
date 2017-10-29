@@ -75,5 +75,22 @@ namespace UnitTesting {
 			Assert::IsFalse(Util::isValidExpression(""));
 		}
 
+		TEST_METHOD(inFixToPosFix)
+		{
+			string exp = "a+b*(c*d-e)*(f+g*h)-i";
+			string result = Util::getPostFixExp(exp);
+			string expected = "a b c d * e - * f g h * + * + i -";
+			Assert::AreEqual(expected, result);
+			
+			exp = "radius    +  (   china *(   dog -   fog ) +   war)";
+			result = Util::getPostFixExp(exp);
+			expected = "radius china dog fog - * war + +";
+			Assert::AreEqual(expected, result);
+
+			exp = "radi    +  (   uschi *(   nado -   gfog ) +   war)";
+			result = Util::getPostFixExp(exp);
+			expected = "radi uschi nado gfog - * war + +";
+			Assert::AreEqual(expected, result);
+		}
 	};
 }

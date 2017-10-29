@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <stack>
+#include <algorithm>
 using namespace std;
 
 class Util {
@@ -18,4 +20,7 @@ public:
 	static vector<string> removeDuplicates(vector<string> input);
 	static vector<string> constructExpression(string expression);
 	static bool isValidExpression(string expression);
+	static string getPostFixExp(string line);
+	static int getOperandPrec(char c);
+	static string removeSpace(string line);
 };

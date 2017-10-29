@@ -1,0 +1,9 @@
+procedure First {
+	a = 5 - bad * (cat + dog);
+	call Second;
+	b = at * 2 - do * ca;}
+
+procedure Second {
+	can = 10 - bat * (category + dogfight);
+	boy = fight - 3;
+	height = height * (fig - dig) + 8;}
