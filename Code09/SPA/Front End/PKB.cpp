@@ -97,7 +97,7 @@ int PKB::getProcIndex(string procName) {
 	allProcedures.insert(procName);
 
 	if (find(procIndexTable.begin(), procIndexTable.end(), procName) != procIndexTable.end())
-		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
+return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
 
 	else {
 		procIndexTable.push_back(procName);
@@ -197,11 +197,31 @@ tuple<vector<int>, vector<string>> PKB::getAllPatternIf() {
 
 tuple<vector<int>, vector<string>> PKB::getPatternVariable(string varName) {
 	int varIndex = getVarIndex(varName);
-	return patternTable[varIndex];
+	if (varIndex >= patternTable.size()) {
+		return tuple<vector<int>, vector<string>>{};
+	} else {
+		return patternTable[varIndex];
+	}
 }
 
 tuple<vector<int>, vector<string>> PKB::getPatternExpression(string expression) {
-	return expressionTable[expression];
+	if (expressionTable.find(expression) == expressionTable.end()) {
+		return tuple<vector<int>, vector<string>>{};
+	} else {
+		return expressionTable[expression];
+	}
+}
+
+tuple<vector<int>, vector<string>> PKB::getPatternExpressionSubstring(string expression) {
+	vector<int> statements;
+	vector<string> variables;
+	for (auto i = expressionTable.begin(); i != expressionTable.end(); i++) {
+		if (i->first.find(expression) != string::npos) {
+			statements.insert(statements.end(), get<0>(i->second).begin(), get<0>(i->second).end());
+			variables.insert(variables.end(), get<1>(i->second).begin(), get<1>(i->second).end());
+		}
+	}
+	return tuple<vector<int>, vector<string>>{ statements, variables };
 }
 
 vector<string> PKB::getAllConstants() {

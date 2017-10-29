@@ -455,13 +455,13 @@ public:
 	vector<int> getPatternIf(string variable);
 	tuple<vector<int>, vector<string>> getAllPatternIf();
 	tuple<vector<int>, vector<string>> getPatternVariable(string varName);
-	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
 	@returns a vector of tuple containing all the (statement number, expression) pairs for the input variable
 	*/
-	tuple<vector<int>, vector<string>> getPattern(string varName);
+	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
+	tuple<vector<int>, vector<string>> getPatternExpressionSubstring(string expression);
 	int getFollowsCount();
 
 	int getFollowStarCount();
