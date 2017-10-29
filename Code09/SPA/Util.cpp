@@ -291,3 +291,79 @@ bool Util::isValidExpression(string expression) {
 	}
 	return bracketCounter == 0 && expectOperandsNext;
 }
+
+
+//code adapted from geekforgeeks
+string Util::getPostFixExp(string line) {
+	line = removeSpace(line);
+	stack<char> infix;
+	infix.push('$'); //terminating character
+	int infixLength = line.length();
+	string postfixString;
+	for (int i = 0; i < infixLength; i++)
+	{
+		// If the scanned character is an operand, add it to output string.
+		if ((line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z'))
+			postfixString += line[i];
+
+		// If the scanned character is an ‘(‘, push it to the stack.
+		else if (line[i] == '(')
+
+			infix.push('(');
+
+		// If the scanned character is an ‘)’, pop and to output string from the stack
+		// until an ‘(‘ is encountered.
+		else if (line[i] == ')')
+		{
+			while (infix.top() != '$' && infix.top() != '(')
+			{
+				char c = infix.top();
+				infix.pop();
+				postfixString += ' '; // delimiter between operand and operator
+				postfixString += c;
+			}
+			if (infix.top() == '(')
+			{
+				char c = infix.top();
+				infix.pop();
+			}
+		}
+
+		//If an operator is scanned
+		else {
+
+			while (infix.top() != '$' && getOperandPrec(line[i]) <= getOperandPrec(infix.top()))
+			{
+				char c = infix.top();
+				infix.pop();
+				postfixString += ' '; // delimiter between consecutive operators
+				postfixString += c;
+			}
+			postfixString += ' '; // delimiter between operands and operator
+			infix.push(line[i]);
+		}
+
+	}
+	//Pop all the remaining elements from the stack
+	while (infix.top() != '$')
+	{
+		char c = infix.top();
+		infix.pop();
+		postfixString += ' '; //delimiter between remaining operand and operator
+		postfixString += c;
+		
+	}
+	return postfixString;
+}
+
+int Util::getOperandPrec(char c){
+	if (c == '*') return 2;
+	else if (c == '+' || c == '-') return 1;
+	else return -1;
+}
+
+string Util::removeSpace(string line) {
+	const auto endpos = remove(line.begin(), line.end(), ' ');
+	line.erase(endpos, line.end());
+	return line;
+}
