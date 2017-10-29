@@ -427,10 +427,12 @@ public:
 		vector<string> queries = {
 			"assign a; Select a pattern a(_, _\"dan\"_)",
 			"assign a; Select a pattern a(_, _\"danger\"_)",
+			"assign a; select a pattern a(_, \"dan\")"
 		};
 		vector<vector<string>> expected = {
-			{ "9" },
-			{ "1","11","12","2","3","4","5","6","8" }
+			{ "1","2","3","7","8","9","10","11" },
+			{ "4","5","6" },
+			{}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
