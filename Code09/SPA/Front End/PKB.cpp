@@ -126,7 +126,7 @@ void PKB::addProcedure(string p) {
 
 void PKB::addAssignPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
-	string expression = Util::insertBrackets(rightExpression);
+	string expression = Util::getPostFixExp(rightExpression);
 	if (patternTable.size() <= varIndex) {
 		patternTable.resize(varIndex + 1);
 	}
