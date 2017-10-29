@@ -9,4 +9,5 @@ procedure First {
 	abs = (absolute - dan * hop) + fig * (dead * rude);
 	abs = absolute - dan * ((hop + fig) * dead) * rude;
 	abs = (absolute - dan) * ((hop + fig) * dead) * rude;
-	abs = (absolute - dan) * ((hop + fig) * dead * rude);}
+	abs = (absolute - dan) * ((hop + fig) * dead * rude);
+	fig = fig + popcicle;}
