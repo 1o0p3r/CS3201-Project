@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <tuple>
 #include <set>
+#include <regex>
 
 string Util::insertBrackets(string input) {
 	string results = input;
@@ -292,78 +293,110 @@ bool Util::isValidExpression(string expression) {
 	return bracketCounter == 0 && expectOperandsNext;
 }
 
-
-//code adapted from geekforgeeks
-string Util::getPostFixExp(string line) {
-	line = removeSpace(line);
-	stack<char> infix;
-	infix.push('$'); //terminating character
-	int infixLength = line.length();
-	string postfixString;
-	for (int i = 0; i < infixLength; i++)
-	{
-		// If the scanned character is an operand, add it to output string.
-		if ((line[i] >= 'a' && line[i] <= 'z') || (line[i] >= 'A' && line[i] <= 'Z'))
-			postfixString += line[i];
-
-		// If the scanned character is an ‘(‘, push it to the stack.
-		else if (line[i] == '(')
-
-			infix.push('(');
-
-		// If the scanned character is an ‘)’, pop and to output string from the stack
-		// until an ‘(‘ is encountered.
-		else if (line[i] == ')')
-		{
-			while (infix.top() != '$' && infix.top() != '(')
-			{
-				char c = infix.top();
-				infix.pop();
-				postfixString += ' '; // delimiter between operand and operator
-				postfixString += c;
-			}
-			if (infix.top() == '(')
-			{
-				char c = infix.top();
-				infix.pop();
-			}
-		}
-
-		//If an operator is scanned
-		else {
-
-			while (infix.top() != '$' && getOperandPrec(line[i]) <= getOperandPrec(infix.top()))
-			{
-				char c = infix.top();
-				infix.pop();
-				postfixString += ' '; // delimiter between consecutive operators
-				postfixString += c;
-			}
-			postfixString += ' '; // delimiter between operands and operator
-			infix.push(line[i]);
-		}
-
-	}
-	//Pop all the remaining elements from the stack
-	while (infix.top() != '$')
-	{
-		char c = infix.top();
-		infix.pop();
-		postfixString += ' '; //delimiter between remaining operand and operator
-		postfixString += c;
-		
-	}
-	return postfixString;
-}
-
 int Util::getOperandPrec(char c){
 	if (c == '*') return 2;
 	else if (c == '+' || c == '-') return 1;
-	else return -1;
+	else return 0;
 }
 
 string Util::removeSpace(string line) {
 	const auto endpos = remove(line.begin(), line.end(), ' ');
 	line.erase(endpos, line.end());
 	return line;
+}
+
+//regex to remove leading,trailing,extra spaces
+
+
+//code adapted from csegeek
+string Util::getPostFixExp(string line) {
+	line = removeSpace(line);
+	stack<char> s;
+	string postfix;
+	int size = line.length();
+	int weight;
+	int i = 0;
+	char ch;
+	// iterate over the line expression   
+	while (i < size) {
+		ch = line[i];
+		if (ch == '(') {
+			// simply push the opening parenthesis
+			postfix += ' '; 
+			s.push(ch);
+			i++;
+			continue;
+		}
+		else if (ch == ')') {
+			// if we see a closing parenthesis,
+			// pop of all the elements and append it to
+			// the postfix expression till we encounter
+			// a opening parenthesis
+			while (!s.empty() && s.top() != '(') {
+				postfix += ' '; 
+				postfix += s.top();	
+				s.pop();
+			}
+			// pop off the opening parenthesis also
+			if (!s.empty()) {
+				postfix += ' ';
+				s.pop();
+			}
+			i++;
+			continue;
+		}
+		weight = getOperandPrec(ch);
+		if (weight == 0) {
+			// we saw an operand
+			// simply append it to postfix expression
+			postfix += ch;
+		}
+		else {
+			// we saw an operator
+			
+			if (s.empty()) {
+				// simply push the operator onto stack if
+				// stack is empty
+				postfix += ' ';
+				s.push(ch);
+			}
+			else {
+				// pop of all the operators from the stack and
+				// append it to the postfix expression till we
+				// see an operator with a lower precedence that
+				// the current operator
+				while (!s.empty() && s.top() != '(' &&
+					weight <= getOperandPrec(s.top())) {
+					
+					postfix += ' '; //spacing between operators
+					postfix += s.top();
+					s.pop();
+					
+				}
+				// push the current operator onto stack
+				postfix += ' ';
+				s.push(ch);
+			}
+		}
+		i++;
+	}
+	// pop of the remaining operators present in the stack
+	// and append it to postfix expression 
+	while (!s.empty()) {
+		postfix += ' ';
+		postfix += s.top();
+		
+		s.pop();
+	}
+
+	return trimLead(postfix);
+}
+
+//code adapted from stackoverflow, remove extra spaces
+string Util::trimLead(const string& str)
+{
+	string output;
+	unique_copy(str.begin(), str.end(), back_insert_iterator<string>(output),
+		[](char a, char b) { return isspace(a) && isspace(b); });
+	return output;
 }

@@ -77,9 +77,12 @@ namespace UnitTesting {
 
 		TEST_METHOD(inFixToPosFix)
 		{
-			string exp = "a+b*(c*d-e)*(f+g*h)-i";
+			//"a+b*(c*d-e)*(f+g*h)-i";
+			//"a b c d * e - * f g h * + * + i -";
+			string exp = "radius    +  (   china *(   dog -   fog ) +   war)";
 			string result = Util::getPostFixExp(exp);
-			string expected = "a b c d * e - * f g h * + * + i -";
+			string expected = "radius china dog fog - * war + +";
+			Assert::AreEqual(expected.length(), result.length());
 			Assert::AreEqual(expected, result);
 			
 			exp = "radius    +  (   china *(   dog -   fog ) +   war)";
@@ -91,6 +94,8 @@ namespace UnitTesting {
 			result = Util::getPostFixExp(exp);
 			expected = "radi uschi nado gfog - * war + +";
 			Assert::AreEqual(expected, result);
+			
+			
 		}
 	};
 }

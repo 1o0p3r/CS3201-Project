@@ -36,7 +36,7 @@ public:
 		Assert::IsTrue(pkb.getModifies(13) == vector<string>{"x", "z", "i"});
 		Assert::IsTrue(pkb.getParent(7) == vector<int>{6});
 		Assert::IsTrue(pkb.getParentStar(8) == vector<int>{6, 4});
-		Assert::IsTrue(pkb.getPattern("i") == vector<tuple<int, string>>{tuple<int, string>{3, "5"}, tuple<int, string>{11, "(i-1)"}, tuple<int, string>{17, "(i-1)"}});
+		Assert::IsTrue(pkb.getPattern("i") == vector<tuple<int, string>>{tuple<int, string>{3, "5"}, tuple<int, string>{11, "i 1 -"}, tuple<int, string>{17, "i 1 -"}});
 		Assert::IsTrue(pkb.getProcModifiedBy("y") == vector<string>{"Example"});
 		Assert::IsTrue(pkb.getProcModifies("q") == vector<string>{"x", "z"});
 		Assert::IsTrue(pkb.getProcUsedBy("x") == vector<string>{"Example", "q", "p"});

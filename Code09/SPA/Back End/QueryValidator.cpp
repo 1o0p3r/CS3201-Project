@@ -458,13 +458,13 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 		arg2Exact = true;
 		arg2 = arg2.substr(1, arg2.length() - 2);
 		arg2 = Util::trim(arg2);
-		arg2 = Util::insertBrackets(arg2);
+		arg2 = Util::getPostFixExp(arg2);
 	} else if (isValidExprUnder(arg2)) {
 		arg2Substring = true;
 		arg2 = removeUnderScoreAndQuotation(arg2);
 		arg2 = removeSymbols(arg2, WHITESPACE_STRING);
 		arg2 = removeSymbols(arg2, TAB_STRING);
-		arg2 = Util::insertBrackets(arg2);
+		arg2 = Util::getPostFixExp(arg2);
 	} else {
 		return false;
 	}

@@ -26,7 +26,7 @@ public:
 		string exp = "5";
 		Assert::AreEqual(exp, get<1>(pkb.getPattern("x")[0]));
 		Assert::AreEqual(4, get<0>(pkb.getPattern("x")[1]));
-		exp = "((x*y)+1)";
+		exp = "x y * 1 +";
 		Assert::AreEqual(exp, get<1>(pkb.getPattern("x")[1]));
 		Assert::AreEqual(3, get<0>(pkb.getPattern("y")[0]));
 	}

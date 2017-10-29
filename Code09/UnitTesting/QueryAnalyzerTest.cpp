@@ -218,8 +218,9 @@ public:
 		QueryElement a("d", "synonym", "while", "f", "synonym", "assign", "Parent");
 		// { { "1","1", "a" },{ "2","3","d" } };
 		QueryElement sel("assign", "a", "synonym", "empty");
+
 		
-		QueryElement pat1("v", Util::insertBrackets("4*c-x"),"","assign", "a", "synonym", "exact","", "empty");
+		QueryElement pat1("v", Util::getPostFixExp("4*c-x"),"","assign", "a", "synonym", "exact","", "empty");
 		
 //		QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, 
 //		string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
@@ -368,7 +369,7 @@ public:
 		//		QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, 
 		//		string patternArg1Type, string patternArg2Type, string patternArg3Type, string patternEnt1); //Pattern
 
-		QueryElement pat1("_", Util::insertBrackets("2*y"), "", "assign", "w", "wildcard", "exact", "", "empty");
+		QueryElement pat1("_", Util::getPostFixExp("2*y"), "", "assign", "w", "wildcard", "exact", "", "empty");
 		QueryElement mod1("w","synonym","assign","v","synonym","","Modifies");
 		QueryElement sel1("assign", "w", "synonym", "empty");
 		qs.addSelectQuery(sel1);

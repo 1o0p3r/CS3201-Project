@@ -120,7 +120,7 @@ void PKB::addProcedure(string p) {
 
 void PKB::addAssignPattern(int statementNum, string leftVariable, string rightExpression) {
 	int varIndex = getVarIndex(leftVariable);
-	tuple<int, string> entry = { statementNum, Util::insertBrackets(rightExpression) };
+	tuple<int, string> entry = { statementNum, Util::getPostFixExp(rightExpression) };
 	if (patternTable.size() <= varIndex) {
 		patternTable.resize(varIndex + 1);
 	}

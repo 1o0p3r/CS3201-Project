@@ -4,6 +4,9 @@
 #include <sstream>
 #include <stack>
 #include <algorithm>
+#include <cctype>
+#include <locale>
+
 using namespace std;
 
 class Util {
@@ -21,6 +24,8 @@ public:
 	static vector<string> constructExpression(string expression);
 	static bool isValidExpression(string expression);
 	static string getPostFixExp(string line);
+	static string trimLead(const string& str);
 	static int getOperandPrec(char c);
 	static string removeSpace(string line);
+
 };
