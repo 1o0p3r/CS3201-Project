@@ -1,0 +1,13 @@
+procedure First {
+	abs = absolute + dan * hop;
+	abs = (absolute + dan) * hop;
+	abs = absolute + (dan * hop);
+	abs = abs + danger * hope;
+	abs = (abs + danger) * hope;
+	abs = abs + (danger * hope);
+	abs = absolute - dan * hop + fig * dead * rude;
+	abs = (absolute - dan * hop) + fig * (dead * rude);
+	abs = absolute - dan * ((hop + fig) * dead) * rude;
+	abs = (absolute - dan) * ((hop + fig) * dead) * rude;
+	abs = (absolute - dan) * ((hop + fig) * dead * rude);
+	fig = fig + popcicle;}

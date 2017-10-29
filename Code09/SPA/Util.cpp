@@ -3,24 +3,21 @@
 #include <algorithm>
 #include <tuple>
 #include <set>
+#include <regex>
 
 string Util::insertBrackets(string input) {
-	string results;
-	for each (char c in input) {
-		if (!isspace(c)) {
-			results.push_back(c);
-		}
-	}
-	//string results = input;
+	string results = input;
 	int index = 0;
 	while (index < results.size()) {
 		if (results[index] == '*') {
+			int front;
+			int back;
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
-				results.insert(index + 2, ")");
-				results.insert(index - 1, "(");
+				front = index + 2;
+				back = index - 1;
 			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 1;
+				back = index - 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -29,11 +26,10 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(index + 2, ")");
-				results.insert(back, "(");
+				front = index + 2;
 			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 1;
+				front = index + 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == '(') {
@@ -42,12 +38,11 @@ string Util::insertBrackets(string input) {
 						counter--;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(index - 1, "(");
+				back = index - 1;
 			} else {
 				int counter = 1;
-				int front = index + 1;
-				int back = index - 1;
+				front = index + 1;
+				back = index - 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == '(') {
@@ -65,9 +60,15 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(back, "(");
 			}
+			while (front < results.size() && isalnum(results[front])) {
+				front++;
+			}
+			while (back > 0 && isalnum(results[back - 1])) {
+				back--;
+			}
+			results.insert(front, ")");
+			results.insert(back, "(");
 			index++;
 		}
 		index++;
@@ -75,12 +76,14 @@ string Util::insertBrackets(string input) {
 	index = 0;
 	while (index < results.size()) {
 		if (results[index] == '+' || results[index] == '-') {
+			int front;
+			int back;
 			if (results[index - 1] != ')' && results[index + 1] != '(') {
-				results.insert(index + 2, ")");
-				results.insert(index - 1, "(");
+				front = index + 2;
+				back = index - 1;
 			} else if (results[index + 1] != '(') {
 				int counter = 1;
-				int back = index - 1;
+				back = index - 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -89,11 +92,10 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(index + 2, ")");
-				results.insert(back, "(");
+				front = index + 2;
 			} else if (results[index - 1] != ')') {
 				int counter = 1;
-				int front = index + 1;
+				front = index + 1;
 				while (counter > 0) {
 					front++;
 					if (results[front] == ')') {
@@ -102,12 +104,11 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(index - 1, "(");
+				back = index - 1;
 			} else {
 				int counter = 1;
-				int back = index - 1;
-				int front = index + 1;
+				back = index - 1;
+				front = index + 1;
 				while (counter > 0) {
 					back--;
 					if (results[back] == '(') {
@@ -125,9 +126,15 @@ string Util::insertBrackets(string input) {
 						counter++;
 					}
 				}
-				results.insert(front, ")");
-				results.insert(back, "(");
 			}
+			while (front < results.size() && isalnum(results[front])) {
+				front++;
+			}
+			while (back > 0 && isalnum(results[back - 1])) {
+				back--;
+			}
+			results.insert(front, ")");
+			results.insert(back, "(");
 			index++;
 		}
 		index++;
@@ -284,4 +291,152 @@ bool Util::isValidExpression(string expression) {
 		}
 	}
 	return bracketCounter == 0 && expectOperandsNext;
+}
+
+int Util::getOperandPrec(char c){
+	if (c == '*') return 2;
+	else if (c == '+' || c == '-') return 1;
+	else return 0;
+}
+
+string Util::removeSpace(string line) {
+	const auto endpos = remove(line.begin(), line.end(), ' ');
+	line.erase(endpos, line.end());
+	return line;
+}
+
+bool Util::isEndOfWord(const char& c) {
+	if (c == '-') return true;
+	if (c == '+') return true;
+	if (c == '*') return true;
+	if (c == ')') return true;
+	return false;
+}
+
+//regex to remove leading,trailing,extra spaces
+
+
+//code adapted from csegeek
+string Util::getPostFixExp(string line) {
+	line = removeSpace(line);
+	stack<char> s;
+	string postfix;
+	int size = line.length();
+	int weight;
+	int i = 0;
+	char ch;
+	bool isNewWord = true;
+	// iterate over the line expression   
+	while (i < size) {
+		ch = line[i];
+		if (ch == '(') {
+			// simply push the opening parenthesis
+			postfix += ' '; 
+			s.push(ch);
+			i++;
+			continue;
+		}
+		else if (ch == ')') {
+
+			//to capture end of a word
+			if (!isNewWord)
+			{
+				postfix += ')';
+				isNewWord = true;
+				postfix += ' ';
+			}
+
+			// if we see a closing parenthesis,
+			// pop of all the elements and append it to
+			// the postfix expression till we encounter
+			// a opening parenthesis
+			while (!s.empty() && s.top() != '(') {
+				postfix += s.top();	
+				s.pop();
+			}
+			// pop off the opening parenthesis also
+			if (!s.empty()) {
+				postfix += ' ';
+				s.pop();
+			}
+			i++;
+			continue;
+		}
+		weight = getOperandPrec(ch);
+		if (weight == 0) {
+			// we saw an operand
+			// simply append it to postfix expression
+
+			if(isNewWord)
+			{
+				isNewWord = false;
+				postfix += '(';
+			}
+			postfix += ch;
+		}
+		else {
+			// we saw an operator
+			
+			if (!isNewWord) {
+				postfix += ')';
+				postfix += ' ';
+				isNewWord = true;
+			}
+
+			if (s.empty()) {
+				// simply push the operator onto stack if
+				// stack is empty
+				s.push(ch);
+			}
+			else {
+				// pop of all the operators from the stack and
+				// append it to the postfix expression till we
+				// see an operator with a lower precedence that
+				// the current operator
+
+				while (!s.empty() && s.top() != '(' &&
+					weight <= getOperandPrec(s.top())) {		
+
+					postfix += s.top();
+					postfix += ' '; //spacing between operators
+					s.pop();
+					
+				}
+				//capture end of a word
+				
+				
+					
+				
+				postfix += ' ';
+				// push the current operator onto stack
+				
+				s.push(ch);
+			}
+		}
+		i++;
+	}
+	// pop of the remaining operators present in the stack
+	// and append it to postfix expression 
+	if (!isNewWord) {
+		postfix += ')';
+		isNewWord = true;
+	}
+	while (!s.empty()) {
+		
+		postfix += ' ';
+		postfix += s.top();
+		
+		s.pop();
+	}
+
+	return trimLead(postfix);
+}
+
+//code adapted from stackoverflow, remove extra spaces
+string Util::trimLead(const string& str)
+{
+	string output;
+	unique_copy(str.begin(), str.end(), back_insert_iterator<string>(output),
+		[](char a, char b) { return isspace(a) && isspace(b); });
+	return output;
 }

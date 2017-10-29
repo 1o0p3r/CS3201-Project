@@ -347,14 +347,14 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 	string resultEntity = selectElement.getSelectType();
 	if (isQueryFalse())
 		if (resultEntity == "BOOLEAN")
-			return{ "FALSE" };
+			return{ "false" };
 		else
 			return {};
 
 	switch(mapResultTypeValues[resultEntity])
 	{
 		case booleanResult:
-			return{ "TRUE" };
+			return{ "true" };
 
 		case synonymResult: 
 			selectSynonym(answer);
@@ -502,6 +502,9 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
+				clauseResult = NextAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case nextStar:
 				break;

@@ -9,10 +9,12 @@ tuple<bool, vector<vector<string>>> ParentStarAnalyzer::addArgTwoResult(string a
 	vector<string> pkbResult;
 	vector<int> pkbParentStar;
 	vector<vector<string>> parentStarResult;
-
-	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
+	
+	if (arg1 == WILDCARD_SYMBOL) {
+		vecOfCandidates = pkbReadOnly.getWhile();
+		vector<int> temp = pkbReadOnly.getIf();
+		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+	} else
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
 		pkbParentStar = pkbReadOnly.getChildStar(candidates);
@@ -40,9 +42,9 @@ tuple<bool, vector<vector<string>>> ParentStarAnalyzer::addArgOneResult(string a
 	vector<string> pkbResult;
 	vector<vector<string>> parentStarResult;
 
-	if (arg2 == WILDCARD_SYMBOL)
+	if (arg2 == WILDCARD_SYMBOL) {
 		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
+	} else
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
 		pkbParentStar = pkbReadOnly.getParentStar(candidates);
@@ -71,7 +73,10 @@ tuple<bool, vector<vector<string>>> ParentStarAnalyzer::addBothSynResult(string 
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> parentStarResult;
 
-	vecOfCandidates = pkbReadOnly.getAllStmt(); 
+	vecOfCandidates = pkbReadOnly.getWhile();
+	vector<int> temp = pkbReadOnly.getIf();
+	vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+	
 	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	for (int candidates : vecOfCandidates) {
 		pkbParentStar = pkbReadOnly.getChildStar(candidates);
@@ -113,6 +118,6 @@ bool ParentStarAnalyzer::checkClauseWildVariable(string arg2)
 bool ParentStarAnalyzer::checkClauseBothWild()
 {	
 	int MIN_STMTS_FOR_PARENT = 1;
-	return (pkbReadOnly.getIf().size() < MIN_STMTS_FOR_PARENT &&
-			pkbReadOnly.getWhile().size() < MIN_STMTS_FOR_PARENT) ? false : true;
+	return (pkbReadOnly.getIf().size() + pkbReadOnly.getWhile().size() < MIN_STMTS_FOR_PARENT) ? false : true;
+
 }

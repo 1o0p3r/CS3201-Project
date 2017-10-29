@@ -7,17 +7,19 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 	bool hasParent = true;
 	vector<int> vecOfCandidates;
 	vector<string> pkbResult;
-	vector<int> pkbParent;
+	vector<int> pkbChild;
 	vector<vector<string>> parentResult;
 
-	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
+	if (arg1 == WILDCARD_SYMBOL) {
+		vecOfCandidates = pkbReadOnly.getWhile();
+		vector<int> temp = pkbReadOnly.getIf();
+		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+	} else
 		vecOfCandidates.push_back(stoi(arg1));
 	for (int candidates : vecOfCandidates) {
-		pkbParent = pkbReadOnly.getChild(candidates);
-		pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
-		for (int candidatesChosen : pkbParent) {
+		pkbChild = pkbReadOnly.getChild(candidates);
+		pkbChild = validatePKBResultsInt(arg2Entity, pkbChild);
+		for (int candidatesChosen : pkbChild) {
 			pkbResult.push_back(to_string(candidatesChosen));
 		}
 	}
@@ -40,9 +42,9 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	vector<string> pkbResult;
 	vector<vector<string>> parentResult;
 
-	if (arg2 == WILDCARD_SYMBOL)
+	if (arg2 == WILDCARD_SYMBOL) {
 		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
+	} else
 		vecOfCandidates.push_back(stoi(arg2));
 	for (int candidates : vecOfCandidates) {
 		pkbParent = pkbReadOnly.getParent(candidates);
@@ -72,7 +74,9 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1
 	vector<vector<string>> parentResult;
 
 	
-	vecOfCandidates = pkbReadOnly.getAllStmt();
+	vecOfCandidates = pkbReadOnly.getWhile();
+	vector<int> temp = pkbReadOnly.getIf();
+	vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
 	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	for (int candidates : vecOfCandidates) {
 		pkbParent = pkbReadOnly.getChild(candidates);
@@ -114,6 +118,5 @@ bool ParentAnalyzer::checkClauseWildVariable(string arg2)
 bool ParentAnalyzer::checkClauseBothWild()
 {
 	int MIN_STMTS_FOR_PARENT = 1;
-	return (pkbReadOnly.getIf().size() < MIN_STMTS_FOR_PARENT &&
-		pkbReadOnly.getWhile().size() < MIN_STMTS_FOR_PARENT) ? false : true;
+	return (pkbReadOnly.getIf().size()+pkbReadOnly.getWhile().size() < MIN_STMTS_FOR_PARENT) ? false : true;
 }
