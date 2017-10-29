@@ -53,12 +53,11 @@ bool Parse(string fileName, PKB& pkb) {
 			isSameLevel = false;
 			isNewContainer = true;
 		} else if (isProcedure(nextLine) && Parent.size() == 0) {
+			pkb.insertStatementList(lineCounter);
 			lineCounter--;
 			if (lineCounter > 1) {
 				pkb.setLastline(procName, lineCounter);
 			}
-			pkb.insertStatementList(lineCounter);
-			lineCounter--;
 			if (nextLine.size() == 3) {
 				procName = nextLine[1];
 			} else {
