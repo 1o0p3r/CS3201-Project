@@ -166,6 +166,7 @@ vector<tuple<int, string>> PKB::getPattern(string varName) {
 	if(varIndex < patternTable.size())
 		return patternTable[varIndex];
 	return vector<tuple<int, string>>();
+	//@limjie, bug here
 }
 
 vector<string> PKB::getAllConstants() {
