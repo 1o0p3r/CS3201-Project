@@ -426,15 +426,17 @@ public:
 		vector<string> answer;
 		vector<string> queries = {
 			//"assign a; Select a pattern a(_, _\"dan\"_)",
-			"assign a; Select a pattern a(_, _\"danger\"_)",
-			"assign a; select a pattern a(_, \"dan\")",
-			"assign a; select a pattern a(_, _\"fig\"_)"
+			//"assign a; Select a pattern a(_, _\"danger\"_)",
+			"assign a; Select a pattern a(_, \"dan\")",
+			//"assign a; Select a pattern a(_, _\"fig\"_)",
+			"assign a; Select a pattern a(_, _\"absolute - dan \"_)"
 		};
 		vector<vector<string>> expected = {
 			//{ "1","2","3","7","8","9","10","11" },
-			{ "4","5","6" },
+			//{ "4","5","6" },
 			{},
-			{"7","8","9","10","11"}
+			//{"7","8","9","10","11"},
+			{"10","11"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

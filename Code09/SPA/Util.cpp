@@ -305,6 +305,14 @@ string Util::removeSpace(string line) {
 	return line;
 }
 
+bool Util::isEndOfWord(const char& c) {
+	if (c == '-') return true;
+	if (c == '+') return true;
+	if (c == '*') return true;
+	if (c == ')') return true;
+	return false;
+}
+
 //regex to remove leading,trailing,extra spaces
 
 
@@ -317,6 +325,7 @@ string Util::getPostFixExp(string line) {
 	int weight;
 	int i = 0;
 	char ch;
+	bool isNewWord = true;
 	// iterate over the line expression   
 	while (i < size) {
 		ch = line[i];
@@ -328,12 +337,20 @@ string Util::getPostFixExp(string line) {
 			continue;
 		}
 		else if (ch == ')') {
+
+			//to capture end of a word
+			if (!isNewWord)
+			{
+				postfix += ')';
+				isNewWord = true;
+				postfix += ' ';
+			}
+
 			// if we see a closing parenthesis,
 			// pop of all the elements and append it to
 			// the postfix expression till we encounter
 			// a opening parenthesis
 			while (!s.empty() && s.top() != '(') {
-				postfix += ' '; 
 				postfix += s.top();	
 				s.pop();
 			}
@@ -349,15 +366,26 @@ string Util::getPostFixExp(string line) {
 		if (weight == 0) {
 			// we saw an operand
 			// simply append it to postfix expression
+
+			if(isNewWord)
+			{
+				isNewWord = false;
+				postfix += '(';
+			}
 			postfix += ch;
 		}
 		else {
 			// we saw an operator
 			
+			if (!isNewWord) {
+				postfix += ')';
+				postfix += ' ';
+				isNewWord = true;
+			}
+
 			if (s.empty()) {
 				// simply push the operator onto stack if
 				// stack is empty
-				postfix += ' ';
 				s.push(ch);
 			}
 			else {
@@ -365,16 +393,23 @@ string Util::getPostFixExp(string line) {
 				// append it to the postfix expression till we
 				// see an operator with a lower precedence that
 				// the current operator
+
 				while (!s.empty() && s.top() != '(' &&
-					weight <= getOperandPrec(s.top())) {
-					
-					postfix += ' '; //spacing between operators
+					weight <= getOperandPrec(s.top())) {		
+
 					postfix += s.top();
+					postfix += ' '; //spacing between operators
 					s.pop();
 					
 				}
-				// push the current operator onto stack
+				//capture end of a word
+				
+				
+					
+				
 				postfix += ' ';
+				// push the current operator onto stack
+				
 				s.push(ch);
 			}
 		}
@@ -382,7 +417,12 @@ string Util::getPostFixExp(string line) {
 	}
 	// pop of the remaining operators present in the stack
 	// and append it to postfix expression 
+	if (!isNewWord) {
+		postfix += ')';
+		isNewWord = true;
+	}
 	while (!s.empty()) {
+		
 		postfix += ' ';
 		postfix += s.top();
 		

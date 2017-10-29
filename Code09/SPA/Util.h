@@ -27,5 +27,5 @@ public:
 	static string trimLead(const string& str);
 	static int getOperandPrec(char c);
 	static string removeSpace(string line);
-
+	static bool isEndOfWord(const char &c);
 };
