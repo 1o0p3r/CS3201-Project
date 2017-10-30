@@ -132,9 +132,8 @@ void PKB::addAssignPattern(int statementNum, string leftVariable, string rightEx
 	}
 	get<0>(patternTable[varIndex]).push_back(statementNum);
 	get<1>(patternTable[varIndex]).push_back(expression);
-	tuple<vector<int>, vector<string>> current = expressionTable[expression];
-	get<0>(current).push_back(statementNum);
-	get<1>(current).push_back(leftVariable);
+	get<0>(expressionTable[expression]).push_back(statementNum);
+	get<1>(expressionTable[expression]).push_back(leftVariable);
 }
 
 void PKB::addWhilePattern(int statementNum, string variable) {
