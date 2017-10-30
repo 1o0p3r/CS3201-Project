@@ -103,8 +103,8 @@ RelationshipTable::RelationshipTable() {
 	relationshipTable[CALLS_STAR_STRING] = relationCallsStar;
 
 	//Adds the relationship of Affects to table
-	affectsArg1 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
-	affectsArg2 = { "constant", "prog_line", "stmt", "assign", "wildcard", "number" };
+	affectsArg1 = { "prog_line", "stmt", "assign", "wildcard", "number" };
+	affectsArg2 = { "prog_line", "stmt", "assign", "wildcard", "number" };
 	Relationship relationAffects = Relationship(NUM_TWO, affectsArg1, affectsArg2);
 	relationshipTable[AFFECTS_STRING] = relationAffects;
 

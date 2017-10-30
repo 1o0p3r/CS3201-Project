@@ -140,6 +140,54 @@ namespace UnitTesting
 			query = "stmt s1,s2; Select s1 such that Parent(_,s1) and Parent(_,s2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "stmt a1; Select a1 such that Affects(1,2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "stmt a1; Select a1 such that Affects(1,2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "stmt a1; Select a1 such that Affects(1,a1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1; Select a1 such that Affects(a1,2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects(a1,a2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects(a1,_)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects(a1,a1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects*(1,2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects*(a1,a2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; Select a1 such that Affects*(_,a2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1; prog_line p1, p2; Select p1 such that Affects*(_,p2) and Affects(_,a1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1; prog_line p1, p2; Select p1 such that Affects*(_,p2) such that Affects(_,a1) and Affects*(p1,p2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 
