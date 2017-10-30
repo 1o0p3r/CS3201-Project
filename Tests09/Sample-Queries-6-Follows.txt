@@ -1,0 +1,145 @@
+1 - Single clause-Follows Valid query no syns
+assign a; 
+Select a such that Follows(2,3)
+1, 2, 3, 4, 5, 7, 9, 10, 11, 13, 15, 17, 18, 20, 21, 22, 24, 25, 27, 28, 29, 31, 33, 35, 37, 39, 41, 45, 48, 50, 51, 52, 54, 55, 56, 57
+5000
+2 - Single clause-Follows Valid query one Syn
+assign a;
+Select a such that Follows(a,22)
+21
+5000
+3 - Single clause-Follows Valid query one Syn
+assign a;
+Select a such that Follows(22,a)
+None
+5000
+4 - Single clause-Follows Valid query one Syn
+while w;
+Select w such that Follows(5,w)
+6
+5000
+5 - Single clause-Follows Valid query one Syn
+while w;
+Select w such that Follows(w,7)
+None
+5000
+6 - Single clause-Follows Valid query one Syn
+if ifs;
+Select ifs such that Follows(11,ifs)
+12
+5000
+7 - Single-clauseFollows Valid query one Synonym
+if ifs;
+Select ifs such that Follows(ifs, 13)
+None
+5000
+8 - Single-clauseFollows Valid query one Synonym
+call c;
+Select c such that Follows(18,c)
+19
+5000
+9 - Single-clauseFollows Valid query one Synonym
+call c;
+Select c such that Follows(c,17)
+None
+5000
+10 - Single-clauseFollows Valid query Two syn
+assign a; if ifs;
+Select a such that Follows(ifs, a)
+None
+5000
+11 - Single-clauseFollows Valid query Two syn
+assign a; while w;
+Select w such that Follows(w, a)
+None
+5000
+12 - Single-clause Follows Valid query 2 synonyms
+while w; if ifs;
+Select ifs such that Follows(w,ifs)
+None
+5000
+13 - Single-clause Follows Valid query 2 synonyms
+stmt s; while w;
+Select s such that Follows(s,w)
+5, 7, 22, 29, 39, 42
+5000
+14 - Single-clause Follows Valid query 1 synonym 1 place holder
+stmt s; while w;
+Select w such that Follows(w,_)
+None
+5000
+15 - Single-clause Follows Valid query 1 synonym 1 place holder
+stmt s; if ifs;
+Select ifs such that Follows(_, ifs)
+12, 14, 34, 42, 44, 49
+5000
+16 - Single-clause Follows* Valid query no synonym
+if ifs;
+Select ifs such that Follows(39,40)
+12, 14, 34, 42, 44, 49
+5000
+17 - Single-clause Follows* Valid query 1 synonym
+assign a;
+Select a such that Follows*(27,a)
+28, 29
+5000
+18 - Single-clause Follows* Valid query 1 synonym
+assign a;
+Select a such that Follows*(a,27)
+1, 2, 3, 4, 5
+5000
+19 - Single-clause Follows* Valid query 1 synonym
+while w;
+Select w such that Follows*(3, w) 
+6, 30
+5000
+20 - Single-clause Follows* Valid query 1 synonym
+while w;
+Select w such that Follows*(w, 28)
+6
+5000
+21 - Single-clause Follows* Valid query 1 synonym
+if ifs;
+Select ifs such that Follows*(41, ifs)
+42
+5000
+22 - Single-clause Follows* Valid query 1 synonym
+if ifs;
+Select ifs such that Follows*(ifs, 41)
+None
+5000
+23 - Single-clause Follows* Valid query 1 synonym
+call c;
+Select c such that Follows*(45,c)
+46
+5000
+24 - Single-clause Follows* Valid query 1 synonym
+call c;
+Select c such that Follows*(c, 45)
+None
+5000
+25 - Single-clause Follows* Valid query Two synonym
+assign a; if ifs;
+Select a such that Follows*(a,ifs)
+41
+5000
+26 - Single-clause Follows* Valid query Two synonym
+assign a; while w;
+Select a such that Follows*(a, w)
+1, 2, 3, 4, 5, 7, 20, 21, 22, 27, 28, 29, 39
+5000
+27 - Single-clause Follows* Valid query Two synonym
+while w; if ifs;
+Select ifs such that Follows*(ifs, w)
+None
+5000
+28 - Single-clause Follows* Valid query 1 Synonym 1 placeholder
+while w;
+Select w such that Follows*(w,_)
+6, 8, 23
+5000
+29 - Single-clause Follows* Valid query 1 Synonym 1 placeholder
+if ifs;
+Select ifs such that Follows*(_,ifs)
+12, 14, 34, 42, 49
+5000
