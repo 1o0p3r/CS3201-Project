@@ -28,4 +28,5 @@ public:
 	static int getOperandPrec(char c);
 	static string removeSpace(string line);
 	static bool isEndOfWord(const char &c);
+	static vector<string> convertIntToString(const vector<int> &vint);
 };

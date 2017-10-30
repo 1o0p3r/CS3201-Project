@@ -313,6 +313,15 @@ bool Util::isEndOfWord(const char& c) {
 	return false;
 }
 
+vector<string> Util::convertIntToString(const vector<int> &vint) {
+	vector<string> result;
+	for (auto const element : vint) {
+		result.push_back(to_string(element));
+	}
+	return result;
+}
+
+
 //regex to remove leading,trailing,extra spaces
 
 

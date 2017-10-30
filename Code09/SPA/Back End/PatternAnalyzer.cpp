@@ -12,12 +12,22 @@ void PatternAnalyzer::initMapPatternExpType() {
 	mapPatternExpType["wildcard"] = _wildcard_;
 }
 
+enum patternAssignType
+{
+	literalWild, literalSubstring, literalExact,
+	synWild, synSubstring, synExact,
+	wildWild, wildSubstring, wildExact
+};
+
 const int IF = 0;
 const int WHILE = 1;
 const int GETSTMTS = 0;
 const int GETVARS = 1;
+const string SUBSTRING = "substring";
+const string EXACT = "exact";
 
 PatternAnalyzer::PatternAnalyzer(QueryElement patternClause, PKB &pkbRedOnly) {
+	//pattern patSyn(arg1,patExp)
 	pkbPtr = pkbRedOnly;
 	patSyn = patternClause.getPatternSynonym();
 	patSynEnt = patternClause.getPatternEntity();
@@ -29,27 +39,132 @@ PatternAnalyzer::PatternAnalyzer(QueryElement patternClause, PKB &pkbRedOnly) {
 	initMapPatternExpType();
 }
 
+
+
 tuple<bool, vector<vector<string>>> PatternAnalyzer::solvePatternAssign()
 {
+	/* pattern assign (arg1, arg2)
+	 * case 0 : literal,wildcard
+	 *		1 : literal,substring
+	 *		2 : literal,exact
+	 *		3 : synonym,wildcard
+	 *		4 : synonym,substring
+	 *		5 : synonym, exact
+	 *		6 : wildcard,wildcard
+	 *		7 : wildcard,substring
+	 *		8 : wildcard,exact
+	 */
+
 	tuple<vector<string>, vector<string>> evaluatedPatResult;
 	vector<string> validatedPatResult;
 	vector<vector<string>> patternResult;
-	if (arg1Type == SYNONYM) {
-		evaluatedPatResult = solvePatSynAssign(arg1, patExp, patExpType, patSyn);
-		if (!get<ARGONE>(evaluatedPatResult).empty()) {
-			patternResult.push_back(get<ARGONE>(evaluatedPatResult));
-			patternResult.push_back(get<ARGTWO>(evaluatedPatResult));
-		} 
-	}
-	else {
-		validatedPatResult = validatedPatSynAssign(arg1, patExp, patExpType, patSyn);
-		if (!validatedPatResult.empty())
-			patternResult.push_back(validatedPatResult);
-	}
-	if (patternResult.empty())
-		hasPatternClause = false;
-	return make_tuple(hasPatternClause,patternResult);
+	int scenario = 0;
 
+	tuple<vector<string>, vector<string>> pkbTupleResult;
+	tuple<bool, vector<vector<string>>> result;
+	vector<string> patSynResult;
+	vector<string> patVarResult;
+
+	if(arg1Type == SYNONYM) {scenario += 3;}
+	else if (arg1Type == WILDCARD) { scenario += 6; }
+	if (patExpType == SUBSTRING) {scenario += 1; }
+	else if (patExpType == EXACT) { scenario += 2; }
+
+	switch(scenario) {
+		case literalWild: case literalSubstring: case literalExact:
+			patSynResult = getAssignPatLiteral();
+			break;
+		case synWild: case synSubstring: case synExact:
+			pkbTupleResult = getAssignPatSyn();
+			patSynResult = get<GETSTMTS>(pkbTupleResult);
+			patVarResult = get<GETVARS>(pkbTupleResult);
+			break;
+		case wildWild:
+			patSynResult = Util::convertIntToString(pkbPtr.getAssign());
+			patSynResult.push_back(patSyn);
+			break;
+		case wildSubstring:
+		case wildExact:
+			pkbTupleResult = getAssignPatSyn();
+			patSynResult = get<GETSTMTS>(pkbTupleResult);
+			break;
+	}
+
+	//if (arg1Type == SYNONYM) {
+	//	evaluatedPatResult = solvePatSynAssign(arg1, patExp, patExpType, patSyn);
+	//	if (!get<ARGONE>(evaluatedPatResult).empty()) {
+	//		patternResult.push_back(get<ARGONE>(evaluatedPatResult));
+	//		patternResult.push_back(get<ARGTWO>(evaluatedPatResult));
+	//	} 
+	//}
+	//else {
+	//	validatedPatResult = validatedPatSynAssign(arg1, patExp, patExpType, patSyn);
+	//	if (!validatedPatResult.empty())
+	//		patternResult.push_back(validatedPatResult);
+	//}
+	if (!patSynResult.empty())
+		patternResult.push_back(patSynResult);
+	if (!patVarResult.empty())
+		patternResult.push_back(patVarResult);
+		
+	return make_tuple(hasPatternClause,patternResult);
+}
+
+vector<string> PatternAnalyzer::getAssignPatLiteral() {
+	bool containsPattern = false;
+	vector<string> stringResult;
+	vector<int> result;
+	if (patExpType == EXACT)
+		result = pkbPtr.getPatternVariableExpression(arg1, patExp);
+	else if (patExpType == SUBSTRING)
+		result = pkbPtr.getPatternVariableExpressionSubstring(arg1, patExp);
+	else
+		result = get<GETSTMTS>(pkbPtr.getPatternVariable(arg1));
+	if (!result.empty()) {
+		stringResult = Util::convertIntToString(result);
+		stringResult.push_back(patSyn); //for mapping
+		containsPattern = true;
+	}
+	hasPatternClause = containsPattern;
+	return stringResult;
+}
+
+tuple<vector<string>, vector<string>> PatternAnalyzer::getAssignPatSyn() {
+	bool containsPattern = false;
+	vector<string> stmtResult;
+	vector<string> varResult;
+	vector<int> result;
+
+	if (patExpType == EXACT) {
+		auto pkbResultTuple = pkbPtr.getPatternExpression(patExp);
+		result = get<GETSTMTS>(pkbResultTuple);
+		stmtResult = Util::convertIntToString(result);
+		varResult = get<GETVARS>(pkbResultTuple);
+	}
+	else if (patExpType == SUBSTRING) {
+		auto pkbResultTuple = pkbPtr.getPatternExpressionSubstring(patExp);
+		result = get<GETSTMTS>(pkbResultTuple);
+		stmtResult = Util::convertIntToString(result);
+		varResult = get<GETVARS>(pkbResultTuple);
+	}
+	else { //wildcard
+		vector<int> candidateList = pkbPtr.getAssign();
+		for(auto candidate : candidateList) {
+			vector<string> pkbResult = pkbPtr.getModifies(candidate);
+			for(auto var: pkbResult) {
+				stmtResult.push_back(to_string(candidate));
+				varResult.push_back(var);
+			}
+		}
+	}
+		
+	if (!stmtResult.empty()) {
+		containsPattern = true;
+		stmtResult.push_back(patSyn);
+		varResult.push_back(arg1);
+	}
+	hasPatternClause = containsPattern;
+	return make_tuple(stmtResult,varResult);
 }
 
 tuple<vector<string>, vector<string>> PatternAnalyzer::solvePatSynAssign(string arg1,

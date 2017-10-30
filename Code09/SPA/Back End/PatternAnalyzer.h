@@ -1,6 +1,8 @@
-#include <QueryAnalyzer.h>
-#include <Abstract_QA_API.h>
-
+#include "PKB.h"
+#include "Abstract_QA_API.h"
+#include "QueryElement.h"
+#include "TupleHash.h"
+#include "Util.h"
 
 #pragma once
 class PatternAnalyzer
@@ -20,6 +22,10 @@ protected:
 	static void initMapPatternExpType();
 	bool hasPatternClause;
 	
+	vector<string> getAssignPatLiteral();
+	tuple<vector<string>, vector<string>> getAssignPatSyn();
+
+
 	tuple<vector<string>,vector<string>> solvePatSynAssign(string arg1, string patExp, string patExpType, string patSyn);
 	vector<string> validatedPatSynAssign(string arg1, string patExp, string patExpType, string patSyn);
 	vector<int> getPKBPatternIfWhile(string candidates);
@@ -32,6 +38,7 @@ protected:
 public:
 	
 	PatternAnalyzer(QueryElement patternClause, PKB &pkbRedOnly);
+	
 	tuple<bool, vector<vector<string>>> solvePatternAssign();
 	tuple<bool, vector<vector<string>>> solvePatternIfWhile();
 };

@@ -23,10 +23,10 @@ public:
 		pkb.addAssignPattern(3, "y", "2");
 		pkb.addAssignPattern(4, "x", "x*y+1");
 		Assert::AreEqual(1, get<0>(pkb.getPatternVariable("x"))[0]);
-		string exp = "5";
+		string exp = "(5)";
 		Assert::AreEqual(exp, get<1>(pkb.getPatternVariable("x"))[0]);
 		Assert::AreEqual(4, get<0>(pkb.getPatternVariable("x"))[1]);
-		exp = "((x*y)+1)";
+		exp = "(x) (y) * (1) +";
 		Assert::AreEqual(exp, get<1>(pkb.getPatternVariable("x"))[1]);
 		Assert::AreEqual(3, get<0>(pkb.getPatternVariable("y"))[0]);
 	}

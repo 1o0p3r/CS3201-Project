@@ -1,5 +1,5 @@
 #include "QueryAnalyzer.h"
-#include "PatternAnalyzer.h"
+
 
 enum selectValue
 {

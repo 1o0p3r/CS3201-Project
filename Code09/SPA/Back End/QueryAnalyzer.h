@@ -8,6 +8,7 @@
 #include "NextAnalyzer.h"
 #include "ParentAnalyzer.h"
 #include "ParentStarAnalyzer.h"
+#include "PatternAnalyzer.h"
 #include "FollowsStarAnalyzer.h"
 #include "ModifiesAnalyzer.h"
 #include "UsesAnalyzer.h"
