@@ -335,14 +335,14 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			"stmt s; Select s such that Follows(s,3)", //1
-			"stmt s; Select s such that Follows(3,s)", //2
-			"stmt s; Select s such that Follows*(1,s)", //3
-			"stmt s; Select s such that Parent(s, 6)", //4
-			"stmt s; Select s such that Parent*(s, 6)", //5 //check parent* 
-			"while w; Select w such that Parent*(w, 6)", //6 //narrow parent* by type
-			"variable v; Select  v such that Modifies(6, v)", //7 //check call stmt modifies
-			"variable v; Select v such that Modifies(8, v)", // 8 //check container stmt modifies
+			//"stmt s; Select s such that Follows(s,3)", //1
+			//"stmt s; Select s such that Follows(3,s)", //2
+			//"stmt s; Select s such that Follows*(1,s)", //3
+			//"stmt s; Select s such that Parent(s, 6)", //4
+			//"stmt s; Select s such that Parent*(s, 6)", //5 //check parent* 
+			//"while w; Select w such that Parent*(w, 6)", //6 //narrow parent* by type
+			//"variable v; Select  v such that Modifies(6, v)", //7 //check call stmt modifies // ???? wrong human answer
+			"variable v; Select v such that Modifies(8, v)", // 8 //check container stmt modifies // getModifies bug, pkb error.
 			"procedure p; if ifs; Select <p, ifs> such that Modifies (p, \"a\")," //9 //narrow search in proc by type
 			"call calls; procedure p; Select calls such that Calls(p, calls)",//10  //find call stmt in proc that calls other proc
 			"procedure p; Select p such that Calls (p, p)", //11 //should return nothing
@@ -367,14 +367,14 @@ public:
 			"Select s such that Next(ifs, s) and Next(w, s)", //30		
 		};
 		vector<vector<string>> expected = {
-			{}, //
-			{ "4" }, //2
-			{ "2" }, //3
-			{ "4" }, //4
-			{ "2", "4" }, //5
-			{ "4" }, //6
-			{ "e" ,"f", "g", "k", "n", "y" }, //7
-			{ "e" ,"f", "g", "k", "n", "y" }, //8
+			//{}, //
+			//{ "4" }, //2
+			//{ "2" }, //3
+			//{ "4" }, //4
+			//{ "2", "4" }, //5
+			//{ "4" }, //6
+			//{ "e" ,"f", "g", "k", "m", "y" }, //7
+			{ "e" ,"f", "g", "k", "m", "y" }, //8
 			{ "<yoda, 2>" }, //9
 			{ "6", "11" }, //10
 			{}, //11
