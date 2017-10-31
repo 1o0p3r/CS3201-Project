@@ -776,3 +776,7 @@ int PKB::getUseCount() {
 int PKB::getProcUseCount() {
 	return use.getProcUseCount();
 }
+
+int PKB::getNextCount() {
+	return next.getNextCount();
+}

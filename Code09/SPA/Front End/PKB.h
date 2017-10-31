@@ -474,6 +474,8 @@ public:
 
 	int getProcUseCount();
 
+	int getNextCount();
+
 private:
 	Follow follow;
 	Parent parent;
