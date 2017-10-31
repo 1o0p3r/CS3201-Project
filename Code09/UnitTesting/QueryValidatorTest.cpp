@@ -244,7 +244,7 @@ namespace UnitTesting
 			QueryStatement queryStatement;
 
 
-			/*query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_";
+			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_";
 			Assert::IsFalse(queryValidator.parseInput(query));
 
 			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_\"(x+y)\"_";
@@ -300,7 +300,7 @@ namespace UnitTesting
 			query = "variable v; assign a, a#; Select v pattern a#(\"aa\",_) and a(v,_\"(x+y)*z\"_) and a(v,_\"x\"_";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
-*/
+
 			query = "variable v; assign a, a#; Select v pattern a#(\"aa\",_) and a(1,_\"(x+y)*z\"_) and a(v,_\"x\"_)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();

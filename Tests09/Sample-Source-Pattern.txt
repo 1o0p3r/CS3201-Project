@@ -1,4 +1,4 @@
-procedure First {
+procedure First {	
 	a = 5 - b * (c + d);
 	b = a * 2 - d * c;
 	while c {
@@ -28,28 +28,6 @@ procedure First {
 			else {
 				b = (c - a) * (h + g);
 			}
-		}
-	}
-	a = b;
-	while b {
-		b = c;
-		if c then {
-			c = d;
-			while d {
-				d = e;
-				if e then{
-					e = a;
-					while a {
-						a = b;
-					}
-				}
-				else {
-					e = b;
-				}
-			}
-		}
-		else {
-			c = b;
 		}
 	}
 }
