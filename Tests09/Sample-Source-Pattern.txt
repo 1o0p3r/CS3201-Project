@@ -1,6 +1,5 @@
-procedure First {
+procedure First {	
 	a = 5 - b * (c + d);
-	call Second;
 	b = a * 2 - d * c;
 	while c {
 		d = c * c + b;
@@ -14,7 +13,6 @@ procedure First {
 			while g {
 				f = h * (b * a);
 			}
-			call Third;
 		}
 		while a {
 			b = c + d;
@@ -30,28 +28,6 @@ procedure First {
 			else {
 				b = (c - a) * (h + g);
 			}
-		}
-	}
-	a = b;
-	while b {
-		b = c;
-		if c then {
-			c = d;
-			while d {
-				d = e;
-				if e then{
-					e = a;
-					while a {
-						a = b;
-					}
-				}
-				else {
-					e = b;
-				}
-			}
-		}
-		else {
-			c = b;
 		}
 	}
 }
