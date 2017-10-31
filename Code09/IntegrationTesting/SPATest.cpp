@@ -433,20 +433,20 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			"assign a; Select a pattern a(_, _\"dan\"_)",
-			"assign a; Select a pattern a(_, _\"danger\"_)",
-			"assign a; Select a pattern a(_, \"dan\")",
-			"assign a; Select a pattern a(_, _\"fig\"_)",
-			"assign a; Select a pattern a(_, _\"absolute - dan \"_)",
-			"assign a; Select a pattern a(_, _\"fig \"_)"
+			//"assign a; Select a pattern a(_, _\"dan\"_)",
+			//"assign a; Select a pattern a(_, _\"danger\"_)",
+			//"assign a; Select a pattern a(_, \"dan\")",
+			"assign a; Select a pattern a(_, \"(fig + popcicle)\")",
+			//"assign a; Select a pattern a(_, _\"absolute - dan \"_)",
+			//"assign a; Select a pattern a(_, _\"fig \"_)"
 		};
 		vector<vector<string>> expected = {
-			{ "1","10","11","2","3","7","8","9" },
-			{ "4","5","6" },
-			{},
-			{"10","11","7","8","9"},
-			{"10","11"},
-			{"10","11","12","7","8","9"}
+			//{ "1","10","11","2","3","7","8","9" },
+			//{ "4","5","6" },
+			//{},
+			{"12"},
+			//{"10","11"},
+			//{"10","11","12","7","8","9"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
