@@ -108,6 +108,12 @@ namespace UnitTesting
 			query = "stmt s; if ifs; Select s such that Parent*(ifs,ifs)";
 			Assert::IsFalse(queryValidator.parseInput(query));
 
+			query = "prog_line l; Select l such that Next(l,l)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
+			query = "prog_line l; Select l such that Next(1,l)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+
 			query = "stmt s; if ifs; Select s such that Next*(ifs,ifs)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 
