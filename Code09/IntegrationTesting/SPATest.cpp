@@ -136,10 +136,12 @@ public:
 			"stmt s; assign a; Select a such that Parent*(s,4)pattern a(_, \"x*y+ 1\")",
 			"stmt s; assign a; Select a such that Follows(s,4)pattern a(_, _\"y+1\"_)",
 			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)",*/
-			"stmt s; assign a; Select s with 1=1",
-			"stmt s; assign a; Select s with \"x\"=\"x\"",
-			"stmt s; assign a; Select s with \"x\"=\"y\"",
-			"stmt s; assign a; Select s with 1=2"
+			//"stmt s; assign a; Select s with 1=1",
+			//"stmt s; assign a; Select s with \"x\"=\"x\"",
+			//"stmt s; assign a; Select s with \"x\"=\"y\"",
+			//"stmt s; assign a; Select s with 1=2",
+			//"stmt s1, s2; Select s1 such that Uses(s1,_) and Modifies(s2,_) and Parent(s1,s2)",
+			"stmt s1, s2; Select s1 such that Uses(s1,_) and Modifies(s1,_) and Parent(s1,_)"
 		};
 		vector<vector<string>> expected = {
 			/*{},
@@ -157,10 +159,12 @@ public:
 			{"4"},
 			{},
 			{"1", "4"},*/
-			{"2","1","3","4"},
-			{"2","1","3","4" },
-			{},
-			{}
+			//{"2","1","3","4"},
+			//{"2","1","3","4" },
+			//{},
+			//{},
+			//{"2"},
+			{"2"}
 		};
 		
 		for (int i = 0; i < queries.size(); i++) {

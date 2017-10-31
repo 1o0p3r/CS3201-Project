@@ -190,6 +190,30 @@ bool suchThatAnalyzer::checkClauseBothWild()
 	return false;
 }
 
+vector<string> suchThatAnalyzer::optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator,
+	bool isAddArg1) {
+	vector<string> pkbResult;
+	bool hasArgEvalBefore = false;
+	tuple<int, int> synLocation = synArgIterator->second;
+	hasArgEvalBefore = true;
+	auto qTableResult = queryTable[get<TABLELOC>(synLocation)][get<SYNVECLOC>(synLocation)];
+	qTableResult.pop_back(); // remove mapping indicator
+	qTableResult = removeDuplicates(qTableResult);
+	vector<int> vecOfCandidates = Util::convertStringToInt(qTableResult);
+	for (int candidates : vecOfCandidates) {
+		if (!hasResultsForArg(candidates, false)) {
+			pkbResult.push_back(to_string(candidates));
+		}
+	}
+	return pkbResult;
+}
+
+bool suchThatAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1)
+{
+	//overwrite this method in child class
+	return false;
+}
+
 vector<int> suchThatAnalyzer::validatePKBResultsInt(string ent, vector<int> validateVec)
 {
 	vector<int> pkbResult;
@@ -241,6 +265,7 @@ vector<string> suchThatAnalyzer::getPKBAllArgValues()
 {	//override in child function
 	return vector<string>();
 }
+
 
 void suchThatAnalyzer::setUnitTestInputs(vector<vector<string>> hcInput)
 {

@@ -1,6 +1,13 @@
 #include "ParentAnalyzer.h"
 #include "Util.h"
 
+bool ParentAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
+	if (isAddArg1)
+		return pkbReadOnly.getChild(candidates).empty() ? false : true;
+	else
+		return pkbReadOnly.getParent(candidates).empty() ? false : true;
+}
+
 tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasParent = true;
@@ -8,21 +15,12 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 	vector<string> pkbResult;
 	vector<int> pkbChild;
 	vector<vector<string>> parentResult;
-	bool hasArg2EvalBefore = false;
+
 	const auto synArg2Iterator = queryMap.find(arg2);
 	
 	if (synArg2Iterator != queryMap.end() && arg1 == WILDCARD_SYMBOL) {
-		tuple<int, int> synLocation2 = synArg2Iterator->second;
-		hasArg2EvalBefore = true;
-		auto qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
-		qTableResult.pop_back(); // remove mapping indicator
-		qTableResult = removeDuplicates(qTableResult);
-		vecOfCandidates = Util::convertStringToInt(qTableResult);
-		for (int candidates : vecOfCandidates) {
-			if (!pkbReadOnly.getParent(candidates).empty()) {
-				pkbResult.push_back(to_string(candidates));
-			}
-		}
+		bool isAddArg1 = false;
+		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1);
 	}
 	else {
 		if (arg1 == WILDCARD_SYMBOL) {
@@ -62,17 +60,8 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	const auto synArg1Iterator = queryMap.find(arg1);
 
 	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
-		tuple<int, int> synLocation1 = synArg1Iterator->second;
-		hasArg1EvalBefore = true;
-		auto qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
-		qTableResult.pop_back(); // remove mapping indicator
-		qTableResult = removeDuplicates(qTableResult);
-		vecOfCandidates = Util::convertStringToInt(qTableResult);
-		for (int candidates : vecOfCandidates) {
-			if (!pkbReadOnly.getChild(candidates).empty()) {
-				pkbResult.push_back(to_string(candidates));
-			}
-		}
+		bool isAddArg1 = true;
+		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1);
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) {

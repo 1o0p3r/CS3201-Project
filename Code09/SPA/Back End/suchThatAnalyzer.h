@@ -4,6 +4,7 @@
 #include "TupleHash.h"
 #include "PKB.h"
 #include "QueryElement.h"
+#include "Util.h"
 #include <vector>
 #include <string>
 #include <iterator>
@@ -11,6 +12,7 @@
 #include <tuple>
 #include <unordered_set>
 #include <assert.h>
+
 
 using namespace std;
 
@@ -47,7 +49,8 @@ protected:
 	virtual bool checkClauseWildVariable(string arg2);
 	virtual bool checkClauseBothWild();
 
-
+	vector<string> optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator, bool isAddArg1);
+	virtual bool hasResultsForArg(const int candidates, const bool isAddArg1);
 
 	vector<int> validatePKBResultsInt(string ent, vector<int> validateVec);
 	vector<string> validatePKBResultsString(string ent, vector<string> validateVec);
