@@ -216,8 +216,7 @@ bool QueryValidator::isValidWith(string str) {
 }
 void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
 	string arg2Synonym) {
-	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym);
-
+	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym, WITH_STRING);
 	queryStatement.addWithQuery(queryElement);
 }
 //Checks if it is attrRef

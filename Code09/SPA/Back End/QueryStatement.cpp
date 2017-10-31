@@ -17,6 +17,12 @@ vector<QueryElement> QueryStatement::getPatternQueryElement() {
 vector<QueryElement> QueryStatement::getWithQueryElement() {
 	return withElement;
 }
+vector<QueryElement> QueryStatement::getWithQueryElementNoSyn() {
+
+}
+vector<QueryElement> QueryStatement::getWithQueryElementOneSyn() {
+
+}
 vector<SynonymEntityPair> QueryStatement::getSynonymEntityList() {
 	return synonymEntityList;
 }
