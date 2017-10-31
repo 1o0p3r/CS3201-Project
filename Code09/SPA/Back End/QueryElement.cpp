@@ -9,13 +9,12 @@ QueryElement::QueryElement()
 
 //Select
 //type can be synonym, tuple, BOOLEAN
-QueryElement::QueryElement(string entity, string synonym, string type, string attrName, string clause)
+QueryElement::QueryElement(string entity, string synonym, string type, string attrName)
 {
 	ent = entity;
 	syn = synonym;
 	selectType = type;
 	synAttr = attrName;
-	clauseType = clause;
 }
 
 //Such that: 7 parameteres

@@ -4,6 +4,7 @@
 #include <Util.h>
 const int ZERO = 0;
 const int ONE = 1;
+const int TWO = 2;
 const string WITH_STRING = "with";
 const string PROCNAME = "procName";
 const string VARNAME = "varName";
@@ -15,23 +16,7 @@ const string STRING_LITERAL = "stringLiteral";
 const string STRTYPE = "strType";
 const string INTTYPE = "intType";
 const string SYMBOL_SEMI_COLON_STRING = ";";
-const string SELECT_STRING = "Select";
-const string COMMENT_STRING = "comment";
-const string SUCH_THAT_STRING = "such that";
-const string PATTERN_STRING = "pattern";
-const string COMMA_WHITESPACE_STRING = ", ";
-const string FOLLOWS_STRING = "Follows";
-const string FOLLOWS_STAR_STRING = "Follows*";
-const string PARENT_STRING = "Parent";
-const string PARENT_STAR_STRING = "Parent";
-const string MODIFIES_STRING = "Modifies";
-const string USES_STRING = "Uses";
-const string CALLS_STRING = "Calls";
-const string NEXT_STRING = "Next";
 const string UNDER_SCORE_STRING = "_";
-const string WILDCARD_STRING = "wildcard";
-const string CONSTANT_STRING = "constant";
-const string RELATIONSHIP_STRING = "relationship";
 const string SYMBOL_LEFT_BRACKET_STRING = "(";
 const string SYMBOL_RIGHT_BRACKET_STRING = ")";
 const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
@@ -65,8 +50,6 @@ const char DOUBLE_QUOTATION = '\"';
 const char EQUAL_CHAR = '=';
 const string INVERTED_COMMA_STRING = "\"";
 
-const string EXACT_STRING = "exact";
-const string SUBSTRING_STRING = "substring";
 const string VARIABLE_STRING = "variable";
 const string SYNONYM_STRING = "synonym";
 const string INTEGER_STRING = "integer";
@@ -195,12 +178,16 @@ bool QueryValidator::isValidWith(string str) {
 
 				//If arg1 and 2 are both attrRref
 				if (arg1AttrRef && arg2AttrRef) {
+					//E.g. p.procName = v.varName
 					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
 				} else if (arg1AttrRef && !arg2AttrRef) {
+					//E.g. p.procName = "sth"
 					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
 				} else if (!arg1AttrRef && arg2AttrRef) {
+					//E.g. "sth" = p.procName
 					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
 				} else {
+					//E.g. n = 1
 					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
 				}
 
@@ -218,7 +205,30 @@ void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, strin
 	string arg2Synonym) {
 	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym, WITH_STRING);
 	queryStatement.addWithQuery(queryElement);
+
+	bool arg1StringLiteralOrNum = false;
+	bool arg2StringLiteralOrNum = false;
+
+	if (isStringLiteralOrNumber(arg1Synonym)) {
+		arg1StringLiteralOrNum = true;
+	}
+	if (isStringLiteralOrNumber(arg2Synonym)) {
+		arg2StringLiteralOrNum = true;
+	}
+	if (!arg1StringLiteralOrNum && !arg2StringLiteralOrNum) {
+		queryStatement.addWithQueryElementNoSyn(queryElement);
+	} else if ((arg1StringLiteralOrNum && !arg2StringLiteralOrNum) || (!arg1StringLiteralOrNum && arg2StringLiteralOrNum)) {
+		queryStatement.addWithQueryElementOneSyn(queryElement);
+	} else {
+		queryStatement.addNormalQueryElement(queryElement);
+		queryStatement.addNormalMultiMap(arg1Synonym, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+		queryStatement.addNormalMultiMap(arg2Synonym, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+	}
 }
+bool QueryValidator::isStringLiteralOrNumber(string syn) {
+	return (isQuotationIdentRegex(syn) || is_number(syn));
+}
+
 //Checks if it is attrRef
 bool QueryValidator::isAttrRef(string arg) {
 	if (isValidAttRefRegex(arg)) {

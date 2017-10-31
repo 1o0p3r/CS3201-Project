@@ -23,32 +23,32 @@ public:
 		string filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
 		Assert::IsTrue(Parse(filename, pkb));
 
-		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Calls");
+		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Calls", "suchThat");
 		clauseResult = CallsAnalyzer(wildWild, pkb).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement wildString("_", "wildcard", "wildcard", "q", "string", "procedure", "Calls");
+		QueryElement wildString("_", "wildcard", "wildcard", "q", "string", "procedure", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildString);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(wildString, pkb).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement stringWild("Example", "string", "procedure", "_", "wildcard", "", "Calls");
+		QueryElement stringWild("Example", "string", "procedure", "_", "wildcard", "", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(stringWild);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(stringWild, pkb).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement stringString("Example", "string", "procedure", "q", "string", "", "Calls");
+		QueryElement stringString("Example", "string", "procedure", "q", "string", "", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(stringString);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(stringString, pkb).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement synSyn("try", "synonym", "procedure", "fry", "synonym", "procedure", "Calls");
+		QueryElement synSyn("try", "synonym", "procedure", "fry", "synonym", "procedure", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
@@ -61,7 +61,7 @@ public:
 			}
 
 
-		QueryElement synString("a", "synonym", "procedure", "p", "string", "procedure", "Calls");
+		QueryElement synString("a", "synonym", "procedure", "p", "string", "procedure", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synString);
 		qa.setQS(qs);
@@ -73,7 +73,7 @@ public:
 				Assert::AreEqual(hardcode[i][j], get<1>(clauseResult)[i][j]);
 			}
 
-		QueryElement synWild("a", "synonym", "procedure", "_", "wildcard", "procedure", "Calls");
+		QueryElement synWild("a", "synonym", "procedure", "_", "wildcard", "procedure", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
@@ -86,7 +86,7 @@ public:
 			}
 
 
-		QueryElement wildSyn("_", "wildcard", "procedure", "a", "synonym", "procedure", "Calls");
+		QueryElement wildSyn("_", "wildcard", "procedure", "a", "synonym", "procedure", "Calls", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);

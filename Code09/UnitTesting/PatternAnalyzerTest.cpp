@@ -23,7 +23,7 @@ public:
 		vector<vector<string>> hardCodeResult;
 
 		//"if ifs; Select ifs pattern ifs("a", _)"
-		QueryElement ifPat("a", "_", "_", "if", "ifs", "variable", "", "", "");
+		QueryElement ifPat("a", "_", "_", "if", "ifs", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
 		qs.addPatternQuery(ifPat);
 		qa.setQS(qs);
@@ -51,7 +51,7 @@ public:
 		vector<vector<string>> hardCodeResult;
 
 		//"if ifs; Select ifs pattern ifs("a", _)"
-		QueryElement whilePat("b", "_", "_", "while", "whiles", "variable", "", "", "");
+		QueryElement whilePat("b", "_", "_", "while", "whiles", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
 		qs.addPatternQuery(whilePat);
 		qa.setQS(qs);

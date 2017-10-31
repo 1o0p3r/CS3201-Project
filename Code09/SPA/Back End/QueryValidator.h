@@ -81,6 +81,8 @@ private:
 	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
+
+	bool isStringLiteralOrNumber(string syn);
 	
 	string extractIdentity(string arg);
 

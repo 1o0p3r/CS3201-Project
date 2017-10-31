@@ -895,7 +895,7 @@ bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName)
 	return false;
 }
 void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
-	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str, SELECT_STRING));
+	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
 }
 
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {

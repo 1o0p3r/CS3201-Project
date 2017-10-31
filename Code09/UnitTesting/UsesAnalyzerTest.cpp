@@ -46,7 +46,7 @@ public:
 		pkb.setStatementType(4, "assign");
 
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Uses");
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Uses", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);

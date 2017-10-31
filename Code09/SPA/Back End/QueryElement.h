@@ -50,7 +50,7 @@ public:
 	//Ent = empty	synonym = empty		type = BOOLEAN		attrName = empty
 	//E.G. procedure p; constant c; stmt s; prog_line n; Select p.procName with n=1
 	//Ent = procedure	Synonym = p		type = attrRef	attrName = procName
-	QueryElement(string entity, string synonym, string type, string attrName, string clause);
+	QueryElement(string entity, string synonym, string type, string attrName);
 	//Such that clauses
 	//procedure p, variable v
 	//E.g. such that Modifies(p,v)
@@ -64,7 +64,7 @@ public:
 	//E.g. procedure p; variable v; 
 	//with p.procName = v.varName
 	//with n=1
-	//arg 1 = p.procName	arg2 = v.varName	arg1Type = procName		arg2Type = varName		arg1Ent = procedure		arg2Ent = variable		arg1Syn = p		arg1Syn = v
+	//arg1Type = procName		arg2Type = varName		arg1Ent = procedure		arg2Ent = variable		arg1Syn = p		arg2Syn = v
 	//arg1Type = prog_line	arg2Type = number	arg1Syn = n		arg2Syn = 1
 	//arg1Type and arg2Type = prog_line/varName/procName/value/stmt#/stringLiteral/number
 	QueryElement(string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn, string clause); //With
