@@ -468,7 +468,7 @@ void PKB::whileCFG(int& i) {
 	goBack.push_back(i);
 	next.setNext(i, i + 1);
 	i++;
-	while (contains(parent.getParentStar(i), goBack.back())) {
+	while (!parent.getParent(i).empty() && parent.getParent(i)[0] == goBack.back()) {
 		processNext(i);
 	}
 	if (i < typeTable.size()) {
@@ -496,13 +496,13 @@ void PKB::ifCFG(int& i) {
 	int current = i;
 	next.setNext(i, i + 1);
 	i++;
-	while (contains(parent.getParentStar(i), current) && (elseSet.find(i) == elseSet.end())) {
+	while (!parent.getParent(i).empty() && (parent.getParent(i)[0] == current) && (elseSet.find(i) == elseSet.end())) {
 		processNext(i);
 	}
 	ifParent.push_back(current);
 	int store = lastLineOfIf;
 	next.setNext(current, i);
-	while (contains(parent.getParentStar(i), current)) {
+	while (!parent.getParent(i).empty() && parent.getParent(i)[0] == current) {
 		processNext(i);
 	}
 	state.pop_back();
