@@ -239,7 +239,6 @@ bool QueryValidator::parseInput(string str) {
 			}
 			str.erase(ZERO, pos + ONE);
 		}
-		cout << "hi";
 		//After the loop ends, comes the select query
 		if (str.find(SELECT_STRING) != string::npos) {
 			return parseQueryLine(str);

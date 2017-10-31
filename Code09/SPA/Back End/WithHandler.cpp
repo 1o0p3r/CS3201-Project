@@ -215,7 +215,7 @@ void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, strin
 	if (isStringLiteralOrNumber(arg2Synonym)) {
 		arg2StringLiteralOrNum = true;
 	}
-	if (!arg1StringLiteralOrNum && !arg2StringLiteralOrNum) {
+	if (arg1StringLiteralOrNum && arg2StringLiteralOrNum) {
 		queryStatement.addWithQueryElementNoSyn(queryElement);
 	} else if ((arg1StringLiteralOrNum && !arg2StringLiteralOrNum) || (!arg1StringLiteralOrNum && arg2StringLiteralOrNum)) {
 		queryStatement.addWithQueryElementOneSyn(queryElement);

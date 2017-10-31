@@ -233,6 +233,7 @@ namespace UnitTesting
 		
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\") with d.value = 4";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 pattern a#(v#,_\"x+y\"_) such that Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -361,6 +362,11 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string query;
 			QueryStatement queryStatement;
+
+
+			query = "stmt a; constant c; prog_line n; Select BOOLEAN with a.stmt# = c.value";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "procedure p; constant c; prog_line n; Select BOOLEAN with n=1";
 			Assert::IsTrue(queryValidator.parseInput(query));
