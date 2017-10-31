@@ -93,18 +93,34 @@ vector<string> WithAnalyzer::getAllProcName(const string ent)
 void WithAnalyzer::addSynToVec(vector<vector<string>> &clauseResult, const vector<string> &candidateList,
 	const vector<string> &candidateListSyn, bool &containsWith)
 {
-	vector<int> toDelete;
+	
+	vector<int> toKeep;
+	string ref1, ref2;
+	vector<vector<string>> result;
 	for(int i=0; i<clauseResult.size();i++)
 	{
 		if (!clauseResult[i].empty()) {
-			if (argSynTypeMap[candidateList[i]] != stringLiteral && argSynTypeMap[candidateList[i]] != integer)
+			if (argSynTypeMap[candidateList[i]] != stringLiteral && argSynTypeMap[candidateList[i]] != integer) {
 				clauseResult[i].push_back(candidateListSyn[i]);
-			else
-				toDelete.push_back(i);
+				toKeep.push_back(i);
+			}
+			else {
+				if (i == 0)
+					ref1 = candidateListSyn[i];
+				else
+					ref2 = candidateListSyn[i];
+			}
 			containsWith = true;
 		}
 	}
-	for (const auto &rmIndex : toDelete)
-		clauseResult.erase(clauseResult.begin() + rmIndex);
+	
+	if (!ref1.empty() && !ref2.empty()) {
+		if (ref1 == ref2)
+			containsWith = true;
+	}
+	
+	for (const auto &keepIndex : toKeep)
+		result.push_back(clauseResult[keepIndex]);
+	clauseResult = result;
 }
 

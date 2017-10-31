@@ -179,19 +179,19 @@ bool QueryValidator::isValidWith(string str) {
 				//Checks for corner cases
 				//Additional checks for both sides are string i.e. with "First" == "First"
 				//Redundant query, so no need to add query
-				if (arg1Identity == STRING_LITERAL && arg2Identity == STRING_LITERAL) {
-					if (arg1 == arg2) {
-						continue;
-					}
-				}
-				//Check corner case again where integer = integer
-				if (arg1Identity == NUMBER_STRING && arg2Identity == NUMBER_STRING) {
-					if (arg1 == arg2) {
-						continue;
-					} else {
-						return false;
-					}
-				}
+				//if (arg1Identity == STRING_LITERAL && arg2Identity == STRING_LITERAL) {
+				//	if (arg1 == arg2) {
+				//		continue;
+				//	}
+				//}
+				////Check corner case again where integer = integer
+				//if (arg1Identity == NUMBER_STRING && arg2Identity == NUMBER_STRING) {
+				//	if (arg1 == arg2) {
+				//		continue;
+				//	} else {
+				//		return false;
+				//	}
+				//}
 
 				//If arg1 and 2 are both attrRref
 				if (arg1AttrRef && arg2AttrRef) {
