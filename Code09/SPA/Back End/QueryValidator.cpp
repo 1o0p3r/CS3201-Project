@@ -484,35 +484,35 @@ void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, stri
 	bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring) {
 	if (arg1UnderScore) {
 		if (arg2UnderScore) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Exact) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Substring) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		}
 	} else if (arg1Variable) {
 		if (arg2UnderScore) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Exact) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, VARIABLE_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Substring) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, VARIABLE_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		}
 	} else if (arg1StringLiteral) {
 		if (arg2UnderScore) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Exact) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		} else if (arg2Substring) {
-			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING);
+			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 			queryStatement.addPatternQuery(assignPatternQueryElement);
 		}
 	}
@@ -663,26 +663,26 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	//If arg1 is a boolean, just add
 	if (arg1Underscore) {
-		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
 	} else if (arg1StringLiteral) {
-		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING);
+		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
 	} else if (arg1Variable) {
-		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING);
+		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
 	}
 }
 
 void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
-		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
 	} else if (arg1StringLiteral) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING);
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
 	} else if (arg1Variable) {
-		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING);
+		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(whileQueryElement);
 	}
 }
@@ -859,7 +859,7 @@ bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName)
 	return false;
 }
 void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
-	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
+	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str, SELECT_STRING));
 }
 
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
