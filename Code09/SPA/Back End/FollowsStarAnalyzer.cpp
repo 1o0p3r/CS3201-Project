@@ -1,5 +1,4 @@
 #include "FollowsStarAnalyzer.h"
-const string WILDCARD_SYMBOL = "_";
 
 tuple<bool, vector<vector<string>>> FollowsStarAnalyzer::addArgTwoResult(string arg1)
 {

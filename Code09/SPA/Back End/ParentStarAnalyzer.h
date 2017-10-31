@@ -5,8 +5,9 @@ class ParentStarAnalyzer :
 	public suchThatAnalyzer
 {
 public:
-	ParentStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly) :
-		suchThatAnalyzer(suchThatClause, pkbReadOnly)
+	ParentStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly, vector<vector<vector<string>>> const &qTable,
+		unordered_map<string, tuple<int, int>> const &qMap) :
+		suchThatAnalyzer(suchThatClause, pkbReadOnly, qTable, qMap)
 	{
 	}
 

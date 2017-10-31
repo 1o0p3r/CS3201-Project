@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Abstract_QA_API.h"
 #include "TupleHash.h"
 #include "PKB.h"
 #include "QueryElement.h"
@@ -16,6 +17,8 @@ using namespace std;
 class suchThatAnalyzer
 {
 protected:
+	vector<vector<vector<string>>> queryTable;
+	unordered_map<string, tuple<int, int>> queryMap;
 	PKB pkbReadOnly;
 	string stEntity;
 
@@ -53,7 +56,9 @@ protected:
 	virtual vector<string> getPKBAllArgValues();
 
 public:
-	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
+	virtual ~suchThatAnalyzer() = default;
+	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb, vector<vector<vector<string>>> const &qTable, 
+			unordered_map<string, tuple<int, int>> const &qMap);
 	tuple<bool, vector<vector<string>>> solveClause();
 	tuple<bool,vector<vector<string>>> solveClauseStmt();
 	

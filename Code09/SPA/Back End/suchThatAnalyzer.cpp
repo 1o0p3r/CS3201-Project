@@ -8,9 +8,13 @@ enum clauseCases
 	wildVar, wildSyn, wildWild
 };
 
-suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb)
+suchThatAnalyzer::suchThatAnalyzer(QueryElement stClause, PKB pkb, 
+		vector<vector<vector<string>>> const &qTable, unordered_map<string, tuple<int, int>> const &qMap)
 { 
 	pkbReadOnly = pkb;
+	queryTable = qTable;
+	queryMap = qMap;
+
 	stEntity = stClause.getSuchThatRel();
 	arg1 = stClause.getSuchThatArg1();
 	arg1Entity = stClause.getSuchThatArg1Entity();

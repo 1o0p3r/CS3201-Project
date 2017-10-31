@@ -4,8 +4,9 @@ class FollowsStarAnalyzer :
 	public suchThatAnalyzer
 {
 public:
-	FollowsStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly) :
-		suchThatAnalyzer(suchThatClause, pkbReadOnly)
+	FollowsStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly, vector<vector<vector<string>>> const &qTable,
+		unordered_map<string, tuple<int, int>> const &qMap) :
+		suchThatAnalyzer(suchThatClause, pkbReadOnly, qTable, qMap)
 	{
 	}
 

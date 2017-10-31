@@ -29,4 +29,5 @@ public:
 	static string removeSpace(string line);
 	static bool isEndOfWord(const char &c);
 	static vector<string> convertIntToString(const vector<int> &vint);
+	static vector<int> convertStringToInt(const vector<string> &vstring);
 };

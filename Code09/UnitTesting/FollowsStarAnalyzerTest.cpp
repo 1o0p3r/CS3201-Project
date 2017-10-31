@@ -33,6 +33,9 @@ public:
 		qa.setPKB(pkb);
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
+		unordered_map<string, tuple<int, int>> qMap;
+		vector<vector<vector<string>>> qTable;
+
 		//intint
 		/*
 		1.while {
@@ -51,35 +54,35 @@ public:
 		qs.addSuchThatQuery(wildWild);
 		qa.setQS(qs);
 
-		clauseResult = FollowsStarAnalyzer(wildWild, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "FollowsStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildInt);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(wildInt, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(wildInt,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intWild("2", "int", "assign", "_", "wildcard", "", "FollowsStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intWild);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(intWild, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(intWild,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intInt("2", "int", "assign", "6", "int", "", "FollowsStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intInt);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(intInt, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(intInt,pkb, qTable, qMap).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
 
 		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "FollowsStar");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(intSyn, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(intSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "3","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -92,7 +95,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synInt);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(synInt, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(synInt,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2","3","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -104,7 +107,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(synSyn, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2","a" },
 		{ "3","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
@@ -118,7 +121,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(synWild, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(synWild,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2","3","5","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -131,7 +134,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);
-		clauseResult = FollowsStarAnalyzer(wildSyn, pkb).solveClause();
+		clauseResult = FollowsStarAnalyzer(wildSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "3","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)

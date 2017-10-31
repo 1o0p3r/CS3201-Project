@@ -1,7 +1,5 @@
 #include "FollowsAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
-
 tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasFollows = true;

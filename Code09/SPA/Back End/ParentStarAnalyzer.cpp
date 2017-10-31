@@ -1,7 +1,5 @@
 #include "ParentStarAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
-
 tuple<bool, vector<vector<string>>> ParentStarAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasParentStar = true;

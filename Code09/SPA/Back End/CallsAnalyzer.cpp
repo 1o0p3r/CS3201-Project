@@ -1,5 +1,4 @@
 #include "CallsAnalyzer.h"
-const string WILDCARD_SYMBOL = "_";
 
 tuple<bool, vector<vector<string>>> CallsAnalyzer::addArgTwoResult(string arg1)
 {

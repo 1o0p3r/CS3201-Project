@@ -1,6 +1,5 @@
 #include "ModifiesAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
 const string PROCEDURE = "procedure";
 
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg1)

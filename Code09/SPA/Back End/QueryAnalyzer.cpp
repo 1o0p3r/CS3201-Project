@@ -463,46 +463,46 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
 		switch (evaluateSTRelation) {
 			case modifies:
-				clauseResult = ModifiesAnalyzer(stClause, pkbPtr).solveClause();
+				clauseResult = ModifiesAnalyzer(stClause, pkbPtr, mergedQueryTable,synTableMap).solveClause();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
-				clauseResult = UsesAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = UsesAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
-				clauseResult = ParentAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = ParentAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parentStar:
-				clauseResult = ParentStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = ParentStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case follows:
-				clauseResult = FollowsAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = FollowsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
-				clauseResult = FollowsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = FollowsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case calls:
-				clauseResult = CallsAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = CallsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case callsStar:
-				clauseResult = CallsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = CallsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
-				clauseResult = NextAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = NextAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;

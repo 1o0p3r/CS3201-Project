@@ -1,6 +1,5 @@
 #include "ParentAnalyzer.h"
-
-const string WILDCARD_SYMBOL = "_";
+#include "Util.h"
 
 tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 {
@@ -9,18 +8,36 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 	vector<string> pkbResult;
 	vector<int> pkbChild;
 	vector<vector<string>> parentResult;
-
-	if (arg1 == WILDCARD_SYMBOL) {
-		vecOfCandidates = pkbReadOnly.getWhile();
-		vector<int> temp = pkbReadOnly.getIf();
-		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
-	} else
-		vecOfCandidates.push_back(stoi(arg1));
-	for (int candidates : vecOfCandidates) {
-		pkbChild = pkbReadOnly.getChild(candidates);
-		pkbChild = validatePKBResultsInt(arg2Entity, pkbChild);
-		for (int candidatesChosen : pkbChild) {
-			pkbResult.push_back(to_string(candidatesChosen));
+	bool hasArg2EvalBefore = false;
+	const auto synArg2Iterator = queryMap.find(arg2);
+	
+	if (synArg2Iterator != queryMap.end() && arg1 == WILDCARD_SYMBOL) {
+		tuple<int, int> synLocation2 = synArg2Iterator->second;
+		hasArg2EvalBefore = true;
+		auto qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
+		qTableResult.pop_back(); // remove mapping indicator
+		qTableResult = removeDuplicates(qTableResult);
+		vecOfCandidates = Util::convertStringToInt(qTableResult);
+		for (int candidates : vecOfCandidates) {
+			if (!pkbReadOnly.getParent(candidates).empty()) {
+				pkbResult.push_back(to_string(candidates));
+			}
+		}
+	}
+	else {
+		if (arg1 == WILDCARD_SYMBOL) {
+			vecOfCandidates = pkbReadOnly.getWhile();
+			vector<int> temp = pkbReadOnly.getIf();
+			vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+		}
+		else
+			vecOfCandidates.push_back(stoi(arg1));
+		for (int candidates : vecOfCandidates) {
+			pkbChild = pkbReadOnly.getChild(candidates);
+			pkbChild = validatePKBResultsInt(arg2Entity, pkbChild);
+			for (int candidatesChosen : pkbChild) {
+				pkbResult.push_back(to_string(candidatesChosen));
+			}
 		}
 	}
 	if (pkbResult.empty())
@@ -41,16 +58,34 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	vector<int> pkbParent;
 	vector<string> pkbResult;
 	vector<vector<string>> parentResult;
+	bool hasArg1EvalBefore = false;
+	const auto synArg1Iterator = queryMap.find(arg1);
 
-	if (arg2 == WILDCARD_SYMBOL) {
-		vecOfCandidates = pkbReadOnly.getAllStmt();
-	} else
-		vecOfCandidates.push_back(stoi(arg2));
-	for (int candidates : vecOfCandidates) {
-		pkbParent = pkbReadOnly.getParent(candidates);
-		pkbParent = validatePKBResultsInt(arg1Entity, pkbParent);
-		for (int candidatesChosen : pkbParent) {
-			pkbResult.push_back(to_string(candidatesChosen));
+	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
+		tuple<int, int> synLocation1 = synArg1Iterator->second;
+		hasArg1EvalBefore = true;
+		auto qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
+		qTableResult.pop_back(); // remove mapping indicator
+		qTableResult = removeDuplicates(qTableResult);
+		vecOfCandidates = Util::convertStringToInt(qTableResult);
+		for (int candidates : vecOfCandidates) {
+			if (!pkbReadOnly.getChild(candidates).empty()) {
+				pkbResult.push_back(to_string(candidates));
+			}
+		}
+	}
+	else {
+		if (arg2 == WILDCARD_SYMBOL) {
+			vecOfCandidates = pkbReadOnly.getAllStmt();
+		}
+		else
+			vecOfCandidates.push_back(stoi(arg2));
+		for (int candidates : vecOfCandidates) {
+			pkbParent = pkbReadOnly.getParent(candidates);
+			pkbParent = validatePKBResultsInt(arg1Entity, pkbParent);
+			for (int candidatesChosen : pkbParent) {
+				pkbResult.push_back(to_string(candidatesChosen));
+			}
 		}
 	}
 	if (pkbResult.empty())
@@ -72,18 +107,65 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> parentResult;
-
 	
-	vecOfCandidates = pkbReadOnly.getWhile();
-	vector<int> temp = pkbReadOnly.getIf();
-	vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
-	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
+	tuple<int,int> synLocation1;
+	tuple<int, int> synLocation2;
+	bool hasArg2EvalBefore = false;
+	bool hasArg1EvalBefore = false;
+	const auto synArg1Iterator = queryMap.find(arg1);
+	const auto synArg2Iterator = queryMap.find(arg2);
+	vector<string> qTableResult;
+
+	if (synArg1Iterator == queryMap.end()) {
+		vecOfCandidates = pkbReadOnly.getWhile();
+		vector<int> temp = pkbReadOnly.getIf();
+		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
+		vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
+	} 
+	if (synArg1Iterator != queryMap.end()) {
+		synLocation1 = synArg1Iterator->second;
+		hasArg1EvalBefore = true;
+	} 
+	if (synArg2Iterator != queryMap.end()) {
+		synLocation2 = synArg2Iterator->second;
+		hasArg2EvalBefore = true;
+	}
+
+	if (hasArg1EvalBefore && hasArg2EvalBefore) {
+		if (queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)].size() >
+			queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)].size())
+			qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
+		else {
+			qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
+			hasArg2EvalBefore = false;
+		}
+	} else if (hasArg1EvalBefore) {
+		qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
+	} else if (hasArg2EvalBefore) {
+		qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
+	}
+	if (!qTableResult.empty()) {
+		qTableResult.pop_back(); // remove mapping indicator
+		qTableResult = removeDuplicates(qTableResult);
+		vecOfCandidates = Util::convertStringToInt(qTableResult);
+	}
+
 	for (int candidates : vecOfCandidates) {
-		pkbParent = pkbReadOnly.getChild(candidates);
-		pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
+		if (!hasArg2EvalBefore) {
+			pkbParent = pkbReadOnly.getChild(candidates);
+			pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
+		} else {
+			pkbParent = pkbReadOnly.getParent(candidates);
+			pkbParent = validatePKBResultsInt(arg1Entity, pkbParent);
+		}
 		for (int candidatesChosen : pkbParent) {
-			pkbResultForArg1.push_back(to_string(candidates));
-			pkbResultForArg2.push_back(to_string(candidatesChosen));
+			if (!hasArg2EvalBefore) {
+				pkbResultForArg1.push_back(to_string(candidates));
+				pkbResultForArg2.push_back(to_string(candidatesChosen));
+			} else {
+				pkbResultForArg1.push_back(to_string(candidatesChosen));
+				pkbResultForArg2.push_back(to_string(candidates));
+			}
 		}
 	}
 	if (pkbResultForArg1.empty())

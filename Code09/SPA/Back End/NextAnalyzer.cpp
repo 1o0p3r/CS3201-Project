@@ -1,7 +1,5 @@
 #include "NextAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
-
 tuple<bool, vector<vector<string>>> NextAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasNext = true;
