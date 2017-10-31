@@ -25,6 +25,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgTwoResult(string arg1)
 	if (pkbResult.empty())
 		hasUses = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		UsesResult.push_back(pkbResult);
 	}
@@ -53,6 +54,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	if (pkbResult.empty())
 		hasUses = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		UsesResult.push_back(pkbResult);
 	}

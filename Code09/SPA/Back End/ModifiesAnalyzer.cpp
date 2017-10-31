@@ -25,6 +25,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg
 	if (pkbResult.empty())
 		hasModifies = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		modifiesResult.push_back(pkbResult);
 	}
@@ -58,6 +59,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	if (pkbResult.empty())
 		hasModifies = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		modifiesResult.push_back(pkbResult);
 	}
