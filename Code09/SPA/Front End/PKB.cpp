@@ -50,7 +50,7 @@ PKB::PKB() {
 	vector<int> ifTable;
 	vector<int> callTable;
 	vector<int> typeTable;
-	vector<int> firstlineTable;
+	set<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<tuple<vector<int>, vector<string>>> patternTable;
 	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
@@ -97,7 +97,7 @@ int PKB::getProcIndex(string procName) {
 	allProcedures.insert(procName);
 
 	if (find(procIndexTable.begin(), procIndexTable.end(), procName) != procIndexTable.end())
-return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
+		return find(procIndexTable.begin(), procIndexTable.end(), procName) - procIndexTable.begin();
 
 	else {
 		procIndexTable.push_back(procName);
@@ -471,10 +471,11 @@ void PKB::whileCFG(int& i) {
 	while (!parent.getParent(i).empty() && parent.getParent(i)[0] == goBack.back()) {
 		processNext(i);
 	}
-	if (i < typeTable.size()) {
+	if (i < typeTable.size() && firstlineTable.find(i) == firstlineTable.end()) {
 		next.setNext(current, i);
 	}
 	state.pop_back();
+	lastLineOfIf = current;
 }
 
 void PKB::assignCallCFG(int& i) {
@@ -484,7 +485,7 @@ void PKB::assignCallCFG(int& i) {
 	} else if (state.back() == _if && (i >= typeTable.size() - 1 || parent.getParent(i + 1).empty() || (elseSet.find(i + 1) != elseSet.end()) || (parent.getParent(i + 1)[0] != ifParent.back()))) {
 		lastLineOfIf = i;
 		ifParent.pop_back();
-	} else if (i < typeTable.size() - 1 && (find(firstlineTable.begin(), firstlineTable.end(), i + 1) == firstlineTable.end())) {
+	} else if (i < typeTable.size() - 1 && firstlineTable.find(i + 1) == firstlineTable.end()) {
 		next.setNext(i, i + 1);
 	}
 	i++;
@@ -496,36 +497,35 @@ void PKB::ifCFG(int& i) {
 	int current = i;
 	next.setNext(i, i + 1);
 	i++;
+	ifHolders.push_back({});
 	while (!parent.getParent(i).empty() && (parent.getParent(i)[0] == current) && (elseSet.find(i) == elseSet.end())) {
 		processNext(i);
 	}
 	ifParent.push_back(current);
-	int store = lastLineOfIf;
+	ifHolders.back().push_back(lastLineOfIf);
 	next.setNext(current, i);
 	while (!parent.getParent(i).empty() && parent.getParent(i)[0] == current) {
 		processNext(i);
 	}
 	state.pop_back();
+	ifHolders.back().push_back(lastLineOfIf);
 	int nextLine;
-	if (elseSet.find(i) != elseSet.end()) {
-		ifHolder.push_back(store);
-		ifHolder.push_back(lastLineOfIf);
-	} else if (i < typeTable.size()) {
-		if (state.back() == _while) {
-			nextLine = goBack.back();
-			goBack.pop_back();
-		} else {
-			nextLine = i;
+	if (state.back() == _while) {
+		nextLine = goBack.back();
+		goBack.pop_back();
+	} else {
+		nextLine = i;
+	}
+	if (elseSet.find(nextLine) == elseSet.end() && nextLine < typeTable.size() && firstlineTable.find(nextLine) == firstlineTable.end()) {
+		for each (int line in ifHolders.back()) {
+			next.setNext(line, nextLine);
 		}
-		if (find(firstlineTable.begin(), firstlineTable.end(), nextLine) == firstlineTable.end()) {
-			next.setNext(store, nextLine);
-			next.setNext(lastLineOfIf, nextLine);
-			for each (int line in ifHolder) {
-				next.setNext(line, nextLine);
-			}
-			ifHolder.clear();
+	} else {
+		if (ifHolders.size() > 1) {
+			ifHolders[ifHolders.size() - 2].insert(ifHolders[ifHolders.size() - 2].end(), ifHolders[ifHolders.size() - 1].begin(), ifHolders[ifHolders.size() - 1].end());
 		}
 	}
+	ifHolders.pop_back();
 }
 
 bool PKB::contains(vector<int> list, int i) {
@@ -611,17 +611,8 @@ vector<int> PKB::getAllStmt() {
 	return result;
 }
 
-void PKB::setFirstline(string procName, int firstline) {
-	int procIndex = getProcIndex(procName);
-	if (firstlineTable.size() <= procIndex) {
-		firstlineTable.resize(procIndex + 1);
-	}
-	firstlineTable[procIndex] = firstline;
-}
-
-int PKB::getFirstline(string procName) {
-	int procIndex = getProcIndex(procName);
-	return firstlineTable[procIndex];
+void PKB::setFirstline(int firstline) {
+	firstlineTable.insert(firstline);
 }
 
 void PKB::setLastline(string procName, int lastline) {

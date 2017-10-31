@@ -25,7 +25,6 @@ public:
 		Assert::IsTrue(pkb.getCallsStar("Example") == vector<string>{"q", "p"});
 		Assert::IsTrue(pkb.getChild(13) == vector<int>{14, 18, 19, 20});
 		Assert::IsTrue(pkb.getChildStar(4) == vector<int>{5, 6, 7, 8, 9, 10, 11});
-		Assert::IsTrue(pkb.getFirstline("p") == 13);
 		Assert::IsTrue(pkb.getFollowedBy(12) == vector<int>{4});
 		Assert::IsTrue(pkb.getFollowedByStar(21) == vector<int>{13});
 		Assert::IsTrue(pkb.getFollows(13) == vector<int>{21});

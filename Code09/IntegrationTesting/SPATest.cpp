@@ -216,10 +216,8 @@ public:
 			"30", "41", "3", "7", "15", "19", "20", "22", "33", "35", "39"}, //correct
 			{"27", "29"},	//Returning every stmt*/
 			{"15", "17", "25", "27", "31", "32"},	//Returning evety stmt
-			{ "8", "17", "27", "34", "37", "40", "1", "2", "4", "6", "9",
-			"10", "12", "14", "16", "18", "23", "24", "25", "28", "29", "31",
-			"32", "36", "38", "42", "43", "5", "11", "13", "21", "26",
-			"30", "41", "3", "7", "15", "19", "20", "22", "33", "35", "39" }, //Returning evety stmt
+			{"1", "10", "11", "12", "13", "14","15", "16", "17", "18", "19", "2", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29",
+			"3", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "4","40", "41", "42", "43","5", "6", "7","8", "9"},
 			{}, //Correct
 			{"37"},	//Obtained : 8 17 27 34 37 40
 			{"37"}, //Obtained : 8 17 27 34 37 40
@@ -235,19 +233,22 @@ public:
 				answer = analyzer.runQueryEval();
 			}
 			else {
-				Logger::WriteMessage("Invalid Query in Source 3");
+				Logger::WriteMessage("Invalid Query in Source Next");
 				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
-			string testNo = "size error in Source 3 in test ";
+			string testNo = "size error in Source Next in test ";
 			testNo.append(to_string(i + 1));
-			string testNo_1 = "value error in Source 3 in test ";
+			string testNo_1 = "value error in Source Next in test ";
 			testNo_1.append(to_string(i + 1));
 			wstring error = wstring(testNo.begin(), testNo.end());
 			vector<string> result = answer;
 			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
 			for (int j = 0; j < answer.size(); j++) {
 				error = wstring(testNo_1.begin(), testNo_1.end());
+				error.append(L" - ");
+				string num = to_string(j + 1);
+				error.append(wstring(num.begin(), num.end()));
 				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
 			}
 		}

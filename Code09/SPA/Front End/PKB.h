@@ -365,13 +365,7 @@ public:
 	@param procName the name of the procedure
 	@param firstline the first line of the procedure
 	*/
-	void setFirstline(string procName, int firstline);
-	/**
-	Gets the first line of a procedure
-	@param procName the name of the procedure
-	@returns the statement number of the first line
-	*/
-	int getFirstline(string procName);
+	void setFirstline(int firstline);
 
 	/**
 	Set the last line of a procedure
@@ -495,7 +489,7 @@ private:
 	vector<int> ifTable;
 	vector<int> callTable;
 	vector<int> typeTable;
-	vector<int> firstlineTable;
+	set<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<tuple<vector<int>, vector<string>>> patternTable;
 	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
@@ -524,7 +518,7 @@ private:
 	vector<int> goBack;
 	vector<int> state;
 	int lastLineOfIf;
-	vector<int> ifHolder;
+	vector<vector<int>> ifHolders;
 	vector<int> ifParent;
 	
 	vector<int> getIntersection(vector<int> v1, vector<int> v2);
