@@ -314,8 +314,16 @@ void PKB::setModifies(int statementNum, string varName) {
 void PKB::setProcModifies(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
-
-	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
+	modify.setProcModifies(procIndex, varIndex);
+	for each (int callstmt in call.getProcCalledByStmt(procIndex)) {
+		modify.setModifies(callstmt, varIndex, parent.getParentStar(callstmt));
+	}
+	for each (int proc in call.getCalledByStar(procIndex)) {
+		modify.setProcModifies(proc, varIndex);
+		for each (int callstmt in call.getProcCalledByStmt(proc)) {
+			modify.setModifies(callstmt, varIndex, parent.getParentStar(callstmt));
+		}
+	}
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
