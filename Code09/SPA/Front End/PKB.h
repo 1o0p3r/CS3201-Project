@@ -409,6 +409,8 @@ public:
 	*/
 	vector<int> getAffectsSecondLiteral(int statementNum);
 
+	tuple<vector<int>, vector<int>> getAffectsTwoSynonyms();
+
 	/**
 	Add a Constant to PKB
 	@param c the constant name
@@ -524,6 +526,8 @@ private:
 	vector<int> ifParent;
 	
 	vector<int> getIntersection(vector<int> v1, vector<int> v2);
+
+	vector<int> removeIntersection(vector<int> v1, vector<int> v2);
 	
 	vector<int> statementProcedureTable;
 };

@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <unordered_map>
 
+typedef tuple<int, vector<int>> aTuple;
 
 using namespace std;
 
@@ -737,6 +738,83 @@ vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
 	}
 	return results;
 }
+
+tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
+	vector<int> s1;
+	vector<int> s2;
+	vector<aTuple> frontier;
+	vector<vector<int>> explored(typeTable.size());
+	set<pair<int, int>> included;
+	if (typeTable[1] == assign) {
+		int var = modify.getModifies(1)[0];
+		vector<int> temp;
+		temp.resize(var + 1);
+		temp[var] = 1;
+		frontier.push_back({ 1, temp });
+	} else {
+		frontier.push_back({ 1, {}});
+	}
+	while (!frontier.empty()) {
+		vector<aTuple> nextFrontier;
+		for each (aTuple current in frontier) {
+			for each (int statement in next.getNext(get<0>(current))) {
+				if (explored[statement] != get<1>(current)) {
+					if (typeTable[statement] == _call) {
+						vector<int> leftovers = removeIntersection(get<1>(current), modify.getModifies(statement));
+						nextFrontier.push_back({ statement, leftovers });
+						explored[statement] = leftovers;
+					} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
+						nextFrontier.push_back({ statement, get<1>(current) });
+						explored[statement] = get<1>(current);
+					} else if (typeTable[statement] == assign) {
+						vector<int> uses = use.getUses(statement);
+						for each (int var in uses) {
+							if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
+								int line = get<1>(current)[var];
+								if (line != 0 && included.find({ line, statement }) == included.end()) {
+									s1.push_back(line);
+									s2.push_back(statement);
+									included.insert({ line, statement });
+								}
+							}
+						}
+						int var = modify.getModifies(statement)[0];
+						vector<int> temp = get<1>(current);
+						if (temp.size() <= var) {
+							temp.resize(var + 1);
+						}
+						temp[var] = statement;
+						nextFrontier.push_back({statement, temp});
+						explored[statement] = temp;
+					}
+				} else if (typeTable[statement] == assign) {
+					vector<int> uses = use.getUses(statement);
+					for each (int var in uses) {
+						if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
+							int line = get<1>(current)[var];
+							if (line != 0 && included.find({ line, statement }) == included.end()) {
+								s1.push_back(line);
+								s2.push_back(statement);
+								included.insert({ line, statement });
+							}
+						}
+					}
+					int var = modify.getModifies(statement)[0];
+					vector<int> temp = get<1>(current);
+					if (temp.size() <= var) {
+						temp.resize(var + 1);
+					}
+					temp[var] = statement;
+					nextFrontier.push_back({ statement, temp });
+					explored[statement] = temp;
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return {s1, s2};
+}
+
 vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	vector<int> result;
 	sort(v1.begin(), v1.end());
@@ -744,6 +822,22 @@ vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
 	return result;
 }
+
+vector<int> PKB::removeIntersection(vector<int> v1, vector<int> v2) {
+	for each (int var in v2) {
+		v1[var] = 0;
+	}
+	return v1;
+}
+
+struct equalFirst {
+	equalFirst(int val) : val_(val) {}
+	bool operator()(const tuple<int, int>& elem) const {
+		return val_ == get<0>(elem);
+	}
+private:
+	int val_;
+};
 
 int PKB::getFollowsCount() {
 	return follow.getFollowsCount();
