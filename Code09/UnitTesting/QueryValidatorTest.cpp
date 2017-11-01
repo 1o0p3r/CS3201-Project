@@ -114,6 +114,9 @@ namespace UnitTesting
 			query = "prog_line l; Select l such that Next(1,l)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 
+			query = "prog_line l; Select l such that Next(1,1)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+
 			query = "stmt s; if ifs; Select s such that Next*(ifs,ifs)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 
@@ -151,7 +154,7 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
-			query = "stmt a1; Select a1 such that Affects(1,2)";
+			query = "stmt a1; Select a1 such that Affects(1,1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 

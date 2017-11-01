@@ -335,68 +335,69 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			//"stmt s; Select s such that Follows(s,3)", //1
-			//"stmt s; Select s such that Follows(3,s)", //2
-			//"stmt s; Select s such that Follows*(1,s)", //3
-			//"stmt s; Select s such that Parent(s, 6)", //4
-			//"stmt s; Select s such that Parent*(s, 6)", //5 //check parent* 
-			//"while w; Select w such that Parent*(w, 6)", //6 //narrow parent* by type
-			//"variable v; Select  v such that Modifies(6, v)", //7 //check call stmt modifies // ???? wrong human answer
-			"variable v; Select v such that Modifies(8, v)", // 8 //check container stmt modifies // getModifies bug, pkb error.
-			"procedure p; if ifs; Select <p, ifs> such that Modifies (p, \"a\")," //9 //narrow search in proc by type
-			"call calls; procedure p; Select calls such that Calls(p, calls)",//10  //find call stmt in proc that calls other proc
-			"procedure p; Select p such that Calls (p, p)", //11 //should return nothing
-			"procedure p; stmt s; Select s with p.procName = \"jedi\" such that Modifies(p, \"k\")", //12
-			"assign a; Select a pattern a(_, _\"y\"_)", //13 //check pattern is working
-			"assign a; Select a pattern a(\"k\", _\"n * e\"_)", //14 //check if AST brackets are correct
-			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)", //15 //check merging
-			"assign a; Select a such that Next(6, a)", //16 //check next function at boundary
-			"assign a; Select a such that Next(11, a)", //17 //check next function at boundary
-			"assign a; Select a such that Next(21, a)", //18 //check next function at boundary
-			"assign a; Select a such that Next(15, a)", //19 //check next function at boundary
-			"assign a; Select a such that Next(18, a)", //20 //check next function at boundary
-			"stmt s; assign a; while w; Select s such that Uses(a, \"y\") with Parent*(w, a) pattern w(\"m\",_)", //21
-			"constant c; Select c", //22
-			"procedure p; stmt s; assign a; Select s such that Modifies(p, \"m\") and Uses(p, \"y\") and Parent(s,a) pattern a(_,_\"y\"_)", //23
-			"assign a; Select a such that Next*(19, a)", //24
-			"assign a; Select BOOLEAN pattern a(\"green\", _\"1 * y * z\"_)", //25
-			"stmt s1, s2; Select s2 such that Parent*(s2, s1) and Modifies(s1, \"k\")", //26
-			"stmt s; if ifs; while w; Select s such that Parent*(ifs, s) and Parent*(w, s)", //27
-			"stmt s; if ifs; while w; Select w such that Parent*(ifs, s) and Parent*(w, s)", //28
-			"stmt s; while w1, w2; if ifs; Select s such that Parent(w1, s) and Parent*(ifs, s) and Parent*(w2, s)", //29
-			"Select s such that Next(ifs, s) and Next(w, s)", //30		
+			"stmt s; Select s such that Follows(s,3)", //1 Correct
+			"stmt s; Select s such that Follows(3,s)", //2 Correct
+			"stmt s; Select s such that Follows*(1,s)", //3 Correct
+			"stmt s; Select s such that Parent(s, 6)", //4 Correct
+			"stmt s; Select s such that Parent*(s, 6)", //5 //Correct, check parent* 
+			"while w; Select w such that Parent*(w, 6)", //6 //Correct, narrow parent* by type
+			"variable v; Select  v such that Modifies(6, v)", //7 //Correct, check call stmt modifies 
+			"variable v; Select v such that Modifies(8, v)", // 8 //Incorrect, check container stmt modifies // getModifies bug, pkb error.
+			"procedure p; if ifs; Select <p, ifs> such that Modifies(p, \"a\")", //9 //Exception caught at selectTuple() narrow search in proc by type
+			"call calls; procedure p; Select calls such that Calls(p, _)",//10  //Correct
+			"procedure p; Select p such that Calls (p, p)", //11 //Correct
+			"procedure p; stmt s; Select s with p.procName = \"jedi\" such that Modifies(p, \"k\")", //12 Correct 
+			"assign a; Select a pattern a(_, _\"y\"_)", //13 //Correct
+			"assign a; Select a pattern a(\"k\", _\"n * e\"_)", //14 //Correct
+			"stmt s; assign a; Select s such that Parent(s,a) pattern a(_, _\"y\"_)", //15 //Correct
+			"assign a; Select a such that Next(6, a)", //16 //Correct, check next function at boundary
+			"stmt s; Select s such that Next(11, s)", //17 //Correct, check next function at boundary
+			"stmt s; Select s such that Next(21, s)", //18 //Correct, check next function at boundary
+			"assign a; Select a such that Next(15, a)", //19 //Correct, check next function at boundary
+			"stmt s; Select s such that Next(18, s)", //20 //Correct, check next function at boundary
+			"stmt s; assign a; while w; Select a such that Uses(a, \"y\") and Parent*(w, a) pattern w(\"m\",_)", //21 Correct, multiple clauses
+			"constant c; Select c", //22 Correct
+			"procedure p; stmt s; assign a; Select s such that Modifies(p, \"m\") and Uses(p, \"y\") and Parent(s,a) pattern a(_,_\"y\"_)", //23 Incorrect, Missing out 1 result : line 13
+			"assign a; Select a such that Next*(19, a)", //24 //Incorrect, currrently giving back all assignments
+			"assign a; Select BOOLEAN pattern a(\"green\", _\"1 * y * z\"_)", //25 Incorrect,	Exception CAUGHT AT getPatternVariableExpressionSubstring
+			"stmt s1, s2; Select s2 such that Parent*(s2, s1) and Modifies(s1, \"k\")", //26 Correct
+			"stmt s; if ifs; while w; Select s such that Parent*(ifs, s) and Parent*(w, s)", //27 Correct
+			"stmt s; if ifs; while w; Select w such that Parent*(ifs, s) and Parent*(w, s)", //28 Coorect
+			"stmt s; while w1, w2; if ifs; Select s such that Parent(w1, s) and Parent*(ifs, s) and Parent*(w2, s)", //29  Correct
+			"stmt s; if ifs; while w; Select s such that Next(ifs, s) and Next(s, w)", //30	 Correct
 		};
 		vector<vector<string>> expected = {
-			//{}, //
-			//{ "4" }, //2
-			//{ "2" }, //3
-			//{ "4" }, //4
-			//{ "2", "4" }, //5
-			//{ "4" }, //6
-			//{ "e" ,"f", "g", "k", "m", "y" }, //7
+			{}, //
+			{ "4" }, //2
+			{ "2" }, //3
+			{ "4" }, //4
+			{ "2", "4" }, //5
+			{ "4" }, //6
+			{ "e" ,"f", "g", "k", "m", "y" }, //7
 			{ "e" ,"f", "g", "k", "m", "y" }, //8
 			{ "<yoda, 2>" }, //9
 			{ "6", "11" }, //10
 			{}, //11
-			{ "19" }, //12
-			{ "1", "7", "16", "18" }, //13
+			{ "4", "8", "10", "13", "17", "20", "1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "2", "15", "6", "11" }, //12
+			{ "1", "16", "18", "7" }, //13
 			{}, //14
-			{ "2", "15", "17" }, //15
-			{ "4" }, //16
-			{ "10", "8" }, //17
-			{ "20", "13" }, //18
+			{ "15", "17", "2" }, //15
+			{ }, //16
+			{ "10" }, //17
+			{ "20" }, //18
 			{ "16", "19" }, //19
-			{ "17", "13" }, //20
+			{ "17"}, //20
 			{ "16", "18" }, //21
-			{ "1", "2", "4", "5", "6", "7" }, //22
-			{ "15", "17" }, //23
-			{ "13", "20", "21" }, //24
+			{ "1", "4", "5", "6", "7" }, //22
+			{ "15", "17", "2", "13" }, //23
+			{ "14", "16", "18", "19", "21" }, //24
 			{ "true" }, //25
-			{ "2", "8", "10" }, //26
-			{ "5", "9", "10", "11", "16", "17", "18", "19", "20", "21" }, //27
-			{ "4", "8", "10", "13", "17", "20" }, //28
-			{ "9", "11", "18", "21" }, //29
-			{ "7", "19" }, //30 
+			{ "10", "13", "15", "2", "4", "8" }, //26
+			{ "10", "11", "16", "17", "18", "19", "20", "21", "5", "6", "9" }, //27
+			{ "10", "13", "17", "20", "4", "8" }, //28
+			{ "10","11","18","21","5","6","9" }, //29
+			{ "16", "19", "3", "7" }, //30 
+			
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
