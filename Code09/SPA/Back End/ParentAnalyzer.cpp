@@ -88,22 +88,28 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	return make_tuple(hasParent, parentResult);
 }
 
+void ParentAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
+{
+	if (!hasArg2EvalBefore) {
+		retrievedPKBValues = pkbReadOnly.getChild(candidates);
+		retrievedPKBValues = validatePKBResultsInt(arg2Entity, retrievedPKBValues);
+	} else {
+		retrievedPKBValues = pkbReadOnly.getParent(candidates);
+		retrievedPKBValues = validatePKBResultsInt(arg1Entity, retrievedPKBValues);
+	}
+}
+
 tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1, string arg2)
 {
 	bool hasParent = true;
 	vector<int> vecOfCandidates;
-	vector<int> pkbParent;
+	vector<int> retrievedPKBResults;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> parentResult;
 	
-	tuple<int,int> synLocation1;
-	tuple<int, int> synLocation2;
 	bool hasArg2EvalBefore = false;
-	bool hasArg1EvalBefore = false;
 	const auto synArg1Iterator = queryMap.find(arg1);
-	const auto synArg2Iterator = queryMap.find(arg2);
-	vector<string> qTableResult;
 
 	if (synArg1Iterator == queryMap.end()) {
 		vecOfCandidates = pkbReadOnly.getWhile();
@@ -111,43 +117,12 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1
 		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
 		vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
 	} 
-	if (synArg1Iterator != queryMap.end()) {
-		synLocation1 = synArg1Iterator->second;
-		hasArg1EvalBefore = true;
-	} 
-	if (synArg2Iterator != queryMap.end()) {
-		synLocation2 = synArg2Iterator->second;
-		hasArg2EvalBefore = true;
-	}
 
-	if (hasArg1EvalBefore && hasArg2EvalBefore) {
-		if (queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)].size() >
-			queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)].size())
-			qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
-		else {
-			qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
-			hasArg2EvalBefore = false;
-		}
-	} else if (hasArg1EvalBefore) {
-		qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
-	} else if (hasArg2EvalBefore) {
-		qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
-	}
-	if (!qTableResult.empty()) {
-		qTableResult.pop_back(); // remove mapping indicator
-		qTableResult = removeDuplicates(qTableResult);
-		vecOfCandidates = Util::convertStringToInt(qTableResult);
-	}
+	getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator);
 
 	for (int candidates : vecOfCandidates) {
-		if (!hasArg2EvalBefore) {
-			pkbParent = pkbReadOnly.getChild(candidates);
-			pkbParent = validatePKBResultsInt(arg2Entity, pkbParent);
-		} else {
-			pkbParent = pkbReadOnly.getParent(candidates);
-			pkbParent = validatePKBResultsInt(arg1Entity, pkbParent);
-		}
-		for (int candidatesChosen : pkbParent) {
+		getValuesFromPKB(retrievedPKBResults, hasArg2EvalBefore, candidates);
+		for (int candidatesChosen : retrievedPKBResults) {
 			if (!hasArg2EvalBefore) {
 				pkbResultForArg1.push_back(to_string(candidates));
 				pkbResultForArg2.push_back(to_string(candidatesChosen));
