@@ -23,12 +23,8 @@ public:
 
 	@param procName procedure variable is modified by
 	@param varName variable being modified by procName
-	@param procIsCalledBy other procedures that called procName. Impicitly sets other procedures to have modified varName.
-	@param procIsCalling procedures that procName is calling. Impicitly sets other procedures to have modified varName.
-	@param procCalledByStmt statements that called procName. Implicitly sets statement to have modified varName.
 	@returns void
 	*/
-	void setProcModifies(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt);
 	void setProcModifies(int procName, int varName);
 
 	/*
