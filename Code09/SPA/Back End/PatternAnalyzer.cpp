@@ -33,7 +33,7 @@ PatternAnalyzer::PatternAnalyzer(QueryElement patternClause, PKB &pkbRedOnly) {
 	patSynEnt = patternClause.getPatternEntity();
 	arg1 = patternClause.getPatternArg1();
 	arg1Type = patternClause.getPatternArg1Type();
-	patExp = patternClause.getPatternArg2();
+	patExp = Util::trimLead(patternClause.getPatternArg2());
 	patExpType = patternClause.getPatternArg2Type();
 	hasPatternClause = true;
 	initMapPatternExpType();
