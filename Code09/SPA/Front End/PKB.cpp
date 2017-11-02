@@ -373,8 +373,16 @@ void PKB::setUses(int statementNum, string varName) {
 void PKB::setProcUses(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
-
-	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
+	use.setProcUses(procIndex, varIndex);
+	for each (int callstmt in call.getProcCalledByStmt(procIndex)) {
+		use.setUses(callstmt, varIndex, parent.getParentStar(callstmt));
+	}
+	for each (int proc in call.getCalledByStar(procIndex)) {
+		use.setProcUses(proc, varIndex);
+		for each (int callstmt in call.getProcCalledByStmt(proc)) {
+			use.setUses(callstmt, varIndex, parent.getParentStar(callstmt));
+		}
+	}
 }
 
 vector<string> PKB::getUses(int statementNum) {
