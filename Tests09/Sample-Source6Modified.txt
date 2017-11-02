@@ -96,4 +96,6 @@ procedure SystemTestOne {
 
  	kThree = kFour + kFive * kThree;
 
+ 	hOne = hOne + hTwo;
+
  }
