@@ -1,0 +1,99 @@
+procedure SystemTestOne {
+  aOne = 1;					
+  bOne = 2;					
+  cOne = 3;					
+  dOne = 4;					
+  eOne = 5;					
+  while aOne {				
+ 	dOne = cOne + dOne;				
+	while bOne {				
+		cOne = cOne + aOne + bOne;		
+		aOne = bOne;				
+		cOne = aOne;
+
+		if cOne then {
+			cOne = cOne +1;
+			if bOne then {
+				bOne = cOne + 2;
+				call SystemTestTwo;
+			} else {
+				cOne = bOne + aOne;
+			}
+		} else {
+			cOne = cOne - bOne;
+			call SystemTestTwo;
+		}			
+	}
+	cOne = 2;					
+	bOne = aOne;					
+	eOne = cOne;					
+	while cOne {				
+		aOne = bOne + 1;			
+	}
+	aOne = aOne + 1;
+	call SystemTestThree;				
+  }
+  aOne = 12;					
+  bOne = 2;					
+  cOne = dOne + e;				
+  while bOne {					
+	cOne = 2;					
+  }
+}
+
+ procedure SystemTestTwo {
+ 	while fOne {
+ 		gOne = gOne + 2;
+ 		if fOne then {
+ 			gOne = fOne + 1;
+ 			call SystemTestThree;
+ 		} else {
+ 			gOne = fOne - 1;
+ 		}
+ 	}
+ 	call SystemTestFour;
+ 	if fTwo then {
+ 		sleep = fun + Two; 
+ 	} else {
+ 		gOne = hOne + hTwo * hThree;
+ 	}
+ }
+
+ procedure SystemTestThree {
+ 	hTwo = hTwo * hThree;	
+ 	while hOne {
+ 		hOne = (hOne*2)-hTwo*(hThree+hFour);
+ 		if hOne then {
+ 			while hThree {
+ 				if hFour then{
+ 					hFour = hOne + hTwo*hThree;
+ 					call SystemTestFour;
+ 				} else {
+ 					while hTwo {
+ 						hFour = hTwo*hThree + 2 - hFour*hOne;
+ 						if hOne then {
+ 							hOne = hOne + hTwo;
+ 						} else {
+ 							hOne = hTwo* hThree;
+ 						}
+ 					}
+ 					hFive = 2 - hFour;
+ 				}
+ 			}
+ 		} else {
+ 			hTwo = hTwo*(hThree + hFour);
+			call SystemTestFour; 		
+ 		}
+ 	}
+ }
+
+ procedure SystemTestFour {
+ 	kOne = kOne + kTwo * KThree *(kFour + kFive);
+
+ 	kFive = kThree * kFour;
+
+ 	kTwo = kTwo * kThree;
+
+ 	kThree = kFour + kFive * kThree;
+
+ }
