@@ -478,6 +478,14 @@ public:
 
 	int getNextCount();
 
+	bool getNextStarTwoLiterals(int s1, int s2);
+
+	vector<int> getNextStarFirstLiteral(int s);
+
+	vector<int> getNextStarSecondLiteral(int s);
+
+	tuple<vector<int>, vector<int>> getNextStarTwoSynonyms();
+
 private:
 	Follow follow;
 	Parent parent;
