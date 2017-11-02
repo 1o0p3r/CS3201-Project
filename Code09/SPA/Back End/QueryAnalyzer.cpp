@@ -141,13 +141,15 @@ void QueryAnalyzer::solveWithClause()
 {
 	vector<vector<string>> withResult;
 	for (QueryElement withClause : withElements) {
-		auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
-		withResult = get<VECTRESULT>(clauseResult);
-		hasWithClause = get<BOOLRESULT>(clauseResult);
-		if (!hasWithClause)
-			break;
-		if (!withResult.empty())
-			insertSTResult(withResult);
+		if (!isQueryFalse()) {
+			auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
+			withResult = get<VECTRESULT>(clauseResult);
+			hasWithClause = get<BOOLRESULT>(clauseResult);
+			if (!hasWithClause)
+				setClauseFalse();
+			if (!withResult.empty())
+				insertSTResult(withResult);
+		}
 
 	}
 	
@@ -457,10 +459,11 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	vector<vector<string>> stResult;
 	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
-	if (isQueryFalse())
-		return {{{}}};
 
 	for (QueryElement stClause : stElements) {
+		if (isQueryFalse())
+			return{ { {} } };
+
 		stClauseType = stClause.getSuchThatRel();
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
 		switch (evaluateSTRelation) {
@@ -522,9 +525,10 @@ void QueryAnalyzer::solvePatternClause() {
 	vector<vector<string>> patternResult;
 	int evaluatePatternRelation;
 
-	if (!isQueryFalse()) {
+	
 
-		for (QueryElement patternClause : patternElements) {
+	for (QueryElement patternClause : patternElements) {
+		if (!isQueryFalse()) {
 			patternClauseType = patternClause.getPatternEntity();
 			evaluatePatternRelation = mapPatternValues[patternClauseType];
 			switch (evaluatePatternRelation) {
@@ -543,6 +547,7 @@ void QueryAnalyzer::solvePatternClause() {
 				break;
 		}
 	}
+	
 		
 }
 
