@@ -415,7 +415,7 @@ vector<int> PKB:: getAllLineCalls() {
 		vector<int> calledByLine = call.getProcCalledByStmt(procIndex);
 		results.insert(results.end(), calledByLine.begin(), calledByLine.end());
 	}
-	return Util::removeDuplicates(results);
+	return results;
 }
 
 vector<int> PKB::getLineCalls(string procName) {
@@ -424,7 +424,7 @@ vector<int> PKB::getLineCalls(string procName) {
 	vector<int> calledByLine = call.getProcCalledByStmt(procNameIndex);
 	results.insert(results.end(), calledByLine.begin(), calledByLine.end());
 
-	return Util::removeDuplicates(results);
+	return results;
 }
 
 vector<string> PKB::getCalls(string procName) {
