@@ -15,13 +15,12 @@ public:
 		QueryStatement qs;
 		tuple<bool, vector<vector<string>>> clauseResult;
 
-		//string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
-		//Parse(filename, pkb);
-
 		vector<string> test2;
 		vector<int> test3;
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
+		unordered_map<string, tuple<int, int>> qMap;
+		vector<vector<vector<string>>> qTable;
 		/*
 		0 procedure Main{
 		1 x = 5;
@@ -50,7 +49,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
-		clauseResult = UsesAnalyzer(synSyn, pkb).solveClause();
+		clauseResult = UsesAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","4","4","a" },{ "x","x","y","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)

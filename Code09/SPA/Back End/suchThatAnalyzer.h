@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Abstract_QA_API.h"
 #include "TupleHash.h"
 #include "PKB.h"
 #include "QueryElement.h"
+#include "Util.h"
 #include <vector>
 #include <string>
 #include <iterator>
@@ -11,11 +13,14 @@
 #include <unordered_set>
 #include <assert.h>
 
+
 using namespace std;
 
 class suchThatAnalyzer
 {
 protected:
+	vector<vector<vector<string>>> queryTable;
+	unordered_map<string, tuple<int, int>> queryMap;
 	PKB pkbReadOnly;
 	string stEntity;
 
@@ -44,7 +49,20 @@ protected:
 	virtual bool checkClauseWildVariable(string arg2);
 	virtual bool checkClauseBothWild();
 
+	virtual void suchThatAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates);
+	virtual void suchThatAnalyzer::getValuesFromPKB(vector<string>& retrievedPKBValues, bool hasArg2EvalBefore, string candidates);
 
+	void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& hasArg2EvalBefore,
+	                                           const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+	                                           iterator synArg2Iterator);
+
+	void suchThatAnalyzer::getArgsPriorStringResults(vector<string>& vecOfCandidates, bool& hasArg2EvalBefore,
+		const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+		iterator synArg2Iterator);
+
+	vector<string> optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator, bool isAddArg1, bool isArgTypeInt);
+	virtual bool hasResultsForArg(const int candidates, const bool isAddArg1);
+	virtual bool hasResultsForArg(const string candidates, const bool isAddArg1);
 
 	vector<int> validatePKBResultsInt(string ent, vector<int> validateVec);
 	vector<string> validatePKBResultsString(string ent, vector<string> validateVec);
@@ -53,7 +71,9 @@ protected:
 	virtual vector<string> getPKBAllArgValues();
 
 public:
-	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb);
+	virtual ~suchThatAnalyzer() = default;
+	suchThatAnalyzer(QueryElement suchThatClause, PKB pkb, vector<vector<vector<string>>> const &qTable, 
+			unordered_map<string, tuple<int, int>> const &qMap);
 	tuple<bool, vector<vector<string>>> solveClause();
 	tuple<bool,vector<vector<string>>> solveClauseStmt();
 	
