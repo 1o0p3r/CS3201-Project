@@ -427,22 +427,12 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 }
 
 vector<int> PKB:: getAllLineCalls() {
-	vector<int> procList = call.getAllCalls();
-	vector<int> results;
-	for (int procIndex : procList) {
-		vector<int> calledByLine = call.getProcCalledByStmt(procIndex);
-		results.insert(results.end(), calledByLine.begin(), calledByLine.end());
-	}
-	return results;
+	return callTable;
 }
 
 vector<int> PKB::getLineCalls(string procName) {
 	int procNameIndex = getProcIndex(procName);
-	vector<int> results;
-	vector<int> calledByLine = call.getProcCalledByStmt(procNameIndex);
-	results.insert(results.end(), calledByLine.begin(), calledByLine.end());
-
-	return results;
+	return call.getProcCalledByStmt(procNameIndex);
 }
 
 vector<string> PKB::getCalls(string procName) {
