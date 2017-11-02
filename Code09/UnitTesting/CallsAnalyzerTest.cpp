@@ -26,30 +26,30 @@ public:
 		string filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
 		Assert::IsTrue(Parse(filename,pkb));
 
-		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Calls");
-		clauseResult = CallsAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
-		Assert::IsTrue(get<0>(clauseResult));
+		//QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Calls");
+		//clauseResult = CallsAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement wildString("_", "wildcard", "wildcard", "q", "string", "procedure", "Calls");
-		qs = QueryStatement();
-		qs.addSuchThatQuery(wildString);
-		qa.setQS(qs);
-		clauseResult = CallsAnalyzer(wildString,pkb, qTable, qMap).solveClause();
-		Assert::IsTrue(get<0>(clauseResult));
+		//QueryElement wildString("_", "wildcard", "wildcard", "q", "string", "procedure", "Calls");
+		//qs = QueryStatement();
+		//qs.addSuchThatQuery(wildString);
+		//qa.setQS(qs);
+		//clauseResult = CallsAnalyzer(wildString,pkb, qTable, qMap).solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement stringWild("Example", "string", "procedure", "_", "wildcard", "", "Calls");
-		qs = QueryStatement();
-		qs.addSuchThatQuery(stringWild);
-		qa.setQS(qs);
-		clauseResult = CallsAnalyzer(stringWild,pkb, qTable, qMap).solveClause();
-		Assert::IsTrue(get<0>(clauseResult));
+		//QueryElement stringWild("Example", "string", "procedure", "_", "wildcard", "", "Calls");
+		//qs = QueryStatement();
+		//qs.addSuchThatQuery(stringWild);
+		//qa.setQS(qs);
+		//clauseResult = CallsAnalyzer(stringWild,pkb, qTable, qMap).solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement stringString("Example", "string", "procedure", "q", "string", "", "Calls");
-		qs = QueryStatement();
-		qs.addSuchThatQuery(stringString);
-		qa.setQS(qs);
-		clauseResult = CallsAnalyzer(stringString,pkb, qTable, qMap).solveClause();
-		Assert::IsTrue(get<0>(clauseResult));
+		//QueryElement stringString("Example", "string", "procedure", "q", "string", "", "Calls");
+		//qs = QueryStatement();
+		//qs.addSuchThatQuery(stringString);
+		//qa.setQS(qs);
+		//clauseResult = CallsAnalyzer(stringString,pkb, qTable, qMap).solveClause();
+		//Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement synSyn("try", "synonym", "procedure", "fry", "synonym", "procedure", "Calls");
 		qs = QueryStatement();

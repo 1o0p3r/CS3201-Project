@@ -191,16 +191,24 @@ bool suchThatAnalyzer::checkClauseBothWild()
 }
 
 vector<string> suchThatAnalyzer::optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator,
-	bool isAddArg1) {
+                                                 const bool isAddArg1, const bool isArgTypeInt) {
 	vector<string> pkbResult;
 	tuple<int, int> synLocation = synArgIterator->second;
 	auto qTableResult = queryTable[get<TABLELOC>(synLocation)][get<SYNVECLOC>(synLocation)];
 	qTableResult.pop_back(); // remove mapping indicator
 	qTableResult = removeDuplicates(qTableResult);
-	vector<int> vecOfCandidates = Util::convertStringToInt(qTableResult);
-	for (int candidates : vecOfCandidates) {
-		if (hasResultsForArg(candidates, isAddArg1)) {
-			pkbResult.push_back(to_string(candidates));
+	if (isArgTypeInt) {
+		vector<int> vecOfCandidates = Util::convertStringToInt(qTableResult);
+		for (int candidates : vecOfCandidates) {
+			if (hasResultsForArg(candidates, isAddArg1)) {
+				pkbResult.push_back(to_string(candidates));
+			}
+		}
+	} else {
+		for (const string candidates : qTableResult) {
+			if (hasResultsForArg(candidates, isAddArg1)) {
+				pkbResult.push_back(candidates);
+			}
 		}
 	}
 	return pkbResult;
@@ -245,12 +253,62 @@ void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& h
 	}
 }
 
+void suchThatAnalyzer::getArgsPriorStringResults(vector<string>& vecOfCandidates, bool& hasArg2EvalBefore,
+	const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+	iterator synArg2Iterator)
+{
+	tuple<int, int> synLocation1;
+	tuple<int, int> synLocation2;
+	vector<string> qTableResult;
+	bool hasArg1EvalBefore = false;
+	if (synArg1Iterator != queryMap.end()) {
+		synLocation1 = synArg1Iterator->second;
+		hasArg1EvalBefore = true;
+	}
+	if (synArg2Iterator != queryMap.end()) {
+		synLocation2 = synArg2Iterator->second;
+		hasArg2EvalBefore = true;
+	}
+
+	if (hasArg1EvalBefore && hasArg2EvalBefore) {
+		if (queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)].size() >
+			queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)].size())
+			qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
+		else {
+			qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
+			hasArg2EvalBefore = false;
+		}
+	}
+	else if (hasArg1EvalBefore) {
+		qTableResult = queryTable[get<TABLELOC>(synLocation1)][get<SYNVECLOC>(synLocation1)];
+	}
+	else if (hasArg2EvalBefore) {
+		qTableResult = queryTable[get<TABLELOC>(synLocation2)][get<SYNVECLOC>(synLocation2)];
+	}
+	if (!qTableResult.empty()) {
+		qTableResult.pop_back(); // remove mapping indicator
+		vecOfCandidates = removeDuplicates(qTableResult);
+		
+	}
+}
+
 void suchThatAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
 {
 	//overwrite in child
 }
 
+void suchThatAnalyzer::getValuesFromPKB(vector<string>& retrievedPKBValues, bool hasArg2EvalBefore, string candidates)
+{
+	//overwrite in child
+}
+
 bool suchThatAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1)
+{
+	//overwrite this method in child class
+	return false;
+}
+
+bool suchThatAnalyzer::hasResultsForArg(const string candidates, const bool isAddArg1)
 {
 	//overwrite this method in child class
 	return false;

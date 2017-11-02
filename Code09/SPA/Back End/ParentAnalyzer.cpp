@@ -20,7 +20,7 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgTwoResult(string arg1)
 	
 	if (synArg2Iterator != queryMap.end() && arg1 == WILDCARD_SYMBOL) {
 		bool isAddArg1 = false;
-		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1);
+		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1, true);
 	}
 	else {
 		if (arg1 == WILDCARD_SYMBOL) {
@@ -56,12 +56,12 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addArgOneResult(string arg2)
 	vector<int> pkbParent;
 	vector<string> pkbResult;
 	vector<vector<string>> parentResult;
-	bool hasArg1EvalBefore = false;
+
 	const auto synArg1Iterator = queryMap.find(arg1);
 
 	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
 		bool isAddArg1 = true;
-		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1);
+		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1, true);
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) {

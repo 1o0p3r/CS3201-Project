@@ -50,11 +50,19 @@ protected:
 	virtual bool checkClauseBothWild();
 
 	virtual void suchThatAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates);
+	virtual void suchThatAnalyzer::getValuesFromPKB(vector<string>& retrievedPKBValues, bool hasArg2EvalBefore, string candidates);
+
 	void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& hasArg2EvalBefore,
 	                                           const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
 	                                           iterator synArg2Iterator);
-	vector<string> optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator, bool isAddArg1);
+
+	void suchThatAnalyzer::getArgsPriorStringResults(vector<string>& vecOfCandidates, bool& hasArg2EvalBefore,
+		const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+		iterator synArg2Iterator);
+
+	vector<string> optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator, bool isAddArg1, bool isArgTypeInt);
 	virtual bool hasResultsForArg(const int candidates, const bool isAddArg1);
+	virtual bool hasResultsForArg(const string candidates, const bool isAddArg1);
 
 	vector<int> validatePKBResultsInt(string ent, vector<int> validateVec);
 	vector<string> validatePKBResultsString(string ent, vector<string> validateVec);
