@@ -110,15 +110,15 @@ tuple<bool, vector<vector<string>>> ParentAnalyzer::addBothSynResult(string arg1
 	
 	bool hasArg2EvalBefore = false;
 	const auto synArg1Iterator = queryMap.find(arg1);
+	const auto synArg2Iterator = queryMap.find(arg2);
 
-	if (synArg1Iterator == queryMap.end()) {
+	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
 		vecOfCandidates = pkbReadOnly.getWhile();
 		vector<int> temp = pkbReadOnly.getIf();
 		vecOfCandidates.insert(vecOfCandidates.end(), temp.begin(), temp.end());
 		vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
-	} 
-
-	getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator);
+	} else 
+		getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
 
 	for (int candidates : vecOfCandidates) {
 		getValuesFromPKB(retrievedPKBResults, hasArg2EvalBefore, candidates);

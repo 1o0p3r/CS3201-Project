@@ -311,6 +311,8 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
 	}
+	for (auto &concatVecEntries : synTableConcatEntries)
+		concatVecEntries = Util::removeDuplicates(concatVecEntries);
 
 	vector<string> vecToCartProd = synTableConcatEntries.front();
 	//cartesian product synonyms.

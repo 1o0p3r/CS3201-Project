@@ -51,7 +51,8 @@ protected:
 
 	virtual void suchThatAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates);
 	void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& hasArg2EvalBefore,
-		const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator);
+	                                           const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+	                                           iterator synArg2Iterator);
 	vector<string> optimizedAddArg(const unordered_map<string, tuple<int, int>>::iterator synArgIterator, bool isAddArg1);
 	virtual bool hasResultsForArg(const int candidates, const bool isAddArg1);
 

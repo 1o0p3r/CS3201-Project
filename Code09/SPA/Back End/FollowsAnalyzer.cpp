@@ -1,5 +1,12 @@
 #include "FollowsAnalyzer.h"
 
+bool FollowsAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
+	if (isAddArg1)
+		return pkbReadOnly.getFollows(candidates).empty() ? false : true;
+	else
+		return pkbReadOnly.getFollowedBy(candidates).empty() ? false : true;
+}
+
 tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgTwoResult(string arg1)
 {
 	bool hasFollows = true;
@@ -8,15 +15,23 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgTwoResult(string arg1
 	vector<int> pkbFollows;
 	vector<vector<string>> followsResult;
 
-	if (arg1 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
-		vecOfCandidates.push_back(stoi(arg1));
-	for (int candidates : vecOfCandidates) {
-		pkbFollows = pkbReadOnly.getFollows(candidates);
-		pkbFollows = validatePKBResultsInt(arg2Entity, pkbFollows);
-		if(!pkbFollows.empty())
-			pkbResult.push_back(to_string(pkbFollows.front()));
+	const auto synArg2Iterator = queryMap.find(arg2);
+
+	if (synArg2Iterator != queryMap.end() && arg1 == WILDCARD_SYMBOL) {
+		bool isAddArg1 = false;
+		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1);
+	}
+	else {
+		if (arg1 == WILDCARD_SYMBOL)
+			vecOfCandidates = pkbReadOnly.getAllStmt();
+		else
+			vecOfCandidates.push_back(stoi(arg1));
+		for (int candidates : vecOfCandidates) {
+			pkbFollows = pkbReadOnly.getFollows(candidates);
+			pkbFollows = validatePKBResultsInt(arg2Entity, pkbFollows);
+			if (!pkbFollows.empty())
+				pkbResult.push_back(to_string(pkbFollows.front()));
+		}
 	}
 	if (pkbResult.empty())
 		hasFollows = false;
@@ -36,17 +51,25 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgOneResult(string arg2
 	vector<string> pkbResult;
 	vector<vector<string>> followsResult;
 	
-	if (arg2 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllStmt();
-	else
-		vecOfCandidates.push_back(stoi(arg2));
-	for (int candidates : vecOfCandidates) {
-		pkbFollows = pkbReadOnly.getFollowedBy(candidates);
-		pkbFollows = validatePKBResultsInt(arg1Entity, pkbFollows);
-		if (!pkbFollows.empty())
-			pkbResult.push_back(to_string(pkbFollows.front()));
+	const auto synArg1Iterator = queryMap.find(arg1);
+
+	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
+		bool isAddArg1 = true;
+		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1);
 	}
-		if (pkbResult.empty())
+	else {
+		if (arg2 == WILDCARD_SYMBOL)
+			vecOfCandidates = pkbReadOnly.getAllStmt();
+		else
+			vecOfCandidates.push_back(stoi(arg2));
+		for (int candidates : vecOfCandidates) {
+			pkbFollows = pkbReadOnly.getFollowedBy(candidates);
+			pkbFollows = validatePKBResultsInt(arg1Entity, pkbFollows);
+			if (!pkbFollows.empty())
+				pkbResult.push_back(to_string(pkbFollows.front()));
+		}
+	}
+	if (pkbResult.empty())
 		hasFollows = false;
 	else {
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
@@ -57,23 +80,48 @@ tuple<bool, vector<vector<string>>> FollowsAnalyzer::addArgOneResult(string arg2
 
 }
 
+void FollowsAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
+{
+	if (!hasArg2EvalBefore) {
+		retrievedPKBValues = pkbReadOnly.getFollows(candidates);
+		retrievedPKBValues = validatePKBResultsInt(arg2Entity, retrievedPKBValues);
+	}
+	else {
+		retrievedPKBValues = pkbReadOnly.getFollowedBy(candidates);
+		retrievedPKBValues = validatePKBResultsInt(arg1Entity, retrievedPKBValues);
+	}
+}
+
 tuple<bool, vector<vector<string>>> FollowsAnalyzer::addBothSynResult(string arg1, string arg2)
 {
 	bool hasFollows = true;
 	vector<int> vecOfCandidates;
-	vector<int> pkbFollows;
+	vector<int> retrievedPKBResults;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> followsResult;
 
-	vecOfCandidates = pkbReadOnly.getAllStmt();
-	vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
+	bool hasArg2EvalBefore = false;
+	const auto synArg1Iterator = queryMap.find(arg1);
+	const auto synArg2Iterator = queryMap.find(arg2);
+
+	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
+		vecOfCandidates = pkbReadOnly.getAllStmt();
+		vecOfCandidates = validatePKBResultsInt(arg1Entity, vecOfCandidates);
+	} else {
+		getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
+	}
 	for (int candidates : vecOfCandidates) {
-		pkbFollows = pkbReadOnly.getFollows(candidates);
-		pkbFollows = validatePKBResultsInt(arg2Entity, pkbFollows);
-		if (!pkbFollows.empty()) {
-			pkbResultForArg1.push_back(to_string(candidates));
-			pkbResultForArg2.push_back(to_string(pkbFollows.front()));
+		getValuesFromPKB(retrievedPKBResults, hasArg2EvalBefore, candidates);
+		for (int candidatesChosen : retrievedPKBResults) {
+			if (!hasArg2EvalBefore) {
+				pkbResultForArg1.push_back(to_string(candidates));
+				pkbResultForArg2.push_back(to_string(candidatesChosen));
+			}
+			else {
+				pkbResultForArg1.push_back(to_string(candidatesChosen));
+				pkbResultForArg2.push_back(to_string(candidates));
+			}
 		}
 	}
 	if (pkbResultForArg1.empty())

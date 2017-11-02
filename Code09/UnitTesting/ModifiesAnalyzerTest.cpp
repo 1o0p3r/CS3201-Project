@@ -45,7 +45,7 @@ public:
 		//test arg1 = stmt synonym, arg2 = string literal
 		QueryElement stmtSynVar("haha", "synonym", "call", "x", "variable", "", "Modifies");
 		pkbHardCode = {{ "1","4","5","6","10","12","13","14","15","16","18","22","24" } };
-		hardCodeResult = { { "1","4","10","12","13","14","15","16","18","22","24","5","6","haha" } };
+		hardCodeResult = { { "1","10","12","13","14","15","16","18","22","24","4","5","6","haha" } };
 		ModifiesAnalyzer test1(stmtSynVar,pkb, qTable, qMap);
 		test1.setUnitTestInputs(pkbHardCode);
 		clauseResult = test1.solveClause();

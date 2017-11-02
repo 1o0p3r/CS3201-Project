@@ -199,19 +199,19 @@ vector<string> suchThatAnalyzer::optimizedAddArg(const unordered_map<string, tup
 	qTableResult = removeDuplicates(qTableResult);
 	vector<int> vecOfCandidates = Util::convertStringToInt(qTableResult);
 	for (int candidates : vecOfCandidates) {
-		if (!hasResultsForArg(candidates, isAddArg1)) {
+		if (hasResultsForArg(candidates, isAddArg1)) {
 			pkbResult.push_back(to_string(candidates));
 		}
 	}
 	return pkbResult;
 }
 
-void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& hasArg2EvalBefore, 
-		const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator)
+void suchThatAnalyzer::getArgsPriorResults(vector<int>& vecOfCandidates, bool& hasArg2EvalBefore,
+                                           const unordered_map<string, tuple<int, int>>::iterator synArg1Iterator, const unordered_map<string, tuple<int, int>>::
+                                           iterator synArg2Iterator)
 {
 	tuple<int, int> synLocation1;
 	tuple<int, int> synLocation2;
-	const auto synArg2Iterator = queryMap.find(arg2);
 	vector<string> qTableResult;
 	bool hasArg1EvalBefore = false;
 	if (synArg1Iterator != queryMap.end()) {
