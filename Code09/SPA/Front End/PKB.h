@@ -501,6 +501,10 @@ public:
 
 	tuple<vector<int>, vector<int>> getNextStarTwoSynonyms();
 
+	vector<string> getAllModifiedVariables();
+
+	vector<string> getAllUsedVariables();
+
 private:
 	Follow follow;
 	Parent parent;
@@ -553,4 +557,6 @@ private:
 	vector<int> removeIntersection(vector<int> v1, vector<int> v2);
 	
 	vector<int> statementProcedureTable;
+	vector<string> modifiedVariables;
+	vector<string> usedVariables;
 };
