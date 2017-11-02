@@ -22,23 +22,23 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			//"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
-			//"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
-			//"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
-			//"assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",
-			//"assign as1; while wew; Select as1 such that Parent*(2, as1)",
-			//"assign as1; while wew; Select wew such that Parent*(wew, 3)",
-			//"assign as1; while wew; Select as1 such that Parent*(as1, 3)",
-			//"procedure pOne; Select pOne such that Modifies(pOne, \"y\")",
-			//"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
-			//"procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
-			//"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
-			//"variable v; Select v such that Modifies(8, v)",
-			//"procedure pOne; Select pOne such that Uses(pOne, \"y\")",
-			//"call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",
-			//"variable v; Select v such that Uses(8, v)",
-			//"assign a; procedure pOne; Select BOOLEAN such that Uses(a, pOne)",
-			//"assign a; procedure pOne; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
+			"stmt sOne, sTwo; Select sOne such that Follows*(1, sOne)",
+			"stmt sOne, sTwo; Select sTwo such that Follows  (sTwo,  6)",
+			"stmt OneTwo; Select BOOLEAN such that Follows(3,3)",
+			"assign as1; while wew; Select as1 such that Parent*		 (wew, as1)",
+			"assign as1; while wew; Select as1 such that Parent*(2, as1)",
+			"assign as1; while wew; Select wew such that Parent*(wew, 3)",
+			"assign as1; while wew; Select as1 such that Parent*(as1, 3)",
+			"procedure pOne; Select pOne such that Modifies(pOne, \"y\")",
+			"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
+			"procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
+			"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
+			"variable v; Select v such that Modifies(8, v)",
+			"procedure pOne; Select pOne such that Uses(pOne, \"y\")",
+			"call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",
+			"variable v; Select v such that Uses(8, v)",
+			"assign a; procedure pOne; Select BOOLEAN such that Uses(a, pOne)",
+			"assign a; procedure pOne; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
 			"assign a2; procedure pTwo;  Select a2 pattern a2(_,  _\"x\"_)",
 			"assign a2; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
 			"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
@@ -53,23 +53,23 @@ public:
 			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\""
 		};
 		vector<vector<string>> expected = {
-			//{"10", "2", "4"},
-			//{ "5" },
-			//{ "false" },
-			//{ "3" },		
-			//{ "3" },
-			//{ "2" },
-			//{},
-			//{ "Apple", "Nana" },
-			//{ "Apple",  "Nana", "Pear"},
-			//{"18","19","8"},
-			//{ "Apple", "Nana", "Pear" },
-			//{ "boom", "ggg", "if" },
-			//{ "Apple", "Nana" },
-			//{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
-			//{ "Y2K", "ggg" , "if"},
-			//{},
-			//{"true"},		//boolean must always return something, and it is true instead of empty 
+			{"10", "2", "4"},
+			{ "5" },
+			{ },
+			{ "3" },		
+			{ "3" },
+			{ "2" },
+			{},
+			{ "Apple", "Nana" },
+			{ "Apple",  "Nana", "Pear"},
+			{"18","19","8"},
+			{ "Apple", "Nana", "Pear" },
+			{ "boom", "ggg", "if" },
+			{ "Apple", "Nana" },
+			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
+			{ "Y2K", "ggg" , "if"},
+			{},
+			{"true"},		//boolean must always return something, and it is true instead of empty 
 			{"3", "5"},
 			{"2"},
 			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
@@ -121,7 +121,7 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			/*"stmt s; Select s such that Follows(s,3)",
+			"stmt s; Select s such that Follows(s,3)",
 			"stmt s; Select s such that Follows(1,s)",
 			"stmt s; Select s such that Follows*(s,2)",
 			"variable v; assign a; Select v such that Modifies(a,v)",
@@ -135,14 +135,14 @@ public:
 			"stmt a; Select a such that Parent*(a,4)",
 			"stmt s; assign a; Select a such that Parent*(s,4)pattern a(_, \"x*y+ 1\")",
 			"stmt s; assign a; Select a such that Follows(s,4)pattern a(_, _\"y+1\"_)",
-			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)",*/
+			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)",
 			"stmt s; assign a; Select s with 1=1",
 			"stmt s; assign a; Select s with \"x\"=\"x\"",
 			"stmt s; assign a; Select s with \"x\"=\"y\"",
 			"stmt s; assign a; Select s with 1=2"
 		};
 		vector<vector<string>> expected = {
-			/*{},
+			{},
 			{"2"},
 			{"1"},
 			{"x", "y"},
@@ -156,7 +156,7 @@ public:
 			{"2"},
 			{"4"},
 			{},
-			{"1", "4"},*/
+			{"1", "4"},
 			{"2","1","3","4"},
 			{"2","1","3","4" },
 			{},
