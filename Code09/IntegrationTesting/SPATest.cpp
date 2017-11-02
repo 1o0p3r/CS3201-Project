@@ -485,6 +485,25 @@ public:
 		}
 		
 	}
+	TEST_METHOD(SampleSouce6_v2) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-6-v2.txt";
+		Parse(filename, pkb);
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		if (validator.parseInput("variable v; assign a1, a2; if ifs; while w; Select ifs such that Parent(ifs, a1) and Follows(ifs, a2) and Modifies(a2, v)")) {
+			statement = validator.getQueryStatement();
+			analyzer.setQS(statement);
+			answer = analyzer.runQueryEval();
+		} else {
+			Logger::WriteMessage("Invalid Query in Source 2");
+			answer = {};
+		}
+		Assert::IsTrue(answer == vector<string>{});
+	}
 
 	};
 }
