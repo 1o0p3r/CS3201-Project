@@ -17,8 +17,6 @@ class ModifiesAnalyzer :
 
 		bool checkClauseBothVariables(string arg1, string arg2) override;
 		bool checkClauseVariableWild(string arg1) override;
-		bool checkClauseWildVariable(string arg2) override;
-
 
 	private:
 		vector<string> getModifiesResultAddArg2(string arg1);

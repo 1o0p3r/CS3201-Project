@@ -142,15 +142,6 @@ bool ModifiesAnalyzer::checkClauseVariableWild(string arg1)
 	return pkbReadOnly.getModifies(stoi(arg1)).empty() ? false : true;
 }
 
-bool ModifiesAnalyzer::checkClauseWildVariable(string arg2)
-{	
-	assert(arg1 == WILDCARD_SYMBOL);
-	if (unitTestModeOn) {
-		return(unitTestInputs[inputHardCodeIndex].size());
-	}
-	return pkbReadOnly.getModifiedBy(arg2).empty() ? false : true;
-}
-
 vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1)
 {	
 	vector<string> pkbResult;

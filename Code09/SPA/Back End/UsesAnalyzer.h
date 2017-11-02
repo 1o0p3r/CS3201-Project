@@ -17,11 +17,9 @@ protected:
 
 	bool checkClauseBothVariables(string arg1, string arg2) override;
 	bool checkClauseVariableWild(string arg1) override;
-	bool checkClauseWildVariable(string arg2) override;
-	bool checkClauseBothWild() override;
 
 private:
-	vector<string> getUsesResultAddArg2(string arg1, string arg2Entity);
+	vector<string> getUsesResultAddArg2(string arg1);
 	vector<string> getUsesResultAddArg1(string arg2, string arg1Entity);
 
 };

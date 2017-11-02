@@ -56,7 +56,8 @@ public:
 			//"call c1,c2; Select c1 with c1.procName = c2.procName ",
 			//"call c1; Select c1 with \"Pear\" = c1.procName ",
 			//"variable v1; stmt s; Select s such that Parent*(s,_) and Modifies(s,v1)",
-			"variable v1; stmt s; Select s such that Parent*(s,_) and Modifies(s,v1) with v1.varName = \"if\" "
+			//"variable v1; stmt s; Select s such that Parent*(s,_) and Modifies(s,v1) with v1.varName = \"if\" ",
+			"variable v1; stmt s; Select s such that Parent*(s,_) and Uses(s,v1) with v1.varName = \"Y2K\" "
 
 		};
 		vector<vector<string>> expected = {
@@ -94,7 +95,8 @@ public:
 			//{ "18","19","8" },
 			//{"19","8"},
 			//{"12","15","2","4","6"},
-			{"12"}
+			//{"12"},
+			{}
 
 
 		};
