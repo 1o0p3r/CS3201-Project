@@ -50,14 +50,14 @@ public:
 			//"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")",
 			//"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) ",
 			//"stmt s; Select s with s.stmt# = 5",
-			//"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\"",
+			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\"",
 			//"call c1; Select c1 with c1.procName =\"Apple\" ",
 			//"call c1; procedure p1; Select c1 with c1.procName = p1.procName ",
 			//"call c1,c2; Select c1 with c1.procName = c2.procName ",
 			//"call c1; Select c1 with \"Pear\" = c1.procName ",
 			//"variable v1; stmt s; Select s such that Parent*(s,_) and Modifies(s,v1)",
 			//"variable v1; stmt s; Select s such that Parent*(s,_) and Modifies(s,v1) with v1.varName = \"if\" ",
-			"variable v1; stmt s; Select s such that Parent*(s,_) and Uses(s,v1) with v1.varName = \"Y2K\" "
+			//"variable v1; stmt s; Select s such that Parent*(s,_) and Uses(s,v1) with v1.varName = \"Y2K\" "
 
 		};
 		vector<vector<string>> expected = {
@@ -89,14 +89,14 @@ public:
 			//{"16"},		//Passed
 			//{"Apple", "Nana"},
 			//{"5"},
-			//{"Nana"},
+			{"Nana"},
 			//{"18"},
 			//{"18","19","8"},
 			//{ "18","19","8" },
 			//{"19","8"},
 			//{"12","15","2","4","6"},
 			//{"12"},
-			{}
+			//{}
 
 
 		};
