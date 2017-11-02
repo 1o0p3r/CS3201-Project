@@ -37,7 +37,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	vector<vector<string>> UsesResult;
 
 	if (arg2 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllUsedVariables();
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
@@ -71,7 +71,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addBothSynResult(string arg1, 
 	const auto synArg2Iterator = queryMap.find(arg2);
 
 	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllUsedVariables();
 	} else 
 		getArgsPriorStringResults(vecOfCandidates, hasArg1EvalBefore, synArg2Iterator, synArg1Iterator);
 

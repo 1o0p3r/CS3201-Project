@@ -40,7 +40,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	
 
 	if (arg2 == WILDCARD_SYMBOL) {
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllModifiedVariables();
 		if (unitTestModeOn) {
 			vecOfCandidates = unitTestInputs[inputHardCodeIndex];
 			inputHardCodeIndex++;
@@ -79,7 +79,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 	const auto synArg2Iterator = queryMap.find(arg2);
 
 	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllModifiedVariables();;
 	}  else
 		getArgsPriorStringResults(vecOfCandidates, hasArg1EvalBefore, synArg2Iterator, synArg1Iterator);
 
