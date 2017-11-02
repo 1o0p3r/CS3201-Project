@@ -100,6 +100,7 @@ void WithAnalyzer::addSynToVec(vector<vector<string>> &clauseResult, const vecto
 	vector<vector<string>> result;
 	vector<string> chgCallNameToStmtNum;
 	vector<string> chgAffectedPairName;
+	vector<string> chgResult;
 
 	//index 0 = for arg1, index1 = for arg2
 	//method to convert callProcNames into stmt numbers
@@ -115,12 +116,13 @@ void WithAnalyzer::addSynToVec(vector<vector<string>> &clauseResult, const vecto
 
 		for(const auto candidate: clauseResult[indxValuesToChg]) {
 			chgCallNameToStmtNum = Util::convertIntToString(pkbPtr.getLineCalls(candidate));
+			chgResult.insert(chgResult.end(), chgCallNameToStmtNum.begin(), chgCallNameToStmtNum.end());
 			//add partner value k number of times, where k = number of calls.
 			for (const auto item : chgCallNameToStmtNum)
 				chgAffectedPairName.push_back(clauseResult[partnerIndex][i]);
 			i++;
 		}
-		clauseResult[indxValuesToChg] = chgCallNameToStmtNum;
+		clauseResult[indxValuesToChg] = chgResult;
 		clauseResult[partnerIndex] = chgAffectedPairName;
 	}
 	else if (arg2Ent == "call" && arg2Type == "procName") {
@@ -130,12 +132,13 @@ void WithAnalyzer::addSynToVec(vector<vector<string>> &clauseResult, const vecto
 
 		for (const auto candidate : clauseResult[indxValuesToChg]) {
 			chgCallNameToStmtNum = Util::convertIntToString(pkbPtr.getLineCalls(candidate));
+			chgResult.insert(chgResult.end(), chgCallNameToStmtNum.begin(), chgCallNameToStmtNum.end());
 			//add partner value k number of times, where k = number of calls.
 			for (const auto item : chgCallNameToStmtNum)
 				chgAffectedPairName.push_back(clauseResult[partnerIndex][i]);
 			i++;
 		}
-		clauseResult[indxValuesToChg] = chgCallNameToStmtNum;
+		clauseResult[indxValuesToChg] = chgResult;
 		clauseResult[partnerIndex] = chgAffectedPairName;
 	}
 
