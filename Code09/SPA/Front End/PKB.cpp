@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <unordered_map>
 
+typedef tuple<int, vector<int>> vTuple;
+typedef tuple<int, set<int>> sTuple;
 
 using namespace std;
 
@@ -313,8 +315,16 @@ void PKB::setModifies(int statementNum, string varName) {
 void PKB::setProcModifies(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
-
-	modify.setProcModifies(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
+	modify.setProcModifies(procIndex, varIndex);
+	for each (int callstmt in call.getProcCalledByStmt(procIndex)) {
+		modify.setModifies(callstmt, varIndex, parent.getParentStar(callstmt));
+	}
+	for each (int proc in call.getCalledByStar(procIndex)) {
+		modify.setProcModifies(proc, varIndex);
+		for each (int callstmt in call.getProcCalledByStmt(proc)) {
+			modify.setModifies(callstmt, varIndex, parent.getParentStar(callstmt));
+		}
+	}
 }
 
 vector<string> PKB::convertToVarNames(vector<int> input) {
@@ -756,6 +766,83 @@ vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
 	}
 	return results;
 }
+
+tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
+	vector<int> s1;
+	vector<int> s2;
+	vector<vTuple> frontier;
+	vector<vector<int>> explored(typeTable.size());
+	set<pair<int, int>> included;
+	if (typeTable[1] == assign) {
+		int var = modify.getModifies(1)[0];
+		vector<int> temp;
+		temp.resize(var + 1);
+		temp[var] = 1;
+		frontier.push_back({ 1, temp });
+	} else {
+		frontier.push_back({ 1, {}});
+	}
+	while (!frontier.empty()) {
+		vector<vTuple> nextFrontier;
+		for each (vTuple current in frontier) {
+			for each (int statement in next.getNext(get<0>(current))) {
+				if (explored[statement] != get<1>(current)) {
+					if (typeTable[statement] == _call) {
+						vector<int> leftovers = removeIntersection(get<1>(current), modify.getModifies(statement));
+						nextFrontier.push_back({ statement, leftovers });
+						explored[statement] = leftovers;
+					} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
+						nextFrontier.push_back({ statement, get<1>(current) });
+						explored[statement] = get<1>(current);
+					} else if (typeTable[statement] == assign) {
+						vector<int> uses = use.getUses(statement);
+						for each (int var in uses) {
+							if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
+								int line = get<1>(current)[var];
+								if (line != 0 && included.find({ line, statement }) == included.end()) {
+									s1.push_back(line);
+									s2.push_back(statement);
+									included.insert({ line, statement });
+								}
+							}
+						}
+						int var = modify.getModifies(statement)[0];
+						vector<int> temp = get<1>(current);
+						if (temp.size() <= var) {
+							temp.resize(var + 1);
+						}
+						temp[var] = statement;
+						nextFrontier.push_back({statement, temp});
+						explored[statement] = temp;
+					}
+				} else if (typeTable[statement] == assign) {
+					vector<int> uses = use.getUses(statement);
+					for each (int var in uses) {
+						if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
+							int line = get<1>(current)[var];
+							if (line != 0 && included.find({ line, statement }) == included.end()) {
+								s1.push_back(line);
+								s2.push_back(statement);
+								included.insert({ line, statement });
+							}
+						}
+					}
+					int var = modify.getModifies(statement)[0];
+					vector<int> temp = get<1>(current);
+					if (temp.size() <= var) {
+						temp.resize(var + 1);
+					}
+					temp[var] = statement;
+					nextFrontier.push_back({ statement, temp });
+					explored[statement] = temp;
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return {s1, s2};
+}
+
 vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	vector<int> result;
 	sort(v1.begin(), v1.end());
@@ -763,6 +850,22 @@ vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
 	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
 	return result;
 }
+
+vector<int> PKB::removeIntersection(vector<int> v1, vector<int> v2) {
+	for each (int var in v2) {
+		v1[var] = 0;
+	}
+	return v1;
+}
+
+struct equalFirst {
+	equalFirst(int val) : val_(val) {}
+	bool operator()(const tuple<int, int>& elem) const {
+		return val_ == get<0>(elem);
+	}
+private:
+	int val_;
+};
 
 int PKB::getFollowsCount() {
 	return follow.getFollowsCount();
@@ -798,4 +901,107 @@ int PKB::getProcUseCount() {
 
 int PKB::getNextCount() {
 	return next.getNextCount();
+}
+
+bool PKB::getNextStarTwoLiterals(int s1, int s2) {
+	vector<int> frontier;
+	set<int> explored;
+	frontier.push_back(s1);
+	while (!frontier.empty()) {
+		vector<int> nextFrontier;
+		for each (int current in frontier) {
+			for each (int line in next.getNext(current)) {
+				if (line == s2) {
+					return true;
+				} else if (explored.find(line) == explored.end()) {
+					nextFrontier.push_back(line);
+				}
+				explored.insert(line);
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return false;
+}
+
+vector<int> PKB::getNextStarFirstLiteral(int s) {
+	vector<int> frontier;
+	set<int> explored;
+	set<int> results;
+	frontier.push_back(s);
+	while (!frontier.empty()) {
+		vector<int> nextFrontier;
+		for each (int current in frontier) {
+			for each (int line in next.getNext(current)) {
+				results.insert(line);
+				if (explored.find(line) == explored.end()) {
+					nextFrontier.push_back(line);
+				}
+				explored.insert(line);
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return vector<int>(results.begin(), results.end());
+}
+
+vector<int> PKB::getNextStarSecondLiteral(int s) {
+	vector<int> frontier;
+	set<int> explored;
+	set<int> results;
+	frontier.push_back(s);
+	while (!frontier.empty()) {
+		vector<int> nextFrontier;
+		for each (int current in frontier) {
+			for each (int line in next.getPrevious(current)) {
+				results.insert(line);
+				if (explored.find(line) == explored.end()) {
+					nextFrontier.push_back(line);
+				}
+				explored.insert(line);
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return vector<int>(results.begin(), results.end());
+}
+
+tuple<vector<int>, vector<int>> PKB::getNextStarTwoSynonyms() {
+	vector<int> s1;
+	vector<int> s2;
+	set<sTuple> explored;
+	vector<sTuple> frontier;
+	set<pair<int, int>> included;
+	frontier.push_back({ 1, {1} });
+	while (!frontier.empty()) {
+		vector<sTuple> nextFrontier;
+		for each (sTuple current in frontier) {
+			for each (int line in next.getNext(get<0>(current))) {
+				set<int> nexts = get<1>(current);
+				nexts.insert(line);
+				sTuple currentLine = { line, nexts };
+				if (explored.find(currentLine) == explored.end()) {
+					for each (int statement in get<1>(current)) {
+						if (included.find({ statement, line }) == included.end()) {
+							s1.push_back(statement);
+							s2.push_back(line);
+							included.insert({ statement, line });
+						}
+					}
+					nextFrontier.push_back(currentLine);
+				} else {
+					for each (int statement in get<1>(current)) {
+						if (included.find({ statement, line }) == included.end()) {
+							s1.push_back(statement);
+							s2.push_back(line);
+							included.insert({ statement, line });
+						}
+					}
+				}
+				explored.insert(currentLine);
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return{ s1, s2 };
 }
