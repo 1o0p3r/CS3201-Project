@@ -31,8 +31,8 @@ public:
 
 		//same table
 		QueryElement synSynUses("a", "synonym", "assign", "c", "synonym", "variable", "Uses");
-		QueryElement synSynTuple("stmt,stmt,variable", "a,b,c", "tuple", "synonym,synonym,synonym");
-		QueryElement synSynFol("a", "synonym", "stmt", "b", "synonym", "stmt", "Follows*"); //FollowsStar
+		QueryElement synSynTuple("assign,stmt,variable", "a,b,c", "tuple", "synonym,synonym,synonym");
+		QueryElement synSynFol("a", "synonym", "assign", "b", "synonym", "stmt", "Follows*"); //FollowsStar
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSynFol);
 		qs.addSuchThatQuery(synSynUses);
