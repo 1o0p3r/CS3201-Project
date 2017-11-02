@@ -64,6 +64,8 @@ PKB::PKB() {
 	set<string> allProcedures;
 	set<int> elseSet;
 	vector<int> statementProcedureTable;
+	vector<string> modifiedVariables;
+	vector<string> usedVariables;
 
 	initTypeMap();
 }
@@ -310,6 +312,7 @@ vector<int> PKB::getAllParent() {
 void PKB::setModifies(int statementNum, string varName) {
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
+	modifiedVariables.push_back(varName);
 }
 
 void PKB::setProcModifies(string procName, string varName) {
@@ -368,6 +371,7 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 void PKB::setUses(int statementNum, string varName) {
 	int index = getVarIndex(varName);
 	use.setUses(statementNum, index, parent.getParentStar(statementNum));
+	usedVariables.push_back(varName);
 }
 
 void PKB::setProcUses(string procName, string varName) {
@@ -1002,4 +1006,12 @@ tuple<vector<int>, vector<int>> PKB::getNextStarTwoSynonyms() {
 		frontier = nextFrontier;
 	}
 	return{ s1, s2 };
+}
+
+vector<string> PKB::getAllModifiedVariables() {
+	return modifiedVariables;
+}
+
+vector<string> PKB::getAllUsedVariables() {
+	return usedVariables;
 }
