@@ -39,18 +39,19 @@ public:
 			//"variable v; Select v such that Uses(8, v)",
 			//"assign a; procedure pOne; Select BOOLEAN such that Uses(a, pOne)",
 			//"assign a; procedure pOne; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
-			"assign a2; procedure pTwo;  Select a2 pattern a2(_,  _\"x\"_)",
-			"assign a2; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
-			"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
-			"assign a2; if ifs; Select ifs pattern ifs(\"if\", _, _)",
-			"assign a2; if ifs; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
-			"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
-			"procedure pOne, pTwo; Select pOne such that Calls(pOne, pTwo)",
-			"assign a2; procedure pOne; variable v; Select a2 such that Modifies(a2, v) pattern a2(_, _\"x\"_) and a2(\"y\", _)",
-			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")",
-			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) ",
-			"stmt s; Select s with s.stmt# = 5",
-			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\""
+			//"assign a2; procedure pTwo;  Select a2 pattern a2(_,  _\"x\"_)",
+			//"assign a2; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
+			//"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
+			//"assign a2; if ifs; Select ifs pattern ifs(\"if\", _, _)",
+			//"assign a2; if ifs; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
+			//"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
+			//"procedure pOne, pTwo; Select pOne such that Calls(pOne, pTwo)",
+			//"assign a2; procedure pOne; variable v; Select a2 such that Modifies(a2, v) pattern a2(_, _\"x\"_) and a2(\"y\", _)",
+			//"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")",
+			//"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) ",
+			//"stmt s; Select s with s.stmt# = 5",
+			//"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\"",
+			"call c1; Select c1 with c1.procName =\"Apple\" "
 		};
 		vector<vector<string>> expected = {
 			//{"10", "2", "4"},
@@ -70,18 +71,19 @@ public:
 			//{ "Y2K", "ggg" , "if"},
 			//{},
 			//{"true"},		//boolean must always return something, and it is true instead of empty 
-			{"3", "5"},
-			{"2"},
-			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
-			{"12"},				//Correct
-			{"12","15","4","6"},				//Exception
-			{"2"},				//Exception
-			{"Apple", "Nana"},	//Passed
-			{"3"},		//Passed
-			{"16"},		//Passed
-			{"Apple", "Nana"},
-			{"5"},
-			{"Nana"}
+			//{"3", "5"},
+			//{"2"},
+			//{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
+			//{"12"},				//Correct
+			//{"12","15","4","6"},				//Exception
+			//{"2"},				//Exception
+			//{"Apple", "Nana"},	//Passed
+			//{"3"},		//Passed
+			//{"16"},		//Passed
+			//{"Apple", "Nana"},
+			//{"5"},
+			//{"Nana"},
+			{"18"}
 
 		};
 
