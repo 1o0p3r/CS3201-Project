@@ -206,7 +206,7 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 		string reorderedTuple;
 		for(auto candidate: selectOrder) {
 			reorderedTuple.append(cartToken[cartMap.find(candidate)->second]);
-			reorderedTuple.append(",");
+			reorderedTuple.append(WHITESPACE);
 		}
 		reorderedTuple.pop_back();
 		result.push_back(reorderedTuple);
@@ -260,6 +260,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		for (auto entry : commonTableSyn) {
 			if (get<TABLELOC>(entry) != NOSYNENTRY) {
 				synonym = mergedQueryTable[get<TABLELOC>(entry)][get<SYNVECLOC>(entry)].back();
+
 			} else {
 				synonym = get<3>(entry);
 			}
