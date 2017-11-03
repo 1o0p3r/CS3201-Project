@@ -503,8 +503,8 @@ public:
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
 			//{"SystemTestThree","SystemTestTwo"},
-			//{"1"},
-			{"2"}
+			//{},
+			{}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

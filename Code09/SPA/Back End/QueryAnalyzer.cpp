@@ -155,6 +155,13 @@ void QueryAnalyzer::solveWithClause()
 	
 }
 
+void QueryAnalyzer::optimizeClauseOrder() {
+	multimap<string, pair<int, int>> normalMap = qsReadOnly.getNormalMultiMap();
+	multimap<string, pair<int, int>> hardMap = qsReadOnly.getHardMultiMap();
+	//tuple<vector<QueryElement>,vector<QueryElement>> 
+	QueryOptimizer(normalElements,hardElements,normalMap,hardMap,pkbPtr).runOptimizer();
+}
+
 vector<string> QueryAnalyzer::runQueryEval() {
 	synTableMap = unordered_map<string, tuple<int, int>>();
 	mergedQueryTable = vector<vector<vector<string>>>();
@@ -163,6 +170,12 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	hasWithClause = true;
 	findQueryElements();
 	solveWithClause();
+	
+	isOptimizerOn = true;
+	if(isOptimizerOn) {
+		optimizeClauseOrder();
+	}
+
 	solveSTClause();
 	solvePatternClause();
 	vector<string> result = analyzeClauseResults();
@@ -176,6 +189,12 @@ void QueryAnalyzer::findQueryElements() {
 	stElements = qsReadOnly.getSuchThatQueryElement(); 
 	patternElements = qsReadOnly.getPatternQueryElement();
 	withElements = qsReadOnly.getWithQueryElement();
+
+	//easyWithElements = qsReadOnly.getWithQueryElementsNoSyn();
+	//normalWithElements = qsReadOnly.getWithQueryElementsOneSyn();
+	
+	normalElements = qsReadOnly.getNormalQueryElements();
+	hardElements = qsReadOnly.getHardQueryElements();
 }
 
 void QueryAnalyzer::selectSynonym(vector<string> &answer)

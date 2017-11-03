@@ -17,6 +17,7 @@
 #include "WithAnalyzer.h"
 #include "CallsStarAnalyzer.h"
 #include "Abstract_QA_API.h"
+#include "QueryOptimizer.h"
 
 #include <numeric>
 #include <iterator>
@@ -38,6 +39,7 @@ public:
 	void setPKB(PKB &pkb);
 	void setQS(QueryStatement qs);
 	void solveWithClause();
+	void optimizeClauseOrder();
 	vector<string> runQueryEval();
 //private:
 	QueryStatement qsReadOnly;
@@ -45,6 +47,15 @@ public:
 	vector<QueryElement> stElements;
 	vector<QueryElement> patternElements;
 	vector<QueryElement> withElements;
+
+
+	vector<QueryElement> easyWithElements;
+	vector<QueryElement> normalWithElements;
+	vector<QueryElement> hardWithElements;
+
+	vector<QueryElement> normalElements;
+	vector<QueryElement> hardElements;
+
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
 	unordered_map<int, int> selectSynMap;
@@ -53,6 +64,7 @@ public:
 	bool hasSTClause;
 	bool hasPatternClause;
 	bool hasWithClause;
+	bool isOptimizerOn;
 
 	void initMapPatternExpType();
 	void initSelectMap();
