@@ -5,7 +5,7 @@
 
 enum
 {
-	undefined, stmtNum, value, varName, procName, integer, stringLiteral
+	undefined, stmtNum, value, varName, procName, integer, stringLiteral, prog_line
 };
 
 void WithAnalyzer::initArgSynTypeMap()
@@ -16,6 +16,7 @@ void WithAnalyzer::initArgSynTypeMap()
 	argSynTypeMap["procName"] = procName;
 	argSynTypeMap["varName"] = varName;
 	argSynTypeMap["stringLiteral"] = stringLiteral;
+	argSynTypeMap["prog_line"] = prog_line;
 }
 
 WithAnalyzer::WithAnalyzer(QueryElement withClause, PKB &pkb)
@@ -55,6 +56,9 @@ tuple<bool, vector<vector<string>>> WithAnalyzer::analyze()
 			case integer: case stringLiteral:
 				refResults.push_back(candidateListSyn[i]);
 				break; 
+			case prog_line:
+				refResults = Util::convertIntToString(pkbPtr.getAllStmt());
+				break;
 		}
 		clauseResult.push_back(refResults);
 		
@@ -72,7 +76,7 @@ vector<string> WithAnalyzer::getStmtResults(string ent)
 {
 	vector<int> pkbResult;
 	vector<string> pkbStringResult;
-	if (ent == "stmt#" || ent == "prog_line" || ent == "stmt")  pkbResult = pkbPtr.getAllStmt();
+	if (ent == "stmt")  pkbResult = pkbPtr.getAllStmt();
 	else if (ent == "assign") pkbResult = pkbPtr.getAssign();
 	else if (ent == "while") pkbResult = pkbPtr.getWhile();
 	else if (ent == "if") pkbResult = pkbPtr.getIf();
