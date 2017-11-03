@@ -1013,5 +1013,10 @@ vector<string> PKB::getAllModifiedVariables() {
 }
 
 vector<string> PKB::getAllUsedVariables() {
+	
 	return usedVariables;
+}
+
+string PKB::getProcCalledByStatement(int statement) {
+	return procIndexTable[call.getStmtCallProc(statement)];
 }
