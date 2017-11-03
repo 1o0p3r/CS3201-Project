@@ -21,7 +21,7 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
-			query = "stmt s; Select s";
+		/*	query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
@@ -152,7 +152,7 @@ namespace UnitTesting
 
 			query = "stmt a1; Select a1 such that Affects(1,2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();
+			queryStatement = queryValidator.getQueryStatement();*/
 
 			query = "stmt a1; Select a1 such that Affects(1,1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
