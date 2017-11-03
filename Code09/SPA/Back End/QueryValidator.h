@@ -73,6 +73,7 @@ private:
 	bool isStmtTypes(string str);
 	bool isHardType(string rel);
 	bool isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
+	bool isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
 	bool isCornerRelation(string relation);
 	bool isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent);
 

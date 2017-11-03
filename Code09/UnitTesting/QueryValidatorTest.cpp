@@ -21,7 +21,7 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
-		/*	query = "stmt s; Select s";
+			query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
@@ -152,7 +152,7 @@ namespace UnitTesting
 
 			query = "stmt a1; Select a1 such that Affects(1,2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();*/
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "stmt a1; Select a1 such that Affects(1,1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -195,6 +195,30 @@ namespace UnitTesting
 			queryStatement = queryValidator.getQueryStatement();
 
 			query = "assign a1; prog_line p1, p2; Select p1 such that Affects*(_,p2) such that Affects(_,a1) and Affects*(p1,p2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(p1, \"SystemTestFive\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2; Select p2 such that Calls*(p1, p2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2, p3; Select p2 such that Calls*(p2, p3) and Calls*(p3, \"SystemTestThree\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 		}

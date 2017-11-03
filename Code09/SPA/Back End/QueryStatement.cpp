@@ -22,11 +22,23 @@ vector<QueryElement> QueryStatement::getWithQueryElementsNoSyn() {
 vector<QueryElement> QueryStatement::getWithQueryElementsOneSyn() {
 	return withQueryElementsOneSyn;
 }
+vector<QueryElement> QueryStatement::getWithQueryElementsTwoSyn()
+{
+	return withQueryElementsTwoSyn;
+}
 vector<QueryElement> QueryStatement::getNormalQueryElements() {
 	return normalQueryElements;
 }
 vector<QueryElement> QueryStatement::getHardQueryElements() {
 	return hardQueryElements;
+}
+multimap<string, pair<int, int>> QueryStatement::getNormalMultiMap()
+{
+	return normalMultiMap;
+}
+multimap<string, pair<int, int>> QueryStatement::getHardMultiMap()
+{
+	return hardMultiMap;
 }
 void QueryStatement::addWithQueryElementNoSyn(QueryElement toAdd) {
 	withQueryElementsNoSyn.push_back(toAdd);

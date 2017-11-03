@@ -32,8 +32,11 @@ public:
 
 	vector<QueryElement> getWithQueryElementsNoSyn();
 	vector<QueryElement> getWithQueryElementsOneSyn();
+	vector<QueryElement> getWithQueryElementsTwoSyn();
 	vector<QueryElement> getNormalQueryElements();
 	vector<QueryElement> getHardQueryElements();
+	multimap<string, pair<int, int>> getNormalMultiMap();
+	multimap<string, pair<int, int>> getHardMultiMap();
 
 	void addWithQueryElementNoSyn(QueryElement qe);
 	void addWithQueryElementOneSyn(QueryElement qe);

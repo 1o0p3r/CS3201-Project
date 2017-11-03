@@ -223,10 +223,14 @@ bool QueryValidator::isValidSuchThat(string str) {
 				}
 			}
 
-			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
+//			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
+//				return false;
+//			}
+			if (!isAllowedParametersCheck(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
 				return false;
 			}
-			
+
+
 			//If both are valid and true, create the clause
 			if (arg1Valid && arg2Valid) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
@@ -241,6 +245,25 @@ bool QueryValidator::isValidSuchThat(string str) {
 	}
 	return true;
 }
+bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
+
+	//Do further checking only if arg1 equals to arg2
+	if (arg1 == arg2) {
+		//Then check the relationships, the only such that clauses with same arg1 and arg2 are Next*, Affects*
+		if (isCornerRelation(relation)) {
+			return true;
+		} else {
+			if (arg1 == UNDER_SCORE_STRING) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	} else {
+		return true;
+	}
+}
+
 
 bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
 	if (!arg1_STRING_LITERAL && !arg2_STRING_LITERAL) {
@@ -260,7 +283,7 @@ bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_
 	}
 }
 bool QueryValidator::isCornerRelation(string relation) {
-	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING)) {
+	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING) || (relation == AFFECTS_STRING)) {
 		return true;
 	}
 	return false;
