@@ -512,6 +512,7 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				clauseResult = CallsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
+				break;
 			case next_:
 				clauseResult = NextAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);

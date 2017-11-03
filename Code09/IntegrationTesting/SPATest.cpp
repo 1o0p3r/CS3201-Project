@@ -496,12 +496,15 @@ public:
 		vector<string> answer;
 		vector<string> queries = {
 			//"procedure p1; Select p1 such that Calls*(p1, _)", //getAllCalls broken api
-			"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")"
-
+			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
+			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
+			"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")"
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
-			{}
+			//{"SystemTestThree","SystemTestTwo"},
+			//{"1"},
+			{"2"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

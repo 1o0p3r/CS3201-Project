@@ -63,7 +63,7 @@ tuple<bool, vector<vector<string>>> CallsStarAnalyzer::addArgOneResult(string ar
 		else
 			vecOfCandidates.push_back(arg2);
 		for (string candidates : vecOfCandidates) {
-			pkbCallsStar = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalledBy(candidates);
+			pkbCallsStar = unitTestModeOn ? getUnitTestInputs() : pkbReadOnly.getCalledByStar(candidates);
 			for (string candidatesChosen : pkbCallsStar) {
 				pkbResult.push_back(candidatesChosen);
 			}
@@ -159,7 +159,7 @@ bool CallsStarAnalyzer::checkClauseWildVariable(string arg2)
 {
 	if (unitTestModeOn)
 		return getUnitTestInputs().empty() ? false : true;
-	return pkbReadOnly.getCalledBy(arg2).empty() ? false : true;
+	return pkbReadOnly.getCalledByStar(arg2).empty() ? false : true;
 }
 
 bool CallsStarAnalyzer::checkClauseBothWild()
