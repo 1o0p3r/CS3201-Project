@@ -26,7 +26,7 @@ public:
 		vector<vector<vector<string>>> qTable;
 		//intint
 		
-		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Follows");
+		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Follows", "suchThat");
 		
 		qs.addSuchThatQuery(wildWild);
 		qa.setQS(qs);
@@ -34,28 +34,28 @@ public:
 		clauseResult = FollowsAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 		
-		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "Follows");
+		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildInt);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(wildInt,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement intWild("2", "int", "assign","_", "wildcard", "", "Follows");
+		QueryElement intWild("2", "int", "assign","_", "wildcard", "", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intWild);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intWild,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
-		QueryElement intInt("1", "int", "assign", "3", "int", "", "Follows");
+		QueryElement intInt("1", "int", "assign", "3", "int", "", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intInt);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intInt,pkb, qTable, qMap).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
 
-		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "Follows");
+		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
@@ -64,7 +64,7 @@ public:
 		Assert::IsTrue(get<0>(clauseResult));
 		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
 
-		QueryElement synInt("a", "synonym", "assign", "3", "integer", "assign", "Follows");
+		QueryElement synInt("a", "synonym", "assign", "3", "integer", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synInt);
 		qa.setQS(qs);
@@ -73,7 +73,7 @@ public:
 		Assert::IsTrue(get<0>(clauseResult));
 		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
 
-		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Follows");
+		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
@@ -83,7 +83,7 @@ public:
 		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
 		Assert::AreEqual(hardcode[1][0], get<1>(clauseResult)[1][0]);
 		
-		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "Follows");
+		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
@@ -92,7 +92,7 @@ public:
 		Assert::IsTrue(get<0>(clauseResult));
 		Assert::AreEqual(hardcode[0][0], get<1>(clauseResult)[0][0]);
 
-		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "Follows");
+		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);

@@ -53,6 +53,7 @@ const string CALL_STRING = "call";
 const string AFFECTS_STRING = "Affects";
 const string AFFECTS_STAR_STRING = "Affects*";
 const string STMT_STRING = "stmt";
+const string SUCH_THAT = "suchThat";
 
 const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
 const string INVALID_ENTITY_ERROR = "invalid entity";
@@ -80,6 +81,7 @@ const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|
 const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))";
 const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
 
+//Regexs for such that relationships
 const string MODIFIESP_STRING_REGEX = MODIFIES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 const string MODIFIESS_STRING_REGEX = MODIFIES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
@@ -104,6 +106,10 @@ const string NEXT_STRING_REGEX = NEXT_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRI
 + "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 const string NEXTT_STRING_REGEX = NEXT_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string AFFECTS_STRING_REGEX = AFFECTS_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
+const string AFFECTST_STRING_REGEX = AFFECTS_STRING + +"\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
++ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
 const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
@@ -117,6 +123,8 @@ const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRAC
 + OR + SYMBOL_LEFT_BRACKET_STRING + CALLST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + MODIFIESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
++ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + SYMBOL_RIGHT_BRACKET_STRING;
 suchThatHandler::suchThatHandler()
 {
@@ -215,10 +223,14 @@ bool QueryValidator::isValidSuchThat(string str) {
 				}
 			}
 
-			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
+//			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
+//				return false;
+//			}
+			if (!isAllowedParametersCheck(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
 				return false;
 			}
-			
+
+
 			//If both are valid and true, create the clause
 			if (arg1Valid && arg2Valid) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
@@ -233,6 +245,25 @@ bool QueryValidator::isValidSuchThat(string str) {
 	}
 	return true;
 }
+bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
+
+	//Do further checking only if arg1 equals to arg2
+	if (arg1 == arg2) {
+		//Then check the relationships, the only such that clauses with same arg1 and arg2 are Next*, Affects*
+		if (isCornerRelation(relation)) {
+			return true;
+		} else {
+			if (arg1 == UNDER_SCORE_STRING) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	} else {
+		return true;
+	}
+}
+
 
 bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
 	if (!arg1_STRING_LITERAL && !arg2_STRING_LITERAL) {
@@ -252,7 +283,7 @@ bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_
 	}
 }
 bool QueryValidator::isCornerRelation(string relation) {
-	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING)) {
+	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING) || (relation == AFFECTS_STRING)) {
 		return true;
 	}
 	return false;
@@ -268,6 +299,9 @@ bool QueryValidator::isSameArgType(string arg1, string arg1Ent, string arg2, str
 bool QueryValidator::isStmtTypes(string str) {
 	return (str == ASSIGN_STRING || str == STMT_STRING || str == WHILE_STRING || str == IF_STRING || str == CALLS_STRING);
 }
+bool QueryValidator::isHardType(string rel) {
+	return (rel == AFFECTS_STRING || rel == AFFECTS_STAR_STRING || rel == NEXT_STAR_STRING);
+}
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string arg1Ent, string arg2Ent) {
 
 	//QueryElement parameters:
@@ -276,23 +310,56 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 	if (!arg1_NUM && !arg1_UNDER && !arg1_STRING_LITERAL) {
 		//Implies that arg 1 is snyonym and arg2 is also a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, SYNONYM_STRING, arg2Ent, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
+				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
+			} else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
 			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, NUMBER_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (!arg2_NUM && !arg2_UNDER  && arg2_STRING_LITERAL) {
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
-			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else {
 			return false;
@@ -300,22 +367,48 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 	} else if (arg1_NUM && !arg1_UNDER && !arg1_STRING_LITERAL) {
 		//Implies that arg1 is a number and arg2 is a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (!arg2_NUM && !arg2_UNDER  && arg2_STRING_LITERAL) {
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
-			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else {
 			return false;
@@ -323,22 +416,48 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 	} else if (!arg1_NUM && arg1_UNDER && !arg1_STRING_LITERAL) {
 		//Implies taht arg1 is a wildcard and arg 2 is a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (!arg2_NUM && !arg2_UNDER  && arg2_STRING_LITERAL) {
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
-			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else {
 			return false;
@@ -348,31 +467,57 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType);
+			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+			}
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else if (!arg2_NUM && !arg2_UNDER  && arg2_STRING_LITERAL) {
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			arg2 = Util::trim(arg2);
-			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType);
+			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
 			addSuchThatQueryElement(queryElement);
+			if (isHardType(relType)) {
+				queryStatement.addHardQueryElement(queryElement);
+			}
+			else {
+				queryStatement.addNormalQueryElement(queryElement);
+			}
 			return true;
 		} else {
-			return true;
+			return false;
 		}
 	} else {
 		return false;

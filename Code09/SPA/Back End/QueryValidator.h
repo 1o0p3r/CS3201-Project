@@ -71,7 +71,9 @@ private:
 	bool isValidGeneralPatternRegex(string str);
 	bool isValidIfMultiplePatternRegex(string str);
 	bool isStmtTypes(string str);
+	bool isHardType(string rel);
 	bool isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
+	bool isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
 	bool isCornerRelation(string relation);
 	bool isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent);
 
@@ -80,6 +82,8 @@ private:
 	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
+
+	bool isStringLiteralOrNumber(string syn);
 	
 	string extractIdentity(string arg);
 

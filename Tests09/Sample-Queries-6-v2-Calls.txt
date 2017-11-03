@@ -1,0 +1,155 @@
+1 - Single Valid Query Calls
+procedure p1;
+Select p1 such that Calls(p1, _)
+SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+2 - Single Valid Query Calls
+procedure p1;
+Select p1 such that Calls(p1, "SystemTestThree")
+SystemTestOne,SystemTestTwo
+5000
+3 - Single Valid Query Calls
+procedure p1;
+Select p1 such that Calls("SystemTestThree", p1)
+SystemTestFour
+5000
+4 - Single Valid Query Calls
+procedure p1;
+Select p1 such that Calls(_, "SystemTestFour")
+SystemTestFour,SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+5 - Single Valid Query Calls
+procedure p1; procedure p2;
+Select p2 such that Calls(p1, p2)
+SystemTestFour,SystemTestThree,SystemTestTwo
+5000
+6 - Single Valid Query Calls
+procedure p1; procedure p2;
+Select p2 such that Calls(p2, p1)
+SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+7 - Multiple Valid Query Calls
+procedure p1; procedure p2;
+Select p1 such that Calls(p2, "SystemTestThree") and Calls(p1, p2)
+SystemTestOne
+5000
+8 - Multiple Valid Query Calls
+procedure p1; procedure p2, p3;
+Select p2 such that Calls(p2, p3) and Calls("SystemTestOne", p3) and Calls(p3, "SystemTestThree") and Calls(p2, "SystemTestThree")
+SystemTestOne
+5000
+9 - Multiple Valid Query Calls
+procedure p1; procedure p2, p3;
+Select p1 such that Calls(_,p1) and Calls(p1,p2) and Calls(p2, "SystemTestFive") and Calls(p3, p2)
+none
+5000
+10 - Invalid Query Calls
+procedure p1;
+Select p1 such that Calls(p1, p1)
+none
+5000
+11 - Invalid Query Calls
+procedure p1;
+Select p1 such that Calls(1, p1)
+none
+5000
+12 - Invalid Query Calls
+procedure p1;
+Select p1 such that Calls("SystemTestThree", "SystemTestThree")
+none
+5000
+13 - Single Valid Query Calls*
+procedure p1;
+Select p1 such that Calls*(p1, _)
+SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+14 - Single Valid Query Calls*
+procedure p1;
+Select p1 such that Calls*(p1, "SystemTestFour")
+SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+15 - Single Valid Query Calls*
+procedure p1;
+Select p1 such that Calls*(p1, "SystemTestFive")
+none
+5000
+16 - Single Valid Query Calls*
+procedure p1;
+Select p1 such that Calls*(_, "SystemTestTwo")
+SystemTestFour,SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+17 - Single Valid Query Calls*
+procedure p1, p2;
+Select p2 such that Calls*(p1, p2)
+SystemTestFour,SystemTestThree,SystemTestTwo
+5000
+18 - Single Valid Query Calls*
+procedure p1, p2;
+Select p2 such that Calls*(p2, p1)
+SystemTestOne,SystemTestThree,SystemTestTwo
+5000
+19 - Multiple Valid Query Calls*
+procedure p1, p2, p3;
+Select p2 such that Calls*(p2, p3) and Calls*(p3, "SystemTestThree")
+SystemTestOne
+5000
+20 - Multiple Valid Query Calls*
+procedure p1, p2;
+Select p2 such that Calls*(_, p2) and Calls*(p2, p3) and Calls*(p3, "SystemTestFour") and Calls*(p3, "SystemTestThree")
+none
+5000
+21 - Invalid Query Calls*
+procedure p1, p2;
+Select p2 such that Calls*(p1,p1)
+none
+5000
+22 - Invalid Query Calls*
+procedure p1, p2;
+Select p2 such that Calls*(p1, 1)
+none
+5000
+23 - Invalid Query Calls*
+procedure p1, p2;
+Select p1 such that Calls*("SystemTestOne", "SystemTestOne")
+none
+5000
+24 - Invalid Query Calls* and Calls
+procedure p1, p2;
+Select poNE such that  Calls*("SystemTestFour", "SystemTestThree")
+none
+5000
+25 - Invalid Query Calls* and Calls
+procedure p1, p2;
+Select p12 such that Calls("SystemTestOne", "SystemTestTwo")
+none
+5000
+26 - Invalid Query Calls* and Calls
+procedure p1, p2;
+Select p2 such that calls(p1, p2)
+none
+5000
+27 - Invalid Query Calls* and Calls
+procedure p1, p2;
+Select p1 such that calls*(p1,p2)
+none
+5000
+28 - Invalid Query Calls* and Calls
+procedure p1, p2;
+Select p1 such that Calls*(p1, p2) Calls(p2, "SystemTestThree")
+none
+5000
+29 - Multiple Valid Query Calls* and Calls
+procedure p1, p2, p3;
+Select p1 such that Calls*(p2, p1) and Calls(p1, p3) and Calls(p3, "SystemTestThree")
+none
+5000
+30 - Multiple Valid Query Calls* and Calls
+procedure p1, p2, p3;
+Select p1 such that Calls(p3, p2) and Calls(p2, "SystemTestThree") and Calls*(p3, "SystemTestFour") and Calls*(p1, p2)
+SystemTestOne
+5000
+31 - Multiple Valid Query stress
+procedure p1, p2, p3, p4, p5;
+Select p3 such that Calls*(p1, p2) and Calls(p2, p3) and Calls(p3, p4) and Calls*(p4, p5) and Calls*(p2, p4) and Calls*(p2, p5) and Calls*(p1, p5)
+none
+5000

@@ -197,6 +197,30 @@ namespace UnitTesting
 			query = "assign a1; prog_line p1, p2; Select p1 such that Affects*(_,p2) such that Affects(_,a1) and Affects*(p1,p2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(p1, \"SystemTestFive\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2; Select p2 such that Calls*(p1, p2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2, p3; Select p2 such that Calls*(p2, p3) and Calls*(p3, \"SystemTestThree\")";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 
@@ -242,6 +266,7 @@ namespace UnitTesting
 		
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\") with d.value = 4";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 pattern a#(v#,_\"x+y\"_) such that Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -370,6 +395,11 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string query;
 			QueryStatement queryStatement;
+
+
+			query = "stmt a; constant c; prog_line n; Select BOOLEAN with a.stmt# = c.value";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "procedure p; constant c; prog_line n; Select BOOLEAN with n=1";
 			Assert::IsTrue(queryValidator.parseInput(query));

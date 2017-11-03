@@ -23,14 +23,14 @@ public:
 		vector<vector<string>> hardCodeResult;
 
 		//"if ifs; Select ifs pattern ifs("a", _)"
-		QueryElement ifPat("a", "_", "_", "if", "ifs", "variable", "", "", "if");
+		QueryElement ifPat("a", "_", "_", "if", "ifs", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
 		qs.addPatternQuery(ifPat);
 		qa.setQS(qs);
 		qa.findQueryElements();
 		qa.solvePatternClause();
 		auto answer = qa.getMergedQueryTable();
-		hardCodeResult = { {"5","16","ifs"} };
+		hardCodeResult = { {"6","18","ifs"} };
 		for ( int k =0; k<answer.size();k++)
 			for( int i =0; i < answer[k].size();i++)
 				for(int j=0; j< answer[k][i].size(); j++)
@@ -50,15 +50,15 @@ public:
 		vector<vector<string>> pkbHardCode;
 		vector<vector<string>> hardCodeResult;
 
-		//"while whiles; Select whiles pattern whiles("b", _)"
-		QueryElement whilePat("b", "_", "_", "while", "whiles", "variable", "", "", "while");
+		//"if ifs; Select ifs pattern ifs("a", _)"
+		QueryElement whilePat("b", "_", "_", "while", "whiles", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
 		qs.addPatternQuery(whilePat);
 		qa.setQS(qs);
 		qa.findQueryElements();
 		qa.solvePatternClause();
 		auto answer = qa.getMergedQueryTable();
-		hardCodeResult = { { "18","whiles" } };
+		hardCodeResult = { { "20","24","whiles" } };
 		for (int k = 0; k<answer.size(); k++)
 			for (int i = 0; i < answer[k].size(); i++)
 				for (int j = 0; j< answer[k][i].size(); j++)

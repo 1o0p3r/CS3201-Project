@@ -18,7 +18,7 @@ QueryElement::QueryElement(string entity, string synonym, string type, string at
 }
 
 //Such that: 7 parameteres
-QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel)
+QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel, string clause)
 {
 	argumentOneSuchThat = arg1;
 	argumentOneTypeSuchThat = arg1Type;
@@ -27,11 +27,11 @@ QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, stri
 	argumentTwoTypeSuchThat = arg2Type;
 	argumentTwoEntitySuchThat = arg2Entity;
 	relSuchThatType = rel;
-
+	clauseType = clause;
 }
 
 //Pattern  9 paramaters
-QueryElement::QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, string argOneType, string argTwoType, string argThreeType, string argOneEntity)
+QueryElement::QueryElement(string arg1, string arg2, string arg3, string patternEntity, string patternSynonym, string argOneType, string argTwoType, string argThreeType, string argOneEntity, string clause)
 {
 	argumentOnePattern = arg1;
 	argumentTwoPattern = arg2;
@@ -42,16 +42,18 @@ QueryElement::QueryElement(string arg1, string arg2, string arg3, string pattern
 	patternArg2Type = argTwoType;
 	patternArg3Type = argThreeType;
 	patternArg1Ent = argOneEntity;
+	clauseType = clause;
 }
 
 //With:8 parameters
-QueryElement::QueryElement(string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn) {
+QueryElement::QueryElement(string arg1Type, string arg2Type, string ent1Type, string ent2Type, string arg1Syn, string arg2Syn, string clause) {
 	argumentOneTypeWith = arg1Type;
 	argumentTwoTypeWith = arg2Type;
 	argumentOneEntWith = ent1Type;
 	argumentTwoEntWith = ent2Type;
 	argumentOneSynWith = arg1Syn;
 	argumentTwoSynWith = arg2Syn;
+	clauseType = clause;
 }
 
 string QueryElement::getSelectEntity()
@@ -170,4 +172,8 @@ string QueryElement::getPatternSynonym()
 string QueryElement :: getSuchThatRel() 
 {
 	return relSuchThatType;
+}
+string QueryElement::getClauseType() 
+{
+	return clauseType;
 }
