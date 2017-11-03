@@ -505,6 +505,8 @@ public:
 
 	vector<string> getAllUsedVariables();
 
+	string getProcCalledByStatement(int statement);
+
 private:
 	Follow follow;
 	Parent parent;

@@ -232,7 +232,7 @@ vector<int> PKB::getPatternVariableExpressionSubstring(string variable, string e
 	vector<int> statements;
 	for (auto i = expressionTable.begin(); i != expressionTable.end(); i++) {
 		if (i->first.find(expression) != string::npos) {
-			for (int j = 0; j < get<1>(i->second).size(); i++) {
+			for (int j = 0; j < get<1>(i->second).size(); j++) {
 				if (get<1>(i->second)[j] == variable) {
 					statements.push_back(get<0>(i->second)[j]);
 				}
