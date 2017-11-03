@@ -50,12 +50,17 @@ public:
 			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select a2 such that Parent*(12,a2) pattern a2(\"boom\",_) pattern a2(_, \"1\")",
 			"stmt s; assign a2; procedure pOne; variable v; if ifs; Select pOne such that Modifies(pOne, \"li3m\") and Uses(pOne,_) ",
 			"stmt s; Select s with s.stmt# = 5",
-			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\""
+			"procedure pro1, pro2; Select pro1 with pro2.procName = \"Pear\" such that Calls(pro1,pro2) with pro1.procName = \"Nana\"",
+			"variable v1; stmt s; Select s such that Parent*(s,_) and Uses(s,v1) with v1.varName = \"Y2K\" ",
+			"call c1; Select c1 with c1.procName =\"Apple\" ",
+			"call c1; procedure p1; Select c1 with c1.procName = p1.procName ",
+			"call c1,c2; Select c1 with c1.procName = c2.procName ",
+			"call c1; Select c1 with \"Pear\" = c1.procName "
 		};
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
 			{ "5" },
-			{ },
+			{},
 			{ "3" },		
 			{ "3" },
 			{ "2" },
@@ -81,8 +86,12 @@ public:
 			{"16"},		//Passed
 			{"Apple", "Nana"},
 			{"5"},
-			{"Nana"}
-
+			{"Nana"},
+			{"12", "15", "4", "6"},
+			{ "18" },
+			{ "18", "19", "8" },
+			{ "18", "19", "8" },
+			{ "19", "8" }
 		};
 
 		for (int i = 0; i < queries.size(); i++) {
@@ -375,7 +384,7 @@ public:
 			{ "4" }, //6
 			{ "e" ,"f", "g", "k", "m", "y" }, //7
 			{ "e" ,"f", "g", "k", "m", "y" }, //8
-			{ "<yoda, 2>" }, //9
+			{ "yoda 15","yoda 2" }, //9 // missing <yoda,15>
 			{ "6", "11" }, //10
 			{}, //11
 			{ "4", "8", "10", "13", "17", "20", "1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "2", "15", "6", "11" }, //12
@@ -389,7 +398,7 @@ public:
 			{ "17"}, //20
 			{ "16", "18" }, //21
 			{ "1", "4", "5", "6", "7" }, //22
-			{ "15", "17", "2", "13" }, //23
+			{ "15", "17", "2"}, //23 //amswer 13 is parent* hence removed
 			{ "14", "16", "18", "19", "21" }, //24
 			{ "true" }, //25
 			{ "10", "13", "15", "2", "4", "8" }, //26
@@ -475,6 +484,25 @@ public:
 			}
 		}
 		
+	}
+	TEST_METHOD(SampleSouce6_v2) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-6-v2.txt";
+		Parse(filename, pkb);
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		if (validator.parseInput("variable v; assign a1, a2; if ifs; while w; Select ifs such that Parent(ifs, a1) and Follows(ifs, a2) and Modifies(a2, v)")) {
+			statement = validator.getQueryStatement();
+			analyzer.setQS(statement);
+			answer = analyzer.runQueryEval();
+		} else {
+			Logger::WriteMessage("Invalid Query in Source 2");
+			answer = {};
+		}
+		Assert::IsTrue(answer == vector<string>{});
 	}
 
 	};

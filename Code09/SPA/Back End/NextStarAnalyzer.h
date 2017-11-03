@@ -1,11 +1,10 @@
 #pragma once
-
 #include "SuchThatAnalyzer.h"
-class ParentStarAnalyzer :
+class NextStarAnalyzer :
 	public suchThatAnalyzer
 {
 public:
-	ParentStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly, vector<vector<vector<string>>> const &qTable,
+	NextStarAnalyzer(QueryElement suchThatClause, PKB pkbReadOnly, vector<vector<vector<string>>> const &qTable,
 		unordered_map<string, tuple<int, int>> const &qMap) :
 		suchThatAnalyzer(suchThatClause, pkbReadOnly, qTable, qMap)
 	{
@@ -24,5 +23,3 @@ protected:
 	bool checkClauseWildVariable(string arg2) override;
 	bool checkClauseBothWild() override;
 };
-
-

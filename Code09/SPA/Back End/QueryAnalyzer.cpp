@@ -141,13 +141,15 @@ void QueryAnalyzer::solveWithClause()
 {
 	vector<vector<string>> withResult;
 	for (QueryElement withClause : withElements) {
-		auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
-		withResult = get<VECTRESULT>(clauseResult);
-		hasWithClause = get<BOOLRESULT>(clauseResult);
-		if (!hasWithClause)
-			break;
-		if (!withResult.empty())
-			insertSTResult(withResult);
+		if (!isQueryFalse()) {
+			auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
+			withResult = get<VECTRESULT>(clauseResult);
+			hasWithClause = get<BOOLRESULT>(clauseResult);
+			if (!hasWithClause)
+				setClauseFalse();
+			if (!withResult.empty())
+				insertSTResult(withResult);
+		}
 
 	}
 	
@@ -204,7 +206,7 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 		string reorderedTuple;
 		for(auto candidate: selectOrder) {
 			reorderedTuple.append(cartToken[cartMap.find(candidate)->second]);
-			reorderedTuple.append(",");
+			reorderedTuple.append(WHITESPACE);
 		}
 		reorderedTuple.pop_back();
 		result.push_back(reorderedTuple);
@@ -219,7 +221,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	auto tupleEntity = selectElement.getSelectEntity();
 	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
 	auto synonymEntities = Util::splitLine(tupleEntity, ',');
-	vector<vector<tuple<int,int,string>>> synLoc;
+	vector<vector<tuple<int,int,string,string>>> synLoc;
 	vector<vector<string>> synTableConcatEntries;
 	unordered_map<string, int> synCartMap;
 
@@ -228,14 +230,14 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
 		if (searchInQueryTable != synTableMap.end()) { //if synonym in immediate table
-			vector<tuple<int, int, string>> selectSynTableAttr;
+			vector<tuple<int, int, string,string>> selectSynTableAttr;
 			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second));
 			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
 				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), synLoc.size()));
 				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
-					synonymEntities[i]));
+					synonymEntities[i],synonymTokens[i]));
 				synLoc.push_back(selectSynTableAttr);
 			} else {
 				//insert synonym results at common table row 
@@ -243,19 +245,25 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				synLoc[insertAtRow].push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
-					synonymEntities[i]));
+					synonymEntities[i],synonymTokens[i]));
 			}
 		} else {
-			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i]) });
+			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i],synonymTokens[i]) });
 		}
 	}
 
+	string synonym;
 	int k = 0;
 	for (auto commonTableSyn : synLoc) {
 
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
-			string synonym = mergedQueryTable[get<TABLELOC>(entry)][get<SYNVECLOC>(entry)].back();
+			if (get<TABLELOC>(entry) != NOSYNENTRY) {
+				synonym = mergedQueryTable[get<TABLELOC>(entry)][get<SYNVECLOC>(entry)].back();
+
+			} else {
+				synonym = get<3>(entry);
+			}
 			synCartMap.insert(make_pair(synonym, k));
 			k++;
 		}
@@ -311,6 +319,8 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
 	}
+	for (auto &concatVecEntries : synTableConcatEntries)
+		concatVecEntries = Util::removeDuplicates(concatVecEntries);
 
 	vector<string> vecToCartProd = synTableConcatEntries.front();
 	//cartesian product synonyms.
@@ -455,54 +465,55 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 	vector<vector<string>> stResult;
 	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
-	if (isQueryFalse())
-		return {{{}}};
 
 	for (QueryElement stClause : stElements) {
+		if (isQueryFalse())
+			return{ { {} } };
+
 		stClauseType = stClause.getSuchThatRel();
 		evaluateSTRelation = mapSuchThatValues[stClauseType];
 		switch (evaluateSTRelation) {
 			case modifies:
-				clauseResult = ModifiesAnalyzer(stClause, pkbPtr).solveClause();
+				clauseResult = ModifiesAnalyzer(stClause, pkbPtr, mergedQueryTable,synTableMap).solveClause();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case uses:
-				clauseResult = UsesAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = UsesAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parent: 
-				clauseResult = ParentAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = ParentAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case parentStar:
-				clauseResult = ParentStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = ParentStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case follows:
-				clauseResult = FollowsAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = FollowsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case followsStar:
-				clauseResult = FollowsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = FollowsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case calls:
-				clauseResult = CallsAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = CallsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case callsStar:
-				clauseResult = CallsStarAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = CallsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 			case next_:
-				clauseResult = NextAnalyzer(stClause, pkbPtr).solveClauseStmt();
+				clauseResult = NextAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				stResult = get<VECTRESULT>(clauseResult);
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
@@ -520,9 +531,10 @@ void QueryAnalyzer::solvePatternClause() {
 	vector<vector<string>> patternResult;
 	int evaluatePatternRelation;
 
-	if (!isQueryFalse()) {
+	
 
-		for (QueryElement patternClause : patternElements) {
+	for (QueryElement patternClause : patternElements) {
+		if (!isQueryFalse()) {
 			patternClauseType = patternClause.getPatternEntity();
 			evaluatePatternRelation = mapPatternValues[patternClauseType];
 			switch (evaluatePatternRelation) {
@@ -541,6 +553,7 @@ void QueryAnalyzer::solvePatternClause() {
 				break;
 		}
 	}
+	
 		
 }
 

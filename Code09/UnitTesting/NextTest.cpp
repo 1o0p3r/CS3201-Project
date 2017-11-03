@@ -60,7 +60,7 @@ namespace UnitTesting {
 			Assert::IsTrue(pkb.getNextStarSecondLiteral(4) == vector<int>{1, 2, 3, 4});
 
 			pkb = PKB();
-			filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+			filename = "..\\..\\Tests09\\Sample-Source-2.txt";	
 			Assert::IsTrue(Parse(filename, pkb));
 			Assert::IsTrue(pkb.getNextStarSecondLiteral(3) == vector<int>{1, 2, 3, 4, 5, 6, 7});
 			Assert::IsTrue(pkb.getNextStarSecondLiteral(6) == vector<int>{1, 2, 3, 4, 5, 6, 7});

@@ -30,9 +30,9 @@ public:
 		// assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < p.procName, c.value, s, v, v.varName > with n=1
 
 		//same table
-		QueryElement synSynUses("a", "synonym", "assign", "c", "synonym", "variable", "Uses", "suchThat");
-		QueryElement synSynTuple("stmt,stmt,variable", "a,b,c", "tuple", "synonym,synonym,synonym");
-		QueryElement synSynFol("a", "synonym", "stmt", "b", "synonym", "stmt", "Follows*", "suchThat"); //FollowsStar
+		QueryElement synSynUses("a", "synonym", "assign", "c", "synonym", "variable", "Uses");
+		QueryElement synSynTuple("assign,stmt,variable", "a,b,c", "tuple", "synonym,synonym,synonym");
+		QueryElement synSynFol("a", "synonym", "assign", "b", "synonym", "stmt", "Follows*"); //FollowsStar
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSynFol);
 		qs.addSuchThatQuery(synSynUses);
@@ -63,9 +63,9 @@ public:
 		vector<vector<string>> result;
 		vector<vector<string>> hardcode;
 
-		QueryElement synSynUses("a", "synonym", "assign", "b", "synonym", "variable", "Uses", "suchThat");
+		QueryElement synSynUses("a", "synonym", "assign", "b", "synonym", "variable", "Uses");
 		QueryElement synSynTuple("assign,variable,while,assign", "c,b,d,a", "tuple", "synonym,synonym,synonym,synonym");
-		QueryElement synSynFol("c", "synonym", "assign", "d", "synonym", "while", "Follows*", "suchThat"); //FollowsStar
+		QueryElement synSynFol("c", "synonym", "assign", "d", "synonym", "while", "Follows*"); //FollowsStar
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSynFol);
 		qs.addSuchThatQuery(synSynUses);

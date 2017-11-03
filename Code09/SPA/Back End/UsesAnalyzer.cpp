@@ -10,14 +10,9 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgTwoResult(string arg1)
 	vector<string> pkbUses;
 	vector<vector<string>> UsesResult;
 
-	//semantic error check by preprocessor
-	/*
-	if (arg1 == WILDCARD_SYMBOL)
-	return make_tuple(false, vector<vector<string>>());
-	*/
 	vecOfCandidates.push_back(arg1);
 	for (string candidates : vecOfCandidates) {
-		pkbUses = getUsesResultAddArg2(candidates, arg2Entity);
+		pkbUses = getUsesResultAddArg2(candidates);
 		for (string candidatesChosen : pkbUses) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -25,6 +20,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgTwoResult(string arg1)
 	if (pkbResult.empty())
 		hasUses = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		UsesResult.push_back(pkbResult);
 	}
@@ -41,7 +37,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	vector<vector<string>> UsesResult;
 
 	if (arg2 == WILDCARD_SYMBOL)
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllUsedVariables();
 	else
 		vecOfCandidates.push_back(arg2);
 	for (string candidates : vecOfCandidates) {
@@ -53,6 +49,7 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addArgOneResult(string arg2)
 	if (pkbResult.empty())
 		hasUses = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		UsesResult.push_back(pkbResult);
 	}
@@ -69,12 +66,28 @@ tuple<bool, vector<vector<string>>> UsesAnalyzer::addBothSynResult(string arg1, 
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> UsesResult;
 
-	vecOfCandidates = pkbReadOnly.getAllVariables();
+	bool hasArg1EvalBefore = false;
+	const auto synArg1Iterator = queryMap.find(arg1);
+	const auto synArg2Iterator = queryMap.find(arg2);
+
+	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
+		vecOfCandidates = pkbReadOnly.getAllUsedVariables();
+	} else 
+		getArgsPriorStringResults(vecOfCandidates, hasArg1EvalBefore, synArg2Iterator, synArg1Iterator);
+
 	for (string candidates : vecOfCandidates) {
-		pkbUses = getUsesResultAddArg1(candidates, arg1Entity);
+		if (!hasArg1EvalBefore)
+			pkbUses = getUsesResultAddArg1(candidates, arg1Entity);
+		else 
+			pkbUses = getUsesResultAddArg2(candidates);
 		for (string candidatesChosen : pkbUses) {
-			pkbResultForArg1.push_back(candidatesChosen);
-			pkbResultForArg2.push_back(candidates);
+			if (!hasArg1EvalBefore) {
+				pkbResultForArg1.push_back(candidatesChosen);
+				pkbResultForArg2.push_back(candidates);
+			} else {
+				pkbResultForArg1.push_back(candidates);
+				pkbResultForArg2.push_back(candidatesChosen);
+			}
 		}
 	}
 	if (pkbResultForArg1.empty())
@@ -110,23 +123,7 @@ bool UsesAnalyzer::checkClauseVariableWild(string arg1)
 	return pkbReadOnly.getUses(stoi(arg1)).empty() ? false : true;
 }
 
-bool UsesAnalyzer::checkClauseWildVariable(string arg2)
-{
-	assert(arg1 == WILDCARD_SYMBOL);
-	return pkbReadOnly.getUsedBy(arg2).empty() ? false : true;
-}
-
-bool UsesAnalyzer::checkClauseBothWild()
-{
-	assert(arg1 == WILDCARD_SYMBOL);
-	int minNoStmtsForUses = 1;
-	vector<int> allStmts = pkbReadOnly.getAllStmt();
-	if (allStmts.size() < minNoStmtsForUses)
-		hasSuchThatClause = false;
-	return hasSuchThatClause;
-}
-
-vector<string> UsesAnalyzer::getUsesResultAddArg2(string arg1, string arg2Entity)
+vector<string> UsesAnalyzer::getUsesResultAddArg2(string arg1)
 {
 	return (arg1Type == PROCEDUREARG) ? pkbReadOnly.getProcUses(arg1) : 
 			pkbReadOnly.getUses(stoi(arg1));

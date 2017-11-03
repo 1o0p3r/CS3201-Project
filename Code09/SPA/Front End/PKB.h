@@ -252,6 +252,21 @@ public:
 	void setCalls(int statementNum, string procName1, string procName2);
 
 	/**
+	Gets the stmt# that calls a procedure 
+
+	 @returns a vector containing stmt# where it calls another procedure
+	 */
+	vector<int> getAllLineCalls();
+	
+	/**
+	Gets the stmt# that calls a specified procedure
+	@param procName that is being called
+
+	@returns a vector containing stmt# where the specified procedure is called
+	*/
+	vector<int> getLineCalls(string procName);
+
+	/**
 	Gets the procedures called directly by input procedure
 
 	@param procName name of procedure calling other procedures directly nested in it
@@ -486,6 +501,12 @@ public:
 
 	tuple<vector<int>, vector<int>> getNextStarTwoSynonyms();
 
+	vector<string> getAllModifiedVariables();
+
+	vector<string> getAllUsedVariables();
+
+	string getProcCalledByStatement(int statement);
+
 private:
 	Follow follow;
 	Parent parent;
@@ -538,4 +559,6 @@ private:
 	vector<int> removeIntersection(vector<int> v1, vector<int> v2);
 	
 	vector<int> statementProcedureTable;
+	vector<string> modifiedVariables;
+	vector<string> usedVariables;
 };

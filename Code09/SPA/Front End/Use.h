@@ -23,12 +23,8 @@ public:
 
 	@param procName procedure variable is used by
 	@param varName variable being used by procName
-	@param procIsCalledBy other procedures that called procName. Impicitly sets other procedures to have used varName.
-	@param procIsCalling procedures that procName is calling. Impicitly sets other procedures to have used varName.
-	@param procCalledByStmt statements that called procName. Implicitly sets statement to have used varName.
 	@returns void
 	*/
-	void setProcUses(int procName, int varName, vector<int> procIsCalledBy, vector<int> procIsCalling, vector<int> procCalledByStmt);
 	void setProcUses(int procName, int varName);
 	/*
 	Gets variables used by statementNum

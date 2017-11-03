@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include "QueryAnalyzer.h"
-#include "Util.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -13,6 +12,8 @@ public:
 		QueryAnalyzer qa;
 		QueryStatement qs;
 		tuple<bool, vector<vector<string>>> clauseResult;
+		unordered_map<string, tuple<int, int>> qMap;
+		vector<vector<vector<string>>> qTable;
 		pkb.setStatementType(1, "while");
 		pkb.setStatementType(2, "assign");
 		pkb.setStatementType(3, "assign");
@@ -51,35 +52,35 @@ public:
 		qs.addSuchThatQuery(wildWild);
 		qa.setQS(qs);
 
-		clauseResult = ParentAnalyzer(wildWild, pkb).solveClause();
+		clauseResult = ParentAnalyzer(wildWild, pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "Parent", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildInt);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(wildInt, pkb).solveClause();
+		clauseResult = ParentAnalyzer(wildInt, pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intWild("2", "int", "assign", "_", "wildcard", "", "Parent", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intWild);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(intWild, pkb).solveClause();
+		clauseResult = ParentAnalyzer(intWild, pkb, qTable, qMap).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
 
 		QueryElement intInt("1", "int", "assign", "3", "int", "", "Parent", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intInt);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(intInt, pkb).solveClause();
+		clauseResult = ParentAnalyzer(intInt, pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intSyn("4", "int", "assign", "a", "synonym", "assign", "Parent", "suchThat");
 		qs = QueryStatement();
 		qs.addSuchThatQuery(intSyn);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(intSyn, pkb).solveClause();
+		clauseResult = ParentAnalyzer(intSyn, pkb, qTable, qMap).solveClause();
 		hardcode = { { "5","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -92,7 +93,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synInt);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(synInt, pkb).solveClause();
+		clauseResult = ParentAnalyzer(synInt, pkb, qTable, qMap).solveClause();
 		hardcode = { { "6","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -104,7 +105,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synSyn);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(synSyn, pkb).solveClause();
+		clauseResult = ParentAnalyzer(synSyn, pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","1","4","6","a" },
 		{ "2","3","5","7","b" } };
 		Assert::IsTrue(get<0>(clauseResult));
@@ -118,7 +119,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(synWild);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(synWild, pkb).solveClause();
+		clauseResult = ParentAnalyzer(synWild, pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","4","6","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)
@@ -131,7 +132,7 @@ public:
 		qs = QueryStatement();
 		qs.addSuchThatQuery(wildSyn);
 		qa.setQS(qs);
-		clauseResult = ParentAnalyzer(wildSyn, pkb).solveClause();
+		clauseResult = ParentAnalyzer(wildSyn, pkb, qTable, qMap).solveClause();
 		hardcode = { { "2","3","5","7","a" } };
 		Assert::IsTrue(get<0>(clauseResult));
 		for (int i = 0; i < get<1>(clauseResult).size(); i++)

@@ -26,9 +26,9 @@ const int GETVARS = 1;
 const string SUBSTRING = "substring";
 const string EXACT = "exact";
 
-PatternAnalyzer::PatternAnalyzer(QueryElement patternClause, PKB &pkbRedOnly) {
+PatternAnalyzer::PatternAnalyzer(QueryElement patternClause, PKB &pkbReadOnly) {
 	//pattern patSyn(arg1,patExp)
-	pkbPtr = pkbRedOnly;
+	pkbPtr = pkbReadOnly;
 	patSyn = patternClause.getPatternSynonym();
 	patSynEnt = patternClause.getPatternEntity();
 	arg1 = patternClause.getPatternArg1();
