@@ -1,6 +1,5 @@
 #include "ModifiesAnalyzer.h"
 
-const string WILDCARD_SYMBOL = "_";
 const string PROCEDURE = "procedure";
 
 tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg1)
@@ -11,14 +10,10 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg
 	vector<string> pkbModifies;
 	vector<vector<string>> modifiesResult;
 
-	//semantic error check by preprocessor
-	/*
-	if (arg1 == WILDCARD_SYMBOL)
-		return make_tuple(false, vector<vector<string>>());
-	*/
+
 	vecOfCandidates.push_back(arg1);
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = getModifiesResultAddArg2(candidates, arg2Entity);
+		pkbModifies = getModifiesResultAddArg2(candidates);
 		for (string candidatesChosen : pkbModifies) {
 			pkbResult.push_back(candidatesChosen);
 		}
@@ -26,6 +21,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgTwoResult(string arg
 	if (pkbResult.empty())
 		hasModifies = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		modifiesResult.push_back(pkbResult);
 	}
@@ -41,8 +37,10 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	vector<string> pkbResult;
 	vector<vector<string>> modifiesResult;
 
+	
+
 	if (arg2 == WILDCARD_SYMBOL) {
-		vecOfCandidates = pkbReadOnly.getAllVariables();
+		vecOfCandidates = pkbReadOnly.getAllModifiedVariables();
 		if (unitTestModeOn) {
 			vecOfCandidates = unitTestInputs[inputHardCodeIndex];
 			inputHardCodeIndex++;
@@ -59,6 +57,7 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addArgOneResult(string arg
 	if (pkbResult.empty())
 		hasModifies = false;
 	else {
+		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		modifiesResult.push_back(pkbResult);
 	}
@@ -75,16 +74,33 @@ tuple<bool, vector<vector<string>>> ModifiesAnalyzer::addBothSynResult(string ar
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> modifiesResult;
 
-	vecOfCandidates = pkbReadOnly.getAllVariables();
+	bool hasArg1EvalBefore = false;
+	const auto synArg1Iterator = queryMap.find(arg1);
+	const auto synArg2Iterator = queryMap.find(arg2);
+
+	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
+		vecOfCandidates = pkbReadOnly.getAllModifiedVariables();;
+	}  else
+		getArgsPriorStringResults(vecOfCandidates, hasArg1EvalBefore, synArg2Iterator, synArg1Iterator);
+
 	if (unitTestModeOn) {
 		vecOfCandidates = unitTestInputs[inputHardCodeIndex];
 		inputHardCodeIndex++;
 	}
+
 	for (string candidates : vecOfCandidates) {
-		pkbModifies = getModifiesResultAddArg1(candidates,arg1Entity);
+		if (!hasArg1EvalBefore)
+			pkbModifies = getModifiesResultAddArg1(candidates, arg1Entity);
+		else
+			pkbModifies = getModifiesResultAddArg2(candidates);
 		for (string candidatesChosen : pkbModifies) {
-			pkbResultForArg1.push_back(candidatesChosen);
-			pkbResultForArg2.push_back(candidates);
+			if (!hasArg1EvalBefore) {
+				pkbResultForArg1.push_back(candidatesChosen);
+				pkbResultForArg2.push_back(candidates);
+			} else {
+				pkbResultForArg1.push_back(candidates);
+				pkbResultForArg2.push_back(candidatesChosen);
+			}
 		}
 	}
 	if (pkbResultForArg1.empty())
@@ -126,29 +142,7 @@ bool ModifiesAnalyzer::checkClauseVariableWild(string arg1)
 	return pkbReadOnly.getModifies(stoi(arg1)).empty() ? false : true;
 }
 
-bool ModifiesAnalyzer::checkClauseWildVariable(string arg2)
-{	
-	assert(arg1 == WILDCARD_SYMBOL);
-	if (unitTestModeOn) {
-		return(unitTestInputs[inputHardCodeIndex].size());
-	}
-	return pkbReadOnly.getModifiedBy(arg2).empty() ? false : true;
-}
-
-bool ModifiesAnalyzer::checkClauseBothWild()
-{
-	assert(arg1 == WILDCARD_SYMBOL);
-	if (unitTestModeOn) {
-		return(unitTestInputs[inputHardCodeIndex].size());
-	}
-	int minNoStmtsForModifies = 1;
-	vector<int> allStmts = pkbReadOnly.getAllStmt();
-	if(allStmts.size() < minNoStmtsForModifies)
-		hasSuchThatClause = false;
-	return hasSuchThatClause;
-}
-
-vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1, string arg2Entity)
+vector<string> ModifiesAnalyzer::getModifiesResultAddArg2(string arg1)
 {	
 	vector<string> pkbResult;
 	if (unitTestModeOn) {

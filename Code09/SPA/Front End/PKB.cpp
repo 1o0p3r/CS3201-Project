@@ -64,6 +64,8 @@ PKB::PKB() {
 	set<string> allProcedures;
 	set<int> elseSet;
 	vector<int> statementProcedureTable;
+	vector<string> modifiedVariables;
+	vector<string> usedVariables;
 
 	initTypeMap();
 }
@@ -230,7 +232,7 @@ vector<int> PKB::getPatternVariableExpressionSubstring(string variable, string e
 	vector<int> statements;
 	for (auto i = expressionTable.begin(); i != expressionTable.end(); i++) {
 		if (i->first.find(expression) != string::npos) {
-			for (int j = 0; j < get<1>(i->second).size(); i++) {
+			for (int j = 0; j < get<1>(i->second).size(); j++) {
 				if (get<1>(i->second)[j] == variable) {
 					statements.push_back(get<0>(i->second)[j]);
 				}
@@ -310,6 +312,7 @@ vector<int> PKB::getAllParent() {
 void PKB::setModifies(int statementNum, string varName) {
 	int index = getVarIndex(varName);
 	modify.setModifies(statementNum, index, parent.getParentStar(statementNum));
+	modifiedVariables.push_back(varName);
 }
 
 void PKB::setProcModifies(string procName, string varName) {
@@ -368,13 +371,22 @@ vector<string> PKB::getProcModifiedBy(string varName) {
 void PKB::setUses(int statementNum, string varName) {
 	int index = getVarIndex(varName);
 	use.setUses(statementNum, index, parent.getParentStar(statementNum));
+	usedVariables.push_back(varName);
 }
 
 void PKB::setProcUses(string procName, string varName) {
 	int procIndex = getProcIndex(procName);
 	int varIndex = getVarIndex(varName);
-
-	use.setProcUses(procIndex, varIndex, call.getCalledBy(procIndex), call.getCalls(procIndex), call.getProcCalledByStmt(procIndex));
+	use.setProcUses(procIndex, varIndex);
+	for each (int callstmt in call.getProcCalledByStmt(procIndex)) {
+		use.setUses(callstmt, varIndex, parent.getParentStar(callstmt));
+	}
+	for each (int proc in call.getCalledByStar(procIndex)) {
+		use.setProcUses(proc, varIndex);
+		for each (int callstmt in call.getProcCalledByStmt(proc)) {
+			use.setUses(callstmt, varIndex, parent.getParentStar(callstmt));
+		}
+	}
 }
 
 vector<string> PKB::getUses(int statementNum) {
@@ -416,6 +428,15 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 			use.setUses(statementNum, var, parent.getParentStar(statementNum));
 		}
 	}
+}
+
+vector<int> PKB:: getAllLineCalls() {
+	return callTable;
+}
+
+vector<int> PKB::getLineCalls(string procName) {
+	int procNameIndex = getProcIndex(procName);
+	return call.getProcCalledByStmt(procNameIndex);
 }
 
 vector<string> PKB::getCalls(string procName) {
@@ -985,4 +1006,17 @@ tuple<vector<int>, vector<int>> PKB::getNextStarTwoSynonyms() {
 		frontier = nextFrontier;
 	}
 	return{ s1, s2 };
+}
+
+vector<string> PKB::getAllModifiedVariables() {
+	return modifiedVariables;
+}
+
+vector<string> PKB::getAllUsedVariables() {
+	
+	return usedVariables;
+}
+
+string PKB::getProcCalledByStatement(int statement) {
+	return procIndexTable[call.getStmtCallProc(statement)];
 }

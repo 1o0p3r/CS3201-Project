@@ -321,6 +321,14 @@ vector<string> Util::convertIntToString(const vector<int> &vint) {
 	return result;
 }
 
+vector<int> Util::convertStringToInt(const vector<string>& vstring) {
+	vector<int> result;
+	for (auto const element : vstring) {
+		result.push_back(stoi(element));
+	}
+	return result;
+}
+
 
 //regex to remove leading,trailing,extra spaces
 

@@ -17,11 +17,14 @@ public:
 		tuple<bool, vector<vector<string>>> clauseResult;
 		vector<vector<string>> pkbHardCode;
 		vector<vector<string>> hardCodeResult;
+		unordered_map<string, tuple<int, int>> qMap;
+		vector<vector<vector<string>>> qTable;
+
 
 		//test wildcard true
 		QueryElement intWild("3", "number", "", "_", "wildcard", "", "Modifies");
 		pkbHardCode = { {"TRUE"} };
-		ModifiesAnalyzer testWild(intWild, pkb);
+		ModifiesAnalyzer testWild(intWild,pkb, qTable, qMap);
 		testWild.setUnitTestInputs(pkbHardCode);
 		clauseResult = testWild.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -31,7 +34,7 @@ public:
 		QueryElement procSynVar("procd", "synonym", "procedure", "x", "variable", "", "Modifies");
 		pkbHardCode = {{"Example","p"} };
 		hardCodeResult = { { "Example","p","procd"} };
-		ModifiesAnalyzer test(procSynVar, pkb);
+		ModifiesAnalyzer test(procSynVar,pkb, qTable, qMap);
 		test.setUnitTestInputs(pkbHardCode);
 		clauseResult = test.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -42,8 +45,8 @@ public:
 		//test arg1 = stmt synonym, arg2 = string literal
 		QueryElement stmtSynVar("haha", "synonym", "call", "x", "variable", "", "Modifies");
 		pkbHardCode = {{ "1","4","5","6","10","12","13","14","15","16","18","22","24" } };
-		hardCodeResult = { { "1","4","5","6","10","12","13","14","15","16","18","22","24","haha" } };
-		ModifiesAnalyzer test1(stmtSynVar, pkb);
+		hardCodeResult = { { "1","10","12","13","14","15","16","18","22","24","4","5","6","haha" } };
+		ModifiesAnalyzer test1(stmtSynVar,pkb, qTable, qMap);
 		test1.setUnitTestInputs(pkbHardCode);
 		clauseResult = test1.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -57,7 +60,7 @@ public:
 		QueryElement procVarSyn("p", "variable", "", "x", "synonym", "", "Modifies");
 		pkbHardCode = { { "x","i","z" } };
 		hardCodeResult = { { "x","i","z","x" } };
-		ModifiesAnalyzer test2(procVarSyn, pkb);
+		ModifiesAnalyzer test2(procVarSyn,pkb, qTable, qMap);
 		test2.setUnitTestInputs(pkbHardCode);
 		clauseResult = test2.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -69,7 +72,7 @@ public:
 		QueryElement stmtVarSyn("10", "number", "", "shy", "synonym", "", "Modifies");
 		pkbHardCode = {{ "z","x" } };
 		hardCodeResult = { { "z","x","shy" } };
-		ModifiesAnalyzer test3(stmtVarSyn, pkb);
+		ModifiesAnalyzer test3(stmtVarSyn,pkb, qTable, qMap);
 		test3.setUnitTestInputs(pkbHardCode);
 		clauseResult = test3.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -83,7 +86,7 @@ public:
 			{ "Example","p"},{"Example"} };
 		hardCodeResult = { { "Example","p","q","Example","p","q","Example","p","Example","waow" },
 			{"x","x","x","z","z","z","i","i","y","happy" } };
-		ModifiesAnalyzer test4(procSynSyn, pkb);
+		ModifiesAnalyzer test4(procSynSyn,pkb, qTable, qMap);
 		test4.setUnitTestInputs(pkbHardCode);
 		clauseResult = test4.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -97,7 +100,7 @@ public:
 		pkbHardCode = { { "x","z","i","y" },{ "Example","p","q" },{ "Example","p","q" },
 		{ "Example","p" },{ "Example" } };
 		hardCodeResult = { { "Example","p","q","Example","p","q","Example","p","Example","waow" } };
-		ModifiesAnalyzer test5(procSynWild, pkb);
+		ModifiesAnalyzer test5(procSynWild,pkb, qTable, qMap);
 		test5.setUnitTestInputs(pkbHardCode);
 		clauseResult = test5.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
@@ -120,7 +123,7 @@ public:
 				"21","22","22","23","23","24","dead" }
 				
 		};
-		ModifiesAnalyzer test6(stmtSynSyn, pkb);
+		ModifiesAnalyzer test6(stmtSynSyn,pkb, qTable, qMap);
 		test6.setUnitTestInputs(pkbHardCode);
 		clauseResult = test6.solveClause();
 		Assert::IsTrue(get<0>(clauseResult));

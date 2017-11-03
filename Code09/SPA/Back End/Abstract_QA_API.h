@@ -13,6 +13,7 @@
 using namespace std;
 
 const string DELIMITER = ",";
+const string WHITESPACE = " ";
 const string SYNONYM = "synonym";
 const string WILDCARD = "wildcard";
 const string WILDCARD_SYMBOL = "_";

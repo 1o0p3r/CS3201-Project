@@ -1,10 +1,10 @@
-#include "NextAnalyzer.h"
+#include "NextStarAnalyzer.h"
 
-bool NextAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
+bool NextStarAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
 	if (isAddArg1)
-		return pkbReadOnly.getNext(candidates).empty() ? false : true;
+		return pkbReadOnly.getNextStar(candidates).empty() ? false : true;
 	else
-		return pkbReadOnly.getPrevious(candidates).empty() ? false : true;
+		return pkbReadOnly.getPreviousStar(candidates).empty() ? false : true;
 }
 
 tuple<bool, vector<vector<string>>> NextAnalyzer::addArgTwoResult(string arg1)
@@ -19,7 +19,7 @@ tuple<bool, vector<vector<string>>> NextAnalyzer::addArgTwoResult(string arg1)
 
 	if (synArg2Iterator != queryMap.end() && arg1 == WILDCARD_SYMBOL) {
 		bool isAddArg1 = false;
-		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1, true);
+		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1);
 	}
 	else {
 		if (arg1 == WILDCARD_SYMBOL) 
@@ -57,7 +57,7 @@ tuple<bool, vector<vector<string>>> NextAnalyzer::addArgOneResult(string arg2)
 
 	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
 		bool isAddArg1 = true;
-		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1, true);
+		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1);
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) // to be optimized
@@ -81,18 +81,6 @@ tuple<bool, vector<vector<string>>> NextAnalyzer::addArgOneResult(string arg2)
 	}
 
 	return make_tuple(hasNext, NextResult);
-}
-
-void NextAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
-{
-	if (!hasArg2EvalBefore) {
-		retrievedPKBValues = pkbReadOnly.getNext(candidates);
-		retrievedPKBValues = validatePKBResultsInt(arg2Entity, retrievedPKBValues);
-	}
-	else {
-		retrievedPKBValues = pkbReadOnly.getPrevious(candidates);
-		retrievedPKBValues = validatePKBResultsInt(arg1Entity, retrievedPKBValues);
-	}
 }
 
 tuple<bool, vector<vector<string>>> NextAnalyzer::addBothSynResult(string arg1, string arg2)
