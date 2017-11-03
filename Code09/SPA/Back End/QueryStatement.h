@@ -43,7 +43,7 @@ public:
 	//syn = a		argumentNum = 0		idxAtNormalQueryElements = 0
 	//syn = v		argumentNum = 1		idxAtNormalQueryElements = 0;
 	//syn = a		argumentNum = 1		idxAtNormalQueryElements = 1;
-	//syn = a2		argumentNum = 2		idxAtNormalQueryElements = 2;
+	//syn = a2		argumentNum = 2		idxAtNormalQueryElements = 1;
 	void addNormalMultiMap(string syn, int argumentNum, int idxAtNormalQueryElements);
 	void addHardMultiMap(string syn, int argumentNum, int idxAtHardQueryElements);
 	int getNormalQueryElementsSize();
