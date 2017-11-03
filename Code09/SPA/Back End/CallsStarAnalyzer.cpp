@@ -53,7 +53,7 @@ tuple<bool, vector<vector<string>>> CallsStarAnalyzer::addArgOneResult(string ar
 	vector<vector<string>> callsResult;
 
 	const auto synArg1Iterator = queryMap.find(arg1);
-
+	
 	if (synArg1Iterator != queryMap.end() && arg2 == WILDCARD_SYMBOL) {
 		bool isAddArg1 = true;
 		pkbResult = optimizedAddArg(synArg1Iterator, isAddArg1, true);

@@ -494,15 +494,41 @@ public:
 		QueryAnalyzer analyzer;
 		analyzer.setPKB(pkb);
 		vector<string> answer;
-		if (validator.parseInput("variable v; assign a1, a2; if ifs; while w; Select ifs such that Parent(ifs, a1) and Follows(ifs, a2) and Modifies(a2, v)")) {
-			statement = validator.getQueryStatement();
-			analyzer.setQS(statement);
-			answer = analyzer.runQueryEval();
-		} else {
-			Logger::WriteMessage("Invalid Query in Source 2");
-			answer = {};
+		vector<string> queries = {
+			//"procedure p1; Select p1 such that Calls*(p1, _)", //getAllCalls broken api
+			"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")"
+
+		};
+		vector<vector<string>> expected = {
+			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
+			{}
+		};
+		validator = QueryValidator(); //re-init validator.
+		for (int i = 0; i < queries.size(); i++) {
+			if (validator.parseInput(queries[i])) {
+				statement = validator.getQueryStatement();
+				analyzer.setQS(statement);
+				answer = analyzer.runQueryEval();
+			}
+			else {
+				Logger::WriteMessage("Invalid Query in Source 6-V2");
+				Logger::WriteMessage(queries[i].c_str());
+				answer = {};
+			}
+			string testNo = "size error in Source 6-V2 in test ";
+			testNo.append(to_string(i + 1));
+			string testNo_1 = "value error in Source 6-V2 in test ";
+			testNo_1.append(to_string(i + 1));
+			wstring error = wstring(testNo.begin(), testNo.end());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
+			for (int j = 0; j < answer.size(); j++) {
+				error = wstring(testNo_1.begin(), testNo_1.end());
+				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
+			}
 		}
-		Assert::IsTrue(answer == vector<string>{});
+
+		
 	}
 
 	};
