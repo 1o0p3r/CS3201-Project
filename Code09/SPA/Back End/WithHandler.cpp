@@ -221,8 +221,9 @@ void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, strin
 		queryStatement.addWithQueryElementOneSyn(queryElement);
 	} else {
 		queryStatement.addNormalQueryElement(queryElement);
-		queryStatement.addNormalMultiMap(arg1Synonym, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
-		queryStatement.addNormalMultiMap(arg2Synonym, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
+		queryStatement.addWithQueryElementTwoSyn(queryElement);
+	//	queryStatement.addNormalMultiMap(arg1Synonym, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
+	//	queryStatement.addNormalMultiMap(arg2Synonym, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 	}
 }
 bool QueryValidator::isStringLiteralOrNumber(string syn) {

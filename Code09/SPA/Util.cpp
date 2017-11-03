@@ -340,7 +340,7 @@ string Util::getPostFixExp(string line) {
 		ch = line[i];
 		if (ch == '(') {
 			// simply push the opening parenthesis
-			postfix += ' '; 
+//			postfix += ' '; 
 			s.push(ch);
 			i++;
 			continue;
@@ -352,7 +352,7 @@ string Util::getPostFixExp(string line) {
 			{
 				postfix += ')';
 				isNewWord = true;
-				postfix += ' ';
+	//			postfix += ' ';
 			}
 
 			// if we see a closing parenthesis,
@@ -365,7 +365,7 @@ string Util::getPostFixExp(string line) {
 			}
 			// pop off the opening parenthesis also
 			if (!s.empty()) {
-				postfix += ' ';
+		//		postfix += ' ';
 				s.pop();
 			}
 			i++;
@@ -388,7 +388,7 @@ string Util::getPostFixExp(string line) {
 			
 			if (!isNewWord) {
 				postfix += ')';
-				postfix += ' ';
+			//	postfix += ' ';
 				isNewWord = true;
 			}
 
@@ -407,7 +407,7 @@ string Util::getPostFixExp(string line) {
 					weight <= getOperandPrec(s.top())) {		
 
 					postfix += s.top();
-					postfix += ' '; //spacing between operators
+				//	postfix += ' '; //spacing between operators
 					s.pop();
 					
 				}
@@ -416,7 +416,7 @@ string Util::getPostFixExp(string line) {
 				
 					
 				
-				postfix += ' ';
+			//	postfix += ' ';
 				// push the current operator onto stack
 				
 				s.push(ch);
@@ -432,13 +432,13 @@ string Util::getPostFixExp(string line) {
 	}
 	while (!s.empty()) {
 		
-		postfix += ' ';
+	//	postfix += ' ';
 		postfix += s.top();
 		
 		s.pop();
 	}
-
-	return trimLead(postfix);
+	return postfix;
+	// return trimLead(postfix);
 }
 
 //code adapted from stackoverflow, remove extra spaces

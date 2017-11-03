@@ -25,7 +25,6 @@ public:
 		Assert::IsTrue(pkb.getCallsStar("Example") == vector<string>{"q", "p"});
 		Assert::IsTrue(pkb.getChild(13) == vector<int>{14, 18, 19, 20});
 		Assert::IsTrue(pkb.getChildStar(4) == vector<int>{5, 6, 7, 8, 9, 10, 11});
-		Assert::IsTrue(pkb.getFirstline("p") == 13);
 		Assert::IsTrue(pkb.getFollowedBy(12) == vector<int>{4});
 		Assert::IsTrue(pkb.getFollowedByStar(21) == vector<int>{13});
 		Assert::IsTrue(pkb.getFollows(13) == vector<int>{21});
@@ -36,7 +35,7 @@ public:
 		Assert::IsTrue(pkb.getModifies(13) == vector<string>{"x", "z", "i"});
 		Assert::IsTrue(pkb.getParent(7) == vector<int>{6});
 		Assert::IsTrue(pkb.getParentStar(8) == vector<int>{6, 4});
-		Assert::IsTrue(pkb.getPatternVariable("i") == tuple<vector<int>, vector<string>> { {3, 11, 17}, {"(5)", "(i) (1) -", "(i) (1) -"} });
+		Assert::IsTrue(pkb.getPatternVariable("i") == tuple<vector<int>, vector<string>> { {3, 11, 17}, {"(5)", "(i)(1)-", "(i)(1)-"} });
 		Assert::IsTrue(pkb.getProcModifiedBy("y") == vector<string>{"Example"});
 		Assert::IsTrue(pkb.getProcModifies("q") == vector<string>{"x", "z"});
 		Assert::IsTrue(pkb.getProcUsedBy("x") == vector<string>{"Example", "q", "p"});

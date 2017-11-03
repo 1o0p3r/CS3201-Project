@@ -64,7 +64,7 @@ bool Parse(string fileName, PKB& pkb) {
 				procName = nextLine[1].substr(0, nextLine[1].size() - 1);
 			}
 			Parent.push_back(0);
-			pkb.setFirstline(procName, lineCounter + 1);
+			pkb.setFirstline(lineCounter + 1);
 			isNewContainer = true;
 			isSameLevel = false;
 		} else if (startsWithBrackets(nextLine) && !isNewContainer) {

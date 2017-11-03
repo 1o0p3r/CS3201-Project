@@ -267,7 +267,7 @@ bool QueryValidator::isCornerRelation(string relation) {
 	//return ((relation == FOLLOWS_STRING) || (relation == FOLLOWS_STAR_STRING) || (relation == PARENT_STRING) | (relation == PARENT_STAR_STRING) | (relation == AFFECTS_STRING));
 }
 bool QueryValidator::isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent) {
-	if (isStmtTypes(arg1Ent) && (arg1Ent == arg2Ent) && (arg1 == arg2)) {
+	if ((arg1Ent == arg2Ent) && (arg1 == arg2) && (arg1 != UNDER_SCORE_STRING)) {
 		return true;
 	} else {
 		return false;

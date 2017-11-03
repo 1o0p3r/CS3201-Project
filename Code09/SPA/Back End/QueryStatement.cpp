@@ -34,6 +34,9 @@ void QueryStatement::addWithQueryElementNoSyn(QueryElement toAdd) {
 void QueryStatement::addWithQueryElementOneSyn(QueryElement toAdd) {
 	withQueryElementsOneSyn.push_back(toAdd);
 }
+void QueryStatement::addWithQueryElementTwoSyn(QueryElement toAdd){
+	withQueryElementsTwoSyn.push_back(toAdd);
+}
 void QueryStatement::addNormalQueryElement(QueryElement toAdd) {
 	normalQueryElements.push_back(toAdd);
 }

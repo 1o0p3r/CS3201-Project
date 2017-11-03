@@ -16,6 +16,7 @@ private:
 	vector<SynonymEntityPair> synonymEntityList;
 	vector<QueryElement> withQueryElementsNoSyn;
 	vector<QueryElement> withQueryElementsOneSyn;
+	vector<QueryElement> withQueryElementsTwoSyn;
 	vector<QueryElement> normalQueryElements;
 	vector<QueryElement> hardQueryElements;
 	multimap<string, pair<int, int>> normalMultiMap;
@@ -34,10 +35,11 @@ public:
 	vector<QueryElement> getNormalQueryElements();
 	vector<QueryElement> getHardQueryElements();
 
-	void addWithQueryElementNoSyn(QueryElement);
-	void addWithQueryElementOneSyn(QueryElement);
-	void addNormalQueryElement(QueryElement);
-	void addHardQueryElement(QueryElement);
+	void addWithQueryElementNoSyn(QueryElement qe);
+	void addWithQueryElementOneSyn(QueryElement qe);
+	void addWithQueryElementTwoSyn(QueryElement qe);
+	void addNormalQueryElement(QueryElement qe);
+	void addHardQueryElement(QueryElement qe);
 	//E.g. Select BOOLEAN pattern a(v, "x") such that Follows(a, a2),
 	//inside normalMultiMap:
 	//syn = a		argumentNum = 0		idxAtNormalQueryElements = 0
