@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <math.h>
 
 using namespace std;
 
@@ -31,3 +32,6 @@ const int TWO_DISJOINT_TABLE = 1;
 const int VECTRESULT = 1;
 const int BOOLRESULT = 0;
 const int NOSYNENTRY = -1;
+const string SUCH_THAT = "suchThat";
+const string EMPTY_STRING = "";
+const int LOWEST_RANK = floor(sqrt(INT_MAX)/2); //some random number

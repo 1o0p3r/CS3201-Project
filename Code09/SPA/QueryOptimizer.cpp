@@ -3,8 +3,8 @@
 
 
 
-QueryOptimizer::QueryOptimizer(vector<QueryElement> normalElement, vector<QueryElement> hardElement,
-		multimap<string, pair<int, int>> normalMap, multimap<string, pair<int, int>> hardMap, const PKB &pkb) {
+QueryOptimizer::QueryOptimizer(const vector<QueryElement> normalElement, const vector<QueryElement> hardElement,
+		const multimap<string, pair<int, int>> normalMap, const multimap<string, pair<int, int>> hardMap, const PKB &pkb) {
 	normalClauses = normalElement;
 	hardClauses = hardElement;
 	normalMMap = normalMap;
@@ -30,69 +30,55 @@ int QueryOptimizer::getRankOfClauseSynonymCount(QueryElement &clause) {
 
 void QueryOptimizer::setRankOfRelationClause() {
 	vector<relRanker> pqRel;
-	relRanker follows, followsT, modifies,modifiesProc, usesProc, uses, parent, parentT, next,
+	relRanker follows, followsT, modifies, uses, parent, parentT, next,
 			patternA, calls, callsT, patternI, patternW;
 	
-	follows.relation = "follows";
+	follows.relation = "Follows";
 	follows.relationTableSize = pkbptr.getFollowsCount();
 	pqRel.push_back(follows);
 	
-	followsT.relation = "followsT";
+	followsT.relation = "Follows*";
 	followsT.relationTableSize = pkbptr.getFollowStarCount();
 	pqRel.push_back(followsT);
 	
-	modifies.relation = "modifies";
-	modifies.relationTableSize = pkbptr.getModifyCount();
+	modifies.relation = "Modifies";
+	modifies.relationTableSize = pkbptr.getModifyCount() + pkbptr.getProcModifyCount();;
 	pqRel.push_back(modifies);
 
-	modifiesProc.relation = "modifiesProc";
-	modifiesProc.relationTableSize = pkbptr.getProcModifyCount();
-	pqRel.push_back(modifiesProc);
-
-	usesProc.relation = "usesProc";
-	usesProc.relationTableSize = pkbptr.getProcUseCount();
-	pqRel.push_back(usesProc);
-
-	uses.relation = "uses";
+	uses.relation = "Uses";
 	uses.relationTableSize = pkbptr.getUseCount();
 	pqRel.push_back(uses);
 
-	parent.relation = "parent";
+	parent.relation = "Parent";
 	parent.relationTableSize = pkbptr.getParentCount();
 	pqRel.push_back(parent);
 
-	parentT.relation = "parentT";
+	parentT.relation = "Parent*";
 	parentT.relationTableSize = pkbptr.getParentStarCount();
 	pqRel.push_back(parentT);
 	
-	next.relation = "next";
+	next.relation = "Next";
 	next.relationTableSize = pkbptr.getNextCount();
 	pqRel.push_back(next);
 	
-	patternA.relation = "patternA";
-	patternA.relationTableSize = pkbptr.getAssign().size();
+	patternA.relation = "pattern";
+	patternA.relationTableSize = pkbptr.getAssign().empty() ? 0: pkbptr.getAssign().size() 
+								+ pkbptr.getIf().empty() ? 0: pkbptr.getIf().size() 
+								+ pkbptr.getWhile().empty() ? 0:pkbptr.getWhile().size();
 	pqRel.push_back(patternA);
-
-	patternI.relation = "patternI";
-	patternI.relationTableSize = pkbptr.getIf().size();
-	pqRel.push_back(patternI);
-
-	patternW.relation = "patternW";
-	patternW.relationTableSize = pkbptr.getWhile().size();
-	pqRel.push_back(patternW);
-
-	calls.relation = "calls";
-	calls.relationTableSize = pkbptr.getCall().size();
+	
+	calls.relation = "Calls";
+	calls.relationTableSize = pkbptr.getCall().empty() ? 0: pkbptr.getCall().size();
 	pqRel.push_back(calls);
 
-	callsT.relation = "callsT";
-	callsT.relationTableSize = pkbptr.getCall().size();
+	callsT.relation = "Calls*";
+	callsT.relationTableSize = pkbptr.getCall().empty() ? 0 : pkbptr.getCall().size();
 	pqRel.push_back(callsT);
 
 	sort(pqRel.begin(), pqRel.end());
 	int i = 1;
 	for(const auto candidate: pqRel) {
-		relRankMap.insert(make_pair(candidate.relation, i));
+		relationRankMap.insert(make_pair(candidate.relation, i));
 		i++;
 	}
 	
@@ -118,7 +104,7 @@ void QueryOptimizer::setRankOfDesignEntity()
 
 	int j = 1;
 	for (const auto candidate : designRank) {
-		designRankMap.insert(make_pair(candidate.relation, i));
+		designEntRankMap.insert(make_pair(candidate.relation, j));
 		j++;
 	}
 }
@@ -150,34 +136,123 @@ void QueryOptimizer::setFreqOfSyn() {
 
 }
 
-void QueryOptimizer::runOptimizer() {
+void QueryOptimizer::runClauseRanking() {
+	vector<clauseRanker> normalClauseRankVector;
+	vector<clauseRanker> hardClauseRankVector;
+	
+	for (auto &candidate : normalClauses) {
+		clauseRanker queryObj;
+		queryObj.relationRank = getRankOfRelation(candidate);
+		queryObj.designEntityRank = getDesignEntityRank(candidate);
+		queryObj.numSynonymRank = getRankOfClauseSynonymCount(candidate);
+		queryObj.synonymFreqRank = getRankOfSynonymFreq(candidate);
+		normalClauseRankVector.push_back(queryObj);
+	}
+
+	for (auto &candidate : hardClauses) {
+		clauseRanker queryObj;
+		queryObj.relationRank = getRankOfRelation(candidate);
+		queryObj.designEntityRank = getDesignEntityRank(candidate);
+		queryObj.numSynonymRank = getRankOfClauseSynonymCount(candidate);
+		queryObj.synonymFreqRank = getRankOfSynonymFreq(candidate);
+		hardClauseRankVector.push_back(queryObj);
+	}
+
+	sort(normalClauseRankVector.begin(), normalClauseRankVector.end());
+	sort(hardClauseRankVector.begin(), hardClauseRankVector.end());
+
+	for(const auto &candidate: normalClauseRankVector) {
+		sortedNormal.push_back(candidate.clause);
+	}
+
+	for (const auto &candidate : hardClauseRankVector) {
+		sortedHard.push_back(candidate.clause);
+	}
+	
+}
+
+string QueryOptimizer::getClauseFirstSynonym(QueryElement& clause) {
+	if (!clause.getPatternSynonym().empty()) return clause.getPatternSynonym();
+	if (!clause.getSuchThatArg1().empty()) return clause.getSuchThatArg1();
+	return EMPTY_STRING;
+}
+
+string QueryOptimizer::getClauseSecondSynonym(QueryElement& clause) {
+	if (!clause.getPatternArg1().empty()) return clause.getPatternArg1();
+	if (!clause.getSuchThatArg2().empty()) return clause.getSuchThatArg2();
+	return EMPTY_STRING;
+}
+
+int QueryOptimizer::getRankOfSynonymFreq(QueryElement& clause) {
+	string firstSynonym = getClauseFirstSynonym(clause);
+	string secondSynonym = getClauseSecondSynonym(clause);
+	int rankOfFirstSynonym;
+	int rankOfSecondSynonym;
+
+	unordered_map<string, int>::iterator iter = synFreqMap.find(firstSynonym);
+	if (!firstSynonym.empty() && iter != synFreqMap.end())  rankOfFirstSynonym = iter->second;
+	else rankOfFirstSynonym = LOWEST_RANK; //for wildcards
+
+	iter = synFreqMap.find(secondSynonym);
+	if (!secondSynonym.empty() && iter != synFreqMap.end())  rankOfSecondSynonym = iter->second;
+	else rankOfSecondSynonym = LOWEST_RANK; //for wildcards
+	return rankOfFirstSynonym + rankOfSecondSynonym;
+
+}
+
+int QueryOptimizer::getRankOfRelation(QueryElement &clause) {
+	string relation = clause.getSuchThatRel();
+	unordered_map<string, int>::iterator iter = relationRankMap.find(relation);
+	if (!relation.empty() && iter != relationRankMap.end()) return iter->second;
+	else {
+		relation = clause.getClauseType();
+		iter = relationRankMap.find(relation);
+		if (iter != relationRankMap.end()) return iter->second;
+		return INT_MAX;
+	}
+}
+
+string QueryOptimizer::getClauseFirstDesignEntity(QueryElement& clause) {
+	if (!clause.getPatternEntity().empty()) return clause.getPatternEntity();
+	if (!clause.getSuchThatArg1Entity().empty()) return clause.getSuchThatArg1Entity();
+	return EMPTY_STRING;
+}
+
+string QueryOptimizer::getClauseSecondDesignEntity(QueryElement& clause) {
+	if (!clause.getPatternArg1Ent().empty()) return clause.getPatternArg1Ent();
+	if (!clause.getSuchThatArg2Entity().empty()) return clause.getSuchThatArg2Entity();
+	return EMPTY_STRING;
+}
+
+int QueryOptimizer::getDesignEntityRank(QueryElement& clause) {
+	string firstDesignEntity = getClauseFirstDesignEntity(clause);
+	string secondDesignEntity = getClauseSecondDesignEntity(clause);
+	int rankOfFirstDesignEntity;
+	int rankOfSecondDesignEntity;
+
+	unordered_map<string, int>::iterator iter = designEntRankMap.find(firstDesignEntity);
+	if (!firstDesignEntity.empty() && iter != designEntRankMap.end()) rankOfFirstDesignEntity = iter->second;
+	else rankOfFirstDesignEntity = LOWEST_RANK; //for wildcards
+
+	iter = designEntRankMap.find(secondDesignEntity);
+	if (!secondDesignEntity.empty() && iter != designEntRankMap.end()) rankOfSecondDesignEntity = iter->second;
+	else rankOfSecondDesignEntity = LOWEST_RANK; //for wildcards
+	return rankOfFirstDesignEntity * rankOfSecondDesignEntity;
+	
+}
+
+tuple<vector<QueryElement>,vector<QueryElement>> QueryOptimizer::runOptimizer() {
 	
 	setRankOfRelationClause();
 	setRankOfDesignEntity();
 	setFreqOfSyn();
+	runClauseRanking();
+	return make_tuple(sortedNormal, sortedHard);
+
 }
 
 
-int QueryOptimizer::getRankOfRelationClause(QueryElement &clause) {
-	return 1;
-}
-
-bool QueryOptimizer::compareRel(tuple<int, string> clause1, tuple<int, string> clause2)
-{
-}
 
 
-bool myCompare(QueryElement clause1, QueryElement clause2) {
-	int countSynRankClause1 = QueryOptimizer::getRankOfClauseSynonymCount(clause1);
-	int countSynRankClause2 = QueryOptimizer::getRankOfClauseSynonymCount(clause2);
-
-	return true;
-}
-
-bool compareRel(tuple<int,string>, tuple<int,string> ) {
-	
-	
-	return true;
-}
 
 

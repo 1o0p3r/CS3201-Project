@@ -10,9 +10,26 @@
 using namespace std;
 
 struct relRanker {
-	string relation; int relationTableSize;
+	string relation; 
+	int relationTableSize;
 	bool operator < (const relRanker& compareTo) const {
 		return relationTableSize < compareTo.relationTableSize;
+	}
+};
+
+struct clauseRanker {
+	QueryElement clause; 
+	int relationRank;
+	int numSynonymRank;
+	int designEntityRank;
+	int synonymFreqRank;
+
+	bool operator < (const clauseRanker& compareTo) const {
+		if (numSynonymRank != compareTo.numSynonymRank) return numSynonymRank < compareTo.numSynonymRank;
+		if(relationRank != compareTo.relationRank) return relationRank < compareTo.relationRank;
+		if (designEntityRank != compareTo.designEntityRank) return designEntityRank < compareTo.designEntityRank;
+		if (synonymFreqRank != compareTo.synonymFreqRank) return compareTo.synonymFreqRank < synonymFreqRank;
+		return true;
 	}
 };
 
@@ -25,32 +42,41 @@ public:
 
 
 	
-	void runOptimizer();
+	tuple<vector<QueryElement>, vector<QueryElement>> runOptimizer();
 
-	static int getRankOfClauseSynonymCount(QueryElement &clause);
-	static int getRankOfRelationClause(QueryElement &clause);
+	
+	
 
 private:
 	PKB pkbptr;
+	vector<QueryElement> sortedNormal;
+	vector<QueryElement> sortedHard;
 	
 	void setRankOfRelationClause();
 	void setRankOfDesignEntity();
 	void setFreqOfSyn();
+	void runClauseRanking();
+
+
+	int getRankOfClauseSynonymCount(QueryElement &clause);
+	string getClauseFirstSynonym(QueryElement& clause);
+	string getClauseSecondSynonym(QueryElement& clause);
+	int getRankOfSynonymFreq(QueryElement& clause);
+	int getRankOfRelation(QueryElement &clause);
+	string getClauseFirstDesignEntity(QueryElement& clause);
+	string getClauseSecondDesignEntity(QueryElement &clause);
+	int getDesignEntityRank(QueryElement &clause);
 
 	vector<QueryElement> normalClauses;
 	vector<QueryElement> hardClauses;
 	multimap<string, pair<int, int>> normalMMap;
 	multimap<string, pair<int, int>> hardMMap;
 
-	unordered_map<string, int> relRankMap;
-	unordered_map<string, int> designRankMap;
+	unordered_map<string, int> relationRankMap;
+	unordered_map<string, int> designEntRankMap;
 	unordered_map<string, int> synFreqMap;
 
-	bool myCompare(const QueryElement& clause1, const QueryElement& clause2);
-	bool compareRel(tuple<int, string> clause1, tuple<int, string> clause2);
 
-	priority_queue<QueryElement, vector<QueryElement>, less<vector<QueryElement>::value_type>> normalQueue;
-	priority_queue<QueryElement, vector<QueryElement>, less<vector<QueryElement>::value_type>> hardQueue;
 };
 
 
