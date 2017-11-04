@@ -106,8 +106,8 @@ aOne,bOne,cOne,fOne,hOne,hThree,hTwo
 22 - Single Valid whilePattern Query
 while w; variable v;
 Select BOOLEAN pattern w("aOne", _)
-none
 true
+5000
 23 - Single Valid whilePattern Query
 while w; variable v;
 Select w pattern w("bOne", _)
@@ -176,5 +176,10 @@ none
 36 - Invalid Pattern Queries
 while w; variable v;
 Select w pattern w("bOne", _, _)
+none
+5000
+37 - Additional Queries
+while w; variable v;
+Select w pattern w("rubbish", _)
 none
 5000
