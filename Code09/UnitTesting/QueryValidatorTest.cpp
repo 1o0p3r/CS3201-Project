@@ -278,6 +278,10 @@ namespace UnitTesting
 			QueryStatement queryStatement;
 
 
+			query = "while w; variable v; Select BOOLEAN pattern w(\"aOne\", _)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "variable v; assign a, a#; Select v pattern a#(_,_) and a(_,_";
 			Assert::IsFalse(queryValidator.parseInput(query));
 
@@ -388,7 +392,6 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 		
-			
 
 		}
 		TEST_METHOD(testQueryWith) {
