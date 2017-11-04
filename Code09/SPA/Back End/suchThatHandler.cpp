@@ -249,8 +249,10 @@ bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool 
 
 	//Do further checking only if arg1 equals to arg2
 	if (arg1 == arg2) {
-		//Then check the relationships, the only such that clauses with same arg1 and arg2 are Next*, Affects*
-		if (isCornerRelation(relation)) {
+		if (resultBoolean) {
+			return true;
+		} //Then check the relationships, the only such that clauses with same arg1 and arg2 are Next*, Affects*
+		else if (isCornerRelation(relation)) {
 			return true;
 		} else {
 			if (arg1 == UNDER_SCORE_STRING) {

@@ -218,6 +218,7 @@ bool QueryValidator::parseInput(string str) {
 	//Upon taking in a string query, clear the following
 	queryStatement = QueryStatement();
 	synonymAndEntityList = vector<SynonymEntityPair>();
+	resultBoolean = false;
 
 	str = removeDuplicatesWhiteSpaces(str);
 
@@ -789,6 +790,7 @@ bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
 		return true;
 	} else if (resultCl == BOOLEAN_STRING) {
 		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING, EMPTY_STRING);
+		resultBoolean = true;
 		return true;
 	} else if (isAttrRef(resultCl)) {
 		//Example p.procName, c.value etc
