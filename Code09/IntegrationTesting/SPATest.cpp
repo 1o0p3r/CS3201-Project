@@ -344,7 +344,9 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
+			"Select BOOLEAN",	//0
 			"stmt s; Select s such that Follows(s,3)", //1 Correct
+			"stmt s; Select BOOLEAN such that Follows(3,3)", //1.5
 			"stmt s; Select s such that Follows(3,s)", //2 Correct
 			"stmt s; Select s such that Follows*(1,s)", //3 Correct
 			"stmt s; Select s such that Parent(s, 6)", //4 Correct
@@ -376,7 +378,9 @@ public:
 			"stmt s; if ifs; while w; Select s such that Next(ifs, s) and Next(s, w)", //30	 Correct
 		};
 		vector<vector<string>> expected = {
-			{}, //
+			{"true"},
+			{}, //1
+			{"false"},
 			{ "4" }, //2
 			{ "2" }, //3
 			{ "4" }, //4

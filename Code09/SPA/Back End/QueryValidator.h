@@ -26,7 +26,7 @@ private:
 	vector<string> declarationString;
 	vector<string> queryString;
 	void addSynonymEntityList();
-
+	bool resultBoolean;
 	bool isValidSelect(vector<string> vectorClauses);
 
 	string extractAllSynAttr(vector<string> resultVec);
@@ -86,8 +86,6 @@ private:
 	bool isStringLiteralOrNumber(string syn);
 	
 	string extractIdentity(string arg);
-
-
 	vector<string> extractAndPattern(string currTwo, vector<string> VecPattern);
 
 	string removeSymbols(string str, string symbolToRemove);
