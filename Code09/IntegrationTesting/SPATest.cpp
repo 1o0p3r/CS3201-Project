@@ -508,7 +508,8 @@ public:
 			//frm sample source 6-v2 Next Queries
 			//"stmt s; Select s such that Next(s,_)" //1
 			//"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
-			//"assign a1, a2; if ifs; while w; Select ifs such that Next*(a2, ifs) and Next*(ifs, w) and Next*(w, a1) and Next*(a1, a2)"
+			//"assign a1, a2; if ifs; while w; Select ifs such that Next*(a2, ifs) and Next*(ifs, w) and Next*(w, a1) and Next*(a1, a2)",
+			//"assign a; while w; if ifs; Select a Pattern a(_, _) and w(_, _) and ifs(_, _, _)"
 
 		};
 		vector<vector<string>> expected = {
@@ -519,6 +520,7 @@ public:
 			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
 			//{"45","49","55"},
 			//{}
+			
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
@@ -558,13 +560,15 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			"stmt s; assign a; Select <s, a> such that Follows(s, a)",
-			"stmt s; while w; Select <s, w> such that Follows(s, w)"
+			//"stmt s; assign a; Select <s, a> such that Follows(s, a)",
+			//"stmt s; while w; Select <s, w> such that Follows(s, w)",
+			
 
 		};
 		vector<vector<string>> expected = {
-			{"14 15", "15 16", "16 17","2 3","36 37","37 38","4 23","42 43", "50 51", "56 57","58 59","60 61","62 63","77 80","83 84", "87 89", "91 92", "92 93"},
-			{"19 20","23 24","27 28","3 4","31 32","38 39","6 13","81 82","82 85","85 87","89 90","9 10"}
+			//{"14 15", "15 16", "16 17","2 3","36 37","37 38","4 23","42 43", "50 51", "56 57","58 59","60 61","62 63","77 80","83 84", "87 89", "91 92", "92 93"},
+			//{"19 20","23 24","27 28","3 4","31 32","38 39","6 13","81 82","82 85","85 87","89 90","9 10"},
+			
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
