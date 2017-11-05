@@ -21,6 +21,7 @@ private:
 	vector<QueryElement> hardQueryElements;
 	multimap<string, pair<int, int>> normalMultiMap;
 	multimap<string, pair<int, int>> hardMultiMap;
+	bool invalidQueryBoolean;
 	
 public:
 	QueryStatement();
@@ -29,6 +30,8 @@ public:
 	vector<QueryElement> getPatternQueryElement();
 	vector<QueryElement> getWithQueryElement();
 	vector<SynonymEntityPair> getSynonymEntityList();
+
+	void setInvalidQueryBoolean();
 
 	vector<QueryElement> getWithQueryElementsNoSyn();
 	vector<QueryElement> getWithQueryElementsOneSyn();
@@ -53,6 +56,7 @@ public:
 	void addHardMultiMap(string syn, int argumentNum, int idxAtHardQueryElements);
 	int getNormalQueryElementsSize();
 	int getHardQueryElementsSize();
+	bool getInvalidQueryBoolean();
 
 	void addSelectQuery(QueryElement);
 	void addSuchThatQuery(QueryElement);

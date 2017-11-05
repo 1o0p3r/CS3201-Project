@@ -376,6 +376,7 @@ public:
 			"stmt s; if ifs; while w; Select w such that Parent*(ifs, s) and Parent*(w, s)", //28 Coorect
 			"stmt s; while w1, w2; if ifs; Select s such that Parent(w1, s) and Parent*(ifs, s) and Parent*(w2, s)", //29  Correct
 			"stmt s; if ifs; while w; Select s such that Next(ifs, s) and Next(s, w)", //30	 Correct
+			"stmt s; if ifs; Select BOOLEAN with p.procName = p.procName"
 		};
 		vector<vector<string>> expected = {
 			{"true"},
@@ -508,6 +509,7 @@ public:
 			//frm sample source 6-v2 Next Queries
 			//"stmt s; Select s such that Next(s,_)" //1
 			"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
+			"while w; if ifs; Select <w, ifs> such that Parent*(w, ifs)"
 
 		};
 		vector<vector<string>> expected = {
@@ -516,7 +518,8 @@ public:
 			//{},
 			//{},
 			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
-			{"45","49","55"}
+			{"45","49","55"},
+			{"32 34","43 45","43 47","43 52","46 47","46 52","50 52","6 12","6 14","8 12","8 14"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

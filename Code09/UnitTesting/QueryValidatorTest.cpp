@@ -225,6 +225,14 @@ namespace UnitTesting
 			query = "while w; if ifs;Select <w, ifs> such that Parent*(w, ifs)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; if ifs; while w; Select w such that Next*(ifs, a1) an Next*(a1, w) and Next*(w, a2)";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "assign a1, a2; if ifs; while w; Select w such that Nex(ifs, a1) ";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 
@@ -897,6 +905,9 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.isValidSuchThatRegex(str));
 
 			str = "such that Follows(_,_) Modifies(2,4)";
+			Assert::IsFalse(queryValidator.isValidSuchThatRegex(str));
+
+			str = "such that Follows(_,_) an Modifies(2,4)";
 			Assert::IsFalse(queryValidator.isValidSuchThatRegex(str));
 		}
 		TEST_METHOD(testValidSuchThatRegexExtended) {
