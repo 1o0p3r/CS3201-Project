@@ -507,7 +507,8 @@ public:
 
 			//frm sample source 6-v2 Next Queries
 			//"stmt s; Select s such that Next(s,_)" //1
-			"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
+			//"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
+			"assign a1, a2; if ifs; while w; Select ifs such that Next*(a2, ifs) and Next*(ifs, w) and Next*(w, a1) and Next*(a1, a2)"
 
 		};
 		vector<vector<string>> expected = {
@@ -516,7 +517,8 @@ public:
 			//{},
 			//{},
 			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
-			{"45","49","55"}
+			//{"45","49","55"},
+			{}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
