@@ -150,48 +150,55 @@ bool QueryValidator::isValidWith(string str) {
 					return false;
 				}
 			}
+			bool bothSameType = isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity);
 			//Do comparison between LHS and RHS
-			if (isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity)) {
+			if (bothSameType) {
 				//Do cleaning up for stringLiteral
-				if (arg1Identity == STRING_LITERAL) {
+				if (arg1Identity == STRING_LITERAL || arg2Identity == STRING_LITERAL) {
 					arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-				}
-				if (arg2Identity == STRING_LITERAL) {
 					arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 				}
-				//Checks for corner cases
-				//Additional checks for both sides are string i.e. with "First" == "First"
-				//Redundant query, so no need to add query
-				//if (arg1Identity == STRING_LITERAL && arg2Identity == STRING_LITERAL) {
-				//	if (arg1 == arg2) {
-				//		continue;
-				//	}
-				//}
-				////Check corner case again where integer = integer
-				//if (arg1Identity == NUMBER_STRING && arg2Identity == NUMBER_STRING) {
-				//	if (arg1 == arg2) {
-				//		continue;
-				//	} else {
-				//		return false;
-				//	}
-				//}
-
-				//If arg1 and 2 are both attrRref
+				if (arg1 == arg2) {
+					continue;
+				}
+				//If arg1 and 2 are both attrRref	
 				if (arg1AttrRef && arg2AttrRef) {
 					//E.g. p.procName = v.varName
 					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				} else if (arg1AttrRef && !arg2AttrRef) {
+				}
+				else if (arg1AttrRef && !arg2AttrRef) {
 					//E.g. p.procName = "sth"
 					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
-				} else if (!arg1AttrRef && arg2AttrRef) {
-					//E.g. "sth" = p.procName
+				}
+				else if (!arg1AttrRef && arg2AttrRef) {
+						//E.g. "sth" = p.procName
 					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
-				} else {
+				}
+				else {
 					//E.g. n = 1
 					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
 				}
-
-				//Basically just need to store arg1, arg2,
+			} else if (!bothSameType && resultBoolean) {
+				if (arg1Identity == STRING_LITERAL || arg2Identity == STRING_LITERAL) {
+					arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+					arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+				}
+				if (arg1AttrRef && arg2AttrRef) {
+					//E.g. p.procName = v.varName
+					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				}
+				else if (arg1AttrRef && !arg2AttrRef) {
+						//E.g. p.procName = "sth"
+					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
+				}
+				else if (!arg1AttrRef && arg2AttrRef) {
+					//E.g. "sth" = p.procName
+					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
+				}
+				else {
+					//E.g. n = 1
+					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
+				}
 			} else {
 				return false;
 			}
@@ -261,6 +268,7 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			string arg1Type = withClauseTypeBank[arg1AttrName];
 			string arg2Type = withClauseTypeBank[arg2AttrName];
 
+//			return ((arg1Type == arg2Type) || resultBoolean);
 			return (arg1Type == arg2Type);
 		} else {
 			//LHS IS attrRef, RHS is not attrRef
@@ -284,8 +292,10 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			//First check: if arg1 identity is number
 			if (arg1Identity == NUMBER_STRING) {
 				//If both are numbers and are not equal to each other
-				if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2)) {
+				if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2) && !resultBoolean) {
 					return false;
+				} else if ((arg2Identity == NUMBER_STRING) && (arg1 != arg2) && resultBoolean) {
+					return true;
 				} else if ((arg2Identity == NUMBER_STRING) && (arg1 == arg2)) {
 					return true;
 				} else if ((arg2Identity == PROG_LINE_STRING)) {

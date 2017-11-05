@@ -554,7 +554,7 @@ void PKB::ifCFG(int& i) {
 	} else {
 		nextLine = i;
 	}
-	if (elseSet.find(nextLine) == elseSet.end() && nextLine < typeTable.size() && !ifHolders.empty() && !ifHolders.back().empty() && statementProcedureTable[ifHolders.back()[0]] == statementProcedureTable[nextLine]) {
+	if ((nextLine != i || elseSet.find(nextLine) == elseSet.end()) && nextLine < typeTable.size() && !ifHolders.empty() && !ifHolders.back().empty() && statementProcedureTable[ifHolders.back()[0]] == statementProcedureTable[nextLine]) {
 		for each (int line in ifHolders.back()) {
 			next.setNext(line, nextLine);
 		}
@@ -778,27 +778,53 @@ tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
 	vector<vTuple> frontier;
 	vector<vector<int>> explored(typeTable.size());
 	set<pair<int, int>> included;
-	if (typeTable[1] == assign) {
-		int var = modify.getModifies(1)[0];
-		vector<int> temp;
-		temp.resize(var + 1);
-		temp[var] = 1;
-		frontier.push_back({ 1, temp });
-	} else {
-		frontier.push_back({ 1, {}});
-	}
-	while (!frontier.empty()) {
-		vector<vTuple> nextFrontier;
-		for each (vTuple current in frontier) {
-			for each (int statement in next.getNext(get<0>(current))) {
-				if (explored[statement] != get<1>(current)) {
-					if (typeTable[statement] == _call) {
-						vector<int> leftovers = removeIntersection(get<1>(current), modify.getModifies(statement));
-						nextFrontier.push_back({ statement, leftovers });
-						explored[statement] = leftovers;
-					} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
-						nextFrontier.push_back({ statement, get<1>(current) });
-						explored[statement] = get<1>(current);
+	int max = 1;
+	while (max < typeTable.size()) {
+		if (typeTable[1] == assign) {
+			int var = modify.getModifies(max)[0];
+			vector<int> temp;
+			temp.resize(var + 1);
+			temp[var] = max;
+			frontier.push_back({ max, temp });
+		} else {
+			frontier.push_back({ max,{} });
+		}
+		while (!frontier.empty()) {
+			vector<vTuple> nextFrontier;
+			for each (vTuple current in frontier) {
+				for each (int statement in next.getNext(get<0>(current))) {
+					if (statement > max) {
+						max = statement;
+					}
+					if (explored[statement] != get<1>(current)) {
+						if (typeTable[statement] == _call) {
+							vector<int> leftovers = removeIntersection(get<1>(current), modify.getModifies(statement));
+							nextFrontier.push_back({ statement, leftovers });
+							explored[statement] = leftovers;
+						} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
+							nextFrontier.push_back({ statement, get<1>(current) });
+							explored[statement] = get<1>(current);
+						} else if (typeTable[statement] == assign) {
+							vector<int> uses = use.getUses(statement);
+							for each (int var in uses) {
+								if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
+									int line = get<1>(current)[var];
+									if (line != 0 && included.find({ line, statement }) == included.end()) {
+										s1.push_back(line);
+										s2.push_back(statement);
+										included.insert({ line, statement });
+									}
+								}
+							}
+							int var = modify.getModifies(statement)[0];
+							vector<int> temp = get<1>(current);
+							if (temp.size() <= var) {
+								temp.resize(var + 1);
+							}
+							temp[var] = statement;
+							nextFrontier.push_back({ statement, temp });
+							explored[statement] = temp;
+						}
 					} else if (typeTable[statement] == assign) {
 						vector<int> uses = use.getUses(statement);
 						for each (int var in uses) {
@@ -817,33 +843,14 @@ tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
 							temp.resize(var + 1);
 						}
 						temp[var] = statement;
-						nextFrontier.push_back({statement, temp});
+						nextFrontier.push_back({ statement, temp });
 						explored[statement] = temp;
 					}
-				} else if (typeTable[statement] == assign) {
-					vector<int> uses = use.getUses(statement);
-					for each (int var in uses) {
-						if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
-							int line = get<1>(current)[var];
-							if (line != 0 && included.find({ line, statement }) == included.end()) {
-								s1.push_back(line);
-								s2.push_back(statement);
-								included.insert({ line, statement });
-							}
-						}
-					}
-					int var = modify.getModifies(statement)[0];
-					vector<int> temp = get<1>(current);
-					if (temp.size() <= var) {
-						temp.resize(var + 1);
-					}
-					temp[var] = statement;
-					nextFrontier.push_back({ statement, temp });
-					explored[statement] = temp;
 				}
 			}
+			frontier = nextFrontier;
 		}
-		frontier = nextFrontier;
+		max++;
 	}
 	return {s1, s2};
 }
@@ -977,36 +984,40 @@ tuple<vector<int>, vector<int>> PKB::getNextStarTwoSynonyms() {
 	set<sTuple> explored;
 	vector<sTuple> frontier;
 	set<pair<int, int>> included;
-	frontier.push_back({ 1, {1} });
-	while (!frontier.empty()) {
-		vector<sTuple> nextFrontier;
-		for each (sTuple current in frontier) {
-			for each (int line in next.getNext(get<0>(current))) {
-				set<int> nexts = get<1>(current);
-				nexts.insert(line);
-				sTuple currentLine = { line, nexts };
-				if (explored.find(currentLine) == explored.end()) {
-					for each (int statement in get<1>(current)) {
-						if (included.find({ statement, line }) == included.end()) {
-							s1.push_back(statement);
-							s2.push_back(line);
-							included.insert({ statement, line });
+	int max = 1;
+	while (max < typeTable.size()) {
+		frontier.push_back({ max,{ max } });
+		while (!frontier.empty()) {
+			vector<sTuple> nextFrontier;
+			for each (sTuple current in frontier) {
+				for each (int line in next.getNext(get<0>(current))) {
+					set<int> nexts = get<1>(current);
+					nexts.insert(line);
+					sTuple currentLine = { line, nexts };
+					if (explored.find(currentLine) == explored.end()) {
+						for each (int statement in get<1>(current)) {
+							if (included.find({ statement, line }) == included.end()) {
+								s1.push_back(statement);
+								s2.push_back(line);
+								included.insert({ statement, line });
+							}
+						}
+						nextFrontier.push_back(currentLine);
+					} else {
+						for each (int statement in get<1>(current)) {
+							if (included.find({ statement, line }) == included.end()) {
+								s1.push_back(statement);
+								s2.push_back(line);
+								included.insert({ statement, line });
+							}
 						}
 					}
-					nextFrontier.push_back(currentLine);
-				} else {
-					for each (int statement in get<1>(current)) {
-						if (included.find({ statement, line }) == included.end()) {
-							s1.push_back(statement);
-							s2.push_back(line);
-							included.insert({ statement, line });
-						}
-					}
+					explored.insert(currentLine);
 				}
-				explored.insert(currentLine);
 			}
+			frontier = nextFrontier;
 		}
-		frontier = nextFrontier;
+		max++;
 	}
 	return{ s1, s2 };
 }
