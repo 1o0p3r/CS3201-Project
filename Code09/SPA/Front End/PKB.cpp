@@ -506,10 +506,13 @@ void PKB::whileCFG(int& i) {
 		goBack.pop_back();
 		toPop = false;
 	}
-	if (i < typeTable.size() && statementProcedureTable[i] == statementProcedureTable[current]) {
+	state.pop_back();
+	if (state.back() == _if && (current >= typeTable.size() - 1 || parent.getParent(i).empty() || (elseSet.find(i) != elseSet.end()) || (parent.getParent(i)[0] != ifParent.back()))) {
+		lastLineOfIf = i;
+		ifParent.pop_back();
+	} else if (i < typeTable.size() && statementProcedureTable[i] == statementProcedureTable[current]) {
 		next.setNext(current, i);
 	}
-	state.pop_back();
 	lastLineOfIf = current;
 }
 
