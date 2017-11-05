@@ -408,6 +408,38 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with \"string\"=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with p.procName = p.procName";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select p with p.procName = p.procName";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with \"string\"= p.procName";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with \"string\"= \"string\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with \"string\"= \"string2\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select BOOLEAN with 5=1";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "procedure p; constant c; prog_line n; Select p with 5=1";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "procedure p; constant c; assign a; Select BOOLEAN pattern a(_,_) with p.procName = \"First\"";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
