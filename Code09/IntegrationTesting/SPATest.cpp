@@ -60,7 +60,7 @@ public:
 		vector<vector<string>> expected = {
 			{"10", "2", "4"},
 			{ "5" },
-			{},
+			{"false"},
 			{ "3" },		
 			{ "3" },
 			{ "2" },
@@ -273,55 +273,59 @@ public:
 		analyzer.setPKB(pkb);
 		vector<string> answer;
 		vector<string> queries = {
-			//"while w; Select w such that Parent(w, 7)",
-			//"assign a; Select a such that Parent*(3, a)",
-			//"if a; stmt b; Select a such that Parent*(3,b)",
-			//"stmt s; Select s such that Follows(8, s)",
-			//"stmt c; Select c such that Follows*(1, c)",
-			//"stmt a; Select a such that Follows(a, 9)",
-			//"stmt s; Select s such that Modifies(s, \"i\")",
-			//"variable n; Select n such that Modifies(1, n)",
-			//"assign a; variable b; while i; Select i such that Modifies(a, b)",
-			//"variable v; Select v such that Uses(\"Second\", v)",
-			//"stmt s; Select s such that Uses(s, \"i\")",
-			//"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
-			//"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
-			//"assign a; Select a pattern a(\"z\", _\"x+i\")",
-			//"assign a; Select a pattern a(_, _\"x + 1\"_)",
-			//"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)",
-			//"Select BOOLEAN with 1 = 1",
+			"while w; Select w such that Parent(w, 7)",
+			"assign a; Select a such that Parent*(3, a)",
+			"if a; stmt b; Select a such that Parent*(3,b)",
+			"stmt s; Select s such that Follows(8, s)",
+			"stmt c; Select c such that Follows*(1, c)",
+			"stmt a; Select a such that Follows(a, 9)",
+			"stmt s; Select s such that Modifies(s, \"i\")",
+			"variable n; Select n such that Modifies(1, n)",
+			"assign a; variable b; while i; Select i such that Modifies(a, b)",
+			"variable v; Select v such that Uses(\"Second\", v)",
+			"stmt s; Select s such that Uses(s, \"i\")",
+			"variable v; assign a; Select v such that Uses(a, v) pattern a(_, _\"x+1\"_)",
+			"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
+			"assign a; Select a pattern a(\"z\", _\"x+i\")",
+			"assign a; Select a pattern a(_, _\"x + 1\"_)",
+			"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)",
+			"Select BOOLEAN with 1 = 1",
 			"Select BOOLEAN with 1 = 2",
 			"Select BOOLEAN with \"string\" = \"string\" with \"Second\" = \"hi\"",
 			"Select BOOLEAN with \"string\" = \"hi\"",
 			"Select BOOLEAN with \"Second\" = \"Second\"",
 			"procedure p; Select BOOLEAN with p.procName = p.procName",
+			"procedure p; procedure p2; Select BOOLEAN with p.procName = p2.procName",
+			"procedure p; procedure p2; Select BOOLEAN with p.procName = 1",
 			"procedure p; Select p with p.procName = p.procName",
 			"procedure p1, p2; Select p1 with p1.procName = p2.procName"
 
 		};
 		vector<vector<string>> expected = {
-			//{ "3" },
-			//{ "4", "5", "6", "7" },
-			//{ "8" },
-			//{ "11" },
-			//{ "11", "12", "13", "2", "3", "8" },
-			//{},
-			//{ "2","3", "7" },
-			//{ "x" },
-			//{ "3" },
-			//{ "i", "x", "y", "z" },
-			//{ "11", "3", "7" },
-			//{ "x" },
-			//{},
-			//{},
-			//{ "9" },
-			//{"1","11","12","2","3","4","5","6","8"},
-			//{"true"},
+			{ "3" },
+			{ "4", "5", "6", "7" },
+			{ "8" },
+			{ "11" },
+			{ "11", "12", "13", "2", "3", "8" },
+			{},
+			{ "2","3", "7" },
+			{ "x" },
+			{ "3" },
+			{ "i", "x", "y", "z" },
+			{ "11", "3", "7" },
+			{ "x" },
+			{},
+			{},
+			{ "9" },
+			{"1","11","12","2","3","4","5","6","8"},
+			{"true"},
 			{"false"},
 			{"false"},
 			{"false"},
 			{"true"},
 			{"true"},
+			{"true"},
+			{"false"},
 			{"Second"},
 			{"Second"}
 		};
@@ -519,13 +523,15 @@ public:
 			//"procedure p1; Select p1 such that Calls*(p1, _)", //getAllCalls broken api
 			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
 			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
-			"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")"
+	//		"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\"),"
+			"procedure p; Select BOOLEAN with p.procName = 1"
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
 			//{"SystemTestThree","SystemTestTwo"},
 			//{"1"},
-			{"2"}
+		//	{"2"}
+			{"false"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
@@ -551,8 +557,6 @@ public:
 				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
 			}
 		}
-
-		
 	}
 
 	};
