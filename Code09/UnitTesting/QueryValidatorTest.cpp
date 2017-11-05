@@ -221,6 +221,10 @@ namespace UnitTesting
 			query = "procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "while w; if ifs;Select <w, ifs> such that Parent*(w, ifs)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 

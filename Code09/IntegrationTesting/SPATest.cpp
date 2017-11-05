@@ -472,17 +472,19 @@ public:
 			//"assign a; Select a pattern a(_, _\"dan\"_)",
 			//"assign a; Select a pattern a(_, _\"danger\"_)",
 			//"assign a; Select a pattern a(_, \"dan\")",
-			"assign a; Select a pattern a(_, \"(fig + popcicle)\")",
+			//"assign a; Select a pattern a(_, \"(fig + popcicle)\")",
 			//"assign a; Select a pattern a(_, _\"absolute - dan \"_)",
-			//"assign a; Select a pattern a(_, _\"fig \"_)"
+			//"assign a; Select a pattern a(_, _\"fig \"_),"
+		
 		};
 		vector<vector<string>> expected = {
 			//{ "1","10","11","2","3","7","8","9" },
 			//{ "4","5","6" },
 			//{},
-			{"12"},
+		//	{"12"},
 			//{"10","11"},
-			//{"10","11","12","7","8","9"}
+			//{"10","11","12","7","8","9"},
+			
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
@@ -524,14 +526,18 @@ public:
 			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
 			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
 	//		"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\"),"
-			"procedure p; Select BOOLEAN with p.procName = 1"
+//			"procedure p; Select BOOLEAN with p.procName = 1",
+			"while w; if ifs;Select <w, ifs> such that Parent*(w, ifs)",
+			"while w; if ifs;Select <w, ifs> such that Follows(w, ifs)"
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
 			//{"SystemTestThree","SystemTestTwo"},
 			//{"1"},
 		//	{"2"}
-			{"false"}
+//			{"false"},
+			{ "32 34","43 45","43 47","43 52","46 47","46 52","50 52","6 12","6 14","8 12", "8 14" },
+			{}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
