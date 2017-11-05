@@ -18,6 +18,7 @@
 #include "CallsStarAnalyzer.h"
 #include "Abstract_QA_API.h"
 #include "QueryOptimizer.h"
+#include "NextStarAnalyzer.h"
 
 #include <numeric>
 #include <iterator>
@@ -93,7 +94,7 @@ public:
 			string patExp, string patType, string patSyn);
 	vector<string> validatedPatAssignSyn(string arg1, string patExp,
 			string patType, string patSyn);
-	vector<vector<vector<string>>> insertSTResult(vector<vector<string>> stResult);
+	vector<vector<vector<string>>> insertClauseResults(vector<vector<string>> stResult);
 	
 	void insertArg1Arg2CommonSynTable(vector<vector<string>> stResult);
 	void restrictTableValues(vector<vector<string>> tableToMerge1, int joinColArg1, int joinColArg2,

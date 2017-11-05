@@ -246,7 +246,7 @@ tuple<vector<QueryElement>,vector<QueryElement>> QueryOptimizer::runOptimizer() 
 	setRankOfRelationClause();
 	setRankOfDesignEntity();
 	setFreqOfSyn();
-	runClauseRanking();
+	runClauseRanking();	
 	return make_tuple(sortedNormal, sortedHard);
 
 }
