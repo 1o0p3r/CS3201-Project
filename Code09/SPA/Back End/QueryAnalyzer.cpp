@@ -165,6 +165,7 @@ void QueryAnalyzer::optimizeClauseOrder() {
 vector<string> QueryAnalyzer::runQueryEval() {
 	synTableMap = unordered_map<string, tuple<int, int>>();
 	mergedQueryTable = vector<vector<vector<string>>>();
+	selectSynMap = unordered_map<int, int>();
 	hasSTClause = true;
 	hasPatternClause = true;
 	hasWithClause = true;
@@ -243,21 +244,26 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	vector<vector<tuple<int,int,string,string>>> synLoc;
 	vector<vector<string>> synTableConcatEntries;
 	unordered_map<string, int> synCartMap;
-
+	vector<tuple<int, int, string, string>> selectSynTableAttr;
 
 	//init mapping of synonyms from same table
+	int numSynTables = 0;
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
 		if (searchInQueryTable != synTableMap.end()) { //if synonym in immediate table
-			vector<tuple<int, int, string,string>> selectSynTableAttr;
-			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second));
+			selectSynTableAttr = vector<tuple<int, int, string, string>>();
+			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second)); //check if select clause has synonyms from same table
+			
 			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
-				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), synLoc.size()));
+				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), numSynTables));
+				
 				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
 					synonymEntities[i],synonymTokens[i]));
+			
 				synLoc.push_back(selectSynTableAttr);
+				numSynTables++;
 			} else {
 				//insert synonym results at common table row 
 				int insertAtRow = searchInSelectSynMap->second;
@@ -271,22 +277,17 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		}
 	}
 
-	string synonym;
+
 	int k = 0;
-	for (auto commonTableSyn : synLoc) {
+	for (auto commonTableSyn : synLoc) { //synonyms from same table,
 
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
-			if (get<TABLELOC>(entry) != NOSYNENTRY) {
-				synonym = mergedQueryTable[get<TABLELOC>(entry)][get<SYNVECLOC>(entry)].back();
-
-			} else {
-				synonym = get<3>(entry);
-			}
+			string synonym = get<3>(entry);
 			synCartMap.insert(make_pair(synonym, k));
 			k++;
 		}
-
+	
 		vector<string> vecAppendedSynValues;
 		//synonym exists in intermediate table
 		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {

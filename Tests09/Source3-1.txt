@@ -1,0 +1,165 @@
+procedure First {
+	a = 5 - b * (c + d);
+	call Second;
+	b = a * 2 - d * c;
+	while c {
+		d = c * c + b;
+		if a then {
+			while f {
+				g = h * (a + d);
+			}	
+		}
+		else {
+			e = f - g * h;
+			while g {
+				f = h * (b * a);
+			}
+			call Third;
+		}
+		while a {
+			b = c + d;
+			c = d - e;
+			d = e * f;
+			f = a + b;
+			if a then {
+				b = a + c + d + e;
+				while b {
+					c = d - e;
+				}
+			}
+			else {
+				b = (c - a) * (h + g);
+			}
+		}
+	}
+	a = b;
+	while b {
+		b = c;
+		if c then {
+			c = d;
+			while d {
+				d = e;
+				if e then{
+					e = a;
+					while a {
+						a = b;
+					}
+				}
+				else {
+					e = b;
+				}
+			}
+		}
+		else {
+			c = b;
+		}
+	}
+}
+
+procedure Second {
+	a = b + c;
+	b = c + d;
+	c = a + b;
+	while c {
+		if b then {
+			call Third;
+		}
+		else {
+			a = (a * b) + (b * c - a * (((b - c + d))));
+			b = (c + a) + (b + a) + b * (c - a) * d * c;
+			if c then {
+				d = d;
+			}
+			else {
+				b = b;
+			}
+			if d then {
+				c = c;
+			}
+			else {
+				a = a;
+			}
+		}
+	}
+}
+
+procedure Third {
+	a = b + c;
+	c = b - a;
+	if a then {
+		if b then {
+			if c then {
+				while d {
+					c = a - b + d;
+					a = a + 1;
+				}
+			}
+			else {
+				c = d * b;
+				c = c + 1;
+			}
+		}
+		else {
+			a = c - b;
+			a = a + 1;
+		}
+	}
+	else {
+		b = d + c;
+		b = b + 1;
+	}
+}
+
+procedure Fourth {
+	call First;
+	call Second;
+	call Third;
+}
+
+
+procedure Fifth { 
+  	a = c + d; 
+  	call Fourth;
+ 	if a then { 
+    	call Third; 
+ 	}
+  	else {
+    	a = 1; 
+  	}
+  	call Second;  
+  	call Second;  
+  	if b then { 
+    	call First;  
+  	}
+  	else {
+   		c = 1; 
+  	}
+	if f then { 
+    	d = 1;
+  	}
+  	else {
+    	b = 1; 
+  	}
+  	a = b + 9999999999; 
+}
+
+
+procedure Sixth { 
+  	a = c * c;  	
+  	while b { 
+		c = 10; 
+		b = b + 1;
+	}
+	while c { 
+   		c = c; 
+ 	}
+  	while a { 
+    	e = d * 99999999999; 
+	}
+  	a = a + b * c; 
+  	while b { 
+    	c = a + d; 
+		a = c + d;
+		d = a + c;
+  	}
+}
