@@ -503,16 +503,20 @@ public:
 			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
 			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
 			//"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")",
+			
 
 			//frm sample source 6-v2 Next Queries
-			"stmt s; Select s such that Next(s,_)" //1
+			//"stmt s; Select s such that Next(s,_)" //1
+			"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
+
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
 			//{"SystemTestThree","SystemTestTwo"},
 			//{},
 			//{},
-			{} //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
+			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
+			{"45","49","55"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

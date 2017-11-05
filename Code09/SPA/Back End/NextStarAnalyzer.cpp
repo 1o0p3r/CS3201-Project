@@ -116,7 +116,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 		auto pkbAnswers = pkbReadOnly.getNextStarTwoSynonyms();
 		
 		pkbResultForArg1 = Util::convertIntToString(validatePKBResultsInt(arg1Entity, get<ARGONE>(pkbAnswers)));
-		pkbResultForArg2 = Util::convertIntToString(validatePKBResultsInt(arg1Entity, get<ARGTWO>(pkbAnswers)));
+		pkbResultForArg2 = Util::convertIntToString(validatePKBResultsInt(arg2Entity, get<ARGTWO>(pkbAnswers)));
 			
 	}
 	else {
