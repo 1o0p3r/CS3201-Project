@@ -32,6 +32,8 @@
     <ClCompile Include="Back End\WithAnalyzer.cpp" />
     <ClCompile Include="Back End\WithHandler.cpp" />
     <ClCompile Include="Back End\suchThatHandler.cpp" />
+    <ClCompile Include="QueryOptimizer.cpp" />
+    <ClCompile Include="Back End\NextStarAnalyzer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h" />
@@ -67,5 +69,7 @@
     <ClInclude Include="Back End\WithAnalyzer.h" />
     <ClInclude Include="Back End\WithHandler.h" />
     <ClInclude Include="Back End\suchThatHandler.h" />
+    <ClInclude Include="QueryOptimizer.h" />
+    <ClInclude Include="Back End\NextStarAnalyzer.h" />
   </ItemGroup>
 </Project>

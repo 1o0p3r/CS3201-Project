@@ -27,7 +27,7 @@ public:
 		
 		vector<vector<string>> a{ {"1","2","3","a"}, {"7","8","9","b"} };
 		vector<vector<string>> b{ {"2","3","a"}, {"8","9","b"} };
-		qa.insertSTResult(a);
+		qa.insertClauseResults(a);
 		qa.restrictTableValues(a, 0, 1, 0, b);
 		hardcode = { { "2","3","a" },{ "8","9","b" } };
 		database = qa.getMergedQueryTable();
@@ -59,9 +59,9 @@ public:
 		// 1 2 3 , 7 8 9 ,1 2 3 
 		
 		vector<vector<string>> intermediate;
-		qa.insertSTResult(a);
-		qa.insertSTResult(b);
-		qa.insertSTResult(c);
+		qa.insertClauseResults(a);
+		qa.insertClauseResults(b);
+		qa.insertClauseResults(c);
 		hardcode = { { "3","a" },{ "9","b" },{"3","c"},{"11","d"} };
 		database = qa.getMergedQueryTable();
 		for (int i = 0; i < database[0].size(); i++)
@@ -91,8 +91,8 @@ public:
 		// 1 4 , b c 
 
 		vector<vector<string>> intermediate;
-		qa.insertSTResult(a);
-		qa.insertSTResult(b);
+		qa.insertClauseResults(a);
+		qa.insertClauseResults(b);
 		hardcode = { { "1","4","a" },{ "b","c","b" } };
 		database = qa.getMergedQueryTable();
 		for (int i = 0; i < database[0].size(); i++)
@@ -122,8 +122,8 @@ public:
 		// 1  2 4 ,b a c , world how hello
 
 		vector<vector<string>> intermediate;
-		qa.insertSTResult(a);
-		qa.insertSTResult(b);
+		qa.insertClauseResults(a);
+		qa.insertClauseResults(b);
 		hardcode = { { "1","2","4","a" },{ "b","a","c","b" },{"world","how","hello","you"} };
 		database = qa.getMergedQueryTable();
 		for (int i = 0; i < database[0].size(); i++)
@@ -153,8 +153,8 @@ public:
 		// 1  2 4 ,b a c , world how hello
 
 		vector<vector<string>> intermediate;
-		qa.insertSTResult(a);
-		qa.insertSTResult(b);
+		qa.insertClauseResults(a);
+		qa.insertClauseResults(b);
 		hardcode = { { "1","4","a" },{ "b","c","b" },{ "c","a","e" } };
 		database = qa.getMergedQueryTable();
 		for (int i = 0; i < database[0].size(); i++)
