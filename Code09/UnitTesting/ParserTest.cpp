@@ -25,6 +25,26 @@ public:
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-1.txt";
 		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-6.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-6-v2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-Next.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-Pattern.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-Pattern-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
 	}
 
 	TEST_METHOD(elseParse) {

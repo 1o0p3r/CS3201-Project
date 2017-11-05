@@ -288,18 +288,7 @@ public:
 			"assign w; variable v; Select w such that Modifies(w, v) pattern w(_,\"2*y\")",
 			"assign a; Select a pattern a(\"z\", _\"x+i\")",
 			"assign a; Select a pattern a(_, _\"x + 1\"_)",
-			"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)",
-			"Select BOOLEAN with 1 = 1",
-			"Select BOOLEAN with 1 = 2",
-			"Select BOOLEAN with \"string\" = \"string\" with \"Second\" = \"hi\"",
-			"Select BOOLEAN with \"string\" = \"hi\"",
-			"Select BOOLEAN with \"Second\" = \"Second\"",
-			"procedure p; Select BOOLEAN with p.procName = p.procName",
-			"procedure p; procedure p2; Select BOOLEAN with p.procName = p2.procName",
-			"procedure p; procedure p2; Select BOOLEAN with p.procName = 1",
-			"procedure p; Select p with p.procName = p.procName",
-			"procedure p1, p2; Select p1 with p1.procName = p2.procName"
-
+			"stmt a; stmt b; stmt c; stmt d; stmt f; Select c such that Follows(a,b) and Follows(c,d) and Follows(f,b) and Follows (c,b)"
 		};
 		vector<vector<string>> expected = {
 			{ "3" },
@@ -317,19 +306,9 @@ public:
 			{},
 			{},
 			{ "9" },
-			{"1","11","12","2","3","4","5","6","8"},
-			{"true"},
-			{"false"},
-			{"false"},
-			{"false"},
-			{"true"},
-			{"true"},
-			{"true"},
-			{"false"},
-			{"Second"},
-			{"Second"}
+			{"1","11","12","2","3","4","5","6","8"}
 		};
-	//	validator = QueryValidator(); //re-init validator.
+		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
 			if (validator.parseInput(queries[i])) {
 				statement = validator.getQueryStatement();
@@ -472,19 +451,17 @@ public:
 			//"assign a; Select a pattern a(_, _\"dan\"_)",
 			//"assign a; Select a pattern a(_, _\"danger\"_)",
 			//"assign a; Select a pattern a(_, \"dan\")",
-			//"assign a; Select a pattern a(_, \"(fig + popcicle)\")",
+			"assign a; Select a pattern a(_, \"(fig + popcicle)\")",
 			//"assign a; Select a pattern a(_, _\"absolute - dan \"_)",
-			//"assign a; Select a pattern a(_, _\"fig \"_),"
-		
+			//"assign a; Select a pattern a(_, _\"fig \"_)"
 		};
 		vector<vector<string>> expected = {
 			//{ "1","10","11","2","3","7","8","9" },
 			//{ "4","5","6" },
 			//{},
-		//	{"12"},
+			{"12"},
 			//{"10","11"},
-			//{"10","11","12","7","8","9"},
-			
+			//{"10","11","12","7","8","9"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
@@ -525,19 +502,21 @@ public:
 			//"procedure p1; Select p1 such that Calls*(p1, _)", //getAllCalls broken api
 			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
 			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
-	//		"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\"),"
-//			"procedure p; Select BOOLEAN with p.procName = 1",
-			"while w; if ifs;Select <w, ifs> such that Parent*(w, ifs)",
-			"while w; if ifs;Select <w, ifs> such that Follows(w, ifs)"
+			//"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")",
+			
+
+			//frm sample source 6-v2 Next Queries
+			//"stmt s; Select s such that Next(s,_)" //1
+			"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
+
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
 			//{"SystemTestThree","SystemTestTwo"},
-			//{"1"},
-		//	{"2"}
-//			{"false"},
-			{ "32 34","43 45","43 47","43 52","46 47","46 52","50 52","6 12","6 14","8 12", "8 14" },
-			{}
+			//{},
+			//{},
+			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
+			{"45","49","55"}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {
@@ -563,6 +542,8 @@ public:
 				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
 			}
 		}
+
+		
 	}
 
 	};

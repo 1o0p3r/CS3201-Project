@@ -18,6 +18,7 @@
     <ClCompile Include="Back End\FollowsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ModifiesAnalyzer.cpp" />
     <ClCompile Include="Back End\NextAnalyzer.cpp" />
+    <ClCompile Include="Back End\NextStarAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentAnalyzer.cpp" />
     <ClCompile Include="Back End\ParentStarAnalyzer.cpp" />
     <ClCompile Include="Back End\PatternAnalyzer.cpp" />
@@ -41,6 +42,7 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
+    <ClCompile Include="QueryOptimizer.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +54,7 @@
     <ClInclude Include="Back End\FollowsStarAnalyzer.h" />
     <ClInclude Include="Back End\ModifiesAnalyzer.h" />
     <ClInclude Include="Back End\NextAnalyzer.h" />
+    <ClInclude Include="Back End\NextStarAnalyzer.h" />
     <ClInclude Include="Back End\ParentAnalyzer.h" />
     <ClInclude Include="Back End\ParentStarAnalyzer.h" />
     <ClInclude Include="Back End\PatternAnalyzer.h" />
@@ -76,6 +79,7 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
+    <ClInclude Include="QueryOptimizer.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

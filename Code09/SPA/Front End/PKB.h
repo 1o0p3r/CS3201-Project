@@ -376,13 +376,6 @@ public:
 	vector<int> getAllStmt();
 
 	/**
-	Set the first line of a procedure
-	@param procName the name of the procedure
-	@param firstline the first line of the procedure
-	*/
-	void setFirstline(int firstline);
-
-	/**
 	Set the last line of a procedure
 	@param procName the name of the procedure
 	@param lastline the last line of the procedure
@@ -522,7 +515,6 @@ private:
 	vector<int> ifTable;
 	vector<int> callTable;
 	vector<int> typeTable;
-	set<int> firstlineTable;
 	vector<int> lastlineTable;
 	vector<tuple<vector<int>, vector<string>>> patternTable;
 	unordered_map<string, tuple<vector<int>, vector<string>>> expressionTable;
@@ -548,6 +540,7 @@ private:
 	void ifCFG(int & i);
 	void processNext(int & i);
 	bool contains(vector<int> list, int i);
+	bool toPop;
 	vector<int> goBack;
 	vector<int> state;
 	int lastLineOfIf;

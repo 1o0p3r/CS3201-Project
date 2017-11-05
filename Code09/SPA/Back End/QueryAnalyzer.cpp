@@ -148,11 +148,18 @@ void QueryAnalyzer::solveWithClause()
 			if (!hasWithClause)
 				setClauseFalse();
 			if (!withResult.empty())
-				insertSTResult(withResult);
+				insertClauseResults(withResult);
 		}
 
 	}
 	
+}
+
+void QueryAnalyzer::optimizeClauseOrder() {
+	multimap<string, pair<int, int>> normalMap = qsReadOnly.getNormalMultiMap();
+	multimap<string, pair<int, int>> hardMap = qsReadOnly.getHardMultiMap();
+	//tuple<vector<QueryElement>,vector<QueryElement>> 
+	QueryOptimizer(normalElements,hardElements,normalMap,hardMap,pkbPtr).runOptimizer();
 }
 
 vector<string> QueryAnalyzer::runQueryEval() {
@@ -163,6 +170,12 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	hasWithClause = true;
 	findQueryElements();
 	solveWithClause();
+	
+	isOptimizerOn = true;
+	if(isOptimizerOn) {
+		optimizeClauseOrder();
+	}
+
 	solveSTClause();
 	solvePatternClause();
 	vector<string> result = analyzeClauseResults();
@@ -176,6 +189,12 @@ void QueryAnalyzer::findQueryElements() {
 	stElements = qsReadOnly.getSuchThatQueryElement(); 
 	patternElements = qsReadOnly.getPatternQueryElement();
 	withElements = qsReadOnly.getWithQueryElement();
+
+	//easyWithElements = qsReadOnly.getWithQueryElementsNoSyn();
+	//normalWithElements = qsReadOnly.getWithQueryElementsOneSyn();
+	
+	normalElements = qsReadOnly.getNormalQueryElements();
+	hardElements = qsReadOnly.getHardQueryElements();
 }
 
 void QueryAnalyzer::selectSynonym(vector<string> &answer)
@@ -519,10 +538,13 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 			case nextStar:
+				clauseResult = NextStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
+				stResult = get<VECTRESULT>(clauseResult);
+				hasSTClause = get<BOOLRESULT>(clauseResult);
 				break;
 		}
 		if (!stResult.empty())
-			insertSTResult(stResult);
+			insertClauseResults(stResult);
 	}
 	return mergedQueryTable;
 }
@@ -549,7 +571,7 @@ void QueryAnalyzer::solvePatternClause() {
 				break;
 			}
 			if (!patternResult.empty())
-				insertSTResult(patternResult);
+				insertClauseResults(patternResult);
 			if (!hasPatternClause)
 				break;
 		}
@@ -558,118 +580,8 @@ void QueryAnalyzer::solvePatternClause() {
 		
 }
 
-//vector<vector<string>> QueryAnalyzer::solveAssignPattern(QueryElement patternClause) {
-//	string patSyn = patternClause.getPatternSynonym();
-//	string arg1 = patternClause.getPatternArg1();
-//	string arg1Type = patternClause.getPatternArg1Type();
-//	string patExp = patternClause.getPatternArg2();
-//	string patType = patternClause.getPatternArg2Type();
-//	tuple<vector<string>, vector<string>> evaluatedPatResult;
-//	vector<string> validatedPatResult;
-//	vector<vector<string>> patternAssignResult;
-//	if (arg1Type == SYNONYM) {
-//		evaluatedPatResult = solvePatAssignSyn(arg1, patExp, patType, patSyn);
-//		if (!get<ARGONE>(evaluatedPatResult).empty()) {
-//			patternAssignResult.push_back(get<ARGONE>(evaluatedPatResult));
-//			patternAssignResult.push_back(get<ARGTWO>(evaluatedPatResult));
-//		}
-//	} else {
-//		validatedPatResult = validatedPatAssignSyn(arg1, patExp, patType, patSyn);
-//		if (!validatedPatResult.empty())
-//			patternAssignResult.push_back(validatedPatResult);
-//	}
-//	return patternAssignResult;
-//}
-//
-//vector<vector<string>> QueryAnalyzer::solveWhilePattern(QueryElement patternClause)
-//{
-//	return vector<vector<string>>();
-//}
-//
-//tuple<vector<string>, vector<string>> QueryAnalyzer::solvePatAssignSyn(string arg1, 
-//		string patExp, string patType, string patSyn) {
-//	vector<tuple<int, string>> pkbPatResult;
-//	bool containsPattern = false;
-//	vector<string> entityVector;
-//	vector<string> variableVector;
-//	for (string candidates : pkbPtr.getAllVariables()) {
-//		pkbPatResult = pkbPtr.getPattern(candidates);
-//		for (tuple<int, string> evalPattExpression : pkbPatResult) {
-//			switch (mapPatternExpType[patType]) {
-//				case _wildcard_:
-//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-//					variableVector.push_back(candidates);
-//					containsPattern = true;
-//				break;
-//			case substring: 
-//				if (get<1>(evalPattExpression).find(patExp) != string::npos) {
-//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-//					variableVector.push_back(candidates);
-//					containsPattern = true;
-//				}
-//				break;
-//			case exact:
-//				if (get<1>(evalPattExpression) == patExp) {
-//					entityVector.push_back(to_string(get<0>(evalPattExpression)));
-//					variableVector.push_back(candidates);
-//					containsPattern = true;
-//				}
-//				break;
-//			}
-//		}
-//	}
-//	if (containsPattern) {
-//		entityVector.push_back(patSyn);
-//		variableVector.push_back(arg1);
-//	}
-//	hasPatternClause = containsPattern;
-//	return make_tuple(entityVector, variableVector);
-//}
-//
-//vector<string> QueryAnalyzer::validatedPatAssignSyn(string arg1, string patExp, 
-//		string patType, string patSyn) {
-//	vector<tuple<int, string>> pkbPatResult;
-//	bool containsPattern = false;
-//	vector<string> entityVector;
-//	unordered_set<string> shortlisted; // for removing duplicates
-//	vector<string> listOfCandidates;
-//	if (arg1 == WILDCARD_SYMBOL) 
-//		listOfCandidates = pkbPtr.getAllVariables();
-//	else
-//		listOfCandidates.push_back(arg1);
-//	for (string candidates : listOfCandidates) {
-//		pkbPatResult = pkbPtr.getPattern(candidates);
-//		for (tuple<int, string> evalPattExpression : pkbPatResult) {
-//			switch (mapPatternExpType[patType]) {
-//				case _wildcard_:
-//					shortlisted.insert(to_string(get<0>(evalPattExpression)));
-//					containsPattern = true;
-//					break;
-//				case substring:
-//					if (get<1>(evalPattExpression).find(patExp) != string::npos) {
-//						shortlisted.insert(to_string(get<0>(evalPattExpression)));
-//						containsPattern = true;
-//					}
-//					break;
-//				case exact:
-//					if (get<1>(evalPattExpression) == patExp) {
-//						shortlisted.insert(to_string(get<0>(evalPattExpression)));
-//						containsPattern = true;
-//					}
-//					break;
-//			}
-//		}
-//	}
-//	if (!shortlisted.empty()) { //removing duplicates
-//		entityVector.assign(shortlisted.begin(), shortlisted.end());
-//		entityVector.push_back(patSyn);
-//	}
-//	hasPatternClause = containsPattern;
-//	return entityVector;
-//}
 
-
-vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<string>> stResult) {
+vector<vector<vector<string>>> QueryAnalyzer::insertClauseResults(vector<vector<string>> clauseResult) {
 	/*		  arg1, arg2
 	 *case 0: hasSyn
 	 *case 1: noSyn
@@ -681,20 +593,20 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 	string arg1;
 	string arg2;
 	int tableIndex;
-	auto iteratorMapFindArg1 = synTableMap.find(stResult[ARGONE].back());
+	auto iteratorMapFindArg1 = synTableMap.find(clauseResult[ARGONE].back());
 	int scenario = 0;
 	bool hasArg2 = false;
-	if (stResult.size() == 1){
+	if (clauseResult.size() == 1){
 		if (iteratorMapFindArg1 == synTableMap.end()) {
 			scenario += 1;
 		}
-	} else if (stResult.size() > 1) {
+	} else if (clauseResult.size() > 1) {
 		hasArg2 = true;
 		if (iteratorMapFindArg1 == synTableMap.end())
 			scenario += 4;
 		else
 			scenario += 2;
-		if (synTableMap.find(stResult[ARGTWO].back()) == synTableMap.end()) {
+		if (synTableMap.find(clauseResult[ARGTWO].back()) == synTableMap.end()) {
 			scenario += 1;
 		}
 	}
@@ -703,22 +615,22 @@ vector<vector<vector<string>>> QueryAnalyzer::insertSTResult(vector<vector<strin
 	tableIndex = mergedQueryTable.size();
 	switch (scenario) {
 		case oneResultArg1Found:
-			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE);
+			addSingleCommonSynTable(clauseResult, clauseResult[ARGONE].back(), ARGONE);
 			break;
 		case oneResultArg1Missing:
-			addSingleCommonSynTable(stResult, stResult[ARGONE].back(), ARGONE); 
+			addSingleCommonSynTable(clauseResult, clauseResult[ARGONE].back(), ARGONE); 
 			break;
 		case bothSynFound:
-			insertArg1Arg2CommonSynTable(stResult);
+			insertArg1Arg2CommonSynTable(clauseResult);
 			break;
 		case arg1Found:
-			addSingleCommonSynTable(stResult,stResult[ARGONE].back(),ARGONE);
+			addSingleCommonSynTable(clauseResult,clauseResult[ARGONE].back(),ARGONE);
 			break;
 		case arg2Found:
-			addSingleCommonSynTable(stResult, stResult[ARGTWO].back(), ARGTWO); 
+			addSingleCommonSynTable(clauseResult, clauseResult[ARGTWO].back(), ARGTWO); 
 			break;
 		case noSynFound:
-			insertNoCommonSynToTable(stResult, tableIndex, hasArg2);
+			insertNoCommonSynToTable(clauseResult, tableIndex, hasArg2);
 			break;
 	}	 
 	return mergedQueryTable;
