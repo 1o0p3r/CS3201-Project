@@ -130,7 +130,7 @@ bool QueryValidator::isValidWith(string str) {
 				arg1Identity = extractIdentity(arg1);
 				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING) && !resultBoolean) {
 					return false;
-				} else {
+				} else if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING) && resultBoolean) {
 					queryStatement.setInvalidQueryBoolean();
 					return true;
 				}
@@ -149,7 +149,7 @@ bool QueryValidator::isValidWith(string str) {
 				arg2Identity = extractIdentity(arg2);
 				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING) && !resultBoolean) {
 					return false;
-				} else {
+				} else if((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING) && resultBoolean) {
 					queryStatement.setInvalidQueryBoolean();
 					return true;
 				}
@@ -164,7 +164,23 @@ bool QueryValidator::isValidWith(string str) {
 				}
 				if (arg1 == arg2) {
 					continue;
+				} else {
+					bool bothStrLiteral = bothStringLiteral(arg1Identity, arg2Identity);
+					bool bothNum = bothNumber(arg1Identity, arg2Identity);
+					if (bothStrLiteral && resultBoolean) {
+						queryStatement.setInvalidQueryBoolean();
+						return true;
+					} else if(bothStrLiteral && !resultBoolean) {
+						return false;
+					} else if (bothNum && resultBoolean) {
+						queryStatement.setInvalidQueryBoolean();
+						return true;
+					} else if(bothNum && !resultBoolean) {
+						return false;
+					}
 				}
+
+
 				//If arg1 and 2 are both attrRref	
 				if (arg1AttrRef && arg2AttrRef) {
 					//E.g. p.procName = v.varName
@@ -219,6 +235,22 @@ bool QueryValidator::isValidWith(string str) {
 		}
 	}
 }
+bool QueryValidator::bothStringLiteral(string arg1Identity, string arg2Identity) {
+	if (arg1Identity == STRING_LITERAL && arg1Identity == arg2Identity) {
+		return true;
+	} else {
+		return false;
+	}
+}
+bool QueryValidator::bothNumber(string arg1Identity, string arg2Identity) {
+	if (arg1Identity == NUMBER_STRING && arg1Identity == arg2Identity) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
 	string arg2Synonym) {
 	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym, WITH_STRING);

@@ -31,17 +31,17 @@ public:
 			"assign as1; while wew; Select as1 such that Parent*(as1, 3)",
 			"procedure pOne; Select pOne such that Modifies(pOne, \"y\")",
 			"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(cTwo, \"  y\")",
-			"procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")",
+			"procedure pOne; call cOne, cTwo; Select cOne such that Modifies(cOne, \"if\")", //10
 			"procedure pOne; call cOne, cTwo; Select pOne such that Modifies(\"Pear\", \"if\")",
 			"variable v; Select v such that Modifies(8, v)",
 			"procedure pOne; Select pOne such that Uses(pOne, \"y\")",
 			"call cOne, cTwo; Select cTwo such that Uses(cTwo,  \"	ggg\")",
-			"variable v; Select v such that Uses(8, v)",
+			"variable v; Select v such that Uses(8, v)",	//15
 			"assign a; procedure pOne; Select BOOLEAN such that Uses(a, pOne)",
 			"assign a; procedure pOne; Select BOOLEAN such that Uses(\"Pear\", \"if\")",
 			"assign a2; procedure pTwo;  Select a2 pattern a2(_,  _\"x\"_)",
 			"assign a2; while wews; Select wews such that Parent*(wews, a2) pattern a2(\"y\", _)",
-			"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)",
+			"assign a2; if ifs; Select ifs such that Follows*(ifs, a2) pattern a2(\"if\", _)", //20
 			"assign a2; if ifs; Select ifs pattern ifs(\"if\", _, _)",
 			"assign a2; if ifs; Select ifs pattern ifs(_, _, _) such that Modifies(a2, \"ggg\")",
 			"assign a2; if ifs; while wews; variable v; Select wews pattern wews(v, _)",
@@ -67,27 +67,27 @@ public:
 			{},
 			{ "Apple", "Nana" },
 			{ "Apple",  "Nana", "Pear"},
-			{"18","19","8"},
+			{"18","19","8"}, //10
 			{ "Apple", "Nana", "Pear" },
 			{ "boom", "ggg", "if" },
 			{ "Apple", "Nana" },
 			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
-			{ "Y2K", "ggg" , "if"},
-			{},
+			{ "Y2K", "ggg" , "if"},  //15
+			{"false"},
 			{"true"},		//boolean must always return something, and it is true instead of empty 
 			{"3", "5"},
 			{"2"},
-			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything.
+			{},		//Results obtained: Empty, hardcoded answer is wrong, line 12 does not follow anything. //20
 			{"12"},				//Correct
 			{"12","15","4","6"},				//Exception
 			{"2"},				//Exception
 			{"Apple", "Nana"},	//Passed
-			{"3"},		//Passed
+			{"3"},		//Passed //25
 			{"16"},		//Passed
 			{"Apple", "Nana"},
 			{"5"},
 			{"Nana"},
-			{"12", "15", "4", "6"},
+			{"12", "15", "4", "6"}, //30
 			{ "18" },
 			{ "18", "19", "8" },
 			{ "18", "19", "8" },
@@ -139,16 +139,17 @@ public:
 			"variable v; Select v such that Uses(3,v)",
 			"variable v; Select v such that Uses(4,v)",
 			"variable v; assign a; Select a such that Uses(a,\"y\")",
-			"assign a; Select a such that Parent(a,3)",
+			"assign a; Select a such that Parent(a,3)", //10
 			"stmt a; Select a such that Parent(a,3)",
 			"stmt a; Select a such that Parent*(a,4)",
 			"stmt s; assign a; Select a such that Parent*(s,4)pattern a(_, \"x*y+ 1\")",
 			"stmt s; assign a; Select a such that Follows(s,4)pattern a(_, _\"y+1\"_)",
-			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)",
+			"stmt s; assign a; Select a such that Modifies(a,_)pattern a(\"x\", _)", //15
 			"stmt s; assign a; Select s with 1=1",
 			"stmt s; assign a; Select s with \"x\"=\"x\"",
-			"stmt s; assign a; Select s with \"x\"=\"y\"",
-			"stmt s; assign a; Select s with 1=2"
+			"stmt s; assign a; Select s with \"x\"=\"y\"", //18
+			"stmt s; assign a; Select s with 1=2",
+			"assign a1;"
 		};
 		vector<vector<string>> expected = {
 			{},
@@ -160,15 +161,15 @@ public:
 			{},
 			{"x", "y"},
 			{"4"},
-			{},
+			{}, //10
 			{"2"},
 			{"2"},
 			{"4"},
 			{},
-			{"1", "4"},
+			{"1", "4"}, //15
 			{"2","1","3","4"},
 			{"2","1","3","4" },
-			{},
+			{}, //18
 			{}
 		};
 		
