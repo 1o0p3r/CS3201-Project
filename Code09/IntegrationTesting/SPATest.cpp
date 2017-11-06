@@ -73,7 +73,7 @@ public:
 			{ "Apple", "Nana" },
 			{ "18","19","8" },			//Results obtained: Empty , fixed hardcoded results + program
 			{ "Y2K", "ggg" , "if"},
-			{},
+			{"false"},
 			{"true"},		//boolean must always return something, and it is true instead of empty 
 			{"3", "5"},
 			{"2"},
