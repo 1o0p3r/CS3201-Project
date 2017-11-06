@@ -1,21 +1,21 @@
-#include "NextStarAnalyzer.h"
+#include "AffectsAnalyzer.h"
 
-bool NextStarAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
+bool AffectsAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg1) {
 	if (isAddArg1)
-		return pkbReadOnly.getNextStarFirstLiteral(candidates).empty() ? false : true;
+		return pkbReadOnly.getAffectsFirstLiteral(candidates).empty() ? false : true;
 	else
-		return pkbReadOnly.getNextStarSecondLiteral(candidates).empty() ? false : true;
+		return pkbReadOnly.getAffectsSecondLiteral(candidates).empty() ? false : true;
 }
 
 
 
-tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg1)
+tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgTwoResult(string arg1)
 {
-	bool hasNextStar = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<string> pkbResult;
 	vector<int> pkbNext;
-	vector<vector<string>> NextStarResult;
+	vector<vector<string>> AffectsResult;
 	bool isArgTypeInt = true;
 
 	const auto synArg2Iterator = queryMap.find(arg2);
@@ -25,12 +25,12 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg
 		pkbResult = optimizedAddArg(synArg2Iterator, isAddArg1, isArgTypeInt);
 	}
 	else {
-		if (arg1 == WILDCARD_SYMBOL) 
+		if (arg1 == WILDCARD_SYMBOL)
 			vecOfCandidates = pkbReadOnly.getAllNext();
 		else
 			vecOfCandidates.push_back(stoi(arg1));
 		for (int candidates : vecOfCandidates) {
-			pkbNext = pkbReadOnly.getNextStarFirstLiteral(candidates);
+			pkbNext = pkbReadOnly.getAffectsFirstLiteral(candidates);
 			pkbNext = validatePKBResultsInt(arg2Entity, pkbNext);
 			for (int candidatesChosen : pkbNext) {
 				pkbResult.push_back(to_string(candidatesChosen));
@@ -38,23 +38,23 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg
 		}
 	}
 	if (pkbResult.empty())
-		hasNextStar = false;
+		hasAffects = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
-		NextStarResult.push_back(pkbResult);
+		AffectsResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNextStar, NextStarResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
-tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg2)
+tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgOneResult(string arg2)
 {
-	bool hasNextStar = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<int> pkbPrevious;
 	vector<string> pkbResult;
-	vector<vector<string>> NextStarResult;
+	vector<vector<string>> AffectsResult;
 
 	const auto synArg1Iterator = queryMap.find(arg1);
 
@@ -69,7 +69,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg
 		else
 			vecOfCandidates.push_back(stoi(arg2));
 		for (int candidates : vecOfCandidates) {
-			pkbPrevious = pkbReadOnly.getNextStarSecondLiteral(candidates);
+			pkbPrevious = pkbReadOnly.getAffectsSecondLiteral(candidates);
 			pkbPrevious = validatePKBResultsInt(arg1Entity, pkbPrevious);
 			for (int candidatesChosen : pkbPrevious) {
 				pkbResult.push_back(to_string(candidatesChosen));
@@ -77,36 +77,36 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg
 		}
 	}
 	if (pkbResult.empty())
-		hasNextStar = false;
+		hasAffects = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
-		NextStarResult.push_back(pkbResult);
+		AffectsResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNextStar, NextStarResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
-void NextStarAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
+void AffectsAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
 {
 	if (!hasArg2EvalBefore) {
-		retrievedPKBValues = pkbReadOnly.getNextStarFirstLiteral(candidates);
+		retrievedPKBValues = pkbReadOnly.getAffectsFirstLiteral(candidates);
 		retrievedPKBValues = validatePKBResultsInt(arg2Entity, retrievedPKBValues);
 	}
 	else {
-		retrievedPKBValues = pkbReadOnly.getNextStarSecondLiteral(candidates);
+		retrievedPKBValues = pkbReadOnly.getAffectsSecondLiteral(candidates);
 		retrievedPKBValues = validatePKBResultsInt(arg1Entity, retrievedPKBValues);
 	}
 }
 
-tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string arg1, string arg2)
+tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg1, string arg2)
 {
-	bool hasNextStar = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<int> retrievedPKBResults;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
-	vector<vector<string>> NextStarResult;
+	vector<vector<string>> AffectsResult;
 	bool isSameSynonym = arg1 == arg2 ? true : false;
 
 	bool hasArg2EvalBefore = false;
@@ -114,7 +114,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 	const auto synArg2Iterator = queryMap.find(arg2);
 
 	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
-		auto pkbAnswers = pkbReadOnly.getNextStarTwoSynonyms();
+		auto pkbAnswers = pkbReadOnly.getAffectsTwoSynonyms();
 		auto validatedPKBAnswers = validatePKBResultsInt(get<ARGONE>(pkbAnswers), get<ARGTWO>(pkbAnswers));
 		pkbResultForArg1 = get<ARGONE>(validatedPKBAnswers);
 		pkbResultForArg2 = get<ARGTWO>(validatedPKBAnswers);
@@ -127,6 +127,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 			}
 			pkbResultForArg1 = clauseResultForSameSynonym;
 		}
+
 	}
 	else {
 		getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
@@ -146,37 +147,43 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 		}
 	}
 	if (pkbResultForArg1.empty())
-		hasNextStar = false;
-	else if(isSameSynonym && !pkbResultForArg1.empty()) {
+		hasAffects = false;
+	else if (isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);
-		NextStarResult.push_back(pkbResultForArg1);
-	} else if(!isSameSynonym && !pkbResultForArg1.empty()) {
+		AffectsResult.push_back(pkbResultForArg1);
+	}
+	else if (!isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);
-		NextStarResult.push_back(pkbResultForArg1);
+		AffectsResult.push_back(pkbResultForArg1);
 		pkbResultForArg2.push_back(arg2);
-		NextStarResult.push_back(pkbResultForArg2);
+		AffectsResult.push_back(pkbResultForArg2);
 	}
 
-	return make_tuple(hasNextStar, NextStarResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
-bool NextStarAnalyzer::checkClauseBothVariables(string arg1, string arg2)
+bool AffectsAnalyzer::checkClauseBothVariables(string arg1, string arg2)
 {
-	return pkbReadOnly.getNextStarTwoLiterals(stoi(arg1), stoi(arg2));
+	return pkbReadOnly.getAffectsTwoLiterals(stoi(arg1), stoi(arg2));
 }
 
-bool NextStarAnalyzer::checkClauseVariableWild(string arg1)
+bool AffectsAnalyzer::checkClauseVariableWild(string arg1)
 {
-	return pkbReadOnly.getNextStarFirstLiteral(stoi(arg1)).empty() ? false : true;
+	return pkbReadOnly.getAffectsFirstLiteral(stoi(arg1)).empty() ? false : true;
 }
 
-bool NextStarAnalyzer::checkClauseWildVariable(string arg2)
+bool AffectsAnalyzer::checkClauseWildVariable(string arg2)
 {
-	return pkbReadOnly.getNextStarSecondLiteral(stoi(arg2)).empty() ? false : true;
+	return pkbReadOnly.getAffectsSecondLiteral(stoi(arg2)).empty() ? false : true;
 }
 
-bool NextStarAnalyzer::checkClauseBothWild()
+bool AffectsAnalyzer::checkClauseBothWild()
 {
-	int MIN_STMTS_FOR_Next = 1;
-	return (pkbReadOnly.getAllNext().size() < MIN_STMTS_FOR_Next) ? false : true;
+	vector<int>  affectsArg1Candidates = pkbReadOnly.getAssign();
+	for(const auto candidates: affectsArg1Candidates) {
+		auto result = pkbReadOnly.getAffectsFirstLiteral(candidates);
+		if (!result.empty())
+			return true;
+	}
+	return false;
 }
