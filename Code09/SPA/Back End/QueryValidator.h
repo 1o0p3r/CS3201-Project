@@ -45,6 +45,8 @@ private:
 	bool parseDeclaration(vector<string> splitString);
 	bool isNotReDeclaredOtherEnt(vector<string> synonymsAttached, string reqEntity);
 	bool isValidWith(string str);
+	bool bothStringLiteral(string arg1Identity, string arg2Identity);
+	bool bothNumber(string arg1Identity, string arg2Identity);
 	bool isAttrRef(string arg);
 	bool isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName, string arg1Identity, string arg2Identity);
 	bool checkRelationshipTable(string, string, int);
