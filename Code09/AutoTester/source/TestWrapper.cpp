@@ -36,14 +36,20 @@ void TestWrapper::evaluate(std::string query, std::list<std::string>& results) {
 	// call your evaluator to evaluate the query here
 	  // ...code to evaluate query...
 	QueryValidator validator;
-	if (validator.parseInput(query)) {
-		QueryStatement statement = validator.getQueryStatement();
-		analyzer.setQS(statement);
-		vector<string> ans = analyzer.runQueryEval();
-		for each (string s in ans) {
-			results.push_back(s);
+	try {
+		if (validator.parseInput(query)) {
+			QueryStatement statement = validator.getQueryStatement();
+			analyzer.setQS(statement);
+
+			vector<string> ans = analyzer.runQueryEval();
+			for each (string s in ans) {
+				results.push_back(s);
+			}
 		}
+	} catch (exception e) {
+			cerr << e.what();
 	}
+	
 	// AutoTester.exe Sample-Source-3.txt Sample-Queries-3.txt out.xml
 	// store the answers to the query in the results list (it is initially empty)
 	// each result must be a string.

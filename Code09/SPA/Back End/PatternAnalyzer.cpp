@@ -212,25 +212,25 @@ vector<string> PatternAnalyzer::validatedPatSynAssign(string arg1, string patExp
 	vector<int> pkbStmtResult;
 	vector<string> listOfCandidates;
 	vector<string> result;
-	bool containsPattern = false;
-	vector<int> entityVector;
-	
-	listOfCandidates.push_back(arg1);
-	for (string candidates : listOfCandidates) {
-		pkbStmtResult = get<GETSTMTS>(pkbPtr.getPatternVariable(candidates));
-		if (entityVector.empty()) {
-			entityVector = pkbStmtResult;
-		}
-		else
-			entityVector = intersectionT(pkbStmtResult, entityVector);
-	}
-	if (!entityVector.empty()) { //removing duplicates
-		entityVector = Util::removeDuplicates(entityVector);
-		for (auto candidate : entityVector)
-			result.push_back(to_string(candidate));
-		result.push_back(patSyn);
-	}
-	hasPatternClause = containsPattern;
+	//bool containsPattern = false;
+	//vector<int> entityVector;
+	//
+	//listOfCandidates.push_back(arg1);
+	//for (string candidates : listOfCandidates) {
+	//	pkbStmtResult = get<GETSTMTS>(pkbPtr.getPatternVariable(candidates));
+	//	if (entityVector.empty()) {
+	//		entityVector = pkbStmtResult;
+	//	}
+	//	else
+	//		entityVector = intersectionT(pkbStmtResult, entityVector);
+	//}
+	//if (!entityVector.empty()) { //removing duplicates
+	//	entityVector = Util::removeDuplicates(entityVector);
+	//	for (auto candidate : entityVector)
+	//		result.push_back(to_string(candidate));
+	//	result.push_back(patSyn);
+	//}
+	//hasPatternClause = containsPattern;
 	return result;
 }
 

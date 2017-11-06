@@ -114,9 +114,9 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 
 	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
 		auto pkbAnswers = pkbReadOnly.getNextStarTwoSynonyms();
-		
-		pkbResultForArg1 = Util::convertIntToString(validatePKBResultsInt(arg1Entity, get<ARGONE>(pkbAnswers)));
-		pkbResultForArg2 = Util::convertIntToString(validatePKBResultsInt(arg2Entity, get<ARGTWO>(pkbAnswers)));
+		auto validatedPKBAnswers = validatePKBResultsInt(get<ARGONE>(pkbAnswers), get<ARGTWO>(pkbAnswers));
+		pkbResultForArg1 = get<ARGONE>(validatedPKBAnswers);
+		pkbResultForArg2 = get<ARGTWO>(validatedPKBAnswers);
 			
 	}
 	else {
