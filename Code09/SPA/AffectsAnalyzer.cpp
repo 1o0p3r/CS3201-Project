@@ -11,7 +11,7 @@ bool AffectsAnalyzer::hasResultsForArg(const int candidates, const bool isAddArg
 
 tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgTwoResult(string arg1)
 {
-	bool hasNext = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<string> pkbResult;
 	vector<int> pkbNext;
@@ -38,19 +38,19 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgTwoResult(string arg1
 		}
 	}
 	if (pkbResult.empty())
-		hasNext = false;
+		hasAffects = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		AffectsResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNext, AffectsResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
 tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgOneResult(string arg2)
 {
-	bool hasNext = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<int> pkbPrevious;
 	vector<string> pkbResult;
@@ -77,14 +77,14 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgOneResult(string arg2
 		}
 	}
 	if (pkbResult.empty())
-		hasNext = false;
+		hasAffects = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		AffectsResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNext, AffectsResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
 void AffectsAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
@@ -101,12 +101,13 @@ void AffectsAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool has
 
 tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg1, string arg2)
 {
-	bool hasNext = true;
+	bool hasAffects = true;
 	vector<int> vecOfCandidates;
 	vector<int> retrievedPKBResults;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> AffectsResult;
+	bool isSameSynonym = arg1 == arg2 ? true : false;
 
 	bool hasArg2EvalBefore = false;
 	const auto synArg1Iterator = queryMap.find(arg1);
@@ -117,6 +118,15 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg
 		auto validatedPKBAnswers = validatePKBResultsInt(get<ARGONE>(pkbAnswers), get<ARGTWO>(pkbAnswers));
 		pkbResultForArg1 = get<ARGONE>(validatedPKBAnswers);
 		pkbResultForArg2 = get<ARGTWO>(validatedPKBAnswers);
+
+		vector<string> clauseResultForSameSynonym;
+		if (isSameSynonym) {
+			for (int i = 0; i < pkbResultForArg1.size(); i++) {
+				if (pkbResultForArg1[i] == pkbResultForArg2[i])
+					clauseResultForSameSynonym.push_back(pkbResultForArg1[i]);
+			}
+			pkbResultForArg1 = clauseResultForSameSynonym;
+		}
 
 	}
 	else {
@@ -137,15 +147,19 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg
 		}
 	}
 	if (pkbResultForArg1.empty())
-		hasNext = false;
-	else {
+		hasAffects = false;
+	else if (isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);
-		pkbResultForArg2.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		AffectsResult.push_back(pkbResultForArg1);
+	}
+	else if (!isSameSynonym && !pkbResultForArg1.empty()) {
+		pkbResultForArg1.push_back(arg1);
+		AffectsResult.push_back(pkbResultForArg1);
+		pkbResultForArg2.push_back(arg2);
 		AffectsResult.push_back(pkbResultForArg2);
 	}
 
-	return make_tuple(hasNext, AffectsResult);
+	return make_tuple(hasAffects, AffectsResult);
 }
 
 bool AffectsAnalyzer::checkClauseBothVariables(string arg1, string arg2)

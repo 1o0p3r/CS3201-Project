@@ -562,12 +562,13 @@ public:
 		vector<string> queries = {
 			//"stmt s; assign a; Select <s, a> such that Follows(s, a)",
 			//"stmt s; while w; Select <s, w> such that Follows(s, w)",
-			
+			"prog_line n1, n2; Select n1 such that Next*(n1, n2) and Uses(n2, \"b\") with n2 = 43"
 
 		};
 		vector<vector<string>> expected = {
 			//{"14 15", "15 16", "16 17","2 3","36 37","37 38","4 23","42 43", "50 51", "56 57","58 59","60 61","62 63","77 80","83 84", "87 89", "91 92", "92 93"},
 			//{"19 20","23 24","27 28","3 4","31 32","38 39","6 13","81 82","82 85","85 87","89 90","9 10"},
+			{ "36","37","38","39","40","41","42","43","44","45","46","47","48","49"}
 			
 		};
 		validator = QueryValidator(); //re-init validator.

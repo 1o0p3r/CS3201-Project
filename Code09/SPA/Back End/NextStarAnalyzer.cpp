@@ -11,7 +11,7 @@ bool NextStarAnalyzer::hasResultsForArg(const int candidates, const bool isAddAr
 
 tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg1)
 {
-	bool hasNext = true;
+	bool hasNextStar = true;
 	vector<int> vecOfCandidates;
 	vector<string> pkbResult;
 	vector<int> pkbNext;
@@ -38,19 +38,19 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg
 		}
 	}
 	if (pkbResult.empty())
-		hasNext = false;
+		hasNextStar = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		NextStarResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNext, NextStarResult);
+	return make_tuple(hasNextStar, NextStarResult);
 }
 
 tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg2)
 {
-	bool hasNext = true;
+	bool hasNextStar = true;
 	vector<int> vecOfCandidates;
 	vector<int> pkbPrevious;
 	vector<string> pkbResult;
@@ -77,14 +77,14 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg
 		}
 	}
 	if (pkbResult.empty())
-		hasNext = false;
+		hasNextStar = false;
 	else {
 		pkbResult = removeDuplicates(pkbResult);
 		pkbResult.push_back(arg1); //to denote this vector belongs to indicated synonym 
 		NextStarResult.push_back(pkbResult);
 	}
 
-	return make_tuple(hasNext, NextStarResult);
+	return make_tuple(hasNextStar, NextStarResult);
 }
 
 void NextStarAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool hasArg2EvalBefore, int candidates)
@@ -101,12 +101,13 @@ void NextStarAnalyzer::getValuesFromPKB(vector<int>& retrievedPKBValues, bool ha
 
 tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string arg1, string arg2)
 {
-	bool hasNext = true;
+	bool hasNextStar = true;
 	vector<int> vecOfCandidates;
 	vector<int> retrievedPKBResults;
 	vector<string> pkbResultForArg1;
 	vector<string> pkbResultForArg2;
 	vector<vector<string>> NextStarResult;
+	bool isSameSynonym = arg1 == arg2 ? true : false;
 
 	bool hasArg2EvalBefore = false;
 	const auto synArg1Iterator = queryMap.find(arg1);
@@ -117,7 +118,15 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 		auto validatedPKBAnswers = validatePKBResultsInt(get<ARGONE>(pkbAnswers), get<ARGTWO>(pkbAnswers));
 		pkbResultForArg1 = get<ARGONE>(validatedPKBAnswers);
 		pkbResultForArg2 = get<ARGTWO>(validatedPKBAnswers);
-			
+
+		vector<string> clauseResultForSameSynonym;
+		if (isSameSynonym) {
+			for (int i = 0; i < pkbResultForArg1.size(); i++) {
+				if (pkbResultForArg1[i] == pkbResultForArg2[i])
+					clauseResultForSameSynonym.push_back(pkbResultForArg1[i]);
+			}
+			pkbResultForArg1 = clauseResultForSameSynonym;
+		}
 	}
 	else {
 		getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
@@ -137,15 +146,18 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 		}
 	}
 	if (pkbResultForArg1.empty())
-		hasNext = false;
-	else {
+		hasNextStar = false;
+	else if(isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);
-		pkbResultForArg2.push_back(arg2); //to denote this vector belongs to indicated synonym 
 		NextStarResult.push_back(pkbResultForArg1);
+	} else if(!isSameSynonym && !pkbResultForArg1.empty()) {
+		pkbResultForArg1.push_back(arg1);
+		NextStarResult.push_back(pkbResultForArg1);
+		pkbResultForArg2.push_back(arg2);
 		NextStarResult.push_back(pkbResultForArg2);
 	}
 
-	return make_tuple(hasNext, NextStarResult);
+	return make_tuple(hasNextStar, NextStarResult);
 }
 
 bool NextStarAnalyzer::checkClauseBothVariables(string arg1, string arg2)
