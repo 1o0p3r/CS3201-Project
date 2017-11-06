@@ -84,5 +84,29 @@ public:
 		sort(get<1>(actual).begin(), get<1>(actual).end());
 		Assert::IsTrue(ans == actual);
 	}
+
+	TEST_METHOD(getAffectStarTwoLiterals) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsFalse(pkb.getAffectStarTwoLiterals(1, 2));
+		Assert::IsFalse(pkb.getAffectStarTwoLiterals(2, 4));
+		Assert::IsFalse(pkb.getAffectStarTwoLiterals(1, 3));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(1, 4));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(3, 4));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(4, 4));
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(1, 4));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(4, 9));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(1, 11));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(1, 12));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(1, 13));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(5, 11));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(2, 12));
+		Assert::IsTrue(pkb.getAffectStarTwoLiterals(2, 13));
+	}
 	};
 }

@@ -1032,5 +1032,53 @@ string PKB::getProcCalledByStatement(int statement) {
 }
 
 bool PKB::getAffectStarTwoLiterals(int s1, int s2) {
-
+	if (typeTable[s1] != assign || typeTable[s2] != assign) {
+		return false;
+	}
+	vector<set<int>> explored(typeTable.size());
+	set<int> modified;
+	vector<sTuple> frontier;
+	modified.insert(modify.getModifies(s1)[0]);
+	frontier.push_back({ s1, modified });
+	while (!frontier.empty() && !modified.empty()) {
+		vector<sTuple> nextFrontier;
+		for each (sTuple current in frontier) {
+			for each (int statement in next.getNext(get<0>(current))) {
+				set<int> temp = get<1>(current);
+				if (typeTable[statement] == assign) {
+					if (statement == s2) {
+						for each (int var in use.getUses(s2)) {
+							if (temp.find(var) != temp.end()) {
+								return true;
+							}
+						}
+					} else {
+						bool chain = false;
+						for each (int var in use.getUses(statement)) {
+							if (temp.find(var) != temp.end()) {
+								chain = true;
+							}
+						}
+						int var = modify.getModifies(statement)[0];
+						if (chain) {
+							temp.insert(var);
+						} else {
+							temp.erase(var);
+						}
+						
+					}
+				} else if (typeTable[statement] == _call) {
+					for each (int var in modify.getModifies(statement)) {
+						temp.erase(var);
+					}
+				}
+				if (explored[statement] != temp) {
+					explored[statement] = temp;
+					nextFrontier.push_back({ statement, temp });
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return false;
 }
