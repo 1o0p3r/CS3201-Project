@@ -11,12 +11,14 @@ procedure weather {
 				sleep = sleep + rain;
 				bed = sleep + blanket;
 				blanket = blanket + good;
-			} else {
+			}
+			else {
 				rain = sleep - timeToSleep;
 			}
 			timeToSleep = sleep + 1;
 			sleep = rain + sleep;
-		} else {
+		}
+		else {
 			call warm;
 		}
 		sleep = sleep + rain;
@@ -85,19 +87,21 @@ procedure warm {
 					aircon = airconNotGood;
 					repairMore = repairMore + airconNotGood - warm;
 					jobs = repairMore - jobs *10;
-				} else {
+				} 
+				else {
 					aircon = aircon -4;
 				}
 				aircon = spoiling + airconNotGood;
 				aircon = aircon + warm;
 			}
 		}
-	} else {
+	} 
+	else {
 		drink = more + water;
-
 		if tooHot then {
 			call dry;
-		} else {
+		} 
+		else {
 			if stillTooHot then {
 				call hot;
 			} else {
@@ -115,11 +119,13 @@ procedure cold {
 	while cold {
 		if stillCold then {
 			go = on + heater;
-		} else {
+		} 
+		else {
 			if heater then {
 				temperature = heater + increase*(warm) -(dry);
 				temperature = stillCold + go * warm - (heater*sleep);
-			} else {
+			} 
+			else {
 				stillCold = heater + (noMoney*lottery-(jobs*rainy + (cloudy- heater)));
 				temperature = heater + decrease;
 			}
@@ -141,7 +147,8 @@ procedure dry {
 				if noMoney then {
 					dry = noMoney + go;
 					go = get + jobs;
-				} else {
+				} 
+				else {
 					go = buy + lottery;
 				}
 				noMoney = noMoney + (3 - lottery);
@@ -180,7 +187,7 @@ procedure cloudy {
 		go = get + jobs;
 	}
 	money = money + 2;
-	noMoney = noMoney*0;
+	noMoney = noMoney*5;
 }
 procedure windy {
 	windy = wind + grey + clouds;
@@ -198,7 +205,8 @@ procedure windy {
 	if freezing then {
 		cold = windy + cold;
 		cold = cold + (blanket + more);
-	} else {
+	} 
+	else {
 		call dry;
 	}
 	rainy = freezing + cold * rainy;
@@ -214,7 +222,6 @@ procedure rain {
 	rainy = (rain)- rainy + (warm)*((cloudy)- dry*rainy);
 	cloudy = (cloudy) + rainy - rainy*(cloudy)- dry*((rainy));
 	cloudy = ((jobs) + cloudy *(shoppingMall)- lottery *rainy)-(rainy*lottery);
-	go = (rainy*lottery-(cloudy*blanket-cold)*(clouds-lottery)*(off-(noMoney)*cold)))
+	go = (rainy*lottery-(cloudy*blanket-cold)*(clouds-lottery)*(off-(noMoney)*cold));
 	go = (temperature*lottery-(temperature*noMoney-noMoney+ brighter + lights - noMoney) *(sleep * noHumdifier));
-
 }

@@ -536,6 +536,10 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "call c; while w; if ifs; Select <c, ifs, w> such that Follows*(ifs, w)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < c.procName, c.value, s, v, v.varName > with n=1";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
