@@ -43,12 +43,15 @@ procedure hot {
 				swim = go + float;
 				if gotFloat then{
 					go = swim + swim + now;
+					gotFloat = slack + swim + now;
 				} 
 				else {
 					go = swim + slack;
 				}
 					slack = swim;
 			}
+			gotFloat = swim + slack;
+			noMoney = noMoney + 10;
 		}
 		else {
 			go = swimmingClass + swim;
@@ -56,7 +59,7 @@ procedure hot {
 		} 
 	}
 	else {
-		go = shoppingMall;
+		go = shoppingMall - hot - 8;
 	}
 }
 procedure warm {
@@ -66,6 +69,7 @@ procedure warm {
 			aircon = aircon + 1;
 			if warm then {
 				aircon = aircon + full;
+				warm = aircon + 3;
 			} 
 			else {
 				aircon = aircon - 1;
@@ -79,6 +83,8 @@ procedure warm {
 						}
 					}
 					aircon = airconNotGood;
+					repairMore = repairMore + airconNotGood - warm;
+					jobs = repairMore - jobs *10;
 				} else {
 					aircon = aircon -4;
 				}
@@ -111,8 +117,10 @@ procedure cold {
 			go = on + heater;
 		} else {
 			if heater then {
-				temperature = heater + increase;
+				temperature = heater + increase*(warm) -(dry);
+				temperature = stillCold + go * warm - (heater*sleep);
 			} else {
+				stillCold = heater + (noMoney*lottery-(jobs*rainy + (cloudy- heater)));
 				temperature = heater + decrease;
 			}
 		}
@@ -131,14 +139,16 @@ procedure dry {
 			}
 			while noMoney {
 				if noMoney then {
+					dry = noMoney + go;
 					go = get + jobs;
 				} else {
 					go = buy + lottery;
 				}
-				noMoney = noMoney + 3;
+				noMoney = noMoney + (3 - lottery);
 			}
-			shoppingMall = shoppingMall + humidifer;
-			shoppingMall = shoppingMall + 2;
+			shoppingMall = (shoppingMall) + humidifer - (cloudy*noHumdifier);
+			shoppingMall = shoppingMall + (2*cloudy) - 5*jobs;
+			lottery = lottery + shoppingMall*(rainy)*cloudy;
 		}
 	}
 }
@@ -147,27 +157,30 @@ procedure cloudy {
 	while cloudy {
 		go = turn + on + lights;
 		if dark then {
-			lights = brighter + lights;
+			lights = brighter + (lights) - dark;
 		}
 		else {
-			lights = dimmer + lights;
+			lights = dimmer + ((lights - dark));
 		}
 		while noMoney {
-			lights = turn + off + lights;
+			lights = (turn + off) * lights;
 		}
-		lights = lights + 1;
+		lights = lights + (1-dry*off-rainy);
 	}
 	if brighthen then {
-		lights = turn + off;
+		lights = turn + (off);
 	} else {
 		lights = turn + on;
+		brighten = ((brighten)) + off;
 	}
 	if noMoney then {
 		lights = turn + off;
+		noMoney = ((noMoney) + (lights)* lottery);
 	} else {
 		go = get + jobs;
 	}
 	money = money + 2;
+	noMoney = noMoney*0;
 }
 procedure windy {
 	windy = wind + grey + clouds;
@@ -184,10 +197,11 @@ procedure windy {
 	}
 	if freezing then {
 		cold = windy + cold;
-		cold = cold + blanket + more;
+		cold = cold + (blanket + more);
 	} else {
 		call dry;
 	}
+	rainy = freezing + cold * rainy;
 	freezing = cold + windy + dry;
 }
 procedure rain {
@@ -199,4 +213,8 @@ procedure rain {
 	rainy = (rain)* rainy + (warm)*((cloudy)- dry);
 	rainy = (rain)- rainy + (warm)*((cloudy)- dry*rainy);
 	cloudy = (cloudy) + rainy - rainy*(cloudy)- dry*((rainy));
+	cloudy = ((jobs) + cloudy *(shoppingMall)- lottery *rainy)-(rainy*lottery);
+	go = (rainy*lottery-(cloudy*blanket-cold)*(clouds-lottery)*(off-(noMoney)*cold)))
+	go = (temperature*lottery-(temperature*noMoney-noMoney+ brighter + lights - noMoney) *(sleep * noHumdifier));
+
 }

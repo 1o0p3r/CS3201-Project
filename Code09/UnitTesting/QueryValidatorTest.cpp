@@ -292,6 +292,12 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 pattern a#(v#,_\"x+y\"_) such that Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+
+			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; Select <p1, c1> such that Uses(p1, v1) with p1.procName = \"SystemTestThree\" pattern a1(v1, _\"hThree\"_)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+
 		}
 
 		TEST_METHOD(testPatternQuery) {
@@ -423,7 +429,10 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string query;
 			QueryStatement queryStatement;
-
+			
+			query = "prog_line n1, n2; Select n1 such that Next*(n1, n2) and Uses(n2, \"b\") with n2 = 43";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "stmt a; constant c; prog_line n; Select BOOLEAN with a.stmt# = c.value";
 			Assert::IsTrue(queryValidator.parseInput(query));
