@@ -11,7 +11,6 @@ public:
 	TEST_METHOD(parse) {
 		PKB pkb;
 		string filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
-		
 		Assert::IsTrue(Parse(filename, pkb));
 
 		pkb = PKB();

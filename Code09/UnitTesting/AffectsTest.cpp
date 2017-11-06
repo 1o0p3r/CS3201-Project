@@ -77,9 +77,12 @@ public:
 		tuple<vector<int>, vector<int>> ans = pkb.getAffectsTwoSynonyms();
 		sort(get<0>(ans).begin(), get<0>(ans).end());
 		sort(get<1>(ans).begin(), get<1>(ans).end());
-		Assert::IsTrue(pkb.getAffectsTwoSynonyms() == tuple<vector<int>, vector<int>>{
-			{ 1, 1, 5, 9, 2, 1, 10, 2, 11, 9, 12, 11, 1, 4, 4, 7, 5, 4, 7, 4 }, 
-			{ 4, 9, 6, 11, 11, 11, 11, 7, 12, 13, 13, 13, 13, 4, 9, 11, 11, 11, 7, 13 }});
+		tuple<vector<int>, vector<int>> actual = {
+			{ 1, 1, 5, 9, 2, 1, 10, 2, 11, 9, 12, 11, 1, 4, 4, 7, 5, 4, 7, 4 },
+			{ 4, 9, 6, 11, 11, 11, 11, 7, 12, 13, 13, 13, 13, 4, 9, 11, 11, 11, 7, 13 } };
+		sort(get<0>(actual).begin(), get<0>(actual).end());
+		sort(get<1>(actual).begin(), get<1>(actual).end());
+		Assert::IsTrue(ans == actual);
 	}
 	};
 }
