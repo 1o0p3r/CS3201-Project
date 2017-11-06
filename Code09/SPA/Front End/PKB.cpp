@@ -430,7 +430,7 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	}
 }
 
-vector<int> PKB:: getAllLineCalls() {
+vector<int> PKB::getAllLineCalls() {
 	return callTable;
 }
 
@@ -510,6 +510,9 @@ void PKB::whileCFG(int& i) {
 	if (state.back() == _if && (current >= typeTable.size() - 1 || parent.getParent(i).empty() || (elseSet.find(i) != elseSet.end()) || (parent.getParent(i)[0] != ifParent.back()))) {
 		lastLineOfIf = i;
 		ifParent.pop_back();
+	} else if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i).empty() || (parent.getParent(i)[0] != goBack.back()))) {
+		next.setNext(current, goBack.back());
+		toPop = true;
 	} else if (i < typeTable.size() && statementProcedureTable[i] == statementProcedureTable[current]) {
 		next.setNext(current, i);
 	}
@@ -548,7 +551,7 @@ void PKB::ifCFG(int& i) {
 	state.pop_back();
 	ifHolders.back().push_back(lastLineOfIf);
 	int nextLine;
-	if (state.back() == _while) {
+	if (state.back() == _while && (i >= typeTable.size() - 1 || parent.getParent(i).empty() || (parent.getParent(i)[0] != goBack.back()))) {
 		nextLine = goBack.back();
 		toPop = true;
 	} else {
@@ -775,84 +778,77 @@ vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
 tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
 	vector<int> s1;
 	vector<int> s2;
-	vector<vTuple> frontier;
+	vector<bool> exploredOnce(typeTable.size());
+	for (int i = 0; i < exploredOnce.size(); i++) {
+		exploredOnce[i] = false;
+	}
 	vector<vector<int>> explored(typeTable.size());
+	for (int i = 0; i < explored.size(); i++) {
+		explored[i] = {};
+	}
 	set<pair<int, int>> included;
 	int max = 1;
 	while (max < typeTable.size()) {
-		if (typeTable[1] == assign) {
+		vTuple current;
+		if (typeTable[max] == assign) {
 			int var = modify.getModifies(max)[0];
-			vector<int> temp;
-			temp.resize(var + 1);
+			vector<int> temp(var + 1);
 			temp[var] = max;
-			frontier.push_back({ max, temp });
+			current = { max, temp };
+			explored[max] = temp;
 		} else {
-			frontier.push_back({ max,{} });
+			current = { max, {} };
 		}
-		while (!frontier.empty()) {
-			vector<vTuple> nextFrontier;
-			for each (vTuple current in frontier) {
-				for each (int statement in next.getNext(get<0>(current))) {
-					if (statement > max) {
-						max = statement;
-					}
-					if (explored[statement] != get<1>(current)) {
-						if (typeTable[statement] == _call) {
-							vector<int> leftovers = removeIntersection(get<1>(current), modify.getModifies(statement));
-							nextFrontier.push_back({ statement, leftovers });
-							explored[statement] = leftovers;
-						} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
-							nextFrontier.push_back({ statement, get<1>(current) });
-							explored[statement] = get<1>(current);
-						} else if (typeTable[statement] == assign) {
-							vector<int> uses = use.getUses(statement);
-							for each (int var in uses) {
-								if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
-									int line = get<1>(current)[var];
-									if (line != 0 && included.find({ line, statement }) == included.end()) {
-										s1.push_back(line);
-										s2.push_back(statement);
-										included.insert({ line, statement });
-									}
-								}
-							}
-							int var = modify.getModifies(statement)[0];
-							vector<int> temp = get<1>(current);
-							if (temp.size() <= var) {
-								temp.resize(var + 1);
-							}
-							temp[var] = statement;
-							nextFrontier.push_back({ statement, temp });
-							explored[statement] = temp;
-						}
-					} else if (typeTable[statement] == assign) {
-						vector<int> uses = use.getUses(statement);
-						for each (int var in uses) {
-							if (get<1>(current).size() > var && get<1>(current)[var] != 0) {
-								int line = get<1>(current)[var];
-								if (line != 0 && included.find({ line, statement }) == included.end()) {
-									s1.push_back(line);
-									s2.push_back(statement);
-									included.insert({ line, statement });
-								}
-							}
-						}
-						int var = modify.getModifies(statement)[0];
-						vector<int> temp = get<1>(current);
-						if (temp.size() <= var) {
-							temp.resize(var + 1);
-						}
-						temp[var] = statement;
-						nextFrontier.push_back({ statement, temp });
-						explored[statement] = temp;
+		exploredOnce[max] = 1;
+		affectsRecurse(s1, s2, current, max, explored, exploredOnce, included);
+		max++;
+	}
+	return{ s1, s2 };
+}
+
+void PKB::affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int& max, vector<vector<int>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included) {
+	vector<int> nexts = next.getNext(get<0>(current));
+	sort(nexts.begin(), nexts.end());
+	for each (int statement in nexts) {
+		if (statement > max) {
+			max = statement;
+		}
+		vector<int> temp;
+		if (typeTable[statement] == _call) {
+			temp = get<1>(current);
+			for each (int var in modify.getModifies(statement)) {
+				if (var < temp.size()) {
+					temp[var] = 0;
+				}
+			}
+		} else if (typeTable[statement] == _while || typeTable[statement] == _if) {
+			temp = get<1>(current);
+		} else if (typeTable[statement] == assign) {
+			int var = modify.getModifies(statement)[0];
+			temp = get<1>(current);
+			if (var >= temp.size()) {
+				temp.resize(var + 1);
+			}
+			temp[var] = statement;
+			vector<int> uses = use.getUses(statement);
+			for each (int var in uses) {
+				if (var < get<1>(current).size()) {
+					int line = get<1>(current)[var];
+					if (line != 0 && included.find({ line, statement }) == included.end()) {
+						s1.push_back(line);
+						s2.push_back(statement);
+						included.insert({ line, statement });
 					}
 				}
 			}
-			frontier = nextFrontier;
 		}
-		max++;
+		if (explored[statement] != temp || !exploredOnce[statement]) {
+			exploredOnce[statement] = true;
+			explored[statement] = temp;
+			affectsRecurse(s1, s2, {statement, temp}, max, explored, exploredOnce, included);
+		}
+		exploredOnce[statement] = true;
 	}
-	return {s1, s2};
 }
 
 vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
@@ -1027,10 +1023,14 @@ vector<string> PKB::getAllModifiedVariables() {
 }
 
 vector<string> PKB::getAllUsedVariables() {
-	
+
 	return usedVariables;
 }
 
 string PKB::getProcCalledByStatement(int statement) {
 	return procIndexTable[call.getStmtCallProc(statement)];
+}
+
+bool PKB::getAffectStarTwoLiterals(int s1, int s2) {
+
 }

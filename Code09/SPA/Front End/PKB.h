@@ -14,6 +14,7 @@
 
 using namespace std;
 typedef short PROC;
+typedef tuple<int, vector<int>> vTuple;
 
 class VarTable;  // no need to #include "VarTable.h" as all I need is pointer
 
@@ -419,6 +420,8 @@ public:
 
 	tuple<vector<int>, vector<int>> getAffectsTwoSynonyms();
 
+	void affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int & max, vector<vector<int>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
+
 	/**
 	Add a Constant to PKB
 	@param c the constant name
@@ -499,6 +502,8 @@ public:
 	vector<string> getAllUsedVariables();
 
 	string getProcCalledByStatement(int statement);
+
+	bool getAffectStarTwoLiterals(int s1, int s2);
 
 private:
 	Follow follow;
