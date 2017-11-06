@@ -150,6 +150,8 @@ void QueryAnalyzer::solveWithClause()
 			if (!withResult.empty())
 				insertClauseResults(withResult);
 		}
+		else
+			break;
 
 	}
 	
@@ -169,13 +171,21 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	hasSTClause = true;
 	hasPatternClause = true;
 	hasWithClause = true;
+	
+	if (qsReadOnly.getInvalidQueryBoolean())
+		setClauseFalse();
+		
+	
 	findQueryElements();
+	
+	
 	solveWithClause();
 	
 	isOptimizerOn = true;
 	if(isOptimizerOn) {
 		optimizeClauseOrder();
 	}
+	
 
 	solveSTClause();
 	solvePatternClause();
@@ -281,6 +291,9 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	int k = 0;
 	for (auto commonTableSyn : synLoc) { //synonyms from same table,
 
+		if (isQueryFalse())
+			break;
+
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
 			string synonym = get<3>(entry);
@@ -319,9 +332,9 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			if (columnResult.empty()) {
 				setClauseFalse();
 				answer = {};
+				break;
 			}
 
-			//TODO: fix bug from here.
 			//append values to vector
 			for (const auto& entry : columnResult) {
 				string appendSynValue;
@@ -339,28 +352,31 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
 	}
-	for (auto &concatVecEntries : synTableConcatEntries)
-		concatVecEntries = Util::removeDuplicates(concatVecEntries);
 
-	vector<string> vecToCartProd = synTableConcatEntries.front();
-	//cartesian product synonyms.
-	if (!vecToCartProd.empty()) {
-		for (int i = 1; i < synTableConcatEntries.size(); i++) {
-			auto result = cross(vecToCartProd, synTableConcatEntries[i]);
-			vector<string> vecCartProdstring;
-			for (auto& j : result) {
-				string concatCartProdString;
-				concatCartProdString.append(get<0>(j))
-					.append(DELIMITER)
-					.append(get<1>(j));
-				vecCartProdstring.push_back(concatCartProdString);
+	if (!isQueryFalse()) {
+		for (auto &concatVecEntries : synTableConcatEntries)
+			concatVecEntries = Util::removeDuplicates(concatVecEntries);
+
+		vector<string> vecToCartProd = synTableConcatEntries.front();
+		//cartesian product synonyms.
+		if (!vecToCartProd.empty()) {
+			for (int i = 1; i < synTableConcatEntries.size(); i++) {
+				auto result = cross(vecToCartProd, synTableConcatEntries[i]);
+				vector<string> vecCartProdstring;
+				for (auto& j : result) {
+					string concatCartProdString;
+					concatCartProdString.append(get<0>(j))
+						.append(DELIMITER)
+						.append(get<1>(j));
+					vecCartProdstring.push_back(concatCartProdString);
+				}
+				vecToCartProd = vecCartProdstring;
 			}
-			vecToCartProd = vecCartProdstring;
 		}
+
+		vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
+		answer = vecToCartProd;
 	}
-	
-	vecToCartProd = rearrange(vecToCartProd,synonymTokens,synCartMap);
-	answer = vecToCartProd;
 
 
 }
@@ -558,6 +574,8 @@ void QueryAnalyzer::solvePatternClause() {
 				insertClauseResults(patternResult);
 			if (!hasPatternClause)
 				break;
+		} else {
+			break;
 		}
 	}
 	
