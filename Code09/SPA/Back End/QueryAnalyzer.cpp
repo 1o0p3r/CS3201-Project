@@ -10,7 +10,7 @@ enum selectValue
 enum suchThatValue
 {
 	undefinedSuchThat, modifies, uses, parent, parentStar, follows,
-	followsStar, calls, callsStar, next_, nextStar
+	followsStar, calls, callsStar, next_, nextStar, affects ,affectsStar
 };
 
 enum parentArgCase
@@ -89,6 +89,8 @@ void QueryAnalyzer::initSuchThatMap()
 	mapSuchThatValues["Calls*"] = callsStar;
 	mapSuchThatValues["Next"] = next_;
 	mapSuchThatValues["Next*"] = nextStar;
+	mapSuchThatValues["Affects"] = affects;
+	mapSuchThatValues["Affects*"] = affectsStar;
 
 }
 
@@ -538,6 +540,11 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				break;
 			case nextStar:
 				clauseResult = NextStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
+				break;
+			case affects:
+				clauseResult = AffectsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
+				break;
+			case affectsStar:
 				break;
 		}
 		stResult = get<VECTRESULT>(clauseResult);

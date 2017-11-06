@@ -19,6 +19,7 @@
 #include "Abstract_QA_API.h"
 #include "QueryOptimizer.h"
 #include "NextStarAnalyzer.h"
+#include "AffectsAnalyzer.h"
 
 #include <numeric>
 #include <iterator>
