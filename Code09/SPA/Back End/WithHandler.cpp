@@ -112,7 +112,6 @@ bool QueryValidator::isValidWith(string str) {
 			//Checks if arg1 arg2 is and attrRef, if so check if the synonym is a valid one and get the corresponding entity and checks if it is a valid entity for the attrRef
 			//Checks if it is a prog_line as well
 			//Then proceed to check LHS and RHS
-
 			arg1 = Util::trim(arg1);
 			arg2 = Util::trim(arg2);
 			//Implies that e.g. v.varName as a whole is a valid, so i can go and get its respective entity, synonym, etc
@@ -129,8 +128,11 @@ bool QueryValidator::isValidWith(string str) {
 			} else {
 				//Implies that arg1 is either a synonym, stringLiteral or integer
 				arg1Identity = extractIdentity(arg1);
-				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING)) {
+				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING) && !resultBoolean) {
 					return false;
+				} else {
+					queryStatement.setInvalidQueryBoolean();
+					return true;
 				}
 			}
 			if (isAttrRef(arg2)) {
@@ -145,9 +147,11 @@ bool QueryValidator::isValidWith(string str) {
 				arg2AttrRef = true;
 			} else {
 				arg2Identity = extractIdentity(arg2);
-
-				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING)) {
+				if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING) && !resultBoolean) {
 					return false;
+				} else {
+					queryStatement.setInvalidQueryBoolean();
+					return true;
 				}
 			}
 			bool bothSameType = isSameType(arg1, arg2, arg1AttrRef, arg2AttrRef, arg1attrName, arg2attrName, arg1Identity, arg2Identity);
@@ -179,33 +183,40 @@ bool QueryValidator::isValidWith(string str) {
 					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
 				}
 			} else if (!bothSameType && resultBoolean) {
-				if (arg1Identity == STRING_LITERAL || arg2Identity == STRING_LITERAL) {
-					arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-					arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-				}
-				if (arg1AttrRef && arg2AttrRef) {
-					//E.g. p.procName = v.varName
-					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else if (arg1AttrRef && !arg2AttrRef) {
-						//E.g. p.procName = "sth"
-					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
-				}
-				else if (!arg1AttrRef && arg2AttrRef) {
-					//E.g. "sth" = p.procName
-					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
-				}
-				else {
-					//E.g. n = 1
-					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
-				}
+				queryStatement.setInvalidQueryBoolean();
+				return true;
+				//if (arg1Identity == STRING_LITERAL || arg2Identity == STRING_LITERAL) {
+				//	arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
+				//	arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
+				//}
+				//if (arg1AttrRef && arg2AttrRef) {
+				//	//E.g. p.procName = v.varName
+				//	addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
+				//}
+				//else if (arg1AttrRef && !arg2AttrRef) {
+				//		//E.g. p.procName = "sth"
+				//	addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
+				//}
+				//else if (!arg1AttrRef && arg2AttrRef) {
+				//	//E.g. "sth" = p.procName
+				//	addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
+				//}
+				//else {
+				//	//E.g. n = 1
+				//	addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
+				//}
 			} else {
 				return false;
 			}
 		}
 		return true;
 	} else {
-		return false;
+		if (!resultBoolean) {
+			return false;
+		} else {
+			queryStatement.setInvalidQueryBoolean();
+			return true;
+		}
 	}
 }
 void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
@@ -288,7 +299,6 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			return (arg1Type == arg2Type);
 		} else {
 			//LHS and RHS are both not attrRef, means arg1 and arg 2 are both default things like n,1,"hi"
-
 			//First check: if arg1 identity is number
 			if (arg1Identity == NUMBER_STRING) {
 				//If both are numbers and are not equal to each other

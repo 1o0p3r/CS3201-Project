@@ -222,26 +222,35 @@ bool QueryValidator::isValidSuchThat(string str) {
 					arg2Valid = false;
 				}
 			}
-
-//			if (!isAllowedParameters(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
-//				return false;
-//			}
 			if (!isAllowedParametersCheck(arg1, arg1Ent, arg1_STRING_LITERAL, arg2, arg2Ent, arg2_STRING_LITERAL, relation)) {
-				return false;
+				if (!resultBoolean) {
+					return false;
+				} else {
+					queryStatement.setInvalidQueryBoolean();
+					return true;
+				}
 			}
-
-
 			//If both are valid and true, create the clause
 			if (arg1Valid && arg2Valid) {
 				if (!addSuchThatQueryElement(arg1_NUM, arg1_UNDER, arg1_STRING_LITERAL, arg2_NUM, arg2_UNDER, arg2_STRING_LITERAL, relation, arg1, arg2, arg1Ent, arg2Ent)) {
 					return false;
 				}
 			} else {
-				return false;
+				if (!resultBoolean) {
+					return false;
+				} else {
+					queryStatement.setInvalidQueryBoolean();
+					return true;
+				}
 			}
 		}
 	} else {
-		return false;
+		if (!resultBoolean) {
+			return false;
+		} else {
+			queryStatement.setInvalidQueryBoolean();
+			return true;
+		}
 	}
 	return true;
 }

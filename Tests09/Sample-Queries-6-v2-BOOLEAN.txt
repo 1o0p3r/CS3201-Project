@@ -1,0 +1,90 @@
+1 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN
+true
+5000
+2 - Invalid BOOLEAN query
+stmt s;
+Select BOOLEAN with p.procName = "SystemTestTwo"
+false
+5000
+3 - Valid BOOLEAN query
+procedure p;
+Select BOOLEAN with p.procName = "SystemTestTwo"
+true
+5000
+4 - invalid BOOLEAN query
+procedure p;
+Select BOOLEAN with p.procName
+false
+5000
+5 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN with "string" = "string"
+true
+5000
+6 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN with "string" = "false"
+false
+5000
+7 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN with 1=1
+true
+5000
+8 - Valid BOOLEAN query
+procedure p; stmt a;
+Select BOOLEAN with p.procName = a.stmt#
+false
+5000
+9 - Valid BOOLEAN query
+assign a;
+Select BOOLEAN with pattern a(_, _"hOne"_)
+false
+5000
+10 - Invalid BOOLEAN query
+assign a;
+Select BOOLEAN with pattern a(_, _"hOne")
+false
+5000
+11 - Invalid BOOLEAN query
+stmt s;
+Select BOOLEAN with pattern a(_, _"hOne"_)
+false
+5000
+12 - Invalid BOOLEAN query
+stmt s;
+Select BOOLEAN such that Follows(s,s)
+false
+5000
+13 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN such that Follows(3, s)
+true
+5000
+14 - Valid BOOLEAN query
+stmt b;
+Select BOOLEAN such that Follows(s,s)
+false
+5000
+15 - Valid BOOLEAN query
+stmt s;
+Select BOOLEAN such that Next*(s,s)
+true
+5000
+16 - Invalid BOOLEAN query
+
+Select BOOLEAN such that Next(s,s)
+false
+5000
+17 - Mix Valid and Invalid queries
+stmt s;
+Select BOOLEAN such that Next*(s, 4) and Next(s,s)
+false
+5000
+18 - Mix Valid and Invalid queries
+stmt s;
+Select BOOLEAN such that Next*(s,s) and Next(s,s)
+false
+5000
