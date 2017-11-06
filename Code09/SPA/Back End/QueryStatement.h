@@ -21,7 +21,7 @@ private:
 	vector<QueryElement> hardQueryElements;
 	multimap<string, pair<int, int>> normalMultiMap;
 	multimap<string, pair<int, int>> hardMultiMap;
-	bool invalidQueryBoolean;
+	bool invalidQuery;
 	
 public:
 	QueryStatement();

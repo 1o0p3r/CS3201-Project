@@ -3,7 +3,7 @@
 using namespace std;
 QueryStatement::QueryStatement() {
 	QueryElement selectElement;
-	invalidQueryBoolean = false;
+	invalidQuery = false;
 }
 QueryElement QueryStatement::getSelectQueryElement() {
 	return selectElement;
@@ -74,13 +74,13 @@ int QueryStatement::getHardQueryElementsSize()
 }
 bool QueryStatement::getInvalidQueryBoolean()
 {
-	return invalidQueryBoolean;
+	return invalidQuery;
 }
 vector<SynonymEntityPair> QueryStatement::getSynonymEntityList() {
 	return synonymEntityList;
 }
 void QueryStatement::setInvalidQueryBoolean() {
-	invalidQueryBoolean = true;
+	invalidQuery= true;
 }
 void QueryStatement::addSelectQuery(QueryElement toAdd) {
 	selectElement = toAdd;

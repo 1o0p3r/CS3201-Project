@@ -170,7 +170,7 @@ const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRAC
 + OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string RELCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + SYMBOL_RIGHT_BRACKET_STRING + "*" + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
+const string RELCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + RELREF_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + AND_STRING + SYMBOL_RIGHT_BRACKET_STRING + "\\s+" + RELREF_STRING_REGEX + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
 const string SUCH_THAT_CL_REGEX = SUCH_THAT_STRING + "\\s+" + RELCOND_STRING_REGEX;
 const string TEMPORARY = SYMBOL_LEFT_BRACKET_STRING + SUCH_THAT_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string SUCH_THAT_CL_EXTENDED_REGEX = TEMPORARY + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
@@ -219,6 +219,7 @@ bool QueryValidator::parseInput(string str) {
 	queryStatement = QueryStatement();
 	synonymAndEntityList = vector<SynonymEntityPair>();
 	resultBoolean = false;
+	declMap = unordered_map<string, string>();
 
 	str = removeDuplicatesWhiteSpaces(str);
 
@@ -226,7 +227,6 @@ bool QueryValidator::parseInput(string str) {
 		bool valQuery = false;
 		size_t pos;
 		std::string token;
-
 		while ((pos = str.find(SYMBOL_SEMI_COLON_STRING) != std::string::npos)) {
 			pos = str.find(SYMBOL_SEMI_COLON_STRING);
 			token = str.substr(ZERO, pos);
@@ -296,7 +296,6 @@ bool QueryValidator::isValidEntity(string currentString) {
 
 //Checks if a given entity is in the EntityTable
 bool QueryValidator::inEntityList(string entity) {
-
 	for (size_t i = ZERO; i < validEntities.size(); i++) {
 		if (entity == validEntities.at(i)) {
 			return true;
@@ -320,8 +319,32 @@ bool QueryValidator::parseDeclaration(vector<string> splitString) {
 	synonymsStr = removeSymbols(synonymsStr, TAB_STRING);
 	//Split the synonymsStr by comma to obtain relevant synonyms create object SynonymEntityPair and places in the "EntTable"
 	vector<string> synonymsAttached = splitBySymbol(synonymsStr, SYMBOL_COMMA);
-	synonymAndEntityList.push_back(SynonymEntityPair(reqEntity, synonymsAttached));
-	return true;
+	if (isNotReDeclaredOtherEnt(synonymsAttached, reqEntity)) {
+		synonymAndEntityList.push_back(SynonymEntityPair(reqEntity, synonymsAttached));
+		for (int i = ZERO; i < synonymsAttached.size(); i++) {
+			declMap[synonymsAttached.at(i)] = reqEntity;
+		}
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool QueryValidator::isNotReDeclaredOtherEnt(vector<string> synonymsAttached, string reqEntity) {
+	for (int i = ZERO; i < synonymsAttached.size(); i++) {
+		unordered_map<string, string>::iterator it;
+		it = declMap.find(synonymsAttached.at(i));
+		if (it == declMap.end()) {
+			return true; 
+		} else {
+			if (declMap[synonymsAttached.at(i)] != reqEntity) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
 }
 
 bool QueryValidator::isValidQueryLine(string selectString) {
@@ -398,6 +421,8 @@ bool QueryValidator::isValidPattern(string str) {
 			if (!isValidAddWhilePattern(currentStr, synPattern)) {
 				return false;
 			}
+		} else if (queryStatement.getInvalidQueryBoolean()) {
+			return true;
 		} else {
 			return false;
 		}
@@ -409,8 +434,11 @@ bool QueryValidator::isValidPattern(string str) {
 bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 	//Cannot really use regex due to brackets, so perform manual check on each arguments
 	//However can check generally for the first arg
-	if (!isAssignPatternRegex(str)) {
+	if (!isAssignPatternRegex(str) && !resultBoolean) {
 		return false;
+	} else if (!isAssignPatternRegex(str) && resultBoolean) {
+		queryStatement.setInvalidQueryBoolean();
+		return true;
 	}
 
 	//Find the first occurence of left bracket
@@ -469,12 +497,15 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 		return false;
 	}
 	if ((!arg1Variable && !arg1UnderScore && !arg1StringLiteral) || (!arg2UnderScore && !arg2Exact
-		&& !arg2Substring)) {
+		&& !arg2Substring) && (!resultBoolean)) {
 		return false;
+	} else if ((!arg1Variable && !arg1UnderScore && !arg1StringLiteral) || (!arg2UnderScore && !arg2Exact
+		&& !arg2Substring) && (resultBoolean)) {
+		queryStatement.setInvalidQueryBoolean();
+		return true;
 	}
 
 	//At this pt, arg1 and arg2 must be valid so we call a function
-
 	addAssignPatternQueryElement(arg1, arg2, ASSIGN_STRING, synPattern, arg1UnderScore, arg1Variable, arg1StringLiteral, arg2UnderScore, arg2Exact
 		, arg2Substring);
 	return true;
@@ -590,7 +621,12 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 
 	//Returns false if it doesnt matches the while regex
 	if (!isValidWhilePatternRegex(str)) {
-		return false;
+		if (!resultBoolean) {
+			return false;
+		} else {
+			queryStatement.setInvalidQueryBoolean();
+			return true;
+		}
 	} else {
 		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
 
@@ -624,7 +660,11 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 			addWhilePatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else {
-			return false;
+			if (!resultBoolean) {
+				return false;
+			} else {
+				queryStatement.setInvalidQueryBoolean();
+			}
 		}
 	}
 }
@@ -638,7 +678,12 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 	//If it does not matches the if regex
 	if (!isValidIfPatternRegex(str)) {
-		return false;
+		if (!resultBoolean) {
+			return false;
+		} else {
+			queryStatement.setInvalidQueryBoolean();
+			return true;
+		}
 	} else {
 		//Since regex passed, try and get wad is contained inside the string now
 		//Find the occurence of the first left bracket
@@ -675,7 +720,12 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 			addIfPatternQueryElement(arg1, arg1UnderScore, arg1Variable, arg1StringLiteral, synPattern);
 			return true;
 		} else {
-			return false;
+			if (!resultBoolean) {
+				return false;
+			} else {
+				queryStatement.setInvalidQueryBoolean();
+				return true;
+			}
 		}
 	}
 }
@@ -741,7 +791,6 @@ string QueryValidator::removeLeadingPatternString(string str) {
 	return Util::trim(str);
 }
 string QueryValidator::removeLeadingAnd(string str) {
-
 	str = Util::trim(str);
 
 	if (str.find(AND_STRING) == 0) {
@@ -925,16 +974,33 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 			if (vec.at(i).find(SELECT_STRING) != std::string::npos) {
 				return false;
 			} else if (vec.at(i).find(SUCH_THAT_STRING) != std::string::npos) {
-				if (!isValidSuchThat(vec.at(i))) {
-					return false;
+				bool validSuchThat = isValidSuchThat(vec.at(i));
+				if (!validSuchThat) {
+					if (queryStatement.getInvalidQueryBoolean()) {
+						return true;
+					} else {
+						return false;
+					}
 				}
 			} else if (vec.at(i).find(PATTERN_STRING) != std::string::npos) {
-				if (!isValidPattern(vec.at(i))) {
-					return false;
+				bool validPattern = isValidPattern(vec.at(i));
+				if (!validPattern) {
+					if (queryStatement.getInvalidQueryBoolean()) {
+						return true;
+					}
+					else {
+						return false;
+					}
 				}
 			} else if (vec.at(i).find(WITH_STRING) != std::string::npos) {
-				if (!isValidWith(vec.at(i))) {
-					return false;
+				bool validWith = isValidWith(vec.at(i));
+				if (!validWith) {
+					if (queryStatement.getInvalidQueryBoolean()) {
+						return true;
+					}
+					else {
+						return false;
+					}
 				}
 			}
 		}
@@ -1188,7 +1254,7 @@ string QueryValidator::trim(string str) {
 //Takes in a string and check if it matches the declaration regex
 //Returns true if matches, else false
 bool QueryValidator::isValidDeclarationRegex(string str) {
-	regex declareRegex("((stmt|assign|while|variable|constant|prog_line|procedure|if|call|stmtLst)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*)\\;");
+	regex declareRegex("((stmt|assign|while|variable|constant|prog_line|procedure|if|call|stmtLst)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*)\\s*\\;");
 	return regex_match(str, declareRegex);
 }
 //Takes in a string and checks if it matches the such that regex

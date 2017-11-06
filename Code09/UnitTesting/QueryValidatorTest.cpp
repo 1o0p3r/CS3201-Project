@@ -21,6 +21,11 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+
+			query = "if ifs, ifs2,ifs3 ; Select ifs";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "stmt s; Select s";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -33,6 +38,14 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 			
+			query = "while c; constant c; Select c";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "while c; constant c; Select c";
+			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
 			query = "Select BOOLEAN";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -61,10 +74,7 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
-			query = "assign a; Select a pattern a(_, _\"f - d + b - l\"_)";
-			Assert::IsTrue(queryValidator.parseInput(query));
-			queryStatement = queryValidator.getQueryStatement();
-			
+
 			query = "variable v1,v#; assign a1,a#; constant d; Select v1 such that Modifies(6,v1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -289,6 +299,9 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
+			query = "assign a; Select a pattern a(_, _\"f - d + b - l\"_)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "while w; variable v; Select BOOLEAN pattern w(\"aOne\", _)";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -914,26 +927,29 @@ namespace UnitTesting
 			QueryValidator queryValidator;
 			string str;
 
-			str = "such that Uses(3,4)such that Modifies(2,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Uses(3,4)such that Modifies(2,4)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
-			
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Modifies(\"s\",\"a\") and Follows(s,3)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//
+			//str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4) and Parent(5,7)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Uses(3,4) and Parent(5,7)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 
-			str = "such that Modifies(uses, \"Next\") and Follows(s,3) such that Next(6, Parent)";
-			Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+			//str = "such that Modifies(\"s\",\"a\") such that Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
+
+			//str = "such that Modifies(uses, \"Next\") and Follows(s,3) such that Next(6, Parent)";
+			//Assert::IsTrue(queryValidator.isValidSuchThaExtendedRegex(str));
 		
 			str = "such that Modifies(uses, \"Next\") Follows(s,3)";
 			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
