@@ -579,13 +579,60 @@ public:
 				answer = analyzer.runQueryEval();
 			}
 			else {
-				Logger::WriteMessage("Invalid Query in Source 6-V2");
+				Logger::WriteMessage("Invalid Query in Source 3-1");
 				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
-			string testNo = "size error in Source 6-V2 in test ";
+			string testNo = "size error in Source 3-1 in test ";
 			testNo.append(to_string(i + 1));
-			string testNo_1 = "value error in Source 6-V2 in test ";
+			string testNo_1 = "value error in Source 3-1 in test ";
+			testNo_1.append(to_string(i + 1));
+			wstring error = wstring(testNo.begin(), testNo.end());
+			vector<string> result = answer;
+			Assert::AreEqual(expected[i].size(), answer.size(), error.c_str());
+			for (int j = 0; j < answer.size(); j++) {
+				error = wstring(testNo_1.begin(), testNo_1.end());
+				Assert::AreEqual(expected[i][j], answer[j], error.c_str());
+			}
+		}
+
+
+	}
+
+	TEST_METHOD(Sample_Source_7) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-7.txt";
+		Parse(filename, pkb);
+		QueryValidator validator;
+		QueryStatement statement;
+		QueryAnalyzer analyzer;
+		analyzer.setPKB(pkb);
+		vector<string> answer;
+		vector<string> queries = {
+			//"if ifs; prog_line n; Select BOOLEAN such that Follows*(ifs, n)",
+			"call c; while w; if ifs; Select <c, ifs, w> such that Follows*(ifs, w)"
+
+		};
+		vector<vector<string>> expected = {
+			//{"true"},
+			{"1"}
+
+		};
+		validator = QueryValidator(); //re-init validator.
+		for (int i = 0; i < queries.size(); i++) {
+			if (validator.parseInput(queries[i])) {
+				statement = validator.getQueryStatement();
+				analyzer.setQS(statement);
+				answer = analyzer.runQueryEval();
+			}
+			else {
+				Logger::WriteMessage("Invalid Query in Source 7");
+				Logger::WriteMessage(queries[i].c_str());
+				answer = {};
+			}
+			string testNo = "size error in Source 7 in test ";
+			testNo.append(to_string(i + 1));
+			string testNo_1 = "value error in Source 7 in test ";
 			testNo_1.append(to_string(i + 1));
 			wstring error = wstring(testNo.begin(), testNo.end());
 			vector<string> result = answer;

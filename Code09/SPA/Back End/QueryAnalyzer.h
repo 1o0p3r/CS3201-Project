@@ -80,6 +80,9 @@ public:
 	void selectSynonym(vector<string> &answer);
 	void setClauseFalse();
 	vector<string> rearrange(vector<string>, vector<string>, const unordered_map<string,int> &);
+	void groupSynonymFromSameTable(vector<string> synonymTokens, vector<string> synonymEntities,
+	                               vector<vector<tuple<int, int, string, string>>> &synLoc,
+	                               vector<tuple<int, int, string, string>> &selectSynTableAttr);
 	void selectTuple(vector<string> &answer);
 	bool isQueryFalse();
 	

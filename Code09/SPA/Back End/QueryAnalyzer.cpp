@@ -247,18 +247,8 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 
 }
 
-void QueryAnalyzer::selectTuple(vector<string> &answer)
+void QueryAnalyzer::groupSynonymFromSameTable(vector<string> synonymTokens, vector<string> synonymEntities, vector<vector<tuple<int, int, string, string>>> &synLoc, vector<tuple<int, int, string, string>> &selectSynTableAttr)
 {
-	auto tupleSynonyms = selectElement.getSelectSynonym();
-	auto tupleEntity = selectElement.getSelectEntity();
-	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
-	auto synonymEntities = Util::splitLine(tupleEntity, ',');
-	vector<vector<tuple<int,int,string,string>>> synLoc;
-	vector<vector<string>> synTableConcatEntries;
-	unordered_map<string, int> synCartMap;
-	vector<tuple<int, int, string, string>> selectSynTableAttr;
-
-	//init mapping of synonyms from same table
 	int numSynTables = 0;
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
@@ -269,6 +259,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
 				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), numSynTables));
 				
+				//store tableLocation, synonymLocation in table, synonymEntity, synonym name
 				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
@@ -286,15 +277,34 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			}
 		} else {
 			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i],synonymTokens[i]) });
+			numSynTables++;
+
 		}
 	}
+}
+
+void QueryAnalyzer::selectTuple(vector<string> &answer)
+{
+	auto tupleSynonyms = selectElement.getSelectSynonym();
+	auto tupleEntity = selectElement.getSelectEntity();
+	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	auto synonymEntities = Util::splitLine(tupleEntity, ',');
+	vector<vector<tuple<int,int,string,string>>> synLoc;
+	vector<vector<string>> synTableConcatEntries;
+	unordered_map<string, int> synCartMap;
+	vector<tuple<int, int, string, string>> selectSynTableAttr;
+
+	if (isQueryFalse()) {
+		answer = {};
+		return;
+	}
+
+	//init mapping of synonyms from same table
+	groupSynonymFromSameTable(synonymTokens, synonymEntities, synLoc, selectSynTableAttr);
 
 
 	int k = 0;
 	for (auto commonTableSyn : synLoc) { //synonyms from same table,
-
-		if (isQueryFalse())
-			break;
 
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
@@ -308,40 +318,13 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {
 			int numVecElements = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size();
 			vecAppendedSynValues = vector<string>();
-			vector<vector<int>> columnToKeep;
 
-			//find intersection of vector and design entity
-		
-			for (auto concatSyn : commonTableSyn) { //elements in vector
-				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn)); //empty vector instead of {}
-				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
-					make_move_iterator(synEntityVec.end()));
-				vector<int> elementNumsToKeep;
-				for (int i = 0; i < numVecElements; i++) {
-					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][i];
-					if (synEntitySet.find(element) != synEntitySet.end())
-							elementNumsToKeep.push_back(i);
-				}
-				columnToKeep.push_back(elementNumsToKeep);
-			
-			}
-			vector<int> columnResult = columnToKeep.front(); //init for merging vecs
-			for (int i=1; i<columnToKeep.size();i++) {
-				columnResult = intersectionT(columnResult, columnToKeep[i]);
-			}
-			
-			//terminating condition
-			if (columnResult.empty()) {
-				setClauseFalse();
-				answer = {};
-				break;
-			}
-
-			//append values to vector
-			for (const auto& entry : columnResult) {
+			//append values to vector, ignore last element which is non-existant, used for maaping
+			int numElementsInTable = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size()-1;
+			for (int index = 0; index < numElementsInTable; index++) {
 				string appendSynValue;
 				for (auto concatSyn : commonTableSyn) {
-					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][entry];
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][index];
 					appendSynValue.append(element);
 					appendSynValue.append(DELIMITER);		
 				}
@@ -349,36 +332,36 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				vecAppendedSynValues.push_back(appendSynValue);
 			}
 		} else {
+			//retrieve design entity values
 			vecAppendedSynValues = validateResult({}, get<SYNENTITY>(commonTableSyn.front()));
 		}
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
 	}
 
-	if (!isQueryFalse()) {
-		for (auto &concatVecEntries : synTableConcatEntries)
-			concatVecEntries = Util::removeDuplicates(concatVecEntries);
+	for (auto &concatVecEntries : synTableConcatEntries)
+		concatVecEntries = Util::removeDuplicates(concatVecEntries);
 
-		vector<string> vecToCartProd = synTableConcatEntries.front();
-		//cartesian product synonyms.
-		if (!vecToCartProd.empty()) {
-			for (int i = 1; i < synTableConcatEntries.size(); i++) {
-				auto result = cross(vecToCartProd, synTableConcatEntries[i]);
-				vector<string> vecCartProdstring;
-				for (auto& j : result) {
-					string concatCartProdString;
-					concatCartProdString.append(get<0>(j))
-						.append(DELIMITER)
-						.append(get<1>(j));
-					vecCartProdstring.push_back(concatCartProdString);
-				}
-				vecToCartProd = vecCartProdstring;
+	vector<string> vecToCartProd = synTableConcatEntries.front();
+	//cartesian product synonyms.
+	if (!vecToCartProd.empty()) {
+		for (int i = 1; i < synTableConcatEntries.size(); i++) {
+			auto result = cross(vecToCartProd, synTableConcatEntries[i]);
+			vector<string> vecCartProdstring;
+			for (auto& j : result) {
+				string concatCartProdString;
+				concatCartProdString.append(get<0>(j))
+					.append(DELIMITER)
+					.append(get<1>(j));
+				vecCartProdstring.push_back(concatCartProdString);
 			}
+			vecToCartProd = vecCartProdstring;
 		}
-
-		vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
-		answer = vecToCartProd;
 	}
+
+	vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
+	answer = vecToCartProd;
+	
 
 
 }
