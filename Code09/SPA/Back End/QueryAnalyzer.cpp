@@ -247,7 +247,7 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 
 }
 
-void QueryAnalyzer::groupSynonymFromSameTable(vector<string> synonymTokens, vector<string> synonymEntities, vector<vector<tuple<int, int, string, string>>> &synLoc, vector<tuple<int, int, string, string>> &selectSynTableAttr)
+void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string> &synonymEntities, vector<vector<tuple<int, int, string, string>>> &synLoc, vector<tuple<int, int, string, string>> &selectSynTableAttr)
 {
 	int numSynTables = 0;
 	for (int i = 0; i < synonymTokens.size(); i++) {
@@ -283,26 +283,8 @@ void QueryAnalyzer::groupSynonymFromSameTable(vector<string> synonymTokens, vect
 	}
 }
 
-void QueryAnalyzer::selectTuple(vector<string> &answer)
+void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, string, string>>> &synLoc, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
 {
-	auto tupleSynonyms = selectElement.getSelectSynonym();
-	auto tupleEntity = selectElement.getSelectEntity();
-	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
-	auto synonymEntities = Util::splitLine(tupleEntity, ',');
-	vector<vector<tuple<int,int,string,string>>> synLoc;
-	vector<vector<string>> synTableConcatEntries;
-	unordered_map<string, int> synCartMap;
-	vector<tuple<int, int, string, string>> selectSynTableAttr;
-
-	if (isQueryFalse()) {
-		answer = {};
-		return;
-	}
-
-	//init mapping of synonyms from same table
-	groupSynonymFromSameTable(synonymTokens, synonymEntities, synLoc, selectSynTableAttr);
-
-
 	int k = 0;
 	for (auto commonTableSyn : synLoc) { //synonyms from same table,
 
@@ -341,7 +323,10 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 
 	for (auto &concatVecEntries : synTableConcatEntries)
 		concatVecEntries = Util::removeDuplicates(concatVecEntries);
+}
 
+void QueryAnalyzer::getCartesianProductResults(vector<string>& answer, vector<string> &synonymTokens, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
+{
 	vector<string> vecToCartProd = synTableConcatEntries.front();
 	//cartesian product synonyms.
 	if (!vecToCartProd.empty()) {
@@ -351,8 +336,8 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			for (auto& j : result) {
 				string concatCartProdString;
 				concatCartProdString.append(get<0>(j))
-					.append(DELIMITER)
-					.append(get<1>(j));
+				                    .append(DELIMITER)
+				                    .append(get<1>(j));
 				vecCartProdstring.push_back(concatCartProdString);
 			}
 			vecToCartProd = vecCartProdstring;
@@ -361,6 +346,28 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 
 	vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
 	answer = vecToCartProd;
+}
+
+void QueryAnalyzer::selectTuple(vector<string> &answer)
+{
+	auto tupleSynonyms = selectElement.getSelectSynonym();
+	auto tupleEntity = selectElement.getSelectEntity();
+	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	auto synonymEntities = Util::splitLine(tupleEntity, ',');
+	vector<vector<tuple<int,int,string,string>>> synLoc;
+	vector<vector<string>> synTableConcatEntries;
+	unordered_map<string, int> synCartMap;
+	vector<tuple<int, int, string, string>> selectSynTableAttr;
+
+	if (isQueryFalse()) {
+		answer = {};
+		return;
+	}
+
+	//init mapping of synonyms from same table
+	groupSynonymFromSameTable(synonymTokens, synonymEntities, synLoc, selectSynTableAttr);
+	concatResultsFromSameTable(synLoc, synTableConcatEntries, synCartMap);
+	getCartesianProductResults(answer, synonymTokens, synTableConcatEntries, synCartMap);
 	
 
 
