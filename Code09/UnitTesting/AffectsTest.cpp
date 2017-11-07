@@ -108,5 +108,42 @@ public:
 		Assert::IsTrue(pkb.getAffectStarTwoLiterals(2, 12));
 		Assert::IsTrue(pkb.getAffectStarTwoLiterals(2, 13));
 	}
+
+	TEST_METHOD(getAffectStarFirstLiteral) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(1) == vector<int>{4});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(2) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(3) == vector<int>{4});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(4) == vector<int>{4});
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(1) == vector<int>{4, 9, 11, 12, 13});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(5) == vector<int>{6, 11, 12, 13});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(9) == vector<int>{11, 12, 13});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(6) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectStarFirstLiteral(2) == vector<int>{11, 7, 12, 13});
+	}
+
+	TEST_METHOD(getAffectStarSecondLiteral) {
+		PKB pkb;
+		string filename = "..\\..\\Tests09\\Sample-Source-3.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(1) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(2) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(3) == vector<int>{});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(4) == vector<int>{3, 1, 4});
+
+		pkb = PKB();
+		filename = "..\\..\\Tests09\\Sample-Source-2.txt";
+		Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(4) == vector<int>{1, 4});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(11) == vector<int>{9, 10, 2, 7, 1, 5, 4});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(12) == vector<int>{11, 9, 10, 2, 7, 1, 5, 4});
+		Assert::IsTrue(pkb.getAffectStarSecondLiteral(13) == vector<int>{12, 11, 9, 10, 2, 7, 1, 5, 4});
+	}
 	};
 }

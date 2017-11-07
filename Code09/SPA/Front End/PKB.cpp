@@ -1081,7 +1081,6 @@ bool PKB::getAffectStarTwoLiterals(int s1, int s2) {
 						} else {
 							temp.erase(var);
 						}
-
 					}
 				} else if (typeTable[statement] == _call) {
 					for each (int var in modify.getModifies(statement)) {
@@ -1097,4 +1096,99 @@ bool PKB::getAffectStarTwoLiterals(int s1, int s2) {
 		frontier = nextFrontier;
 	}
 	return false;
+}
+
+vector<int> PKB::getAffectStarFirstLiteral(int s1) {
+	if (typeTable[s1] != assign) {
+		return{};
+	}
+	set<int> included;
+	vector<int> result;
+	vector<set<int>> explored(typeTable.size());
+	set<int> modified;
+	vector<sTuple> frontier;
+	modified.insert(modify.getModifies(s1)[0]);
+	frontier.push_back({ s1, modified });
+	while (!frontier.empty() && !modified.empty()) {
+		vector<sTuple> nextFrontier;
+		for each (sTuple current in frontier) {
+			for each (int statement in next.getNext(get<0>(current))) {
+				set<int> temp = get<1>(current);
+				if (typeTable[statement] == assign) {
+					bool chain = false;
+					for each (int var in use.getUses(statement)) {
+						if (temp.find(var) != temp.end()) {
+							chain = true;
+						}
+					}
+					int var = modify.getModifies(statement)[0];
+					if (chain) {
+						temp.insert(var);
+						if (included.find(statement) == included.end()) {
+							result.push_back(statement);
+							included.insert(statement);
+						}
+					} else {
+						temp.erase(var);
+					}
+				} else if (typeTable[statement] == _call) {
+					for each (int var in modify.getModifies(statement)) {
+						temp.erase(var);
+					}
+				}
+				if (explored[statement] != temp) {
+					explored[statement] = temp;
+					nextFrontier.push_back({ statement, temp });
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return result;
+}
+
+vector<int> PKB::getAffectStarSecondLiteral(int s2) {
+	if (typeTable[s2] != assign) {
+		return{};
+	}
+	set<int> included;
+	vector<int> result;
+	vector<set<int>> explored(typeTable.size());
+	vector<sTuple> frontier;
+	set<int> used;
+	vector<int> intialUsed = use.getUses(s2);
+	used.insert(intialUsed.begin(), intialUsed.end());
+	frontier.push_back({ s2, used });
+	while (!frontier.empty() && !used.empty()) {
+		vector<sTuple> nextFrontier;
+		for each (sTuple current in frontier) {
+			for each (int statement in next.getPrevious(get<0>(current))) {
+				set<int> temp = get<1>(current);
+				if (typeTable[statement] == assign) {
+					bool chain = false;
+					int var = modify.getModifies(statement)[0];
+					chain = temp.find(var) != temp.end();
+					temp.erase(var);
+					if (chain) {
+						vector<int> currentUsed = use.getUses(statement);
+						temp.insert(currentUsed.begin(), currentUsed.end());
+						if (included.find(statement) == included.end()) {
+							result.push_back(statement);
+							included.insert(statement);
+						}
+					}
+				} else if (typeTable[statement] == _call) {
+					for each (int var in modify.getModifies(statement)) {
+						temp.erase(var);
+					}
+				}
+				if (explored[statement] != temp) {
+					explored[statement] = temp;
+					nextFrontier.push_back({ statement, temp });
+				}
+			}
+		}
+		frontier = nextFrontier;
+	}
+	return result;
 }

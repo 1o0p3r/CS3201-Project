@@ -505,6 +505,10 @@ public:
 
 	bool getAffectStarTwoLiterals(int s1, int s2);
 
+	vector<int> getAffectStarFirstLiteral(int s1);
+
+	vector<int> getAffectStarSecondLiteral(int s2);
+
 private:
 	Follow follow;
 	Parent parent;
