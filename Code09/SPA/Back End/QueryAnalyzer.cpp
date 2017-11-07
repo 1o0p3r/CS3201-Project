@@ -192,7 +192,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 		
 	findQueryElements();	
 	solveWithClause();
-	isOptimizerOn = true;
+	isOptimizerOn = false;
 	if(isOptimizerOn) optimizeClauseOrder();
 	else normalClauses.insert(normalClauses.end(), hardClauses.begin(), hardClauses.end());
 
@@ -455,6 +455,7 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 		break;
 
 	case stmtLstSelect: //unimplemented stmt# of the first Stmt in the list
+		selectResultInt = pkbPtr.getStatementList();
 		break;
 	}
 	if (!selectResultInt.empty())
