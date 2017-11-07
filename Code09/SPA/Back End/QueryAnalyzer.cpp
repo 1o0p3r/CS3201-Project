@@ -142,7 +142,7 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 void QueryAnalyzer::solveWithClause()
 {
 	vector<vector<string>> withResult;
-	for (QueryElement withClause : withElements) {
+	for (QueryElement withClause : withClauses) {
 		if (!isQueryFalse()) {
 			auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
 			withResult = get<VECTRESULT>(clauseResult);
@@ -162,8 +162,21 @@ void QueryAnalyzer::solveWithClause()
 void QueryAnalyzer::optimizeClauseOrder() {
 	multimap<string, pair<int, int>> normalMap = qsReadOnly.getNormalMultiMap();
 	multimap<string, pair<int, int>> hardMap = qsReadOnly.getHardMultiMap();
-	//tuple<vector<QueryElement>,vector<QueryElement>> 
-	QueryOptimizer(normalElements,hardElements,normalMap,hardMap,pkbPtr).runOptimizer();
+	auto result = QueryOptimizer(normalClauses,hardClauses,normalMap,hardMap,pkbPtr).runOptimizer();
+	normalClauses = get<GETNORMALCLAUSE>(result);
+	normalClauses.insert(normalClauses.end(),get<GETHARDCLAUSE>(result).begin(), get<GETHARDCLAUSE>(result).end());
+}
+
+void QueryAnalyzer::solveNonWithClauses() {
+	for(auto candidates : normalClauses) {
+		if (isQueryFalse())
+			return;
+		string clauseType = candidates.getClauseType();
+		if (clauseType == "pattern")
+			solvePatternClause(candidates);
+		else if (clauseType == "suchThat")
+			solveSTClause(candidates);
+	}
 }
 
 vector<string> QueryAnalyzer::runQueryEval() {
@@ -177,20 +190,16 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	if (qsReadOnly.getInvalidQueryBoolean())
 		setClauseFalse();
 		
-	
-	findQueryElements();
-	
-	
+	findQueryElements();	
 	solveWithClause();
-	
 	isOptimizerOn = true;
-	if(isOptimizerOn) {
-		optimizeClauseOrder();
-	}
-	
+	if(isOptimizerOn) optimizeClauseOrder();
+	else normalClauses.insert(normalClauses.end(), hardClauses.begin(), hardClauses.end());
 
-	solveSTClause();
-	solvePatternClause();
+	solveNonWithClauses();
+
+//	solveSTClause();
+//	solvePatternClause();
 	vector<string> result = analyzeClauseResults();
 	return result;
 }
@@ -201,13 +210,13 @@ void QueryAnalyzer::findQueryElements() {
 	selectElement = qsReadOnly.getSelectQueryElement();
 	stElements = qsReadOnly.getSuchThatQueryElement(); 
 	patternElements = qsReadOnly.getPatternQueryElement();
-	withElements = qsReadOnly.getWithQueryElement();
+	withClauses = qsReadOnly.getWithQueryElement();
 
 	//easyWithElements = qsReadOnly.getWithQueryElementsNoSyn();
 	//normalWithElements = qsReadOnly.getWithQueryElementsOneSyn();
 	
-	normalElements = qsReadOnly.getNormalQueryElements();
-	hardElements = qsReadOnly.getHardQueryElements();
+	normalClauses = qsReadOnly.getNormalQueryElements();
+	hardClauses = qsReadOnly.getHardQueryElements();
 }
 
 void QueryAnalyzer::selectSynonym(vector<string> &answer)
@@ -457,20 +466,6 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 	return answer;
 }
 
-//vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
-//{
-//
-//	vector<string> v3;
-//
-//	sort(v1.begin(), v1.end());
-//	sort(v2.begin(), v2.end());
-//
-//	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
-//
-//	return v3;
-//}
-
-
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
 	unordered_set<string> shortlisted;
 	vector<string> answer;
@@ -488,13 +483,13 @@ vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) 
 	return answer;
 }
 
-vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
+vector<vector<vector<string>>> QueryAnalyzer::solveSTClause(QueryElement stClause) {
 	string stClauseType;
 	vector<vector<string>> stResult;
 	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
 
-	for (QueryElement stClause : stElements) {
+	//for (QueryElement stClause : stElements) {
 		if (isQueryFalse())
 			return{ { {} } };
 
@@ -541,11 +536,11 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 		hasSTClause = get<BOOLRESULT>(clauseResult);
 		if (!stResult.empty())
 			insertClauseResults(stResult);
-	}
+//	}
 	return mergedQueryTable;
 }
 
-void QueryAnalyzer::solvePatternClause() {
+void QueryAnalyzer::solvePatternClause(QueryElement patternClause) {
 	string patternClauseType;
 	vector<vector<string>> patternResult;
 	int evaluatePatternRelation;
@@ -553,7 +548,7 @@ void QueryAnalyzer::solvePatternClause() {
 
 	
 
-	for (QueryElement patternClause : patternElements) {
+//	for (QueryElement patternClause : patternElements) {
 		if (!isQueryFalse()) {
 			patternClauseType = patternClause.getPatternEntity();
 			evaluatePatternRelation = mapPatternValues[patternClauseType];
@@ -570,11 +565,11 @@ void QueryAnalyzer::solvePatternClause() {
 			if (!patternResult.empty())
 				insertClauseResults(patternResult);
 			if (!hasPatternClause)
-				break;
+				return;
 		} else {
-			break;
+			return;
 		}
-	}
+//	}
 	
 		
 }

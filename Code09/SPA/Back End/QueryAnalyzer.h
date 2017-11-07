@@ -42,21 +42,17 @@ public:
 	void setQS(QueryStatement qs);
 	void solveWithClause();
 	void optimizeClauseOrder();
+	void solveNonWithClauses();
 	vector<string> runQueryEval();
 //private:
 	QueryStatement qsReadOnly;
 	QueryElement selectElement;
 	vector<QueryElement> stElements;
 	vector<QueryElement> patternElements;
-	vector<QueryElement> withElements;
+	vector<QueryElement> withClauses;
 
-
-	vector<QueryElement> easyWithElements;
-	vector<QueryElement> normalWithElements;
-	vector<QueryElement> hardWithElements;
-
-	vector<QueryElement> normalElements;
-	vector<QueryElement> hardElements;
+	vector<QueryElement> normalClauses;
+	vector<QueryElement> hardClauses;
 
 	vector<vector<vector<string>>> mergedQueryTable;
 	unordered_map<string, tuple<int,int>> synTableMap;
@@ -94,8 +90,8 @@ public:
 	vector<string> validateResult(vector<string> answer, string selectEntity);
 	//vector<string> intersection(vector<string> v1, vector<string> v2);
 	vector<string> removeVectDuplicates(vector<string> selectClause);
-	vector<vector<vector<string>>> solveSTClause();
-	void solvePatternClause();
+	vector<vector<vector<string>>> solveSTClause(QueryElement);
+	void solvePatternClause(QueryElement);
 	vector<vector<string>> solveAssignPattern(QueryElement patternClause);
 	vector<vector<string>> solveWhilePattern(QueryElement patternClause);
 	tuple<vector<string>, vector<string>> solvePatAssignSyn(string arg1, 
