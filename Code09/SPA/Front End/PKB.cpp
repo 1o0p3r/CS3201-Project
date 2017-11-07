@@ -416,16 +416,32 @@ void PKB::setCalls(int statementNum, string procName1, string procName2) {
 	int index1 = getProcIndex(procName1);
 	int index2 = getProcIndex(procName2);
 	call.setCalls(statementNum, index1, index2);
-	if (index2 < index1) {
-		vector<int> modifies = modify.getProcModifies(index2);
-		for each (int var in modifies) {
-			modify.setProcModifies(index1, var);
-			modify.setModifies(statementNum, var, parent.getParentStar(statementNum));
+	vector<int> modifies = modify.getProcModifies(index2);
+	for each (int var in modifies) {
+		modify.setProcModifies(index1, var);
+		modify.setModifies(statementNum, var, parent.getParentStar(statementNum));
+		for each (int statement in call.getProcCalledByStmt(index1)) {
+			modify.setModifies(statement, var, parent.getParentStar(statement));
 		}
-		vector<int> uses = use.getProcUses(index2);
-		for each (int var in uses) {
-			use.setProcUses(index1, var);
-			use.setUses(statementNum, var, parent.getParentStar(statementNum));
+		for each (int called in call.getCalledByStar(index1)) {
+			modify.setProcModifies(called, var);
+			for each (int stmt in call.getProcCalledByStmt(called)) {
+				modify.setModifies(stmt, var, parent.getParentStar(stmt));
+			}
+		}
+	}
+	vector<int> uses = use.getProcUses(index2);
+	for each (int var in uses) {
+		use.setProcUses(index1, var);
+		use.setUses(statementNum, var, parent.getParentStar(statementNum));
+		for each (int statement in call.getProcCalledByStmt(index1)) {
+			use.setUses(statement, var, parent.getParentStar(statement));
+		}
+		for each (int called in call.getCalledByStar(index1)) {
+			use.setProcUses(called, var);
+			for each (int stmt in call.getProcCalledByStmt(called)) {
+				use.setUses(stmt, var, parent.getParentStar(stmt));
+			}
 		}
 	}
 }
@@ -845,7 +861,7 @@ void PKB::affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int& 
 		if (explored[statement] != temp || !exploredOnce[statement]) {
 			exploredOnce[statement] = true;
 			explored[statement] = temp;
-			affectsRecurse(s1, s2, {statement, temp}, max, explored, exploredOnce, included);
+			affectsRecurse(s1, s2, { statement, temp }, max, explored, exploredOnce, included);
 		}
 		exploredOnce[statement] = true;
 	}
@@ -1065,7 +1081,7 @@ bool PKB::getAffectStarTwoLiterals(int s1, int s2) {
 						} else {
 							temp.erase(var);
 						}
-						
+
 					}
 				} else if (typeTable[statement] == _call) {
 					for each (int var in modify.getModifies(statement)) {
