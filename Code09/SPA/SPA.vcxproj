@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AffectsAnalyzer.cpp" />
+    <ClCompile Include="AffectsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\AnalyzerFactory.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
     <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
@@ -48,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AffectsAnalyzer.h" />
+    <ClInclude Include="AffectsStarAnalyzer.h" />
     <ClInclude Include="Back End\Abstract_QA_API.h" />
     <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />

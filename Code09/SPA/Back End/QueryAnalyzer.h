@@ -20,6 +20,7 @@
 #include "QueryOptimizer.h"
 #include "NextStarAnalyzer.h"
 #include "AffectsAnalyzer.h"
+#include "AffectsStarAnalyzer.h"
 
 #include <numeric>
 #include <iterator>

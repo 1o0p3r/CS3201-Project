@@ -531,6 +531,7 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause(QueryElement stClaus
 				clauseResult = AffectsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				break;
 			case affectsStar:
+				clauseResult = AffectsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				break;
 		}
 		stResult = get<VECTRESULT>(clauseResult);
