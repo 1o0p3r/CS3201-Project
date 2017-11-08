@@ -193,7 +193,7 @@ procedure windy {
 	windy = go + wind + grey + clouds;
 	call rain;
 	call cloudy;
-	if rainy then{
+	if rainy then {
 		call cold;
 	} 
 	else {
@@ -221,7 +221,39 @@ procedure rain {
 	rainy = (rain)* rainy + (warm)*((cloudy)- dry);
 	rainy = (rain)- rainy + (warm)*((cloudy)- dry*rainy);
 	cloudy = (cloudy) + rainy - rainy*(cloudy)- dry*((rainy));
-	cloudy = ((jobs) + cloudy *(shoppingMall)- lottery *rainy)-(rainy*lottery);
+	cloudy = (jobs) + cloudy *(shoppingMall)- lottery *rainy-(rainy*lottery);
 	go = (rainy*lottery-(cloudy*blanket-cold)*(clouds-lottery)*(off-(noMoney)*cold));
 	go = (temperature*lottery-(temperature*noMoney-noMoney+ brighter + lights - noMoney) *(sleep * noHumdifier));
+	call end;
+}
+
+procedure end {
+	while weather {
+		cloud = shoppingMall + go + aircon;
+		shoppingMall = sleep + buy + aircon;
+	}
+	if windy then {
+		if rainy then {
+			end = go + cold;
+		}
+		else {
+			while hot {
+				cloudy = hot + go + dry;
+				while cold {
+					dry = hot + lottery + go;
+				}
+			}		
+		}
+	}
+	else {
+		while noMoney {
+			dry = hot + windy;
+			if sleep then {
+				shoppingMall = sleep + buy;
+			}
+			else {
+				sleep = lottery * shoppingMall;
+			}
+		}
+	}
 }
