@@ -19,6 +19,7 @@
 #include <unordered_map>
 
 typedef tuple<int, vector<int>> vTuple;
+typedef tuple<int, vector<set<int>>> vsTuple;
 typedef tuple<int, set<int>> sTuple;
 
 using namespace std;
@@ -815,7 +816,7 @@ tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
 		} else {
 			current = { max, {} };
 		}
-		exploredOnce[max] = 1;
+		exploredOnce[max] = true;
 		affectsRecurse(s1, s2, current, max, explored, exploredOnce, included);
 		max++;
 	}
@@ -863,7 +864,6 @@ void PKB::affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int& 
 			explored[statement] = temp;
 			affectsRecurse(s1, s2, { statement, temp }, max, explored, exploredOnce, included);
 		}
-		exploredOnce[statement] = true;
 	}
 }
 
@@ -1191,4 +1191,82 @@ vector<int> PKB::getAffectStarSecondLiteral(int s2) {
 		frontier = nextFrontier;
 	}
 	return result;
+}
+
+tuple<vector<int>, vector<int>> PKB::getAffectStarTwoSynonyms() {
+	vector<int> s1;
+	vector<int> s2;
+	vector<bool> exploredOnce(typeTable.size());
+	for (int i = 0; i < exploredOnce.size(); i++) {
+		exploredOnce[i] = false;
+	}
+	vector<vector<set<int>>> explored(typeTable.size());
+	for (int i = 0; i < explored.size(); i++) {
+		explored[i] = {};
+	}
+	set<pair<int, int>> included;
+	int max = 1;
+	while (max < typeTable.size()) {
+		vsTuple current;
+		if (typeTable[max] == assign) {
+			int var = modify.getModifies(max)[0];
+			vector<set<int>> temp(var + 1);
+			temp[var].insert(max);
+			current = { max, temp };
+			explored[max] = temp;
+		} else {
+			current = { max,{} };
+		}
+		exploredOnce[max] = true;
+		affectStarRecurse(s1, s2, current, max, explored, exploredOnce, included);
+		max++;
+	}
+	return{ s1, s2 };
+}
+
+void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included) {
+	vector<int> nexts = next.getNext(get<0>(current));
+	sort(nexts.begin(), nexts.end());
+	for each (int statement in nexts) {
+		if (statement > max) {
+			max = statement;
+		}
+		vector<set<int>> temp = get<1>(current);
+		if (typeTable[statement] == _call) {
+			for each (int var in modify.getModifies(statement)) {
+				if (var < temp.size()) {
+					temp[var].clear();
+				}
+			}
+		} else if (typeTable[statement] == assign) {
+			int var = modify.getModifies(statement)[0];
+			if (temp.size() <= var) {
+				temp.resize(var + 1);
+			}
+			set<int> store = temp[var];
+			temp[var].clear();
+			for each (int uVar in use.getUses(statement)) {
+				set<int> uVars;
+				if (uVar == var) {
+					uVars = store;
+				} else if (temp.size() > uVar) {
+					uVars = temp[uVar];
+				}
+				temp[var].insert(uVars.begin(), uVars.end());
+			}
+			for each (int line in temp[var]) {
+				if (included.find({ line, statement }) == included.end()) {
+					s1.push_back(line);
+					s2.push_back(statement);
+					included.insert({ line, statement });
+				}
+			}
+			temp[var].insert(statement);
+		}
+		if (explored[statement] != temp || !exploredOnce[statement]) {
+			exploredOnce[statement] = true;
+			explored[statement] = temp;
+			affectStarRecurse(s1, s2, { statement, temp }, max, explored, exploredOnce, included);
+		}
+	}
 }
