@@ -1,0 +1,110 @@
+procedure Singapore {
+	travel = taiwan + plane;
+	if taiwan then {
+		call taiwan;
+	} 
+	else {
+		while {
+			while {
+				if Singapore then{
+					Singapore = boring + place + plane;
+					travel = plane + must;
+				} else {
+					travel = plane + maybe;
+				}
+			}		
+		}
+	}
+	call China;
+	if China then {
+		China = travel + plane;
+
+	}
+	else {
+		China = China - Singapore*2;
+	}
+	while Singapore {
+		work = go + travel;
+	}
+}
+procedure Malaysia {
+	
+}
+procedure country {
+	if sg then {
+		if my then {
+			if thai then {
+				while jp {
+					while viet {
+						while Bru {
+							if phi then{
+								while ind {
+									if kor then {
+										if lao then{
+											call Singapore;
+										}
+										else {
+											call Malaysia;
+										}
+									}
+									else {
+										call Thailand;
+									}
+								}
+							}
+							else {
+								call Japan;
+							}
+						}
+					}
+				}
+			}
+			else {
+				call Vietnam;
+			}
+		}
+		else {
+			call Brunei;
+		}
+	}
+	else {
+		call Philippines;
+	}
+}
+
+procedure Thailand {
+	
+}
+procedure Japan {
+	
+}
+procedure Vietnam {
+	
+}
+procedure Brunei {
+	
+}
+procedure Philippines {
+	
+}
+procedure Indonesia {
+	
+}
+procedure Korea {
+	
+}
+procedure Laos {
+	
+}
+procedure Cambodia {
+	
+}
+procedure Myanmar {
+	
+}
+procedure China {
+	
+}
+procedure Taiwan {
+	
+}
