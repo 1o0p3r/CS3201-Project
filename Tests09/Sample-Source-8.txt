@@ -1,60 +1,242 @@
 procedure Singapore {
-	travel = taiwan + plane;
-	if taiwan then {
-		call taiwan;
-	} 
-	else {
-		while {
-			while {
-				if Singapore then{
-					Singapore = boring + place + plane;
-					travel = plane + must;
-				} else {
-					travel = plane + maybe;
-				}
-			}		
+	travel = wants * work;
+	while Singapore {
+		wants = go + travel;
+		while Singapore {
+			while travel {
+				wants = go + travel * expenses;
+			}
 		}
 	}
-	call China;
-	if China then {
-		China = travel + plane;
-
+	while Singapore {
+		wants = go + travel + Malaysia;
+		if Malaysia then {
+			call Malaysia;
+			expenses = travel * expenses * 2;
+		}
+		else {
+			while expenses {
+				expenses = work + earn;
+			}
+		}
+	}
+	if Thailand then {
+		wants = go + (travel) + (Thailand);
+		while Thailand {
+			call Thailand;
+			expenses = (travel * expenses) * 3;
+			if expenses then {
+				expenses = work* (work) * (earn);
+			} 
+			else {
+				expenses = work * earn - 4;
+			}
+		}
 	}
 	else {
-		China = China - Singapore*2;
+		while Singapore {
+			job = (needed * expenses * 5);
+			if travel then {
+				job = ((work) * earn) * 6;
+			} 
+			else {
+				job = earn * ((6 * save));
+			}
+		}
 	}
-	while Singapore {
-		work = go + travel;
+	if Taiwan then {
+		if travel then {
+			wants = (go) * ((travel)) * ((Taiwan)) + expenses;
+			travel = expenses * wants;
+			while expenses {
+				travel = expenses * planning + Taiwan;
+				stay = expenses - 9;
+			}
+			while wants {
+				wants = wants * (travel);
+				call Taiwan;
+			}
+		}
+		else {
+			job = job * work + (earn);		
+			travel = expenses - 10;
+		}
+	}
+	else {
+		if travel then {
+			wants = (go)* expenses- planning;
+			vacation = wants * expenses;
+			while planning {
+				planning = time * 5;
+				time = travel * expenses + Taiwan;
+			}
+		}
+		else {
+			wants = (go)* planning * (wants);
+			expenses = travel * planning - 12;
+		}
+	}
+	while China {
+		while travel {
+			vacation = travel*China- expenses;
+			China = wants + go + travel - planning;
+			if China then {
+				wants = go + China + expenses;
+				stay = expenses - 12 * China;
+			}
+			else {
+				China = (travel + expenses) * planning;
+				call China;
+			}
+		}
+		China = planning + expenses;
+		job = China + travel * expenses;
+	}
+	while Japan {
+		travel = Japan + must;
+		travel = Japan - job + expenses;
+		call Japan;
+		while travel {
+			travel = travel * expenses;
+			travel = Japan - China + Taiwan;
+			while yen {
+				yen = expenses * 80;
+				yen = Japan * go + must;
+			}
+		Japan = Japan * travel - (expenses * 80);
+		job = (job + must) + go + Japan;
+		}
 	}
 }
 procedure Malaysia {
-	
+	call country;
+	while country {
+		call Indonesia;
+	}
+	if country then {
+		call Laos;
+	}
+	else {
+		call Korea;
+	}
+	if Malaysia then {
+		expenses = Malaysia * 80 - go * expenses;
+		while expenses {
+			expenses = Malaysia * 80 - go * Korea;
+			expenses = ringgit * go + must;
+		}
+		if work then {
+			work = work * earn + go;
+			ringgit = earn * expenses;
+		}
+		else {
+			job = job * job + go;
+			ringgit = earn * earn * must;
+		}
+		work = job + obtained;
+		expenses = ringgit * obtained * go;
+	}
+	else {
+		expenses = no * ((go) + obtained);
+		work = job + obtained + expenses;
+	}
+	Malaysia = expenses - Singapore * expenses * 2;
+	Singapore = Malaysia - expenses *2;
+}
+procedure Laos {
+	Korea = Laos * 2 - Singapore * Malaysia - expenses;
+	Malaysia = Korea * go + travel;
+	Thailand = Malaysia * Singapore * Indonesia;
+	China = Thailand * Singapore - Malaysia;
+	China = Thailand * Korea - Indonesia;
+	if Thailand then {
+		Thailand = Korea * travel;
+	}
+	else {
+		expeneses = Thailand * Korea;
+	}
+	if China then {
+		China = go + expenses * travel - 5;
+	} 
+	else {
+		Laos = China * Korea - travel;
+	}
+	while Thailand {
+		Thailand = expenses * travel * job;
+	}
+	Japan = Thailand * expenses - travel * job;
+	while Japan {
+		Laos = Japan * expenses - travel * obtained;
+		Japan = yen * obtained;
+	}
+	travel = Japan * required;
+}
+procedure Indonesia {
+	if travel then {
+		Indonesia = rupiah * currency - required;
+		travel = Indonesia * rupiah;
+		while here {
+			travel = here * Indonesia * rupiah;
+		}
+	}
+	else {
+		rupiah = yen + or + yuan + or + ringgit;
+		while there {
+			travel = there * Indonesia * travel;
+		}
+	}
+	while Indonesia {
+		while expenses {
+			Indonesia = expenses * here * rupiah;
+		}
+		while here {
+			if here then {
+				Indonesia = Indonesia * here - rupiah + there;
+			}
+			else {
+				Indonesia = here * rupuiah + yuan - there;
+			}
+		}
+		call Laos;
+	}
+}
+procedure Thailand {
+	while Thailand {
+		go = expenses + disco + there;
+		if there then {
+			call Laos;
+			if here then {
+				go = expenses + disco + here;
+			}
+			else {
+				Laos = expenses + (Indonesia) * here;
+			}
+		}
+		else {
+			go = here + expenses + travel;
+		}
+	}
+	here = here * there + expenses * travel * disco;
+	while here {
+		if here then {
+			while there {
+				here = here + expenses * travel + (disco - there);
+			}
+		}
+		else {
+			call Laos;
+		}
+	}
+	there = here * expenses - disco * travel + yuan;
 }
 procedure country {
 	if sg then {
 		if my then {
-			if thai then {
-				while jp {
-					while viet {
-						while Bru {
-							if phi then{
-								while ind {
-									if kor then {
-										if lao then{
-											call Singapore;
-										}
-										else {
-											call Malaysia;
-										}
-									}
-									else {
-										call Thailand;
-									}
-								}
-							}
-							else {
-								call Japan;
-							}
+			if lao then {
+				while ind {
+					while Vie {
+						while Cam  {
+							call Thailand;						
 						}
 					}
 				}
@@ -62,49 +244,447 @@ procedure country {
 			else {
 				call Vietnam;
 			}
+		} 
+		else {
+			call Laos;
+		}
+	} 
+	else {
+		call Taiwan;
+	}
+}
+procedure Vietnam {
+	yen = go + Vietnam + expenses;
+	if Vietnam then {
+		expenses = Vietnam + rice + expenses;
+		here = expenses - there;
+		while Vietnam {
+			if Vietnam then {
+				expenses = Vietnam - expenses;
+				while here {
+					expenses = here + Vietnam - expenses;
+				}
+			}
+			else {
+				here = expenses - Thailand + Singapore - yuan + yen;
+			}
+		}
+		yen = here + Vietnam - there;
+	}
+	else {
+		yuan = yen + expenses + yuan;
+		while yuan {
+			while yen {
+				if yen then {
+					yen = yuan + expenses - Vietnam;
+				}
+				else {
+					yuan = Vietnam + yen;
+				}
+			}
+		}
+	}
+	if Vietnam then {
+		yuan = yen;
+	}
+	else {
+		yen = yuan;
+	}
+}
+procedure Cambodia {
+	Cambodia = Laos * Japan - Korea;
+	Vietnam = Singapore + Malaysia;
+	China = expenses + yen;
+	while mountain {
+		if expenses then {
+			mountain = yen + Vietnam;
+			yen = Korea + Japan;
 		}
 		else {
-			call Brunei;
+			while yen {
+				mountain = mountain * yen - yuan;
+			}
+			while yuan {
+				mountain = yen * expenses - Vietnam;
+			}
+			if Vietnam then {
+				call Laos;
+			}
+			else {
+				while expenses {
+					while Laos {
+						if Singapore then {
+							kiasu = expeneses - normal;
+						}
+						else {
+							kiasi = expenses + normal;
+							Singapore = Laos + mountain;
+						}
+					}
+				}
+				mountain = Cambodia * China + Cambodia;
+			}
+		}
+		expenses = Vietnam + China + Cambodia;
+	}
+}
+procedure Korea {
+	if Korean then {
+		while Korea {
+			expenses = Korea + expenses;
+		}
+		if korea then {
+			idol = expenses + travel;
+			call China;
+		}
+		else {
+			makeup = expenses + travel;
 		}
 	}
 	else {
-		call Philippines;
+		if China then {
+			fee = expenses + travel + Korea;
+		}
+		else {
+			cost = expenses + travel + Korea;
+			while Korea {
+				if Japan then {
+					while Singapore {
+						expenses = 20;
+					}
+					if Malaysia then {
+						while Indonesia {
+							while China {
+								Korea = Korea * Korea - China;
+							}
+						}
+						Korea = China * expenses;
+					}
+					else {
+						Singapore = Malaysia * expenses;
+					}
+				}
+				else {
+					if China then {
+						if Thailand then {
+							travel = Korea * expenses;
+						} else {
+							then = Korea* expenses;
+						}
+					}
+					else {
+						cost = expenses * Korea;
+					}
+				}
+				this = cost;
+			}
+			hi = cost;
+		}
+		hello = cost;
 	}
-}
-
-procedure Thailand {
-	
+	end = cost;
 }
 procedure Japan {
-	
-}
-procedure Vietnam {
-	
-}
-procedure Brunei {
-	
-}
-procedure Philippines {
-	
-}
-procedure Indonesia {
-	
-}
-procedure Korea {
-	
-}
-procedure Laos {
-	
-}
-procedure Cambodia {
-	
-}
-procedure Myanmar {
-	
+	Japan = expenses + work + yen - yuan;
+	Korea = expenses + job * Singapore - yen;
+	Taiwan = expenses * work * Singapore - travel;
+	go = Vietnam + Thailand;
+	if Japan then {
+		expenses = Japan * yuan;
+		work = 5 * 8 - expenses;
+		while Japan {
+			job = 5 * (ringgit);
+			Vietnam = job * Singapore;
+			if Japan then {
+				call Korea;
+				call Cambodia;
+				if Korean then {
+					yen = work * yuan;
+					yuan = travel + job;
+					while Korea {
+						expense = expenses + work;
+						travelling = travel;
+						while Taiwan {
+							ringgit = Taiwan * Korea;
+						}
+					}
+				}
+				else {
+					go = work + job + expenses;
+					Taiwan = work + Singapore;
+				}
+			}
+			else {
+				go = yuan + ringgit + yen;
+				Korea = rmb + expenses;
+			}
+			work = go + yuan + Japan;
+		}
+	}
+	else {
+		travelling = Japan + Korea;
+	}
+	travelled = Taiwan;
+	travelledMore = go;
+	travelMore = Korea;
+	travelSome = Japan;
 }
 procedure China {
-	
+	China = go + travel + 14;
+	Japan = expenses + 202 - job;
+	Korea = work * 185 - yen;
+	Vietnam = 155 - rice + rmb;
+	Thailand = disco + bar * 123;
+	Indonesia = 87 * haze * year;
+	Laos = temple + Taiwan * 86;
+	Malaysia = 55-  ringgit * drop;
+	if China then {
+		while China {
+			if China then {
+				while Korea {
+					disco = expenses * rmb;
+					while Japan {
+						yen = Korea  - job;
+						while Thailand {
+							China = expenses * Japan;
+							Vietnam = Thailand - Indonesia;								
+						}				
+						rmb = bar * yen;
+					}
+				}
+				rice = paddy + 10;
+				disco = Indonesia + 10 - paddy;
+			}
+			else {
+				while China {
+					job = expenses;
+					while Vietnam {
+						Indonesia = haze * job;
+					}
+				}
+				job = haze * travel;
+				Laos = Thailand * rice - rmb;
+			}
+			Malaysia = 5 - ringgit * 53;
+			temple = Taiwan + Vietnam;
+		}
+	}
+	else {
+		if China then {
+			while China {
+				Korea = yuan - rmb;
+				if Japan then {
+					while Singapore {
+						Japan = Korea + yuan - yen;
+					}
+				}
+				else {
+					while Malaysia {
+						China = yuan + rmb;
+					}
+				}
+				Thailand = China + ringgit;
+			}
+		}
+		else {
+			while China {
+				paddy = rice * disco;
+			}
+		}
+	}
+	while Indonesia {
+		if China then {
+			while Laos {
+				call Laos;
+				call Laos;
+			}
+		}
+		else {
+			while expenses {
+				Korea = yuan * yen - Taiwan;
+			}
+		}
+	}
+	before = Thailand* 59;
+	after = Japan- 63;
+	present = China+ 73;
+	perfect = Singapore- 89;
+	tense = Vietnam + 65;
+	continous = Korea + 136;
+	current = Indonesia + 144;
+	soon = Malaysia- 194;
+	when = Laos * 143;
 }
 procedure Taiwan {
-	
+	while Taiwan {
+		go = travel + yen + yuan + expenses + rmb + ringgit;
+		time = China + Japan + Laos + (Malaysia - Vietnam) * Thailand;
+		here = there * 8 - expenses;
+		Taiwan = rmb * yuan - expenses;
+		if Taiwan then {
+			rmb = yuan + yen;
+			yen = expenses * rmb + yuan;
+			call Laos;
+			if travel then {
+				if expenses then {
+					go = travel + yuan;
+					rmb = yen + expenses;
+				}
+				else {
+					if China then {
+						China = ringgit - expenses;
+						China = Japan - expenses;
+					}
+					else {
+						if Korea then {
+							time = China + ringgit * rmbr - yuan;
+							call Laos;
+						}
+						else {
+							if yen then {
+								Laos = yen * ((Thailand - Laos));
+								travel = go * yen;
+							}
+							else {
+								Taiwan = rmb * yuan + Thailand;
+								Vietnam = time * Thailand + Laos + Malaysia;
+							}
+						}
+					}
+				}
+			}
+			else {
+				if Korea then {
+					Korea = Japan + yuan;
+				}
+				else {	
+					yen = China + rmb;
+				}
+			}
+		}
+		else {
+			go = China + Japan + Korea;
+		}
+	}
+}
+procedure dummy {
+	call country;
+	while country {
+		call Indonesia;
+	}
+	if country then {
+		call Laos;
+	}
+	else {
+		call Korea;
+	}
+	if Malaysia then {
+		Korea = Malaysia * ((80) - (go)) * expenses;
+		while expenses {
+			expenses = Malaysia * ((80))- (((go))) * ((Korea));
+			expenses = (ringgit * go) + must;
+		}
+		if work then {
+			rupiah = work * earn + go;
+			ringgit = earn * (expenses);
+		}
+		else {
+			job = (job * job) + go;
+			ringgit = (earn * earn) * must;
+		}
+		work = job + obtained;
+		expeneses = ringgit * obtained * go;
+	}
+	else {
+		expenses = no * ((go) + obtained);
+		work = job + (obtained) + ((expenses));
+	}
+	Malaysia = expenses - (Singapore) * (expenses * 2);
+	Singapore = Malaysia - (expenses *2);
+}
+procedure DummyTwo {
+	dummy = go + travel + 14;
+	Japan = expenses + 202 - job;
+	Korea = work * 185 - yen;
+	Vietnam = 155 - rice + rmb;
+	Thailand = disco + bar * 123;
+	Indonesia = 87 * haze * year;
+	Laos = temple + Taiwan * 86;
+	Malaysia = 55-  ringgit * drop;
+	if dummy then {
+		while dummy {
+			if dummy then {
+				while Korea {
+					disco = expenses * rmb;
+					while Japan {
+						yen = Korea  - job;
+						while Thailand {
+							dummy = expenses * Japan;
+							Vietnam = Thailand - Indonesia;								
+						}				
+						rmb = bar * yen;
+					}
+				}
+				rice = paddy + 10;
+				disco = Indonesia + 10 - paddy;
+			}
+			else {
+				while dummy {
+					job = expenses;
+					while Vietnam {
+						Indonesia = haze * job;
+					}
+				}
+				job = haze * travel;
+				Laos = Thailand * rice - rmb;
+			}
+			Malaysia = 5 - ringgit * 53;
+			temple = Taiwan + Vietnam;
+		}
+	}
+	else {
+		if dummy then {
+			while dummy {
+				Korea = yuan - rmb;
+				if Japan then {
+					while Singapore {
+						Japan = Korea + yuan - yen;
+					}
+				}
+				else {
+					while Malaysia {
+						dummy = yuan + rmb;
+					}
+				}
+				Thailand = dummy + ringgit;
+			}
+		}
+		else {
+			while dummy {
+				paddy = rice * disco;
+			}
+		}
+	}
+	while Indonesia {
+		if dummy then {
+			while Laos {
+				call Laos;
+				call Laos;
+			}
+		}
+		else {
+			while expenses {
+				Korea = yuan * yen - Taiwan;
+			}
+		}
+	}
+	before = Thailand * 259;
+	after = Japan - 263;
+	present = dummy + 273;
+	perfect = Singapore - 389;
+	tense = Vietnam + 265;
+	continous = Korea + 236;
+	current = Indonesia + 244;
+	soon = Malaysia- 154;
+	when = Laos * 293;
 }

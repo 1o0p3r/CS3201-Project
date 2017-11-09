@@ -1,0 +1,690 @@
+procedure Singapore {
+1	travel = wants * work;
+2	while Singapore {
+3		wants = go + travel;
+4		while Singapore {
+5			while travel {
+6				wants = go + travel * expenses;
+			}
+		}
+	}
+7	while Singapore {
+8		wants = go + travel + Malaysia;
+9		if Malaysia then {
+10		call Malaysia;
+11		expenses = travel * expenses * 2;
+		}
+		else {
+12				while expenses {
+13				expenses = work + earn;
+			}
+		}
+	}
+14	if Thailand then {
+15		wants = go + (travel) + (Thailand);
+16		while Thailand {
+17			call Thailand;
+18			expenses = (travel * expenses) * 3;
+19			if expenses then {
+20				expenses = work* (work) * (earn);
+			} 
+			else {
+21				expenses = work * earn - 4;
+			}
+		}
+	}
+	else {
+22		while Singapore {
+23			job = (needed * expenses * 5);
+24			if travel then {
+25				job = ((work) * earn) * 6;
+			} 
+			else {
+26				job = earn * ((6 * save));
+			}
+		}
+	}
+27	if Taiwan then {
+28		if travel then {
+29			wants = (go) * ((travel)) * ((Taiwan)) + expenses;
+30			travel = expenses * wants;
+31			while expenses {
+32				travel = expenses * planning + Taiwan;
+33				stay = expenses - 9;
+			}
+34			while wants {
+35				wants = wants * (travel);
+36				call Taiwan;
+			}
+		}
+		else {
+37			job = job * work + (earn);		
+38			travel = expenses - 10;
+		}
+	}
+	else {
+39		if travel then {
+40			wants = (go)* expenses- planning;
+41			vacation = wants * expenses;
+42			while planning {
+43				planning = time * 5;
+44				time = travel * expenses + Taiwan;
+			}
+		}
+		else {
+45			wants = (go)* planning * (wants);
+46			expenses = travel * planning - 12;
+		}
+	}
+47	while China {
+48		while travel {
+49			vacation = travel*China- expenses;
+50			China = wants + go + travel - planning;
+51			if China then {
+52				wants = go + China + expenses;
+53				stay = expenses - 12 * China;
+			}
+			else {
+54				China = (travel + expenses) * planning;
+55				call China;
+			}
+		}
+56		China = planning + expenses;
+57		job = China + travel * expenses;
+	}
+58	while Japan {
+59		travel = Japan + must;
+60		travel = Japan - job + expenses;
+61		call Japan;
+62		while travel {
+63			travel = travel * expenses;
+64			travel = Japan - China + Taiwan;
+65			while yen {
+66				yen = expenses * 80;
+67				yen = Japan * go + must;
+			}
+68		Japan = Japan * travel - (expenses * 80);
+69		job = (job + must) + go + Japan;
+		}
+	}
+}
+procedure Malaysia {
+70	call country;
+71	while country {
+72		call Indonesia;
+	}
+73	if country then {
+74		call Laos;
+	}
+	else {
+75		call Korea;
+	}
+76	if Malaysia then {
+77		expenses = Malaysia * 80 - go * expenses;
+78		while expenses {
+79			expenses = Malaysia * 80 - go * Korea;
+80			expenses = ringgit * go + must;
+		}
+81		if work then {
+82			work = work * earn + go;
+83			ringgit = earn * expenses;
+		}
+		else {
+84			job = job * job + go;
+85			ringgit = earn * earn * must;
+		}
+86		work = job + obtained;
+87		expenses = ringgit * obtained * go;
+	}
+	else {
+88		expenses = no * ((go) + obtained);
+89		work = job + obtained + expenses;
+	}
+90	Malaysia = expenses - Singapore * expenses * 2;
+91	Singapore = Malaysia - expenses *2;
+}
+procedure Laos {
+92	Korea = Laos * 2 - Singapore * Malaysia - expenses;
+93	Malaysia = Korea * go + travel;
+94	Thailand = Malaysia * Singapore * Indonesia;
+95	China = Thailand * Singapore - Malaysia;
+96	China = Thailand * Korea - Indonesia;
+97	if Thailand then {
+98		Thailand = Korea * travel;
+	}
+	else {
+99		expeneses = Thailand * Korea;
+	}
+100	if China then {
+101		China = go + expenses * travel - 5;
+	} 
+	else {
+102		Laos = China * Korea - travel;
+	}
+103	while Thailand {
+104		Thailand = expenses * travel * job;
+	}
+105	Japan = Thailand * expenses - travel * job;
+106	while Japan {
+107		Laos = Japan * expenses - travel * obtained;
+108		Japan = yen * obtained;
+	}
+109	travel = Japan * required;
+}
+procedure Indonesia {
+110	if travel then {
+111		Indonesia = rupiah * currency - required;
+112		travel = Indonesia * rupiah;
+113		while here {
+114			travel = here * Indonesia * rupiah;
+		}
+	}
+	else {
+115		rupiah = yen + or + yuan + or + ringgit;
+116		while there {
+117			travel = there * Indonesia * travel;
+		}
+	}
+118	while Indonesia {
+119		while expenses {
+120			Indonesia = expenses * here * rupiah;
+		}
+121		while here {
+122			if here then {
+123				Indonesia = Indonesia * here - rupiah + there;
+			}
+			else {
+124				Indonesia = here * rupuiah + yuan - there;
+			}
+		}
+125		call Laos;
+	}
+}
+procedure Thailand {
+126	while Thailand {
+127		go = expenses + disco + there;
+128		if there then {
+129			call Laos;
+130			if here then {
+131				go = expenses + disco + here;
+			}
+			else {
+132				Laos = expenses + (Indonesia) * here;
+			}
+		}
+		else {
+133			go = here + expenses + travel;
+		}
+	}
+134	here = here * there + expenses * travel * disco;
+135	while here {
+136		if here then {
+137			while there {
+138				here = here + expenses * travel + (disco - there);
+				}
+		}
+		else {
+139			call Laos;
+		}
+	}
+140	there = here * expenses - disco * travel + yuan;
+}
+procedure country {
+141	if sg then {
+142		if my then {
+143			if lao then {
+144				while ind {
+145					while Vie {
+146						while Cam  {
+147							call Thailand;						
+							}
+					}
+				}
+			}
+			else {
+148			call Vietnam;
+			}
+		} 
+		else {
+149			call Laos;
+		}
+	} 
+	else {
+150		call Taiwan;
+	}
+}
+procedure Vietnam {
+151	yen = go + Vietnam + expenses;
+152	if Vietnam then {
+153		expenses = Vietnam + rice + expenses;
+154		here = expenses - there;
+155		while Vietnam {
+156			if Vietnam then {
+157				expenses = Vietnam - expenses;
+158				while here {
+159					expenses = here + Vietnam - expenses;
+				}
+			}
+			else {
+160				here = expenses - Thailand + Singapore - yuan + yen;
+			}
+		}
+161		yen = here + Vietnam - there;
+	}
+	else {
+162		yuan = yen + expenses + yuan;
+163		while yuan {
+164			while yen {
+165				if yen then {
+166					yen = yuan + expenses - Vietnam;
+				}
+				else {
+167					yuan = Vietnam + yen;
+				}
+			}
+		}
+	}
+168	if Vietnam then {
+169		yuan = yen;
+	}
+	else {
+170		yen = yuan;
+	}
+}
+procedure Cambodia {
+171	Cambodia = Laos * Japan - Korea;
+172	Vietnam = Singapore + Malaysia;
+173	China = expenses + yen;
+174	while mountain {
+175		if expenses then {
+176			mountain = yen + Vietnam;
+177			yen = Korea + Japan;
+		}
+		else {
+178			while yen {
+179				mountain = mountain * yen - yuan;
+			}
+180			while yuan {
+181				mountain = yen * expenses - Vietnam;
+			}
+182			if Vietnam then {
+183				call Laos;
+			}
+			else {
+184				while expenses {
+185					while Laos {
+186						if Singapore then {
+187							kiasu = expeneses - normal;
+						}
+						else {
+188							kiasi = expenses + normal;
+189							Singapore = Laos + mountain;
+						}
+					}
+				}
+190				mountain = Cambodia * China + Cambodia;
+			}
+		}
+191		expenses = Vietnam + China + Cambodia;
+	}
+}
+procedure Korea {
+192	if Korean then {
+193		while Korea {
+194			expenses = Korea + expenses;
+		}
+195		if korea then {
+196			idol = expenses + travel;
+197			call China;
+		}
+		else {
+198			makeup = expenses + travel;
+		}
+	}
+	else {
+199		if China then {
+200			fee = expenses + travel + Korea;
+		}
+		else {
+201			cost = expenses + travel + Korea;
+202			while Korea {
+203				if Japan then {
+204					while Singapore {
+205						expenses = 20;
+					}
+206					if Malaysia then {
+207						while Indonesia {
+208							while China {
+209								Korea = Korea * Korea - China;
+							}
+						}
+210						Korea = China * expenses;
+					}
+					else {
+211						Singapore = Malaysia * expenses;
+					}
+				}
+				else {
+212					if China then {
+213						if Thailand then {
+214							travel = Korea * expenses;
+						} else {
+215							then = Korea* expenses;
+						}
+					}
+					else {
+216						cost = expenses * Korea;
+					}
+				}
+217				this = cost;
+			}
+218			hi = cost;
+		}
+219		hello = cost;
+	}
+220	end = cost;
+}
+procedure Japan {
+221	Japan = expenses + work + yen - yuan;
+222	Korea = expenses + job * Singapore - yen;
+223	Taiwan = expenses * work * Singapore - travel;
+224	go = Vietnam + Thailand;
+225	if Japan then {
+226		expenses = Japan * yuan;
+227		work = 5 * 8 - expenses;
+228		while Japan {
+229			job = 5 * (ringgit);
+230			Vietnam = job * Singapore;
+231			if Japan then {
+232				call Korea;
+234				call Cambodia;
+235				if Korean then {
+236					yen = work * yuan;
+237					yuan = travel + job;
+238					while Korea {
+239						expense = expenses + work;
+240						travelling = travel;
+241						while Taiwan {
+242							ringgit = Taiwan * Korea;
+						}
+					}
+				}
+				else {
+243					go = work + job + expenses;
+244					Taiwan = work + Singapore;
+				}
+			}
+			else {
+245				go = yuan + ringgit + yen;
+246				Korea = rmb + expenses;
+			}
+247			work = go + yuan + Japan;
+		}
+	}
+	else {
+248		travelling = Japan + Korea;
+	}
+249	travelled = Taiwan;
+250	travelledMore = go;
+251	travelMore = Korea;
+252	travelSome = Japan;
+}
+procedure China {
+253	China = go + travel + 14;
+254	Japan = expenses + 202 - job;
+255	Korea = work * 185 - yen;
+256	Vietnam = 155 - rice + rmb;
+257	Thailand = disco + bar * 123;
+258	Indonesia = 87 * haze * year;
+259	Laos = temple + Taiwan * 86;
+260	Malaysia = 55-  ringgit * drop;
+261	if China then {
+262		while China {
+263			if China then {
+264				while Korea {
+265					disco = expenses * rmb;
+266					while Japan {
+267						yen = Korea  - job;
+268						while Thailand {
+269							China = expenses * Japan;
+270							Vietnam = Thailand - Indonesia;								
+						}				
+271						rmb = bar * yen;
+					}
+				}
+272				rice = paddy + 10;
+273				disco = Indonesia + 10 - paddy;
+			}
+			else {
+274				while China {
+275					job = expenses;
+276					while Vietnam {
+277						Indonesia = haze * job;
+					}
+				}
+278				job = haze * travel;
+279				Laos = Thailand * rice - rmb;
+			}
+280			Malaysia = 5 - ringgit * 53;
+281			temple = Taiwan + Vietnam;
+		}
+	}
+	else {
+282		if China then {
+283			while China {
+284				Korea = yuan - rmb;
+285				if Japan then {
+286					while Singapore {
+287						Japan = Korea + yuan - yen;
+					}
+				}
+				else {
+288					while Malaysia {
+289						China = yuan + rmb;
+					}
+				}
+290				Thailand = China + ringgit;
+			}
+		}
+		else {
+291			while China {
+292				paddy = rice * disco;
+			}
+		}
+	}
+293	while Indonesia {
+294		if China then {
+295			while Laos {
+296				call Laos;
+297				call Laos;
+			}
+		}
+		else {
+298			while expenses {
+299				Korea = yuan * yen - Taiwan;
+			}
+		}
+	}
+300	before = Thailand* 59;
+301	after = Japan- 63;
+302	present = China+ 73;
+303	perfect = Singapore- 89;
+304	tense = Vietnam + 65;
+305	continous = Korea + 136;
+306	current = Indonesia + 144;
+307	soon = Malaysia- 194;
+308	when = Laos * 143;
+}
+procedure Taiwan {
+309	while Taiwan {
+310		go = travel + yen + yuan + expenses + rmb + ringgit;
+311		time = China + Japan + Laos + (Malaysia - Vietnam) * Thailand;
+312		here = there * 8 - expenses;
+313		Taiwan = rmb * yuan - expenses;
+314		if Taiwan then {
+315			rmb = yuan + yen;
+316			yen = expenses * rmb + yuan;
+317			call Laos;
+318			if travel then {
+319				if expenses then {
+320					go = travel + yuan;
+321					rmb = yen + expenses;
+				}
+				else {
+322					if China then {
+323						China = ringgit - expenses;
+324						China = Japan - expenses;
+					}
+					else {
+325						if Korea then {
+326							time = China + ringgit * rmbr - yuan;
+327							call Laos;
+						}
+						else {
+328							if yen then {
+329								Laos = yen * ((Thailand - Laos));
+330								travel = go * yen;
+							}
+							else {
+331								Taiwan = rmb * yuan + Thailand;
+332								Vietnam = time * Thailand + Laos + Malaysia;
+							}
+						}
+					}
+				}
+			}
+			else {
+333				if Korea then {
+334					Korea = Japan + yuan;
+				}
+				else {	
+335					yen = China + rmb;
+				}
+			}
+		}
+		else {
+336			go = China + Japan + Korea;
+		}
+	}
+}
+procedure dummy {
+337	call country;
+338	while country {
+339		call Indonesia;
+	}
+340	if country then {
+341		call Laos;
+	}
+342	else {
+343		call Korea;
+	}
+344	if Malaysia then {
+345		Korea = Malaysia * ((80) - (go)) * expenses;
+346		while expenses {
+347			expenses = Malaysia * ((80))- (((go))) * ((Korea));
+348			expenses = (ringgit * go) + must;
+		}
+349		if work then {
+350			rupiah = work * earn + go;
+351			ringgit = earn * (expenses);
+		}
+		else {
+352			job = (job * job) + go;
+353			ringgit = (earn * earn) * must;
+		}
+354		work = job + obtained;
+355		expeneses = ringgit * obtained * go;
+	}
+	else {
+356		expenses = no * ((go) + obtained);
+357		work = job + (obtained) + ((expenses));
+	}
+358	Malaysia = expenses - (Singapore) * (expenses * 2);
+359	Singapore = Malaysia - (expenses *2);
+}
+procedure DummyTwo {
+360	dummy = go + travel + 14;
+361	Japan = expenses + 202 - job;
+362	Korea = work * 185 - yen;
+363	Vietnam = 155 - rice + rmb;
+364	Thailand = disco + bar * 123;
+365	Indonesia = 87 * haze * year;
+366	Laos = temple + Taiwan * 86;
+367	Malaysia = 55-  ringgit * drop;
+368	if dummy then {
+369		while dummy {
+370			if dummy then {
+371				while Korea {
+372					disco = expenses * rmb;
+373					while Japan {
+374						yen = Korea  - job;
+375						while Thailand {
+376							dummy = expenses * Japan;
+377							Vietnam = Thailand - Indonesia;								
+						}				
+378						rmb = bar * yen;
+					}
+				}
+379				rice = paddy + 10;
+380				disco = Indonesia + 10 - paddy;
+			}
+			else {
+381				while dummy {
+382					job = expenses;
+383					while Vietnam {
+384						Indonesia = haze * job;
+					}
+				}
+385				job = haze * travel;
+386				Laos = Thailand * rice - rmb;
+			}
+387			Malaysia = 5 - ringgit * 53;
+388			temple = Taiwan + Vietnam;
+		}
+	}
+	else {
+389		if dummy then {
+390			while dummy {
+391				Korea = yuan - rmb;
+392				if Japan then {
+393					while Singapore {
+394						Japan = Korea + yuan - yen;
+					}
+				}
+				else {
+395					while Malaysia {
+396						dummy = yuan + rmb;
+					}
+				}
+397				Thailand = dummy + ringgit;
+			}
+		}
+		else {
+398			while dummy {
+399				paddy = rice * disco;
+			}
+		}
+	}
+400	while Indonesia {
+401		if dummy then {
+402			while Laos {
+403				call Laos;
+404				call Laos;
+			}
+		}
+		else {
+405			while expenses {
+406				Korea = yuan * yen - Taiwan;
+			}
+		}
+	}
+407	before = Thailand * 259;
+408	after = Japan - 263;
+409	present = dummy + 273;
+410	perfect = Singapore - 389;
+411	tense = Vietnam + 265;
+412	continous = Korea + 236;
+413	current = Indonesia + 244;
+414	soon = Malaysia- 154;
+415	when = Laos * 293;
+}

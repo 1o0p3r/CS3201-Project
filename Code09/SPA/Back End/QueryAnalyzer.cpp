@@ -142,7 +142,7 @@ void QueryAnalyzer::setQS(QueryStatement qs){
 void QueryAnalyzer::solveWithClause()
 {
 	vector<vector<string>> withResult;
-	for (QueryElement withClause : withElements) {
+	for (QueryElement withClause : withClauses) {
 		if (!isQueryFalse()) {
 			auto clauseResult = WithAnalyzer(withClause, pkbPtr).analyze();
 			withResult = get<VECTRESULT>(clauseResult);
@@ -162,8 +162,21 @@ void QueryAnalyzer::solveWithClause()
 void QueryAnalyzer::optimizeClauseOrder() {
 	multimap<string, pair<int, int>> normalMap = qsReadOnly.getNormalMultiMap();
 	multimap<string, pair<int, int>> hardMap = qsReadOnly.getHardMultiMap();
-	//tuple<vector<QueryElement>,vector<QueryElement>> 
-	QueryOptimizer(normalElements,hardElements,normalMap,hardMap,pkbPtr).runOptimizer();
+	auto result = QueryOptimizer(normalClauses,hardClauses,normalMap,hardMap,pkbPtr).runOptimizer();
+	normalClauses = get<GETNORMALCLAUSE>(result);
+	normalClauses.insert(normalClauses.end(),get<GETHARDCLAUSE>(result).begin(), get<GETHARDCLAUSE>(result).end());
+}
+
+void QueryAnalyzer::solveNonWithClauses() {
+	for(auto candidates : normalClauses) {
+		if (isQueryFalse())
+			return;
+		string clauseType = candidates.getClauseType();
+		if (clauseType == "pattern")
+			solvePatternClause(candidates);
+		else if (clauseType == "suchThat")
+			solveSTClause(candidates);
+	}
 }
 
 vector<string> QueryAnalyzer::runQueryEval() {
@@ -177,20 +190,16 @@ vector<string> QueryAnalyzer::runQueryEval() {
 	if (qsReadOnly.getInvalidQueryBoolean())
 		setClauseFalse();
 		
-	
-	findQueryElements();
-	
-	
+	findQueryElements();	
 	solveWithClause();
-	
-	isOptimizerOn = true;
-	if(isOptimizerOn) {
-		optimizeClauseOrder();
-	}
-	
+	isOptimizerOn = false;
+	if(isOptimizerOn) optimizeClauseOrder();
+	else normalClauses.insert(normalClauses.end(), hardClauses.begin(), hardClauses.end());
 
-	solveSTClause();
-	solvePatternClause();
+	solveNonWithClauses();
+
+//	solveSTClause();
+//	solvePatternClause();
 	vector<string> result = analyzeClauseResults();
 	return result;
 }
@@ -201,13 +210,13 @@ void QueryAnalyzer::findQueryElements() {
 	selectElement = qsReadOnly.getSelectQueryElement();
 	stElements = qsReadOnly.getSuchThatQueryElement(); 
 	patternElements = qsReadOnly.getPatternQueryElement();
-	withElements = qsReadOnly.getWithQueryElement();
+	withClauses = qsReadOnly.getWithQueryElement();
 
 	//easyWithElements = qsReadOnly.getWithQueryElementsNoSyn();
 	//normalWithElements = qsReadOnly.getWithQueryElementsOneSyn();
 	
-	normalElements = qsReadOnly.getNormalQueryElements();
-	hardElements = qsReadOnly.getHardQueryElements();
+	normalClauses = qsReadOnly.getNormalQueryElements();
+	hardClauses = qsReadOnly.getHardQueryElements();
 }
 
 void QueryAnalyzer::selectSynonym(vector<string> &answer)
@@ -247,18 +256,8 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 
 }
 
-void QueryAnalyzer::selectTuple(vector<string> &answer)
+void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string> &synonymEntities, vector<vector<tuple<int, int, string, string>>> &synLoc, vector<tuple<int, int, string, string>> &selectSynTableAttr)
 {
-	auto tupleSynonyms = selectElement.getSelectSynonym();
-	auto tupleEntity = selectElement.getSelectEntity();
-	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
-	auto synonymEntities = Util::splitLine(tupleEntity, ',');
-	vector<vector<tuple<int,int,string,string>>> synLoc;
-	vector<vector<string>> synTableConcatEntries;
-	unordered_map<string, int> synCartMap;
-	vector<tuple<int, int, string, string>> selectSynTableAttr;
-
-	//init mapping of synonyms from same table
 	int numSynTables = 0;
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
@@ -269,6 +268,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
 				selectSynMap.insert(make_pair(get<TABLELOC>(searchInQueryTable->second), numSynTables));
 				
+				//store tableLocation, synonymLocation in table, synonymEntity, synonym name
 				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
@@ -286,15 +286,16 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 			}
 		} else {
 			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i],synonymTokens[i]) });
+			numSynTables++;
+
 		}
 	}
+}
 
-
+void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, string, string>>> &synLoc, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
+{
 	int k = 0;
 	for (auto commonTableSyn : synLoc) { //synonyms from same table,
-
-		if (isQueryFalse())
-			break;
 
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
@@ -308,40 +309,13 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 		if (get<TABLELOC>(commonTableSyn.front()) != NOSYNENTRY) {
 			int numVecElements = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size();
 			vecAppendedSynValues = vector<string>();
-			vector<vector<int>> columnToKeep;
 
-			//find intersection of vector and design entity
-		
-			for (auto concatSyn : commonTableSyn) { //elements in vector
-				vector<string> synEntityVec = validateResult({}, get<SYNENTITY>(concatSyn)); //empty vector instead of {}
-				unordered_set<string> synEntitySet(make_move_iterator(synEntityVec.begin()),
-					make_move_iterator(synEntityVec.end()));
-				vector<int> elementNumsToKeep;
-				for (int i = 0; i < numVecElements; i++) {
-					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][i];
-					if (synEntitySet.find(element) != synEntitySet.end())
-							elementNumsToKeep.push_back(i);
-				}
-				columnToKeep.push_back(elementNumsToKeep);
-			
-			}
-			vector<int> columnResult = columnToKeep.front(); //init for merging vecs
-			for (int i=1; i<columnToKeep.size();i++) {
-				columnResult = intersectionT(columnResult, columnToKeep[i]);
-			}
-			
-			//terminating condition
-			if (columnResult.empty()) {
-				setClauseFalse();
-				answer = {};
-				break;
-			}
-
-			//append values to vector
-			for (const auto& entry : columnResult) {
+			//append values to vector, ignore last element which is non-existant, used for maaping
+			int numElementsInTable = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size()-1;
+			for (int index = 0; index < numElementsInTable; index++) {
 				string appendSynValue;
 				for (auto concatSyn : commonTableSyn) {
-					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][entry];
+					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][index];
 					appendSynValue.append(element);
 					appendSynValue.append(DELIMITER);		
 				}
@@ -349,36 +323,61 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 				vecAppendedSynValues.push_back(appendSynValue);
 			}
 		} else {
+			//retrieve design entity values
 			vecAppendedSynValues = validateResult({}, get<SYNENTITY>(commonTableSyn.front()));
 		}
 		synTableConcatEntries.push_back(vecAppendedSynValues);
 
 	}
 
-	if (!isQueryFalse()) {
-		for (auto &concatVecEntries : synTableConcatEntries)
-			concatVecEntries = Util::removeDuplicates(concatVecEntries);
+	for (auto &concatVecEntries : synTableConcatEntries)
+		concatVecEntries = Util::removeDuplicates(concatVecEntries);
+}
 
-		vector<string> vecToCartProd = synTableConcatEntries.front();
-		//cartesian product synonyms.
-		if (!vecToCartProd.empty()) {
-			for (int i = 1; i < synTableConcatEntries.size(); i++) {
-				auto result = cross(vecToCartProd, synTableConcatEntries[i]);
-				vector<string> vecCartProdstring;
-				for (auto& j : result) {
-					string concatCartProdString;
-					concatCartProdString.append(get<0>(j))
-						.append(DELIMITER)
-						.append(get<1>(j));
-					vecCartProdstring.push_back(concatCartProdString);
-				}
-				vecToCartProd = vecCartProdstring;
+void QueryAnalyzer::getCartesianProductResults(vector<string>& answer, vector<string> &synonymTokens, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
+{
+	vector<string> vecToCartProd = synTableConcatEntries.front();
+	//cartesian product synonyms.
+	if (!vecToCartProd.empty()) {
+		for (int i = 1; i < synTableConcatEntries.size(); i++) {
+			auto result = cross(vecToCartProd, synTableConcatEntries[i]);
+			vector<string> vecCartProdstring;
+			for (auto& j : result) {
+				string concatCartProdString;
+				concatCartProdString.append(get<0>(j))
+				                    .append(DELIMITER)
+				                    .append(get<1>(j));
+				vecCartProdstring.push_back(concatCartProdString);
 			}
+			vecToCartProd = vecCartProdstring;
 		}
-
-		vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
-		answer = vecToCartProd;
 	}
+
+	vecToCartProd = rearrange(vecToCartProd, synonymTokens, synCartMap);
+	answer = vecToCartProd;
+}
+
+void QueryAnalyzer::selectTuple(vector<string> &answer)
+{
+	auto tupleSynonyms = selectElement.getSelectSynonym();
+	auto tupleEntity = selectElement.getSelectEntity();
+	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
+	auto synonymEntities = Util::splitLine(tupleEntity, ',');
+	vector<vector<tuple<int,int,string,string>>> synLoc;
+	vector<vector<string>> synTableConcatEntries;
+	unordered_map<string, int> synCartMap;
+	vector<tuple<int, int, string, string>> selectSynTableAttr;
+
+	if (isQueryFalse()) {
+		answer = {};
+		return;
+	}
+
+	//init mapping of synonyms from same table
+	groupSynonymFromSameTable(synonymTokens, synonymEntities, synLoc, selectSynTableAttr);
+	concatResultsFromSameTable(synLoc, synTableConcatEntries, synCartMap);
+	getCartesianProductResults(answer, synonymTokens, synTableConcatEntries, synCartMap);
+	
 
 
 }
@@ -456,6 +455,7 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 		break;
 
 	case stmtLstSelect: //unimplemented stmt# of the first Stmt in the list
+		selectResultInt = pkbPtr.getStatementList();
 		break;
 	}
 	if (!selectResultInt.empty())
@@ -466,20 +466,6 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 	}
 	return answer;
 }
-
-//vector<string> QueryAnalyzer::intersection(vector<string> v1, vector<string> v2)
-//{
-//
-//	vector<string> v3;
-//
-//	sort(v1.begin(), v1.end());
-//	sort(v2.begin(), v2.end());
-//
-//	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(v3));
-//
-//	return v3;
-//}
-
 
 vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) {
 	unordered_set<string> shortlisted;
@@ -498,13 +484,13 @@ vector<string> QueryAnalyzer::removeVectDuplicates(vector<string> selectClause) 
 	return answer;
 }
 
-vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
+vector<vector<vector<string>>> QueryAnalyzer::solveSTClause(QueryElement stClause) {
 	string stClauseType;
 	vector<vector<string>> stResult;
 	tuple<bool, vector<vector<string>>> clauseResult;
 	int evaluateSTRelation;
 
-	for (QueryElement stClause : stElements) {
+	//for (QueryElement stClause : stElements) {
 		if (isQueryFalse())
 			return{ { {} } };
 
@@ -545,17 +531,18 @@ vector<vector<vector<string>>> QueryAnalyzer::solveSTClause() {
 				clauseResult = AffectsAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				break;
 			case affectsStar:
+				clauseResult = AffectsStarAnalyzer(stClause, pkbPtr, mergedQueryTable, synTableMap).solveClauseStmt();
 				break;
 		}
 		stResult = get<VECTRESULT>(clauseResult);
 		hasSTClause = get<BOOLRESULT>(clauseResult);
 		if (!stResult.empty())
 			insertClauseResults(stResult);
-	}
+//	}
 	return mergedQueryTable;
 }
 
-void QueryAnalyzer::solvePatternClause() {
+void QueryAnalyzer::solvePatternClause(QueryElement patternClause) {
 	string patternClauseType;
 	vector<vector<string>> patternResult;
 	int evaluatePatternRelation;
@@ -563,7 +550,7 @@ void QueryAnalyzer::solvePatternClause() {
 
 	
 
-	for (QueryElement patternClause : patternElements) {
+//	for (QueryElement patternClause : patternElements) {
 		if (!isQueryFalse()) {
 			patternClauseType = patternClause.getPatternEntity();
 			evaluatePatternRelation = mapPatternValues[patternClauseType];
@@ -580,11 +567,11 @@ void QueryAnalyzer::solvePatternClause() {
 			if (!patternResult.empty())
 				insertClauseResults(patternResult);
 			if (!hasPatternClause)
-				break;
+				return;
 		} else {
-			break;
+			return;
 		}
-	}
+//	}
 	
 		
 }

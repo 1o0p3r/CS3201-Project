@@ -34,4 +34,6 @@ const int BOOLRESULT = 0;
 const int NOSYNENTRY = -1;
 const string SUCH_THAT = "suchThat";
 const string EMPTY_STRING = "";
+const int GETNORMALCLAUSE = 0;
+const int GETHARDCLAUSE = 1;
 const int LOWEST_RANK = floor(sqrt(INT_MAX)/2); //some random number
