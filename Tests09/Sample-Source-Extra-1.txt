@@ -1,0 +1,205 @@
+procedure Ten {
+	alpaca = 2 + 7 - 100 * (99 + 47);
+	antelope = 2 + alpaca;
+	while alpaca {
+		badger = 77 * antelope - 20 + 100;
+		bear = 88 * 99 - (8 + 4 - 3 * 100 * (99 + 47));
+		if bird then {
+			bear = bear - (99 + 47);
+			camel = antelope;
+			bear = 100 + 91 - 47 + 8 + 4 - 3; }
+		else {
+			antelope = camel - 20 + 100 * (31 * 2);
+			call Eleven; 
+			anaconda = 3 * bear - 70 * (99 + 99 * (88 + 12- 34)); } }
+	cat = badger;
+	while anaconda {
+		cat = 9;
+		anaconda = 19 + anaconda + cat - 99 * camel;
+		badger = 77 * 88 - 9 + 10 - 34 + (8 * 8 * (2 * 31) * 9) + 14;
+		if dog then {
+			deer = cat - dog - cat + dog - cat * cat - dog;
+			antelope = alpaca - 3 + 4 + 8 * antelope - alpaca;
+			cow = alpaca * 99 - 70 + 14 * (8 + 9);
+			cow = antelope; }
+			else {
+			camel = camel * 7 + 2; 
+			deer = 2 * 8 + badger * (badger + badger * badger); }
+		dog = camel + cat * (100 + 99); 
+		elephant = 79; }
+	deer = cat - badger * 100;
+	dinosaur = (77 * 99) - (100 * 74 + (24 + 24) + 5 * 2);
+	while dinosaur {
+		if dolphin then {
+			dinosaur = 77 - 2 * 31 + antelope;
+			cow = 17 * 64 - 5;
+			cow = 7 + (8* 99) + (8 + 1 - dinosaur);
+			cow = elephant * elephant; }
+		else {
+			eagle = 18 * 99 + 14 - 99 * (100 + 2);
+			dinosaur = deer + eagle + antelope - 100 * (7 + 45);
+			if earthworm then {
+				dinosaur = 20;
+				eel = 99 - eel; 
+				dinosaur = eagle + 74 - 88 * 2; } 
+			else {
+				eel = dinosaur;
+				cow = 77 * anaconda * (9 + 10 - 2 * 45);
+				earthworm = dinosaur * 99 - 10 + (81 - 43); } } }
+	flea = 22;
+	earthworm = 72 - 99 * 8 * 7 * 23;
+	antelope = earthworm + 12 * antelope - 77;
+	if dinosaur then {
+		while cow {
+			dinosaur = 25 * flea - 77;
+			elephant = eagle + dinosaur - 25 * flea;
+			call Twelve;
+			fly = flea - 26;
+			flamingo = antelope + fly; } }
+	else {
+		while anaconda {
+			antelope = dinosaur - fly * 28;
+			bear = antelope + (9 + 10 - 2 * 45);
+			cow = bear - 99;
+			deer = cow * 17;
+			elephant = deer;
+			flea = elephant - 78; } }
+	gazelle = 25 * flea - 100 + (99 * 99);
+	earthworm = 8 * 9 - 12 + 45;
+	gorilla = 77;
+	if gorilla then {
+		deer = deer + 2;
+		while anaconda {
+			flea = gorilla + 25 * badger * badger + (badger + badger);
+			elephant = 35 * (elephant - 78); }
+		gazelle = flea - elephant; }
+	else {
+		dinosaur = 37;
+		dinosaur = gorilla - 8 + 1 + 2 + 3 + 5;
+		while dinosaur {
+			flamingo = 37;
+			flamingo = 99 * 54 + badger;
+			flamingo = 99 * 100 - 2;
+			flamingo = alpaca; }
+		gorilla = 41;
+		gorilla = 53 + 81 - 74; }
+	hawk = cat;
+	while cat {
+		hawk = 4 + cat + 4;
+		while hawk {
+			cat = 46 * 99;
+			earthworm = anaconda + 99 - 3 * 7 + badger;	}
+		hedgehog = anaconda * 48 + badger; }
+	dolphin = 7;
+	flamingo = 49;
+	while anaconda {
+		while cat {
+			hedgehog = bear + hedgehog;
+			cow = cat + 1 + 2;
+			flamingo = 7;
+			flamingo = 9 + hedgehog - 14;
+			flamingo = 10; } }
+	fly = 99 * 54 + badger;
+	if badger then {
+		if flamingo then {
+			flamingo = 4 + 99 - 3;
+			human = earthworm + badger * 99 - 13 * (17 - 4 + badger * badger);
+			call Eleven; }
+		else {
+			earthworm = 5 * human - 74;
+			hamster = human + 3;
+			iguana = 8 * 8 + 8 - 99 * (flamingo - 91);} } 
+	else {
+		if iguana then {
+			call Twelve;
+			dog = 4;
+			elephant = 7 + dog;
+			earthworm = 8 * elephant - 99;
+			hamster = iguana + human; }
+		else {
+			fly = jaguar + antelope - 17;
+			jaguar = 17 - 88 * 9 - 17;
+			iguana = anaconda * 100 - badger * badger;
+			jaguar = badger * anaconda;
+			iguana = 1 + 2 + 5 * 99;
+			flamingo = 123 - 2 * 7 - (9 * 9); } }
+	flamingo = 54 * antelope - 16;
+	human = 15 - 88 * badger;
+	human = 123;
+	if human then {
+		gorilla = 64 * gazelle - 120 + 99;
+		jaguar = human + 71;
+		flamingo = 71 * gorilla;
+		if iguana then {
+			jaguar = antelope;
+			flamingo = jaguar * 2 - badger;
+			human = badger - 44 * 99 - 2 * (5 + 4);
+			flamingo = 99;
+			earthworm = alpaca;
+			deer = dog + gazelle - 14; }
+		else {
+			flamingo = alpaca + deer - gazelle + badger;
+			human = antelope - dog + cat - 13 + 14 * 88 - (7 * 8); }
+		eel = cow - 15 * 8;
+		flamingo = 10 * 7 - 99; }
+	else {
+		flamingo = 69 * eagle;
+		eel = human * 17 + 123 - human;
+		flamingo = earthworm - 15;
+		eel = 19 * 8 - 99;
+		if cat then {
+			camel = 3 - 4;
+			cat = 4 * camel - 100; }
+		else {
+			flamingo = 19;
+			eel = anaconda * 10;
+			earthworm = 17 + earthworm;
+			human = human; }
+		flamingo = 73 * jaguar;
+		iguana = iguana * badger;
+		iguana = badger - 17; }
+	flamingo = antelope - 9;
+}
+
+procedure Eleven {
+	while hamster {
+		cow = hamster * 10;
+		while cow {
+			anaconda = elephant - 100 + 99;
+			earthworm = human - 12;
+			while dog {
+				while hamster {
+					flamingo = 17 - 3;
+					cat = dog + 13;
+					eagle = 17 * 8 - 99; } }
+			eel = elephant * 2 - 4; } 
+		while earthworm {
+			dog = cat + 122;
+			cat = 3; } }
+	anaconda = 17;
+}
+
+procedure Twelve {
+	anaconda = 12;
+	if anaconda then {
+		eel = anaconda * 100;
+		cow = 10;
+		cat = 17 + 15 * 8 + badger; }
+	else {
+		eel = 2;
+		flamingo = 16 * badger; 
+		while flamingo {
+			cow = 15 + anaconda - 15;
+			anaconda = 16;
+			while eagle {
+				flamingo = 10;
+				while gorilla { 
+					eel = 13 + 8 * 9; 
+					cow = 17; }
+				cat = 15;
+				if cat then {
+					dog = 17 + 2; }
+				else {
+					dog = camel; } } } }
+	anaconda = 2;
+}
