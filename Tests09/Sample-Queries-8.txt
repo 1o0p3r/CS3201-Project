@@ -3,3 +3,83 @@ stmtLst s;
 Select s
 none
 5000
+2 - stmtLst tuple with other clauses
+stmtLst sl; while w; call c1, c2;
+Select <sl, c1> such that Parent(w, c1) and Next(c1,c2)
+none
+5000
+3 - Single Follows* Query
+while w; assign a;
+Select <w, a> such that Follows*(w,a)
+none
+5000
+4 - Single Parent* Query
+if ifs; while w;
+Select <w, ifs> such that Parent*(ifs, w)
+none
+5000
+5 - Single Modifies Query
+call c; variable v;
+Select <c, v> such that Modifies(c, v)
+none
+5000
+6 - Single Uses Query
+procedure p; call c;
+Select <p, c> such that Uses(p, _)
+none
+5000
+7 - Single Next Query
+prog_line n; assign a;
+Select <n, a> such that Next(n,a)
+none
+5000
+8- Single Next* Query
+call c; if ifs;
+Select <c, ifs> such that Next*(ifs, c)
+none
+5000
+9- Single Affects Query
+assign a1, a2;
+Select a2 such that Affects(a1, a2)
+none
+5000
+10 - Single Affects Query
+assign a1; prog_line n;
+Select a1 such that Affects(a1, n)
+none
+5000
+11 -Single Affects Query
+stmt s;
+Select <s> such that Affects(s, 244)
+none
+5000
+12 -Single Affects* Query
+assign a1, a2;
+Select a2 such that Affects*(a1,a2)
+none
+5000
+13-Single Affects* Query
+stmt s; assign a2;
+Select <a2, s> such that Affects*(a2, s)
+none
+5000
+14-Single Affects* Query
+stmt s; call c;
+Select <c, s> such that Affects*(224, s)
+none
+5000
+15-Single Affects* Query no synonym, both wild card, BOOLEAN
+
+Select BOOLEAN such that Affects*(_,_)
+none
+5000
+16-Single Affects* Query no synonym, both number
+constant c;
+Select c such that Affects*(223,242)
+none
+5000
+17-Single Affects* Query no synonym, both number, BOOLEAN
+stmt s;
+Select BOOLEAN such that Affects*(223, 242)
+none
+5000
