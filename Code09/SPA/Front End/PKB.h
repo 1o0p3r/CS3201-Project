@@ -15,8 +15,7 @@
 using namespace std;
 typedef short PROC;
 typedef tuple<int, vector<int>> vTuple;
-
-class VarTable;  // no need to #include "VarTable.h" as all I need is pointer
+typedef tuple<int, vector<set<int>>> vsTuple;
 
 class PKB {
 public:
@@ -420,8 +419,6 @@ public:
 
 	tuple<vector<int>, vector<int>> getAffectsTwoSynonyms();
 
-	void affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int & max, vector<vector<int>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
-
 	/**
 	Add a Constant to PKB
 	@param c the constant name
@@ -505,6 +502,12 @@ public:
 
 	bool getAffectStarTwoLiterals(int s1, int s2);
 
+	vector<int> getAffectStarFirstLiteral(int s1);
+
+	vector<int> getAffectStarSecondLiteral(int s2);
+
+	tuple<vector<int>, vector<int>> getAffectStarTwoSynonyms();
+
 private:
 	Follow follow;
 	Parent parent;
@@ -559,4 +562,6 @@ private:
 	vector<int> statementProcedureTable;
 	vector<string> modifiedVariables;
 	vector<string> usedVariables;
+	void affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int & max, vector<vector<int>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
+	void affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
 };

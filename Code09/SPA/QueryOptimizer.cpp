@@ -142,6 +142,7 @@ void QueryOptimizer::runClauseRanking() {
 	
 	for (auto &candidate : normalClauses) {
 		clauseRanker queryObj;
+		queryObj.clause = candidate;
 		queryObj.relationRank = getRankOfRelation(candidate);
 		queryObj.designEntityRank = getDesignEntityRank(candidate);
 		queryObj.numSynonymRank = getRankOfClauseSynonymCount(candidate);
@@ -151,6 +152,7 @@ void QueryOptimizer::runClauseRanking() {
 
 	for (auto &candidate : hardClauses) {
 		clauseRanker queryObj;
+		queryObj.clause = candidate;
 		queryObj.relationRank = getRankOfRelation(candidate);
 		queryObj.designEntityRank = getDesignEntityRank(candidate);
 		queryObj.numSynonymRank = getRankOfClauseSynonymCount(candidate);

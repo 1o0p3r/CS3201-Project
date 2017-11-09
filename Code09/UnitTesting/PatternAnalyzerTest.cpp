@@ -28,7 +28,7 @@ public:
 		qs.addPatternQuery(ifPat);
 		qa.setQS(qs);
 		qa.findQueryElements();
-		qa.solvePatternClause();
+		qa.solvePatternClause(ifPat);
 		auto answer = qa.getMergedQueryTable();
 		hardCodeResult = { {"6","18","ifs"} };
 		for ( int k =0; k<answer.size();k++)
@@ -56,7 +56,7 @@ public:
 		qs.addPatternQuery(whilePat);
 		qa.setQS(qs);
 		qa.findQueryElements();
-		qa.solvePatternClause();
+		qa.solvePatternClause(whilePat);
 		auto answer = qa.getMergedQueryTable();
 		hardCodeResult = { { "20","24","whiles" } };
 		for (int k = 0; k<answer.size(); k++)
