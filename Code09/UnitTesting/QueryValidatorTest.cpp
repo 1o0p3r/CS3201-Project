@@ -297,6 +297,13 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "stmt s; assign a; Select <s, a> pattern a (_, _\"x\"_) such that Parent* (s, a) and Next (s, a) and Next* (a, s)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "call c; if ifs; Select <c, ifs> such that Next*(ifs, c)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 		}
 

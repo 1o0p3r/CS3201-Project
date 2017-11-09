@@ -12,7 +12,7 @@ procedure Singapore {
 		wants = go + travel + Malaysia;
 		if Malaysia then {
 			call Malaysia;
-			expenses = travel * expenses * 2;
+			expenses = travel * expenses * 11;
 		}
 		else {
 			while expenses {
@@ -29,7 +29,7 @@ procedure Singapore {
 				expenses = work* (work) * (earn);
 			} 
 			else {
-				expenses = work * earn - 4;
+				expenses = work * earn - 21;
 			}
 		}
 	}
@@ -442,7 +442,7 @@ procedure China {
 		while China {
 			if China then {
 				while Korea {
-					disco = expenses * rmb;
+					disco = expenses * rmb - Japan;
 					while Japan {
 						yen = Korea  - job;
 						while Thailand {
@@ -684,7 +684,7 @@ procedure DummyTwo {
 	perfect = Singapore - 389;
 	tense = Vietnam + 265;
 	continous = Korea + 236;
-	current = Indonesia + 244;
+	current = Indonesia + 244 * 203;
 	soon = Malaysia- 154;
 	when = Laos * 293;
 }
