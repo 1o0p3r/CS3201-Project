@@ -11,7 +11,7 @@ procedure weather {
 				sleep = sleep + rain;
 				bed = sleep + blanket;
 				blanket = blanket + good;
-			}
+				}
 			else {
 				rain = sleep - timeToSleep;
 			}
@@ -126,7 +126,7 @@ procedure cold {
 				temperature = stillCold + go * warm - (heater*sleep);
 			} 
 			else {
-				stillCold = heater + (noMoney*lottery-(jobs*rainy + (cloudy- heater)));
+				cold = heater + (noMoney*lottery-(jobs*rainy + (cloudy- heater)));
 				temperature = heater + decrease;
 			}
 		}
@@ -136,7 +136,7 @@ procedure cold {
 	sleep = temperature + increase;
 }
 procedure dry {
-	dry = buy + humidifier;
+	dry = go + buy + humidifier;
 	go = shoppingMall + humidifier;
 	while noHumidifier {
 		while dry {
@@ -181,7 +181,7 @@ procedure cloudy {
 		brighten = ((brighten)) + off;
 	}
 	if noMoney then {
-		lights = turn + off;
+		windy = turn + off;
 		noMoney = ((noMoney) + (lights)* lottery);
 	} else {
 		go = get + jobs;
@@ -190,10 +190,10 @@ procedure cloudy {
 	noMoney = noMoney*5;
 }
 procedure windy {
-	windy = wind + grey + clouds;
+	windy = go + wind + grey + clouds;
 	call rain;
 	call cloudy;
-	if rainy then{
+	if rainy then {
 		call cold;
 	} 
 	else {
@@ -209,7 +209,7 @@ procedure windy {
 	else {
 		call dry;
 	}
-	rainy = freezing + cold * rainy;
+	rain = freezing + cold * rainy;
 	freezing = cold + windy + dry;
 }
 procedure rain {
@@ -221,7 +221,39 @@ procedure rain {
 	rainy = (rain)* rainy + (warm)*((cloudy)- dry);
 	rainy = (rain)- rainy + (warm)*((cloudy)- dry*rainy);
 	cloudy = (cloudy) + rainy - rainy*(cloudy)- dry*((rainy));
-	cloudy = ((jobs) + cloudy *(shoppingMall)- lottery *rainy)-(rainy*lottery);
+	cloudy = (jobs) + cloudy *(shoppingMall)- lottery *rainy-(rainy*lottery);
 	go = (rainy*lottery-(cloudy*blanket-cold)*(clouds-lottery)*(off-(noMoney)*cold));
 	go = (temperature*lottery-(temperature*noMoney-noMoney+ brighter + lights - noMoney) *(sleep * noHumdifier));
+	call end;
+}
+
+procedure end {
+	while weather {
+		cloud = shoppingMall + go + aircon;
+		shoppingMall = sleep + buy + aircon;
+	}
+	if windy then {
+		if rainy then {
+			end = go + cold;
+		}
+		else {
+			while hot {
+				cloudy = hot + go + dry;
+				while cold {
+					dry = hot + lottery + go;
+				}
+			}		
+		}
+	}
+	else {
+		while noMoney {
+			dry = hot + windy;
+			if sleep then {
+				shoppingMall = sleep + buy;
+			}
+			else {
+				sleep = lottery * shoppingMall;
+			}
+		}
+	}
 }
