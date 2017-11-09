@@ -65,7 +65,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgOneResult(string arg
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) // to be optimized
-			vecOfCandidates = pkbReadOnly.getAllStmt();
+			return addBothSynResult(arg1, arg2);
 		else
 			vecOfCandidates.push_back(stoi(arg2));
 		for (int candidates : vecOfCandidates) {
@@ -151,10 +151,14 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addBothSynResult(string ar
 		pkbResultForArg1.push_back(arg1);
 		NextStarResult.push_back(pkbResultForArg1);
 	} else if(!isSameSynonym && !pkbResultForArg1.empty()) {
-		pkbResultForArg1.push_back(arg1);
-		NextStarResult.push_back(pkbResultForArg1);
-		pkbResultForArg2.push_back(arg2);
-		NextStarResult.push_back(pkbResultForArg2);
+		if (arg1 != WILDCARD_SYMBOL) {
+			pkbResultForArg1.push_back(arg1);
+			NextStarResult.push_back(pkbResultForArg1);
+		}
+		if (arg2 != WILDCARD_SYMBOL) {
+			pkbResultForArg2.push_back(arg2);
+			NextStarResult.push_back(pkbResultForArg2);
+		}
 	}
 
 	return make_tuple(hasNextStar, NextStarResult);
