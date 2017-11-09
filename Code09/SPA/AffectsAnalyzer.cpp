@@ -26,7 +26,7 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgTwoResult(string arg1
 	}
 	else {
 		if (arg1 == WILDCARD_SYMBOL)
-			vecOfCandidates = pkbReadOnly.getAllNext();
+			return addBothSynResult(arg1, arg2);
 		else
 			vecOfCandidates.push_back(stoi(arg1));
 		for (int candidates : vecOfCandidates) {
@@ -65,7 +65,7 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgOneResult(string arg2
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) // to be optimized
-			vecOfCandidates = pkbReadOnly.getAllStmt();
+			return addBothSynResult(arg1, arg2);
 		else
 			vecOfCandidates.push_back(stoi(arg2));
 		for (int candidates : vecOfCandidates) {
@@ -153,11 +153,16 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg
 		AffectsResult.push_back(pkbResultForArg1);
 	}
 	else if (!isSameSynonym && !pkbResultForArg1.empty()) {
-		pkbResultForArg1.push_back(arg1);
-		AffectsResult.push_back(pkbResultForArg1);
-		pkbResultForArg2.push_back(arg2);
-		AffectsResult.push_back(pkbResultForArg2);
+		if (arg1 != WILDCARD_SYMBOL) {
+			pkbResultForArg1.push_back(arg1);
+			AffectsResult.push_back(pkbResultForArg1);
+		} 
+		if (arg2 != WILDCARD_SYMBOL) {
+			pkbResultForArg2.push_back(arg2);
+			AffectsResult.push_back(pkbResultForArg2);
+		}
 	}
+
 
 	return make_tuple(hasAffects, AffectsResult);
 }
