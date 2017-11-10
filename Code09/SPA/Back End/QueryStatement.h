@@ -1,3 +1,4 @@
+//This class is a query object to be passed to query evaluator and contains all the necessary information about the query.
 #pragma once
 #include <vector>
 #include <SynonymEntityPair.h>
@@ -31,8 +32,6 @@ public:
 	vector<QueryElement> getWithQueryElement();
 	vector<SynonymEntityPair> getSynonymEntityList();
 
-	void setInvalidQueryBoolean();
-
 	vector<QueryElement> getWithQueryElementsNoSyn();
 	vector<QueryElement> getWithQueryElementsOneSyn();
 	vector<QueryElement> getWithQueryElementsTwoSyn();
@@ -40,7 +39,7 @@ public:
 	vector<QueryElement> getHardQueryElements();
 	multimap<string, pair<int, int>> getNormalMultiMap();
 	multimap<string, pair<int, int>> getHardMultiMap();
-
+	void setInvalidQueryBoolean();
 	void addWithQueryElementNoSyn(QueryElement qe);
 	void addWithQueryElementOneSyn(QueryElement qe);
 	void addWithQueryElementTwoSyn(QueryElement qe);

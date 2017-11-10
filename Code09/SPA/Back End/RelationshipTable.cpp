@@ -1,8 +1,7 @@
+//This class holds all the allowed arguments for every relationhips in the such that clause
 #include "RelationshipTable.h"
 #include <unordered_map>
 #include <string>
-
-
 
 RelationshipTable::RelationshipTable() {
 	const int NUM_ONE = 1;
@@ -42,96 +41,93 @@ RelationshipTable::RelationshipTable() {
 	vector<string> affectsArg1;
 	vector<string> affectsArg2;
 
-
 	//Add the relationship of Modifies to table
 	modifiesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
 		"string", "number" };
 	modifiesArg2 = { "variable", "string", "wildcard" };
-	Relationship relationModifies = Relationship(NUM_TWO, modifiesArg1, modifiesArg2);
+	Relationship relationModifies = Relationship(modifiesArg1, modifiesArg2);
 	relationshipTable[MODIFIES_STRING] = relationModifies;
 
 	//Add the relationship of Uses to table
 	usesArg1 = { "stmt", "assign", "while", "prog_line", "if", "call", "procedure",
 		"string", "number"};
 	usesArg2 = {"variable", "string", "wildcard"};
-	Relationship relationUses = Relationship(NUM_TWO, usesArg1, usesArg2);
+	Relationship relationUses = Relationship(usesArg1, usesArg2);
 	relationshipTable[USES_STRING] = relationUses;
 
 	//Adds the relationship of Follows to table
 	followsArg = { "stmt", "assign", "while", "if", "prog_line", "call", "wildcard", "number" };
-	Relationship relationFollows = Relationship(NUM_TWO, followsArg, followsArg);
+	Relationship relationFollows = Relationship(followsArg, followsArg);
 	relationshipTable[FOLLOWS_STRING] = relationFollows;
 
 	//Adds the relationship of Follows* to table
 	followsStarArg = { "stmt", "assign", "while", "if", "prog_line", "call", "wildcard", "number" };
-	Relationship relationFollowsStar = Relationship(NUM_TWO, followsStarArg, followsStarArg);
+	Relationship relationFollowsStar = Relationship(followsStarArg, followsStarArg);
 	relationshipTable[FOLLOWS_STAR_STRING] = relationFollowsStar;
 
 	//Adds the relationship of Parent to table
 	parentArg1 = { "stmt", "while", "if", "prog_line" ,"wildcard", "number" };
 	parentArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
-	Relationship relationParent = Relationship(NUM_TWO, parentArg1, parentArg2);
+	Relationship relationParent = Relationship(parentArg1, parentArg2);
 	relationshipTable[PARENT_STRING] = relationParent;
 
 	//Adds the relationship of Parent* to table
 	parentStarArg1 = { "stmt", "while", "if", "prog_line", "wildcard", "number" };
 	parentStarArg2 = { "stmt", "while", "if", "wildcard", "prog_line", "call", "assign", "number" };
-	Relationship relationParentStar = Relationship(NUM_TWO, parentStarArg1, parentStarArg2);
+	Relationship relationParentStar = Relationship(parentStarArg1, parentStarArg2);
 	relationshipTable[PARENT_STAR_STRING] = relationParentStar;
 
 	//Adds the relationship of Next to table
 	nextArg1 = { "stmt", "assign", "while", "if", "call", "prog_line", "number", "wildcard" };
 	nextArg2 = { "stmt", "assign", "while", "if", "call", "prog_line", "number", "wildcard" };
-	Relationship relationNext = Relationship(NUM_TWO, nextArg1, nextArg2);
+	Relationship relationNext = Relationship(nextArg1, nextArg2);
 	relationshipTable[NEXT_STRING] = relationNext;
 
 	//Since Next and Next*
 	nextStarArg1 = nextArg1;
 	nextStarArg2 = nextArg2;
-	Relationship relationNextStar = Relationship(NUM_TWO, nextStarArg1, nextStarArg2);
+	Relationship relationNextStar = Relationship(nextStarArg1, nextStarArg2);
 	relationshipTable[NEXT_STAR_STRING] = relationNextStar;
 
 	//Adds the relationship of Calls to table
 	callsArg1 = { "procedure", "string", "wildcard" };
 	callsArg2 = { "procedure", "string", "wildcard" };
-	Relationship relationCalls = Relationship(NUM_TWO, callsArg1, callsArg2);
+	Relationship relationCalls = Relationship(callsArg1, callsArg2);
 	relationshipTable[CALLS_STRING] = relationCalls;
 
 	callsStarArg1 = callsArg1;
 	callsStarArg2 = callsArg2;
-	Relationship relationCallsStar = Relationship(NUM_TWO, callsStarArg1, callsStarArg2);
+	Relationship relationCallsStar = Relationship(callsStarArg1, callsStarArg2);
 	relationshipTable[CALLS_STAR_STRING] = relationCallsStar;
 
 	//Adds the relationship of Affects to table
 	affectsArg1 = { "prog_line", "stmt", "assign", "wildcard", "number" };
 	affectsArg2 = { "prog_line", "stmt", "assign", "wildcard", "number" };
-	Relationship relationAffects = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	Relationship relationAffects = Relationship(affectsArg1, affectsArg2);
 	relationshipTable[AFFECTS_STRING] = relationAffects;
 
 	//Adds the relationship of Affects* to table
-	Relationship relationAffectsT = Relationship(NUM_TWO, affectsArg1, affectsArg2);
+	Relationship relationAffectsT = Relationship(affectsArg1, affectsArg2);
 	relationshipTable[AFFECTS_STAR_STRING] = relationAffectsT;
 
 }
-
+//This Function takes in a relationship, the type and the argIdx(argNum) and checks if they are permitted with the particular relationship
+//Returns true if so, else returns false
 bool RelationshipTable::isValidArg(string rel, string type, int argIndex) {
 	if (argIndex == 1 && (isValidArg1(rel,type))) {
 		return true;
-	}
-	else if (argIndex == 2 && isValidArg2(rel, type)) {
+	} else if (argIndex == 2 && isValidArg2(rel, type)) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
+//This function takes in a relationship and the type of argument it is and checks for the first argument with type of argument
+//Returns true if check is valid i.e. exists in a relationship argNum1, else returns false
 bool RelationshipTable::isValidArg1(string rel, string typeArg) {
-
 	if (isRelationshipExists(rel)) {
 		Relationship relationship = relationshipTable.at(rel);
-
 		vector<string> reqArg1 = relationship.getArg1();
-		
 		for (std::vector<string>::iterator it = reqArg1.begin(); it != reqArg1.end(); it++) {
 			if (typeArg == (*it)) {
 				return true;
@@ -141,11 +137,12 @@ bool RelationshipTable::isValidArg1(string rel, string typeArg) {
 	}
 	return false;
 }
+//This function takes in a relationship and the type of argument it is and checks for the second argument with type of argument
+//Returns true if check is valid i.e. exists in a relationship argNum2, else returns false
 bool RelationshipTable::isValidArg2(string rel, string typeArg) {
 	if (isRelationshipExists(rel) == true) {
 		Relationship relationship = relationshipTable.at(rel);
 		vector<string> reqArg2 = relationship.getArg2();
-
 		for (std::vector<string>::iterator it = reqArg2.begin(); it != reqArg2.end(); it++) {
 			if (typeArg == (*it)) {
 				return true;
@@ -155,11 +152,11 @@ bool RelationshipTable::isValidArg2(string rel, string typeArg) {
 	}
 	return false;
 }
+//This function takes in a string which is a relationship and checks if it exists as a key in the relationshipTable Object
+//Returns true if exists, else returns false;
 bool RelationshipTable::isRelationshipExists(string rel) {
 	std::unordered_map<std::string, Relationship>::iterator it;
-
 	it = relationshipTable.find(rel);
-
 	if (it != relationshipTable.end()) {
 		return true;
 	}

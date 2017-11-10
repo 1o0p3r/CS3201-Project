@@ -1,3 +1,4 @@
+//This class holds a particular relationship e.g. Follows with its permitted arg1 and arg2
 #pragma once
 #include <string>
 #include <vector>
@@ -10,9 +11,8 @@ private:
 	vector<string> argument1;
 	vector<string> argument2;
 public:
-	Relationship(int, vector<string>, vector<string>);
+	Relationship(vector<string>, vector<string>);
 	Relationship();
-	int getNumArgs();
 	vector<string> getArg1();
 	vector<string> getArg2();
 };

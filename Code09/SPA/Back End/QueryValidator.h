@@ -1,3 +1,4 @@
+//This class takes in a given string, checks if it is a valid query, and if it is valid, creates a queryElement and adds to the queryStatement
 #pragma once
 #include <string>
 #include <vector>
@@ -10,8 +11,6 @@
 
 using std::string;
 using std::vector;
-
-
 class QueryValidator
 {
 private:
@@ -26,72 +25,55 @@ private:
 	vector<string> declarationString;
 	vector<string> queryString;
 	unordered_map<string, string> declMap;
-	void addSynonymEntityList();
 	bool resultBoolean;
+	
 	bool isValidSelect(vector<string> vectorClauses);
-
-	string extractAllSynAttr(vector<string> resultVec);
-
-	bool isValidCorrespondingTupleEntities(vector<string> resultVec);
-
-	string extractAllEnt(vector<string> resultCl);
-
-	string extractAllSyn(vector<string> resultVec);
-
 	bool isValidOthers(vector<string> others);
 	bool isVariableSynonym(string str);
 	bool isValidSynonym(string syn);
 	bool inEntityList(string entity);
 	bool parseDeclaration(vector<string> splitString);
 	bool isNotReDeclaredOtherEnt(vector<string> synonymsAttached, string reqEntity);
+	bool isValidCorrespondingTupleEntities(vector<string> resultVec);
 	bool isValidWith(string str);
 	bool bothStringLiteral(string arg1Identity, string arg2Identity);
 	bool bothNumber(string arg1Identity, string arg2Identity);
+	bool isStringLiteralOrNumber(string syn);
 	bool isAttrRef(string arg);
 	bool isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName, string arg1Identity, string arg2Identity);
 	bool checkRelationshipTable(string, string, int);
 	bool parseQueryLine(string);
 	bool isLeadingAnd(string str);
-	bool isValidAddAssignPattern(string str, string synPattern);
+	void addSynonymEntityList();
 	
+	bool isValidAddAssignPattern(string str, string synPattern);
 	void addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Variable, bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring);
 	bool isValidAddWhilePattern(string str, string synPattern);
-	
 	void addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern);
 	bool isValidAddIfPattern(string str, string synPattern);
-	
 	void addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern);
+	
 	bool isWhiteSpaceTab(string str);
-	bool isString(string str);
 	bool isBalancedParantheses(string str);
 	bool isValidLeadTrail(string str);
 	bool is_number(string str);
 	bool isSubstring(string str);
 	
+	bool isValidCorrespondingEntity(string synonym, string attrName);
+	bool isIdent(string str);
 	bool isValidAttrCondRegex(string str);
 	bool isValidAttRefRegex(string str);
 	bool isValidAttrCompareRegex(string str);
 	bool isQuotationIdentRegex(string str);
 	bool isValidGeneralPatternRegex(string str);
-	bool isValidIfMultiplePatternRegex(string str);
-	bool isStmtTypes(string str);
 	bool isHardType(string rel);
-	bool isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
 	bool isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation);
 	bool isCornerRelation(string relation);
-	bool isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent);
-
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
-	
 	void addSelectQueryElement(string ent, string syn, string selectType, string str);
 	void addSuchThatQueryElement(QueryElement qe);
 	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
-
-	bool isStringLiteralOrNumber(string syn);
 	
-	string extractIdentity(string arg);
-	vector<string> extractAndPattern(string currTwo, vector<string> VecPattern);
-
 	string removeSymbols(string str, string symbolToRemove);
 	string trim(string str);
 	string removeDuplicatesWhiteSpaces(string str);
@@ -101,6 +83,15 @@ private:
 	string removeUnderScoreAndQuotation(string str);
 	string getCorrespondingEntity(string syn);
 	vector<string> splitBySymbol(string str, char symbol);
+
+	vector<string> extractAndPattern(string currTwo, vector<string> VecPattern);
+	vector<string> extractPatternClauses(string str);
+	vector<string> extractSuchThatClauses(string str);
+	vector<string> extractWithClauses(string str);
+	string extractAllSynAttr(vector<string> resultVec);
+	string extractAllEnt(vector<string> resultCl);
+	string extractAllSyn(vector<string> resultVec);
+	string extractIdentity(string arg);
 public:
 	QueryValidator();
 	bool parseInput(string str);
@@ -128,14 +119,7 @@ public:
 	bool isValidExprUnder(string str);
 	bool isValidTuple(string str);
 
-	bool isIdent(string str);
-	bool isOnlyTuple(string str);
-
-	vector<string> extractPatternClauses(string str);
-	vector<string> extractSuchThatClauses(string str);
-	vector<string> extractWithClauses(string str);
 	vector<string> splitToSentences(string strToSplit);
 	QueryStatement getQueryStatement();
-	bool isValidCorrespondingEntity(string synonym, string attrName);
-	
+
 };
