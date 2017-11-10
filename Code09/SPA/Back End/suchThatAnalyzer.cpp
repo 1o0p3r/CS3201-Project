@@ -409,8 +409,15 @@ tuple<vector<string>,vector<string>> suchThatAnalyzer::validatePKBResultsInt(vec
 			arg2EntResults.find(to_string(v2[i])) != arg2EntResults.end()) {
 			arg1ValidatedResults.push_back(to_string(v1[i]));
 			arg2ValidatedResults.push_back(to_string(v2[i]));
-		}
+		} 
+		else if(arg2 == WILDCARD_SYMBOL && arg1EntResults.find(to_string(v1[i])) != arg1EntResults.end())
+			arg1ValidatedResults.push_back(to_string(v1[i]));
+		else if(arg1 == WILDCARD_SYMBOL && arg2EntResults.find(to_string(v2[i])) != arg2EntResults.end())
+			arg2ValidatedResults.push_back(to_string(v2[i]));
 	}
-
+	if (arg2 == WILDCARD_SYMBOL && !arg1ValidatedResults.empty())
+		arg1ValidatedResults = removeDuplicates(arg1ValidatedResults);
+	else if (arg1 == WILDCARD_SYMBOL && !arg2ValidatedResults.empty())
+		arg2ValidatedResults = removeDuplicates(arg2ValidatedResults);
 	return make_tuple(arg1ValidatedResults, arg2ValidatedResults);
 }

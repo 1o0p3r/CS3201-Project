@@ -509,8 +509,8 @@ public:
 			//"stmt s; Select s such that Next(s,_)" //1
 			//"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
 			//"assign a1, a2; if ifs; while w; Select ifs such that Next*(a2, ifs) and Next*(ifs, w) and Next*(w, a1) and Next*(a1, a2)",
-			//"assign a; while w; if ifs; Select a Pattern a(_, _) and w(_, _) and ifs(_, _, _)"
-
+			//"assign a; while w; if ifs; Select a Pattern a(_, _) and w(_, _) and ifs(_, _, _)",
+			"while w; Select w such that Next*(w, _)"
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
@@ -520,6 +520,7 @@ public:
 			//{}, //1, Next Unable to store results correctly for While with If nested, see procedure systemtesttwo
 			//{"45","49","55"},
 			//{}
+			{"23","30","32","43","46","50","6","8"}
 			
 		};
 		validator = QueryValidator(); //re-init validator.
