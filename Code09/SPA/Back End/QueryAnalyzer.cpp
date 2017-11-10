@@ -192,7 +192,7 @@ vector<string> QueryAnalyzer::runQueryEval() {
 		
 	findQueryElements();	
 	solveWithClause();
-	isOptimizerOn = false;
+	isOptimizerOn = true;
 	if(isOptimizerOn) optimizeClauseOrder();
 	else normalClauses.insert(normalClauses.end(), hardClauses.begin(), hardClauses.end());
 
