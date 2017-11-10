@@ -225,7 +225,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		//Implies that arg 1 is snyonym and arg2 is also a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
@@ -239,7 +238,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
 			//Implies that the clause for arg1 is not a num/under, arg2 is not a num, arg2 is an UNDER
 			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
@@ -250,7 +248,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
@@ -263,7 +260,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
 			QueryElement queryElement = QueryElement(arg1, SYNONYM_STRING, arg1Ent, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
@@ -279,7 +275,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		//Implies that arg1 is a number and arg2 is a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
@@ -290,7 +285,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -299,7 +293,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -310,7 +303,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
 			QueryElement queryElement = QueryElement(arg1, NUMBER_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -324,7 +316,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 		//Implies taht arg1 is a wildcard and arg 2 is a synonym
 		if (!arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
@@ -335,7 +326,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return true;
 		} else if (!arg2_NUM && arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -344,7 +334,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			return true;
 		} else if (arg2_NUM && !arg2_UNDER && !arg2_STRING_LITERAL) {
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -355,7 +344,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
 			arg2 = Util::trim(arg2);
 			QueryElement queryElement = QueryElement(UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -371,7 +359,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, SYNONYM_STRING, arg2Ent, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
@@ -384,7 +371,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, UNDER_SCORE_STRING, WILDCARD_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -395,7 +381,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
 			arg1 = Util::trim(arg1);
 			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, NUMBER_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {
@@ -408,7 +393,6 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			arg1 = Util::trim(arg1);
 			arg2 = Util::trim(arg2);
 			QueryElement queryElement = QueryElement(arg1, VARIABLE_STRING, EMPTY_STRING, arg2, VARIABLE_STRING, EMPTY_STRING, relType, SUCH_THAT);
-			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 			} else {

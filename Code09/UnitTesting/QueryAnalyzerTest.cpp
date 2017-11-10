@@ -232,10 +232,10 @@ public:
 
 		qa.setPKB(pkb);
 
-		qs.addSuchThatQuery(synSyn);
-		qs.addSuchThatQuery(a);
+		qs.addNormalQueryElement(synSyn);
+		qs.addNormalQueryElement(a);
 		qs.addSelectQuery(sel);
-		qs.addPatternQuery(pat1);
+		qs.addNormalQueryElement(pat1);
 		qa.setQS(qs);
 		answer = qa.runQueryEval();
 	/*	qa.findQueryElements();

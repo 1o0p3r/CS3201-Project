@@ -560,53 +560,44 @@ void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, stri
 	if (arg1UnderScore) {
 		if (arg2UnderScore) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize()- ONE);
 		
 		} else if (arg2Exact) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		} else if (arg2Substring) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, WILDCARD_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		}
 	} else if (arg1Variable) {
 		if (arg2UnderScore) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 			queryStatement.addNormalMultiMap(arg1, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 		} else if (arg2Exact) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, EXACT_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		} else if (arg2Substring) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, SYNONYM_STRING, SUBSTRING_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		}
 	} else if (arg1StringLiteral) {
 		if (arg2UnderScore) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		} else if (arg2Exact) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, EXACT_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		} else if (arg2Substring) {
 			QueryElement assignPatternQueryElement = QueryElement(arg1, arg2, EMPTY_STRING, ent, syn, VARIABLE_STRING, SUBSTRING_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-			queryStatement.addPatternQuery(assignPatternQueryElement);
 			queryStatement.addNormalQueryElement(assignPatternQueryElement);
 			queryStatement.addNormalMultiMap(syn, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		}
@@ -739,18 +730,15 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
 		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(ifQueryElement);
 		queryStatement.addNormalQueryElement(ifQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 
 	} else if (arg1StringLiteral) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(ifQueryElement);
 		queryStatement.addNormalQueryElement(ifQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 	} else if (arg1Variable) {
 		QueryElement ifQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, WILDCARD_STRING, VARIABLE_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(ifQueryElement);
 		queryStatement.addNormalQueryElement(ifQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		queryStatement.addNormalMultiMap(arg1, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
@@ -760,18 +748,15 @@ void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, 
 void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
 		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(whileQueryElement);
 		queryStatement.addNormalQueryElement(whileQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 
 	} else if (arg1StringLiteral) {
 		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, VARIABLE_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(whileQueryElement);
 		queryStatement.addNormalQueryElement(whileQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 	} else if (arg1Variable) {
 		QueryElement whileQueryElement = QueryElement(arg1, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, SYNONYM_STRING, WILDCARD_STRING, EMPTY_STRING, VARIABLE_STRING, PATTERN_STRING);
-		queryStatement.addPatternQuery(whileQueryElement);
 		queryStatement.addNormalQueryElement(whileQueryElement);
 		queryStatement.addNormalMultiMap(synPattern, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 		queryStatement.addNormalMultiMap(arg1, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
@@ -846,10 +831,7 @@ bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName)
 void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
 	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
 }
-//This function adds a suchThat QueryElement
-void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
-	queryStatement.addSuchThatQuery(qe);
-}
+
 //This functions checks for all other clauses'(suchthat, pattern, with) validity
 //Returns true if the clauses are all valid, else returns false
 bool QueryValidator::isValidOthers(vector<string> vec) {

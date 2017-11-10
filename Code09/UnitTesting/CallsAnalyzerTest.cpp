@@ -53,7 +53,7 @@ public:
 
 		QueryElement synSyn("try", "synonym", "procedure", "fry", "synonym", "procedure", "Calls");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSyn);
+		qs.addNormalQueryElement(synSyn);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "Example","p","Example","try" }, {"q","q","p","fry"} };
@@ -66,7 +66,7 @@ public:
 
 		QueryElement synString("a", "synonym", "procedure", "p", "string", "procedure", "Calls");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synString);
+		qs.addNormalQueryElement(synString);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(synString,pkb, qTable, qMap).solveClause();
 		hardcode = { { "Example","a" },{"p","p" } };
@@ -78,7 +78,7 @@ public:
 
 		QueryElement synWild("a", "synonym", "procedure", "_", "wildcard", "procedure", "Calls");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synWild);
+		qs.addNormalQueryElement(synWild);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(synWild,pkb, qTable, qMap).solveClause();
 		hardcode = { { "Example","p","a" } };
@@ -91,7 +91,7 @@ public:
 
 		QueryElement wildSyn("_", "wildcard", "procedure", "a", "synonym", "procedure", "Calls");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(wildSyn);
+		qs.addNormalQueryElement(wildSyn);
 		qa.setQS(qs);
 		clauseResult = CallsAnalyzer(wildSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { {"p","q","a" } };

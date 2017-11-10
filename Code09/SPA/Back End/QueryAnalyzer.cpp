@@ -208,8 +208,8 @@ vector<string> QueryAnalyzer::runQueryEval() {
 
 void QueryAnalyzer::findQueryElements() {
 	selectElement = qsReadOnly.getSelectQueryElement();
-	stElements = qsReadOnly.getSuchThatQueryElement(); 
-	patternElements = qsReadOnly.getPatternQueryElement();
+	/*stElements = qsReadOnly.getSuchThatQueryElement(); 
+	patternElements = qsReadOnly.getPatternQueryElement();*/
 	withClauses = qsReadOnly.getWithQueryElement();
 
 	//easyWithElements = qsReadOnly.getWithQueryElementsNoSyn();

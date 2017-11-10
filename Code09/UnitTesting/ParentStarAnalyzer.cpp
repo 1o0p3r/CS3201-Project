@@ -51,7 +51,7 @@ public:
 
 		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "ParentStar", "suchThat");
 
-		qs.addSuchThatQuery(wildWild);
+		qs.addNormalQueryElement(wildWild);
 		qa.setQS(qs);
 
 		clauseResult = ParentStarAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
@@ -59,28 +59,28 @@ public:
 
 		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(wildInt);
+		qs.addNormalQueryElement(wildInt);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(wildInt,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intWild("2", "int", "assign", "_", "wildcard", "", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intWild);
+		qs.addNormalQueryElement(intWild);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(intWild,pkb, qTable, qMap).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
 
 		QueryElement intInt("1", "int", "assign", "3", "int", "", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intInt);
+		qs.addNormalQueryElement(intInt);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(intInt,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intSyn("4", "int", "while", "a", "synonym", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intSyn);
+		qs.addNormalQueryElement(intSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(intSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { {"5","7","a"} };
@@ -93,7 +93,7 @@ public:
 
 		QueryElement synInt("a", "synonym", "while", "7", "integer", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synInt);
+		qs.addNormalQueryElement(synInt);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(synInt,pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","4","6","a" } };
@@ -105,7 +105,7 @@ public:
 
 		QueryElement synSyn("a", "synonym", "while", "b", "synonym", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSyn);
+		qs.addNormalQueryElement(synSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","1","1","1","4","4","6","a" },
@@ -119,7 +119,7 @@ public:
 
 		QueryElement synWild("a", "synonym", "while", "_", "wildcard", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synWild);
+		qs.addNormalQueryElement(synWild);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(synWild,pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","4","6","a" } };
@@ -132,7 +132,7 @@ public:
 
 		QueryElement wildSyn("_", "wildcard", "", "a", "synonym", "assign", "ParentStar", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(wildSyn);
+		qs.addNormalQueryElement(wildSyn);
 		qa.setQS(qs);
 		clauseResult = ParentStarAnalyzer(wildSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2","3","5","7","a" } };

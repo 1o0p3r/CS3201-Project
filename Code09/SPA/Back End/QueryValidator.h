@@ -71,7 +71,6 @@ private:
 	bool isCornerRelation(string relation);
 	bool addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string type1, string type2);
 	void addSelectQueryElement(string ent, string syn, string selectType, string str);
-	void addSuchThatQueryElement(QueryElement qe);
 	void addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym, string arg2Synonym);
 	
 	string removeSymbols(string str, string symbolToRemove);

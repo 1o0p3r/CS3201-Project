@@ -202,14 +202,6 @@ void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, strin
 	if (isStringLiteralOrNumber(arg2Synonym)) {
 		arg2StringLiteralOrNum = true;
 	}
-	if (arg1StringLiteralOrNum && arg2StringLiteralOrNum) {
-		queryStatement.addWithQueryElementNoSyn(queryElement);
-	} else if ((arg1StringLiteralOrNum && !arg2StringLiteralOrNum) || (!arg1StringLiteralOrNum && arg2StringLiteralOrNum)) {
-		queryStatement.addWithQueryElementOneSyn(queryElement);
-	} else {
-		queryStatement.addNormalQueryElement(queryElement);
-		queryStatement.addWithQueryElementTwoSyn(queryElement);
-	}
 }
 //This function checks if given string is a stringLiteral or Number
 //Returns true if either is true, else returns false

@@ -47,7 +47,7 @@ public:
 
 		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Uses", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSyn);
+		qs.addNormalQueryElement(synSyn);
 		qa.setQS(qs);
 		clauseResult = UsesAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "1","4","4","a" },{ "x","x","y","b" } };

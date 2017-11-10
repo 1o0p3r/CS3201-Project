@@ -21,7 +21,6 @@ namespace UnitTesting
 			string query;
 			QueryStatement queryStatement;
 
-
 			query = "if ifs, ifs2,ifs3 ; Select ifs";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
@@ -74,6 +73,9 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "if ifs; Select ifs such that Next*(ifs, _)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "variable v1,v#; assign a1,a#; constant d; Select v1 such that Modifies(6,v1)";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -561,24 +563,25 @@ namespace UnitTesting
 			QueryStatement expectedQueryStatement;
 			QueryStatement queryStatement;
 
-			query = "stmt s; assign a; procedure p; while w; if i;  call c; variable v; Select BOOLEAN such that Modifies(3, \"a\") and Modifies(a, v) and Modifies(\"x\", \"x\") and Modifies(s, v) such that Modifies(w, v) and Modifies(i, v) and  Modifies(p, v)";
+			query = "stmt s; assign a; procedure p; while w; if i;  call c; variable v; Select BOOLEAN such that Modifies(3, \"a\") and Modifies(a, v)" 
+				"and Modifies(\"x\", \"x\") and Modifies(s, v) such that Modifies(w, v) and Modifies(i, v) and  Modifies(p, v)";
 			Assert::IsTrue(queryValidator.parseInput(query));
 			selectQueryElement = QueryElement("empty", "empty", "BOOLEAN", "empty");
 			expectedQueryStatement.addSelectQuery(selectQueryElement);
 			suchThatQueryElement = QueryElement("3", "number", "empty", "a", "variable", "empty", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("a", "synonym", "assign", "v", "synonym", "variable", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("x", "variable", "empty", "x", "variable", "empty", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("s", "synonym", "stmt", "v", "synonym", "variable", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("w", "synonym", "while", "v", "synonym", "variable", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("i", "synonym", "if", "v", "synonym", "variable", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			suchThatQueryElement = QueryElement("p", "synonym", "procedure", "v", "synonym", "variable", "Modifies");
-			expectedQueryStatement.addSuchThatQuery(suchThatQueryElement);
+			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			queryStatement = queryValidator.getQueryStatement();
 
 		}
