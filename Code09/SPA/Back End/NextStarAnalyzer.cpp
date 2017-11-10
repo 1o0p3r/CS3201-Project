@@ -31,6 +31,7 @@ tuple<bool, vector<vector<string>>> NextStarAnalyzer::addArgTwoResult(string arg
 			vecOfCandidates.push_back(stoi(arg1));
 		for (int candidates : vecOfCandidates) {
 			pkbNext = pkbReadOnly.getNextStarFirstLiteral(candidates);
+
 			pkbNext = validatePKBResultsInt(arg2Entity, pkbNext);
 			for (int candidatesChosen : pkbNext) {
 				pkbResult.push_back(to_string(candidatesChosen));
