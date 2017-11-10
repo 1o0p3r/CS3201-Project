@@ -1,0 +1,393 @@
+procedure AyamPenyet {
+	ayam = 1 + (broccoli + (5 - (9 * (chilli + ayam - 30) + 100 * 2 - date * 20) + (((1 - 5 * 20) - 100 * egg) + fish - ginger + broccoli) - (ayam - honey) * ginger - fish + 100 - 20 * 4) + 20 - 3 * (ginger + broccoli) - fish);
+	broccoli = ayam - fish * chilli + egg;
+	broccoli = fish + broccoli - egg * ginger;
+	egg = date + ayam - fish + iceCream * jam - ketchup;
+	date = date - date + date * date;
+	mushroom = date + fish - iceCream;
+	lime = broccoli + ayam - chilli * egg;
+	egg = honey - nutmeg * oats + pea - ayam;
+	fish = lime + egg + jam - nutmeg * oats + pea - date * fish + ayam;
+	call MeeSiam;
+	lime = fish + jam - ayam - broccoli + oats - date;
+	chilli = date * fish + lime - broccoli * oats;
+	fish = broccoli * oats - jam - date * 10 - 5 + 9 * 20 + oats;
+	oats = broccoli * ayam - fish + oats;
+	if oats then {
+		if broccoli then {
+			broccoli = oats + fish - oats * date + broccoli + jam - pea;
+			fish = broccoli + oats - ayam + broccoli - ketchup;
+			oats = 9 + 100 - 20 + ketchup * 20 - pea + date;
+			date = broccoli - ayam + chilli - date;
+			broccoli = jam + iceCream - ginger;
+			call CarrotCake;
+		}
+		else {
+			call MalaHotpot;
+			oats = broccoli + fish - 20;
+			ginger = 100 * 2 - date * 20;
+			chilli = chilli + ayam - 30;
+			fish = fish - ginger + broccoli;
+			ayam = ayam - honey;
+			broccoli = iceCream + jam;
+			oats = ayam + fish + pea - 100;
+		}
+		honey = fish + jam - ayam - broccoli + oats - date;
+		date = date * fish + lime - broccoli * oats;
+		jam = broccoli * oats - jam - date * 10 - 5 + 9 * 20 + oats;
+		date = broccoli * ayam - fish + oats;
+	}
+	else {
+		fish = (broccoli * oats - jam) - (date * 10) - 5 + (9 * 20) + oats;
+		broccoli = honey - nutmeg * oats + pea - ayam;
+		call MalaHotpot;
+		iceCream = nutmeg * oats;
+		honey = fish + iceCream * jam;
+	}
+	call WantonMee;
+	call McSpicy;
+	call Rojak;
+	oats = chilli + ayam - 3;
+}
+
+procedure MeeSiam {
+	call NasiLemak;
+	while iceCream {
+		chilli = ayam + 100 - 20 * 5 + ketchup - egg;
+		egg = ketchup - ayam + chilli;
+		while ayam {
+			while chilli {
+				while ketchup {
+					ketchup = 1 - 5 * 20;
+					oats = 9 + 100 - 20 + ketchup * 20;
+					ayam = 5 + 9 * 20;
+					ketchup = (1 - 5 * 20) - 100 * egg;
+				}
+			}
+			while ayam {
+				chilli = ketchup;
+				fish = 9 + 100 - 20 + ketchup * 20;
+				egg = 100 * 2 - date * 20;
+				chilli = chilli;
+				chilli = chilli + ketchup * 20;
+				ayam = oats - 20 + 30 * (100 - 5 + egg) + 9 - 20 * 10;
+			}
+			ketchup = ayam + fish - 100 + 20 * 5 - 9 - 20 * 10;
+			ayam = ketchup + fish - 100 + 20 * 5;
+			while fish {
+				fish = fish;
+				fish = fish + fish;
+				fish = ketchup - egg * 5 + chilli - 20 * 9;
+			}
+		}
+	}
+	chilli = ketchup + (ayam - egg) + 5 * (100 - 20 + (chilli + egg - ketchup) + oats) - fish;
+	fish = chilli - ketchup + (ayam - egg) + 5 * (100 - 20);
+	call CharKwayTeow;
+}
+
+procedure CarrotCake {
+	ginger = iceCream + ketchup - chilli + jam * 5 - 9 + date - 100;
+	iceCream = ginger - ketchup + 9 - 5 * date - 100;
+	iceCream = chilli - 20 * 9;
+	chilli = 9 + 100 - 20 + ketchup * 20;
+	jam = chilli + egg - ketchup;
+	while jam {
+		while egg {
+			while jam {
+				if egg then {
+					egg = ketchup - egg * 5;
+					call MeeSiam;
+					jam = chilli + ketchup * 20;
+				} 
+				else {
+					ketchup = egg * oats - jam + ginger;
+					while date {
+						date = ketchup - iceCream + ginger - 9 + 100 * 5;
+					}
+					egg = chilli + egg - ketchup;
+					ketchup = date + iceCream + 100 - 9;
+				}
+			}
+			if jam then {
+				ketchup = egg + chilli - ketchup;
+				egg = chilli + egg;
+				ginger = ginger - ketchup + 9;
+			}
+			else {
+				ketchup = ginger + chilli - 5 * 100 - 20 * egg;
+				date = jam + 20 + ketchup * 20;
+				while jam {
+					jam = ketchup + chilli * 20;
+					chilli = 20 * 10 + 9 - 100 * 20 - ketchup;
+				}
+				chilli = iceCream + 9 + 100 - 20 + ketchup;
+			}
+			while chilli {
+				iceCream = ketchup + chilli - 9 + 20 * 100;
+			}
+			iceCream = iceCream + ginger - jam;
+			call MalaHotpot;
+			call BakKutTeh;
+			jam = ketchup + 20 - 100;
+		}
+	}
+}
+
+procedure MalaHotpot {
+	iceCream = pea - lime * 100 - 20 + honey * fish;
+	pea = lime + 20 - 5 * fish + pea;
+	lime = 20 * 100 + fish;
+	iceCream = iceCream * 100 - 2 + 9 * 100;
+	pea = lime - iceCream + fish - 20 * 100;
+	while lime {
+		if pea then {
+			while lime {
+				if pea then {
+					lime = iceCream + lime - pea + fish * 20;
+					fish = 20 * lime - 2 + 50 - 9 + 1;
+					call BakKutTeh;
+					lime = iceCream + fish - pea - 20 + 100;
+					pea = iceCream + 10;
+				}
+				else {
+					pea = lime - 10 + 100 - fish;
+					fish = pea + lime - 100 * 20 + 5 - iceCream;
+					call BeeHoon;
+					fish = pea + 100 - 5 * 20 + 9 + iceCream;
+				}
+			}
+		}
+		else {
+			honey = honey + 20 - 100 * fish;
+			while honey {
+				fish = honey + 20 + iceCream + 10;
+			}
+			honey = fish - pea - 20;
+			if fish then {
+				honey = fish - 2 + 50 - 9 + 1;
+			}
+			else {
+				iceCream = honey * (lime - iceCream);
+			}
+			pea = 9 + iceCream;
+			call CurryFishHead;
+			pea = lime + iceCream - 10;
+		}
+	}
+	iceCream = pea + lime + iceCream - 10;
+	call Bingsu;
+}
+
+procedure WantonMee {
+	mushroom = nutmeg + broccoli + ayam - 100 * 9 - 20 + oats - 100 * 5 + date - pea;
+	broccoli = ayam - 100 * 9 - 20;
+	oats = broccoli + nutmeg + broccoli + ayam - 100 * 9;
+	pea = pea + oats - nutmeg + broccoli + ayam - 100 * 9;
+	call CurryFishHead;
+	date = (date * 10) - 5;
+	mushroom = mushroom + fish * 10 - broccoli * 100 + ayam;
+	ayam = oats * 9 - pea * 5 + ayam;
+	while ayam {
+		oats = pea + oats - broccoli + ayam;
+		oats = oats - 100 * 9;
+		broccoli = 9 - 20 + oats - 100 * 5;
+	}
+	call Bingsu;
+	broccoli = mushroom + nutmeg + ayam;
+	nutmeg = nutmeg + broccoli + ayam - 100 * 9;
+}
+
+procedure Rojak {
+	iceCream = honey + chilli - 100 * 5 + fish + 9 - 20 - date;
+	fish = iceCream + honey - chilli * 5 - fish + 9 - 20;
+	honey = fish - 100;
+	while fish {
+		iceCream = honey + fish - 100 * 5 + fish - 20;
+		date = 100 * 5 + fish - date;
+		while honey {
+			honey = chilli - 100 * 20 + date - iceCream;
+			iceCream = chilli + 20 * 100;
+			fish = iceCream + date - honey;
+		}
+		iceCream = honey + chilli - fish;
+	}
+	call WantonMee;
+	honey = fish * 100 - date;
+	call Bingsu;
+	if date then {
+		iceCream = fish + honey;
+	}
+	else {
+		iceCream = chilli + 20 + 10 * 5 - 9;
+	}
+	call Takoyaki;
+	chilli = iceCream + honey + chilli - fish;
+	fish = honey + chilli - 100 * 5;
+}
+
+procedure NasiLemak {
+	while honey {
+		call FriedRice;
+		while honey {
+			call FriedRice;
+			while honey {
+				call FriedRice;
+			}
+		}
+		while honey {
+			call FriedRice;
+		}
+	}
+	if honey then {
+		call BakKutTeh;
+		if honey then {
+			call BakKutTeh;
+		}
+		else {
+			call BakKutTeh;
+		}
+	}
+	else {
+		call BakKutTeh;
+	}
+}
+
+procedure CharKwayTeow {
+	ginger = fish + mushroom - 100 * 5 + nutmeg - egg;
+	fish = egg + 100 * 5 - 20 + nutmeg;
+	call FriedRice;
+	while nutmeg {
+		ginger = fish + 5 - nutmeg;
+	}
+	call McSpicy;
+	fish = ginger * 100 - 5;
+	egg = fish - 2 + 50 - 9 + 1;
+	call CurryFishHead;
+	ginger = egg + fish - 2 + 50 - 9 + 1;
+}
+
+procedure CurryFishHead {
+	chilli = broccoli + (5 - (9 * (chilli + ayam - 30) + 100 * 2 - date * 20));
+	call Laksa;
+	broccoli = chilli + ayam - date;
+	ayam = date + chilli;
+}
+
+procedure Bingsu {
+	jam = nutmeg + broccoli + ayam - 100 * 9;
+	ketchup = nutmeg + broccoli + ayam - 100 * 9;
+	nutmeg = 100 * 9;
+	while nutmeg {
+		jam = nutmeg + broccoli + ayam - 100 * 9;
+		call BeeHoon;
+	}
+	if jam then {
+		ketchup = ayam - 100 * 9;
+		broccoli = nutmeg + broccoli;
+		call YongTauFoo;
+		call RotiPrata;
+		ayam = ayam - 100 * 9;
+	}
+	else {
+		jam = nutmeg + broccoli + ayam - 100 * 9;
+		ayam = nutmeg + broccoli;
+		call BeeHoon;
+		call HokkienMee;
+		nutmeg = 100 * 9;
+	}
+}
+
+procedure Takoyaki {
+	date = iceCream + chilli + 20 + 10 * 5 - 9;
+	call RotiPrata;
+	chilli = chilli + 20 + 10 * 5 - 9;
+}
+
+procedure BakKutTeh {
+	broccoli = fish + broccoli - egg * ginger;
+	egg = fish + ginger - 100 * 9;
+	ginger = 20 + 10 * 5 - 9 * iceCream;
+	call McSpicy;
+	call BeeHoon;
+	call HokkienMee;
+	ginger = broccoli + egg + fish - ginger * iceCream;
+}
+
+procedure FriedRice {
+	broccoli = fish + broccoli - egg * ginger;
+	fish = ginger * 9 + 100 - 20 + 1;
+	egg = broccoli + 20 * 9 - fish * ginger;
+	broccoli = ginger * 20;
+	egg = ginger;
+	fish = egg * 100 * 9 - 20;
+}
+
+procedure McSpicy {
+	ayam = broccoli + chilli;
+	call Zinger;
+	call Zinger;
+	chilli = ayam + broccoli - date;
+}
+
+procedure Zinger {
+	date = iceCream + fish;
+	fish = 20 + fish * 100;
+	ginger = 100 * 5;
+}
+
+procedure BeeHoon {
+	nutmeg = jam + ketchup - lime * 100 + 2;
+	call LorMee;
+	jam = lime - 100 * 9;
+	call Popiah;
+	lime = jam - nutmeg + 100 * 9;
+}
+
+procedure Laksa {
+	oats = pea + ketchup - chilli * 100 - 5 + 20;
+	call Zinger;
+	chilli = pea + 20 * (100 * 9);
+	call LorMee;
+	pea = ginger * honey - oats;
+	oats = lime + 5 + pea;
+	call Popiah;
+	lime = ketchup + pea;
+}
+
+procedure HokkienMee {
+	lime = (ayam - honey) * ginger;
+	honey = ayam * ginger + 100;
+	call LorMee;
+	honey = lime + ginger - ayam;
+	call Popiah;
+	ginger = lime * ayam;
+}
+
+procedure RotiPrata {
+	oats = 9 * (chilli + ayam - 30) + 100 * 2 - date * 20;
+	pea = 1 - 5 * 20;
+	call YongTauFoo;
+	ayam = oats + date;
+}
+
+procedure YongTauFoo {
+	fish = 5 - (9 * (chilli + ayam - 30) + 100 * 2 - date * 20) + (((1 - 5 * 20) - 100 * egg) + fish - ginger + broccoli) - (ayam - honey) * ginger - fish + 100 - 20 * 4;
+	call LorMee;
+	ginger = broccoli * (100 - 9);
+	broccoli = fish + (100 * 9);
+	call Popiah;
+	broccoli = fish + broccoli - 9;
+}
+
+procedure LorMee {
+	egg = iceCream + ginger * 5;
+	call Popiah;
+	chilli = fish - 10 + egg;
+}
+
+procedure Popiah {
+	ayam = broccoli * 9;
+	pea = ginger + honey * 5;
+	nutmeg = ayam + honey;
+}

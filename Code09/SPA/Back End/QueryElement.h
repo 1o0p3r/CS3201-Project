@@ -1,3 +1,4 @@
+//This class holds the representation of information of clause i.e. result-cl, suchthat-cl. pattern-cl, with-cl 
 #pragma once
 #include <string>
 
@@ -39,8 +40,6 @@ private:
 
 public:
 	QueryElement();
-
-	
 	//Select
 	//E.g. assign a; procedure p; constant c; stmt s; prog_line n; variable v; Select < p.procName, c.value, s, v, v.varName > with n=1
 	//Ent = procedure,constant,stmt,variable,variable	 synonym = p,c,s,v,v		type = tuple	synAttr = 	procName,value,synonym,synonym,varName

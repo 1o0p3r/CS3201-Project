@@ -1,5 +1,5 @@
+//This class purpose is to store the process of validation of such that clauses and nothing else
 #include "suchThatHandler.h"
-
 const int ZERO = 0;
 const int ONE = 1;
 const int TWO = 2;
@@ -16,11 +16,7 @@ const char DOT_CHAR = '.';
 
 const string WHITESPACE_STRING = " ";
 const string SYMBOL_SEMI_COLON_STRING = ";";
-const string SELECT_STRING = "Select";
-const string COMMENT_STRING = "comment";
 const string SUCH_THAT_STRING = "such that";
-const string PATTERN_STRING = "pattern";
-const string COMMA_WHITESPACE_STRING = ", ";
 const string FOLLOWS_STRING = "Follows";
 const string FOLLOWS_STAR_STRING = "Follows*";
 const string PARENT_STRING = "Parent";
@@ -30,106 +26,37 @@ const string USES_STRING = "Uses";
 const string CALLS_STRING = "Calls";
 const string NEXT_STRING = "Next";
 const string NEXT_STAR_STRING = "Next*";
+const string AFFECTS_STRING = "Affects";
+const string AFFECTS_STAR_STRING = "Affects*";
+const string CALL_STRING = "call";
 const string UNDER_SCORE_STRING = "_";
 const string WILDCARD_STRING = "wildcard";
-const string CONSTANT_STRING = "constant";
-const string RELATIONSHIP_STRING = "relationship";
 const string SYMBOL_LEFT_BRACKET_STRING = "(";
 const string SYMBOL_RIGHT_BRACKET_STRING = ")";
 const string NUMBER_STRING = "number";
-const string PATTERN_REGEX = "pattern \w+[(][^\s]+,\s[^\s]+[)]";
 const string INVERTED_COMMA_STRING = "\"";
 const string EXACT_STRING = "exact";
 const string SUBSTRING_STRING = "substring";
 const string VARIABLE_STRING = "variable";
 const string SYNONYM_STRING = "synonym";
-const string INTEGER_STRING = "integer";
 const string INVALID_STRING = "invalid";
-const string PROCEDURE_STRING = "procedure";
-const string PROG_LINE_STRING = "prog_line";
 const string STR_STRING = "string";
 const string BOOLEAN_STRING = "BOOLEAN";
-const string CALL_STRING = "call";
-const string AFFECTS_STRING = "Affects";
-const string AFFECTS_STAR_STRING = "Affects*";
-const string STMT_STRING = "stmt";
-const string SUCH_THAT = "suchThat";
 
-const string WRONG_SYNTAX_ERROR = "wrong syntax entered";
-const string INVALID_ENTITY_ERROR = "invalid entity";
-const string INVALID_QUERY = "Invalid query";
-const string INVALID_SYNONYM_QUERIED_ERROR = "Invalid synonym queried";
-const string INVALID_ARGUMENT_ERROR = "Invalid argument";
-const string NUMBER_ZERO_TO_NINE = "0123456789";
+const string SUCH_THAT = "suchThat";
 const string OR = "|";
 const string EMPTY_STRING = "empty";
-const string ASSIGN_STRING = "assign";
-const string WHILE_STRING = "while";
-const string IF_STRING = "if";
 const string AND_STRING = "and";
 const string ASTERIK = "*";
 const string EQUAL_STRING = "=";
 const string TAB_STRING = "\\t";
 
-const string WITH_STRING = "with";
-const string PROCNAME = "procName";
-const string VARNAME = "varName";
-const string VALUE = "value";
-const string STMTNUM = "stmt#";
-const string STRING_LITERAL = "stringLiteral";
-const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*\\s*\"))";
-const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))";
-const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
-
-//Regexs for such that relationships
-const string MODIFIESP_STRING_REGEX = MODIFIES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string MODIFIESS_STRING_REGEX = MODIFIES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string USESP_STRING_REGEX = USES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string USESS_STRING_REGEX = USES_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string CALLS_STRING_REGEX = CALLS_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string CALLST_STRING_REGEX = CALLS_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + ENTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + ENTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string PARENT_STRING_REGEX = PARENT_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string PARENTT_STRING_REGEX = PARENT_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string FOLLOWS_STRING_REGEX = FOLLOWS_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string FOLLOWST_STRING_REGEX = FOLLOWS_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string NEXT_STRING_REGEX = NEXT_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string NEXTT_STRING_REGEX = NEXT_STRING + "\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + LINEREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string AFFECTS_STRING_REGEX = AFFECTS_STRING + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-const string AFFECTST_STRING_REGEX = AFFECTS_STRING + +"\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
-+ "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
-
-const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + PARENTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + PARENT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + FOLLOWS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + FOLLOWST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + NEXT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + NEXTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + CALLS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + CALLST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + MODIFIESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + USESP_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ OR + SYMBOL_LEFT_BRACKET_STRING + AFFECTST_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
-+ SYMBOL_RIGHT_BRACKET_STRING;
 suchThatHandler::suchThatHandler()
 {
 }
 
+//This function takes in a given string and checks that it is a valid such that clause
+//Returns true if valid, else returns false
 bool QueryValidator::isValidSuchThat(string str) {
 	int toAdd = ZERO;
 
@@ -254,8 +181,9 @@ bool QueryValidator::isValidSuchThat(string str) {
 	}
 	return true;
 }
+//This function takes in and do further checking on the argument to ensure that argument 1 and argument 2 are not arguments that do not make sense, e.g. Follows(s,s)
+//Returns true if valid, else returns false
 bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
-
 	//Do further checking only if arg1 equals to arg2
 	if (arg1 == arg2) {
 		if (resultBoolean) {
@@ -274,47 +202,22 @@ bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool 
 		return true;
 	}
 }
-
-
-bool QueryValidator::isAllowedParameters(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
-	if (!arg1_STRING_LITERAL && !arg2_STRING_LITERAL) {
-		if (isSameArgType(arg1, arg1Ent, arg2, arg2Ent) && !isCornerRelation(relation)) {
-			return false;
-			//Possible combinations a,a	s,s	ifs,ifs, calls,calls	
-		}
-		return true;
-	} else if(arg1_STRING_LITERAL && arg2_STRING_LITERAL && !isCornerRelation(relation)) {
-		if (arg1 == arg2) {
-			return false;
-		} else {
-			return true;
-		}
-	} else {
-		return true;
-	}
-}
+//This function takes in a given string and checks that given string is Modifes|Uses|Next*|Affects*|Affects
+//Returns true if is indeed one of the relation, else returns false
 bool QueryValidator::isCornerRelation(string relation) {
 	if ((relation == MODIFIES_STRING) || (relation == USES_STRING) || (relation == NEXT_STAR_STRING) || (relation == AFFECTS_STAR_STRING) || (relation == AFFECTS_STRING)) {
 		return true;
 	}
 	return false;
-	//return ((relation == FOLLOWS_STRING) || (relation == FOLLOWS_STAR_STRING) || (relation == PARENT_STRING) | (relation == PARENT_STAR_STRING) | (relation == AFFECTS_STRING));
 }
-bool QueryValidator::isSameArgType(string arg1, string arg1Ent, string arg2, string arg2Ent) {
-	if ((arg1Ent == arg2Ent) && (arg1 == arg2) && (arg1 != UNDER_SCORE_STRING)) {
-		return true;
-	} else {
-		return false;
-	}
-}
-bool QueryValidator::isStmtTypes(string str) {
-	return (str == ASSIGN_STRING || str == STMT_STRING || str == WHILE_STRING || str == IF_STRING || str == CALLS_STRING);
-}
+//This function takes in a given string and checks if it is either Affects|Affects*|Next
+//Returns true if it is indeed one of the relation, else returns false
 bool QueryValidator::isHardType(string rel) {
 	return (rel == AFFECTS_STRING || rel == AFFECTS_STAR_STRING || rel == NEXT_STAR_STRING);
 }
+//This function adds a such that QueryElement into the QueryStatement Object
+//Returns true if successful addition is done, else returns false
 bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, bool arg1_STRING_LITERAL, bool arg2_NUM, bool arg2_UNDER, bool arg2_STRING_LITERAL, string relType, string arg1, string arg2, string arg1Ent, string arg2Ent) {
-
 	//QueryElement parameters:
 	//Arg1, Arg1Type, Arg1Ent, Arg2, Arg2Type, arg2Ent, relType
 	//Implies that arg1 is a synonym
@@ -340,8 +243,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -352,8 +254,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -366,8 +267,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg1, ONE, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg1, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -383,8 +283,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -394,8 +293,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -404,8 +302,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -416,8 +313,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -432,8 +328,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -443,8 +338,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -453,8 +347,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -465,8 +358,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -483,8 +375,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
 				queryStatement.addHardMultiMap(arg2, TWO, queryStatement.getHardQueryElementsSize() - ONE);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 				queryStatement.addNormalMultiMap(arg2, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 			}
@@ -496,8 +387,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -508,8 +398,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -522,8 +411,7 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 			addSuchThatQueryElement(queryElement);
 			if (isHardType(relType)) {
 				queryStatement.addHardQueryElement(queryElement);
-			}
-			else {
+			} else {
 				queryStatement.addNormalQueryElement(queryElement);
 			}
 			return true;
@@ -533,18 +421,4 @@ bool QueryValidator::addSuchThatQueryElement(bool arg1_NUM, bool arg1_UNDER, boo
 	} else {
 		return false;
 	}
-}
-//This method extracts all the relationship involed in the such that clauses and returns them in a vector
-vector<string> QueryValidator::extractSuchThatClauses(string str) {
-	regex suchThatRelRegex(RELREF_STRING_REGEX);
-	smatch m;
-	string temp;
-	vector<string> toReturnVec;
-
-	while (regex_search(str, m, suchThatRelRegex)) {
-		temp = m[ZERO];
-		toReturnVec.push_back(temp);
-		str = m.suffix().str();
-	}
-	return toReturnVec;
 }

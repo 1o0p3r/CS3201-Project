@@ -1,3 +1,4 @@
+//This class is a query object to be passed to query evaluator and contains all the necessary information about the query.
 #include "QueryStatement.h"
 
 using namespace std;
@@ -23,8 +24,7 @@ vector<QueryElement> QueryStatement::getWithQueryElementsNoSyn() {
 vector<QueryElement> QueryStatement::getWithQueryElementsOneSyn() {
 	return withQueryElementsOneSyn;
 }
-vector<QueryElement> QueryStatement::getWithQueryElementsTwoSyn()
-{
+vector<QueryElement> QueryStatement::getWithQueryElementsTwoSyn() {
 	return withQueryElementsTwoSyn;
 }
 vector<QueryElement> QueryStatement::getNormalQueryElements() {
@@ -33,12 +33,10 @@ vector<QueryElement> QueryStatement::getNormalQueryElements() {
 vector<QueryElement> QueryStatement::getHardQueryElements() {
 	return hardQueryElements;
 }
-multimap<string, pair<int, int>> QueryStatement::getNormalMultiMap()
-{
+multimap<string, pair<int, int>> QueryStatement::getNormalMultiMap() {
 	return normalMultiMap;
 }
-multimap<string, pair<int, int>> QueryStatement::getHardMultiMap()
-{
+multimap<string, pair<int, int>> QueryStatement::getHardMultiMap() {
 	return hardMultiMap;
 }
 void QueryStatement::addWithQueryElementNoSyn(QueryElement toAdd) {
@@ -64,16 +62,13 @@ void QueryStatement::addHardMultiMap(string syn, int argumentNum, int idx) {
 	pair<int, int> normalPair = make_pair(argumentNum, idx);
 	hardMultiMap.insert(pair<string, pair<int, int>>(syn, normalPair));
 }
-int QueryStatement::getNormalQueryElementsSize()
-{
+int QueryStatement::getNormalQueryElementsSize() {
 	return normalQueryElements.size();
 }
-int QueryStatement::getHardQueryElementsSize()
-{
+int QueryStatement::getHardQueryElementsSize() {
 	return hardQueryElements.size();
 }
-bool QueryStatement::getInvalidQueryBoolean()
-{
+bool QueryStatement::getInvalidQueryBoolean() {
 	return invalidQuery;
 }
 vector<SynonymEntityPair> QueryStatement::getSynonymEntityList() {
