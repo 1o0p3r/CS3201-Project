@@ -34,8 +34,8 @@ public:
 		QueryElement synSynTuple("assign,stmt,variable", "a,b,c", "tuple", "synonym,synonym,synonym");
 		QueryElement synSynFol("a", "synonym", "assign", "b", "synonym", "stmt", "Follows*"); //FollowsStar
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSynFol);
-		qs.addSuchThatQuery(synSynUses);
+		qs.addNormalQueryElement(synSynFol);
+		qs.addNormalQueryElement(synSynUses);
 		qs.addSelectQuery(synSynTuple);
 		qa.setQS(qs);
 		qa.setPKB(pkb);
@@ -67,8 +67,8 @@ public:
 		QueryElement synSynTuple("assign,variable,while,assign", "c,b,d,a", "tuple", "synonym,synonym,synonym,synonym");
 		QueryElement synSynFol("c", "synonym", "assign", "d", "synonym", "while", "Follows*"); //FollowsStar
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSynFol);
-		qs.addSuchThatQuery(synSynUses);
+		qs.addNormalQueryElement(synSynFol);
+		qs.addNormalQueryElement(synSynUses);
 		qs.addSelectQuery(synSynTuple);
 		qa.setQS(qs);
 		qa.setPKB(pkb);

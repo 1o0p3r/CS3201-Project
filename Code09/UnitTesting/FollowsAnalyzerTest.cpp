@@ -28,7 +28,7 @@ public:
 		
 		QueryElement wildWild("_", "wildcard", "", "_", "wildcard", "", "Follows", "suchThat");
 		
-		qs.addSuchThatQuery(wildWild);
+		qs.addNormalQueryElement(wildWild);
 		qa.setQS(qs);
 		
 		clauseResult = FollowsAnalyzer(wildWild,pkb, qTable, qMap).solveClause();
@@ -36,28 +36,28 @@ public:
 		
 		QueryElement wildInt("_", "wildcard", "wildcard", "3", "int", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(wildInt);
+		qs.addNormalQueryElement(wildInt);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(wildInt,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intWild("2", "int", "assign","_", "wildcard", "", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intWild);
+		qs.addNormalQueryElement(intWild);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intWild,pkb, qTable, qMap).solveClause();
 		Assert::IsTrue(get<0>(clauseResult));
 
 		QueryElement intInt("1", "int", "assign", "3", "int", "", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intInt);
+		qs.addNormalQueryElement(intInt);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intInt,pkb, qTable, qMap).solveClause();
 		Assert::IsFalse(get<0>(clauseResult));
 
 		QueryElement intSyn("2", "int", "assign", "a", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(intSyn);
+		qs.addNormalQueryElement(intSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(intSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { {"3"} };
@@ -66,7 +66,7 @@ public:
 
 		QueryElement synInt("a", "synonym", "assign", "3", "integer", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synInt);
+		qs.addNormalQueryElement(synInt);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(synInt,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2" } };
@@ -75,7 +75,7 @@ public:
 
 		QueryElement synSyn("a", "synonym", "assign", "b", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synSyn);
+		qs.addNormalQueryElement(synSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(synSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2" },{"3"} };
@@ -85,7 +85,7 @@ public:
 		
 		QueryElement synWild("a", "synonym", "assign", "_", "wildcard", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(synWild);
+		qs.addNormalQueryElement(synWild);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(synWild,pkb, qTable, qMap).solveClause();
 		hardcode = { { "2" }};
@@ -94,7 +94,7 @@ public:
 
 		QueryElement wildSyn("_", "wildcard", "assign", "a", "synonym", "assign", "Follows", "suchThat");
 		qs = QueryStatement();
-		qs.addSuchThatQuery(wildSyn);
+		qs.addNormalQueryElement(wildSyn);
 		qa.setQS(qs);
 		clauseResult = FollowsAnalyzer(wildSyn,pkb, qTable, qMap).solveClause();
 		hardcode = { { "3" } };

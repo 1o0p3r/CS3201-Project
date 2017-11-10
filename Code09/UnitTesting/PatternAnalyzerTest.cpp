@@ -25,7 +25,7 @@ public:
 		//"if ifs; Select ifs pattern ifs("a", _)"
 		QueryElement ifPat("a", "_", "_", "if", "ifs", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
-		qs.addPatternQuery(ifPat);
+		qs.addNormalQueryElement(ifPat);
 		qa.setQS(qs);
 		qa.findQueryElements();
 		qa.solvePatternClause(ifPat);
@@ -53,7 +53,7 @@ public:
 		//"if ifs; Select ifs pattern ifs("a", _)"
 		QueryElement whilePat("b", "_", "_", "while", "whiles", "variable", "", "", "", "pattern");
 		qa.setPKB(pkb);
-		qs.addPatternQuery(whilePat);
+		qs.addNormalQueryElement(whilePat);
 		qa.setQS(qs);
 		qa.findQueryElements();
 		qa.solvePatternClause(whilePat);

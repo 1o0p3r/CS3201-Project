@@ -473,3 +473,8 @@ while w; if ifs;
 Select BOOLEAN with w.stmt# = if.stmt#
 false
 5000
+96- Multiple Valid Clauses Queries
+while w; if ifs; assign a1, a2; stmt s; variable v1, v2; pocedure p;
+Select <w, v2> such that Parent*(w, ifs) and Modifies(ifs, v1) pattern a1(v1, _"airconNotGood"_) and a2(v2, _) with v2.varName = p.procName
+none
+5000
