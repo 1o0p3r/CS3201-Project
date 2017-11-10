@@ -243,13 +243,16 @@ namespace UnitTesting
 			query = "assign a1, a2; if ifs; while w; Select w such that Nex(ifs, a1) ";
 			Assert::IsFalse(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
+
+			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1.varName such that Modifies(6,v1) and Parent(1, w1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		}
 		TEST_METHOD(testQueryAll) {
 
 			QueryValidator queryValidator;
 			string query;
 			QueryStatement queryStatement;
-
 
 			query = "while w; assign a; Select w such that Follows(w, a) pattern a(_, x)";
 			Assert::IsFalse(queryValidator.parseInput(query));
@@ -297,6 +300,13 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "stmt s; assign a; Select <s, a> pattern a (_, _\"x\"_) such that Parent* (s, a) and Next (s, a) and Next* (a, s)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+
+			query = "call c; if ifs; Select <c, ifs> such that Next*(ifs, c)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 		}
 
@@ -641,29 +651,7 @@ namespace UnitTesting
 			Assert::IsFalse(queryValidator.isAssignPatternRegex(str));
 	
 		}
-		TEST_METHOD(testExtractPattern3) {
-			QueryValidator queryValidator;
-			string str;
-			vector<string> expected;
-			vector<string> result;
-
-			str = "pattern a(_,_) and a(_,_) pattern a(_,_)";
-			expected.push_back("pattern a(_,_) ");
-			expected.push_back("and a(_,_)");
-			expected.push_back("pattern a(_,_)");
-			result = queryValidator.extractPatternClauses(str);
-			Assert::IsTrue(result == expected);
-
-			expected.clear();
-			result.clear();
-
-			str = "			pattern a#(v#,_\"x+y\"_)		and a1(1, \"(x+y)\")		pattern a1(v1, \"x\")";
-			result = queryValidator.extractPatternClauses(str);
-
-			str = "pattern a(_, _) and pattern a(v, _)";
-			result = queryValidator.extractPatternClauses(str);
-			
-		}
+		
 		TEST_METHOD(testValidSplit) {
 			QueryValidator queryValidator;
 			vector<string> vecStr;
@@ -999,92 +987,6 @@ namespace UnitTesting
 			str = "such that Modifies(uses, \"Next(x, y)\") and Follows(s,3) such that Next(6, Parent)";
 			Assert::IsFalse(queryValidator.isValidSuchThaExtendedRegex(str));
 		}
-		TEST_METHOD(testValidExtractSuchThatClauses) {
-			QueryValidator queryValidator;
-			string str;
-			vector<string> expectedVec;
-			vector<string> returnedVec;
-
-
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,4) and Uses(3,s)";
-			expectedVec.push_back("Modifies(\"s\",\"a\")");
-			expectedVec.push_back("Follows(s,4)");
-			expectedVec.push_back("Uses(3,s)");
-			returnedVec = queryValidator.extractSuchThatClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "such that Uses(3, 4)such that Modifies(2, 4)";
-			expectedVec.push_back("Uses(3, 4)");
-			expectedVec.push_back("Modifies(2, 4)");
-			returnedVec = queryValidator.extractSuchThatClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "such that Modifies(\"s\",\"a\") and Follows(s,3) such that Next(8,9) such that Uses(3,4) and Parent(5,7)";
-			expectedVec.push_back("Modifies(\"s\",\"a\")");
-			expectedVec.push_back("Follows(s,3)");
-			expectedVec.push_back("Next(8,9)");
-			expectedVec.push_back("Uses(3,4)");
-			expectedVec.push_back("Parent(5,7)");
-			returnedVec = queryValidator.extractSuchThatClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-		}
-		TEST_METHOD(testValidExtractWithClauses) {
-			QueryValidator queryValidator;
-			string str;
-			vector<string> expectedVec;
-			vector<string> returnedVec;
-
-			str = "with p.procName = v1.varName";
-			expectedVec.push_back("p.procName = v1.varName");
-			returnedVec = queryValidator.extractWithClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "with v1.varName = v2.varName and v1.varName = \"hello\"";
-			expectedVec.push_back("v1.varName = v2.varName");
-			expectedVec.push_back("v1.varName = \"hello\"");
-			returnedVec = queryValidator.extractWithClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "with v1.varName = v2.varName and v1.varName = \"hello\" with c.value = 1 with p.procName = \"First\"";
-			expectedVec.push_back("v1.varName = v2.varName");
-			expectedVec.push_back("v1.varName = \"hello\"");
-			expectedVec.push_back("c.value = 1");
-			expectedVec.push_back("p.procName = \"First\"");
-			returnedVec = queryValidator.extractWithClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-			str = "with c.value = a.stmt# with v2.varName = p.procName and 4 = c.value with n = c.value and p.procName = \"HELL\"";
-			expectedVec.push_back("c.value = a.stmt#");
-			expectedVec.push_back("v2.varName = p.procName");
-			expectedVec.push_back("4 = c.value");
-			expectedVec.push_back("n = c.value");
-			expectedVec.push_back("p.procName = \"HELL\"");
-			returnedVec = queryValidator.extractWithClauses(str);
-			Assert::IsTrue(returnedVec == expectedVec);
-
-
-			expectedVec.clear();
-			returnedVec.clear();
-
-		}
 
 		TEST_METHOD(testValidIfPatternRegex) {
 			QueryValidator queryValidator;
@@ -1135,6 +1037,18 @@ namespace UnitTesting
 
 			str = "Select \@";
 			Assert::IsFalse(queryValidator.isValidSelectInitialRegex(str));
+
+			str = "Select <hi, b>";
+			Assert::IsTrue(queryValidator.isValidSelectInitialRegex(str));
+
+			str = "Select <hi, p.procName>";
+			Assert::IsTrue(queryValidator.isValidSelectInitialRegex(str));
+
+			str = "Select p.procName";
+			Assert::IsTrue(queryValidator.isValidSelectInitialRegex(str));
+
+			str = "Select <this>";
+			Assert::IsTrue(queryValidator.isValidSelectInitialRegex(str));
 		}
 		TEST_METHOD(testValidWhilePattern) {
 			QueryValidator queryValidator;
@@ -1302,35 +1216,6 @@ namespace UnitTesting
 
 			input = "andpattern a(_,_)";
 			Assert::IsFalse(queryValidator.isPartialPatternRegex(input));
-		}
-
-		TEST_METHOD(testTupleMethod) {
-			QueryValidator queryValidator;
-			string input;
-
-			input = "<a,b>";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "< a , b >";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "<a ,b >";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "<a , b>";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "<a , b>";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "b.stmt#";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "<a, s.stmt#>";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
-
-			input = "<	a, s.stmt#	, c.procName , b	>";
-			Assert::IsTrue(queryValidator.isValidTuple(input));
 		}
 	};
 }

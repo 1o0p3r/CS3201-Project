@@ -17,6 +17,8 @@
 #include <iterator>
 #include <algorithm>
 #include <unordered_map>
+#include <iostream>
+#include <fstream>
 
 typedef tuple<int, vector<int>> vTuple;
 typedef tuple<int, vector<set<int>>> vsTuple;
@@ -795,17 +797,11 @@ vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
 tuple<vector<int>, vector<int>> PKB::getAffectsTwoSynonyms() {
 	vector<int> s1;
 	vector<int> s2;
-	vector<bool> exploredOnce(typeTable.size());
-	for (int i = 0; i < exploredOnce.size(); i++) {
-		exploredOnce[i] = false;
-	}
-	vector<vector<int>> explored(typeTable.size());
-	for (int i = 0; i < explored.size(); i++) {
-		explored[i] = {};
-	}
 	set<pair<int, int>> included;
 	int max = 1;
 	while (max < typeTable.size()) {
+		vector<bool> exploredOnce(typeTable.size());
+		vector<vector<int>> explored(typeTable.size());
 		vTuple current;
 		if (typeTable[max] == assign) {
 			int var = modify.getModifies(max)[0];
@@ -1196,17 +1192,11 @@ vector<int> PKB::getAffectStarSecondLiteral(int s2) {
 tuple<vector<int>, vector<int>> PKB::getAffectStarTwoSynonyms() {
 	vector<int> s1;
 	vector<int> s2;
-	vector<bool> exploredOnce(typeTable.size());
-	for (int i = 0; i < exploredOnce.size(); i++) {
-		exploredOnce[i] = false;
-	}
-	vector<vector<set<int>>> explored(typeTable.size());
-	for (int i = 0; i < explored.size(); i++) {
-		explored[i] = {};
-	}
 	set<pair<int, int>> included;
 	int max = 1;
 	while (max < typeTable.size()) {
+		vector<int> exploredOnce(typeTable.size());
+		vector<vector<set<int>>> explored(typeTable.size());
 		vsTuple current;
 		if (typeTable[max] == assign) {
 			int var = modify.getModifies(max)[0];
@@ -1217,20 +1207,17 @@ tuple<vector<int>, vector<int>> PKB::getAffectStarTwoSynonyms() {
 		} else {
 			current = { max,{} };
 		}
-		exploredOnce[max] = true;
+		exploredOnce[max] = 1;
 		affectStarRecurse(s1, s2, current, max, explored, exploredOnce, included);
 		max++;
 	}
 	return{ s1, s2 };
 }
 
-void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included) {
+void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<int>& exploredOnce, set<pair<int, int>>& included) {
 	vector<int> nexts = next.getNext(get<0>(current));
 	sort(nexts.begin(), nexts.end());
 	for each (int statement in nexts) {
-		if (statement > max) {
-			max = statement;
-		}
 		vector<set<int>> temp = get<1>(current);
 		if (typeTable[statement] == _call) {
 			for each (int var in modify.getModifies(statement)) {
@@ -1243,16 +1230,16 @@ void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, i
 			if (temp.size() <= var) {
 				temp.resize(var + 1);
 			}
-			set<int> store = temp[var];
-			temp[var].clear();
-			for each (int uVar in use.getUses(statement)) {
-				set<int> uVars;
-				if (uVar == var) {
-					uVars = store;
-				} else if (temp.size() > uVar) {
-					uVars = temp[uVar];
+			vector<int> usedVars = use.getUses(statement);
+			if (find(usedVars.begin(), usedVars.end(), var) == usedVars.end()) {
+				temp[var].clear();
+
+			}
+			for each (int uVar in usedVars) {
+				if (uVar < temp.size()) {
+					set<int> uVars = temp[uVar];
+					temp[var].insert(uVars.begin(), uVars.end());
 				}
-				temp[var].insert(uVars.begin(), uVars.end());
 			}
 			for each (int line in temp[var]) {
 				if (included.find({ line, statement }) == included.end()) {
@@ -1263,8 +1250,29 @@ void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, i
 			}
 			temp[var].insert(statement);
 		}
-		if (explored[statement] != temp || !exploredOnce[statement]) {
-			exploredOnce[statement] = true;
+		if (explored[statement] != temp && exploredOnce[statement] < 100) {
+			/*ofstream file;
+			file.open("debug.txt", ios::app);
+			file << "Current statement :" << statement << "\n";
+			for (int i = 0; i < temp.size(); i++) {
+				file << "temp: " << i << " --> ";
+				for each (int var in temp[i]) {
+					file << var << " ,";
+				}
+				file << "\n";
+			}
+			for (int i = 0; i < explored[statement].size(); i++) {
+				file << "actual: " << i << " --> ";
+				for each (int var in explored[statement][i]) {
+					file << var << " ,";
+				}
+				file << "\n";
+			}
+			file.close();*/
+			if (statement > max) {
+				max = statement;
+			}
+			exploredOnce[statement]++;
 			explored[statement] = temp;
 			affectStarRecurse(s1, s2, { statement, temp }, max, explored, exploredOnce, included);
 		}

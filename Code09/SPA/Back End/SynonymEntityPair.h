@@ -1,3 +1,4 @@
+//This class holds two attibute i.e. vector of synonym and its associated design entity
 #pragma once
 #include <string>
 #include <vector>

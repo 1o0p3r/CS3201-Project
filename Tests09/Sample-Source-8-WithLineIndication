@@ -12,7 +12,7 @@ procedure Singapore {
 8		wants = go + travel + Malaysia;
 9		if Malaysia then {
 10		call Malaysia;
-11		expenses = travel * expenses * 2;
+11		expenses = travel * expenses * 11;
 		}
 		else {
 12				while expenses {
@@ -29,7 +29,7 @@ procedure Singapore {
 20				expenses = work* (work) * (earn);
 			} 
 			else {
-21				expenses = work * earn - 4;
+21				expenses = work * earn - 21;
 			}
 		}
 	}
@@ -653,7 +653,7 @@ procedure DummyTwo {
 				}
 				else {
 395					while Malaysia {
-396						dummy = yuan + rmb;
+396						dummy = yuan + rmb * Malaysia;
 					}
 				}
 397				Thailand = dummy + ringgit;
@@ -684,7 +684,7 @@ procedure DummyTwo {
 410	perfect = Singapore - 389;
 411	tense = Vietnam + 265;
 412	continous = Korea + 236;
-413	current = Indonesia + 244;
+413	current = Indonesia + 244- 203;
 414	soon = Malaysia- 154;
 415	when = Laos * 293;
 }

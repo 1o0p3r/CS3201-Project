@@ -1,4 +1,5 @@
-﻿#include "QueryValidator.h"
+﻿//This class takes in a given string, checks if it is a valid query, and if it is valid, creates a queryElement and adds to the queryStatement
+#include "QueryValidator.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -154,7 +155,7 @@ const string AFFECTS_STRING_REGEX = AFFECTS_STRING + "\\s*" + SYMBOL_LEFT_BRACKE
 const string AFFECTST_STRING_REGEX = AFFECTS_STRING + +"\\*" + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\(" + "\\s*" + STMTREF_STRING_REGEX + "\\s*"
 + "," + "\\s*" + STMTREF_STRING_REGEX + "\\s*" + "\\)" + SYMBOL_RIGHT_BRACKET_STRING;
 
-const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
+static const string RELREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYMBOL_LEFT_BRACKET_STRING + MODIFIESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + USESS_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + PARENTT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
 + OR + SYMBOL_LEFT_BRACKET_STRING + PARENT_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING
@@ -192,7 +193,6 @@ const string PARTIAL_PATTERN_REGEX = "(and\\s+)(.+)";
 const string ELEM_REGEX = SYMBOL_LEFT_BRACKET_STRING  + IDENT_STRING_REGEX + OR + ATTRREF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string TUPLE_REGEX = ELEM_REGEX + OR + SYMBOL_LEFT_BRACKET_STRING + "\\<" + "\\s*" + ELEM_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + "," + "\\s*" + ELEM_REGEX + + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + "\\>" + SYMBOL_RIGHT_BRACKET;
 const string ONLY_TUPLE_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\\<" + "\\s*" + ELEM_REGEX + "\\s*" + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + "," + "\\s*" + ELEM_REGEX + +"\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + "\\>" + SYMBOL_RIGHT_BRACKET;
-//const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + "([a-zA-Z])([a-zA-Z]|\\d|\\#)*|(BOOLEAN)" + OR + ATTRREF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
 const string SELECT_INITIAL_REGEX = SYMBOL_LEFT_BRACKET_STRING + SELECT_STRING + "\\s+" + SYMBOL_LEFT_BRACKET_STRING + "BOOLEAN" + OR + TUPLE_REGEX + SYMBOL_RIGHT_BRACKET_STRING + SYMBOL_RIGHT_BRACKET_STRING;
 const string INVALID_BRACKET_EXEPTION = "Invalid Bracket Exception";
 
@@ -213,7 +213,8 @@ QueryValidator::QueryValidator()
 	attrNameBank[VALUE] = { CONSTANT_STRING };
 	attrNameBank[STMTNUM] = { STMT_STRING, ASSIGN_STRING, IF_STRING, WHILE_STRING, CALL_STRING };
 }
-//With a given str, loop thru to find ;
+//This function takes in a given string and places it through a series of checks by calling other required methods
+//Returns true if given Query is Valid. Else returns false
 bool QueryValidator::parseInput(string str) {
 	//Upon taking in a string query, clear the following
 	queryStatement = QueryStatement();
@@ -222,7 +223,6 @@ bool QueryValidator::parseInput(string str) {
 	declMap = unordered_map<string, string>();
 
 	str = removeDuplicatesWhiteSpaces(str);
-
 	if (str.find(SYMBOL_SEMI_COLON_STRING)) {
 		bool valQuery = false;
 		size_t pos;
@@ -247,19 +247,18 @@ bool QueryValidator::parseInput(string str) {
 			return false;
 		}
 	} else {
-		cout << WRONG_SYNTAX_ERROR;
 		return false;
 	}
 }
 
 
 //This function parses the Entity And Synonym and checks for the validity of Entity
+//Returns through if Entity and synonym is valid, else returns false
 bool QueryValidator::isEntityAndSynonym(string currentString) {
 	if (isValidEntity(currentString)) {
 		addSynonymEntityList();
 		return true;
 	} else {
-		cout << INVALID_ENTITY_ERROR;
 		return false;
 	}
 }
@@ -267,12 +266,77 @@ bool QueryValidator::isEntityAndSynonym(string currentString) {
 void QueryValidator::addSynonymEntityList() {
 	queryStatement.addSynonymEntityList(synonymAndEntityList);
 }
+//This function parses a given queryLine.
+//Returns true if parsing was successful, else returns false.
 bool QueryValidator::parseQueryLine(string str) {
 	if (!isValidQueryLine(str)) {
-		cout << INVALID_QUERY << endl;
 		return false;
 	} else {
 		return true;
+	}
+}
+//This function takes in a given string and calls 2 method to do further validation on the Result clause in Select and Other Clauses involved(suchthat, pattern, with)
+//Returns True if both are valid, else Returns false
+bool QueryValidator::isValidQueryLine(string selectString) {
+	vector<string> initialVector;
+	initialVector.push_back(selectString);
+	initialVector = splitToSentences(selectString);
+	//After splitting do validation different parts of the vector
+	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
+		return true;
+	} else {
+		return false;
+
+	}
+}
+//This function function checks for the select portion of the select query and ensure that the synonym/tuple/Boolean are valid
+//Returns true if the result-cl is valid, else returns false;
+bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
+	string selectClause = vectorClauses.at(ZERO);
+	int toAdd = ZERO;
+	selectClause = Util::trim(selectClause);
+	if (!isValidSelectInitialRegex(selectClause)) {
+		return false;
+	}
+	string resultCl = selectClause.substr(SELECT_STRING.length(), selectClause.length() - SELECT_STRING.length());
+	resultCl = Util::trim(resultCl);
+	resultCl = removeSymbols(resultCl, WHITESPACE_STRING);
+	resultCl = removeSymbols(resultCl, TAB_STRING);
+	//If its a synonym
+	if (isIdent(resultCl) && isValidSynonym(resultCl)) {
+		string ent = getCorrespondingEntity(resultCl);
+		addSelectQueryElement(ent, resultCl, SYNONYM_STRING, SYNONYM_STRING);
+		return true;
+	} else if (resultCl == BOOLEAN_STRING) {
+		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING, EMPTY_STRING);
+		resultBoolean = true;
+		return true;
+	} else if (isAttrRef(resultCl)) {
+		vector<string> resultVec = splitBySymbol(resultCl, DOT_CHAR);
+		string syn = resultVec.at(ZERO);
+		string attrName = resultVec.at(ONE);
+		//First check that synonym is declared and is a corresponding entity
+		if (isValidSynonym(syn) && isValidCorrespondingEntity(syn, attrName)) {
+			string ent = getCorrespondingEntity(syn);
+			addSelectQueryElement(ent, syn, ATTRREF_STRING, attrName);
+			return true;
+		} else {
+			return false;
+		}
+	} else if (isValidTuple(resultCl)) {
+		resultCl = resultCl.substr(ONE, resultCl.length() - TWO);
+		vector<string> resultVec = splitBySymbol(resultCl, SYMBOL_COMMA);
+		if (isValidCorrespondingTupleEntities(resultVec)) {
+			string allSyn = extractAllSyn(resultVec);		// a,b,c,d
+			string allEnt = extractAllEnt(resultVec);
+			string allSynAttr = extractAllSynAttr(resultVec);
+			addSelectQueryElement(allEnt, allSyn, TUPLE_STRING, allSynAttr);
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
 	}
 }
 
@@ -303,15 +367,32 @@ bool QueryValidator::inEntityList(string entity) {
 	}
 	return false;
 }
-//Parses the synonym with the associated entity into the synonymTable
-bool QueryValidator::parseDeclaration(vector<string> splitString) {
+bool QueryValidator::isValidCorrespondingTupleEntities(vector<string> resultVec) {
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string syn = tempVec.at(ZERO);
+			string attrName = tempVec.at(ONE);
+			if (!isValidCorrespondingEntity(syn, attrName)) {
+				return false;
+			}
+		}
+		else {
 
-	//Obtains the entity and erase it from vector
+			string ent = getCorrespondingEntity(resultVec.at(i));
+			if (ent == INVALID_STRING) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+//Parses the synonym with the associated entity into the synonymTable
+//Returns true if Parsing is successful, else returns false
+bool QueryValidator::parseDeclaration(vector<string> splitString) {
 	string reqEntity = splitString.front();
 	splitString.erase(splitString.begin());
 	string synonymsStr;
-
-	//Adds back the rest of the string into 1 string
 	for (std::size_t i = ZERO; i < splitString.size(); i++) {
 		synonymsStr += splitString.at(i);
 	}
@@ -325,12 +406,12 @@ bool QueryValidator::parseDeclaration(vector<string> splitString) {
 			declMap[synonymsAttached.at(i)] = reqEntity;
 		}
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
-
+//This function takes in a given entity and checks if it has been redeclared
+//Returns true if it has not been redeclared, else return false
 bool QueryValidator::isNotReDeclaredOtherEnt(vector<string> synonymsAttached, string reqEntity) {
 	for (int i = ZERO; i < synonymsAttached.size(); i++) {
 		unordered_map<string, string>::iterator it;
@@ -346,32 +427,13 @@ bool QueryValidator::isNotReDeclaredOtherEnt(vector<string> synonymsAttached, st
 		}
 	}
 }
-
-bool QueryValidator::isValidQueryLine(string selectString) {
-
-	vector<string> initialVector;
-	initialVector.push_back(selectString);
-
-	initialVector = splitToSentences(selectString);
-	//After splitting do validation different parts of the vector
-	if (isValidSelect(initialVector) && isValidOthers(initialVector)) {
-		return true;
-	} else {
-		return false;
-
-	}
-}
-//Posssible str received here are:
-//pattern a(,) pattern(,)
-//pattern ifs(,,) and pattern a()
-//pattern w(_,_) and pattern a() pattern ifs(,,)
+//Checks if a given pattern string is valid
+//Returns true if valid else false
 bool QueryValidator::isValidPattern(string str) {
 	//First Util::trim it
 	str = Util::trim(str);
-
 	//Extract out all the pattern
 	vector<string> vecPattern = extractPatternClauses(str);
-
 	if (vecPattern[ZERO] == INVALID_BRACKET_EXEPTION) {
 		return false;
 	}
@@ -391,13 +453,9 @@ bool QueryValidator::isValidPattern(string str) {
 		if (!isValidGeneralPatternRegex(currentStr)) {
 			return false;
 		}
-		//What i should do: remove leading pattern
-		//With given string, first remove the word pattern
 		currentStr = currentStr.substr(PATTERN_STRING_LENGTH, currentStr.length() - PATTERN_STRING_LENGTH);
 		//Util::trim it again
 		currentStr = Util::trim(currentStr);
-
-		//To be used as identification of the pattern regex
 		bool isAssign = false;
 		bool isIf = false;
 		bool isWhile = false;
@@ -430,36 +488,24 @@ bool QueryValidator::isValidPattern(string str) {
 	return true;
 }
 
-//This function handles the Assign pattern scenario
+//This function checks if an assign pattern is valid
+//Returns true if assign pattern is valid, else returns false
 bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
-	//Cannot really use regex due to brackets, so perform manual check on each arguments
-	//However can check generally for the first arg
 	if (!isAssignPatternRegex(str) && !resultBoolean) {
 		return false;
 	} else if (!isAssignPatternRegex(str) && resultBoolean) {
 		queryStatement.setInvalidQueryBoolean();
 		return true;
 	}
-
-	//Find the first occurence of left bracket
 	int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
-
-	//Get the string without the synPattern
 	string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
-
-	//Remove outer 2 brackets
 	curr = removeOuterParentheses(curr);
-
-	//Split the string by comma
 	vector<string> assignVecPattern = splitBySymbol(curr, SYMBOL_COMMA);
-
 	string arg1 = assignVecPattern.at(ZERO);
 	string arg2 = assignVecPattern.at(ONE);
-
 	//Firstly trim them
 	arg1 = Util::trim(arg1);
 	arg2 = Util::trim(arg2);
-
 	//Then for each arg, check wad type they are
 	bool arg1UnderScore = false;
 	bool arg1Variable = false;
@@ -504,13 +550,11 @@ bool QueryValidator::isValidAddAssignPattern(string str, string synPattern) {
 		queryStatement.setInvalidQueryBoolean();
 		return true;
 	}
-
-	//At this pt, arg1 and arg2 must be valid so we call a function
 	addAssignPatternQueryElement(arg1, arg2, ASSIGN_STRING, synPattern, arg1UnderScore, arg1Variable, arg1StringLiteral, arg2UnderScore, arg2Exact
 		, arg2Substring);
 	return true;
 }
-
+//This functions adds a valid assign pattern QueryElement to QueryStatement
 void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, string ent, string syn, bool arg1UnderScore, bool arg1Variable,
 	bool arg1StringLiteral, bool arg2UnderScore, bool arg2Exact, bool arg2Substring) {
 	if (arg1UnderScore) {
@@ -571,33 +615,26 @@ void QueryValidator::addAssignPatternQueryElement(string arg1, string arg2, stri
 
 
 //This method checks if given string is a well-formed expression
+//Returns true if is a well-formed expression, else returns false
 bool QueryValidator::isValidExpr(string str) {
-	//Several checks to perform here
-	//First ensure that no. of left brackets == no. of right brackets
-	//Next ensure that onli string,integers and brackets are allowed
-	//Next ensure that within a bracket, it is not empty
-	//Next ensure that when an operator is encountered, LHS can onli be a ')', string/integer. RHS can onli be string/integer '('
-	//Next ensure that when a string/integer is encounter LHS can never be a ')', RHS can never be '('
-	//Given string will be sth like "wwwww"
-	//Trim it first
 	str = Util::trim(str);
-
 	if (!isExactString(str)) {
 		return false;
 	} else {
-		str = str.substr(ONE, str.length() - 2);
+		str = str.substr(ONE, str.length() - TWO);
 		return isBalancedParantheses(str);
 	}
 }
 
-//This function takes in a string str and checks if LHS = RHS
+//This function takes in a string str and checks if it is balanced in terms of parantheses and expression
+//Returns true if is balanced, else returns false
 bool QueryValidator::isBalancedParantheses(string str) {
 	return Util::isValidExpression(str);
 }
 //This method checks if a given string a well-formed expression with underscores at both ends
+//Returns true if well-formed, else returns false
 bool QueryValidator::isValidExprUnder(string str) {
 	str = Util::trim(str);
-
 	if (!isSubstring(str)) {
 		return false;
 	}
@@ -606,20 +643,9 @@ bool QueryValidator::isValidExprUnder(string str) {
 		return isBalancedParantheses(str);
 	}
 }
-
-string QueryValidator::removeUnderScoreAndQuotation(string str) {
-	str = removeSymbols(str, INVERTED_COMMA_STRING);
-	str = removeSymbols(str, UNDER_SCORE_STRING);
-
-	return Util::trim(str);
-}
-
-
-
-//This function handles the while pattern scenario
+//This function returns true if a given while pattern is valid.
+//Returns true if Valid. Else returns false
 bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
-
-	//Returns false if it doesnt matches the while regex
 	if (!isValidWhilePatternRegex(str)) {
 		if (!resultBoolean) {
 			return false;
@@ -629,18 +655,12 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 		}
 	} else {
 		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
-
 		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
-
 		curr = Util::trim(curr);
-
 		curr = curr.substr(ONE, curr.length() - TWO);
-
 		vector<string> whilePatternVec = splitBySymbol(curr, SYMBOL_COMMA);
 		string arg1 = whilePatternVec.at(ZERO);
-		//trim arg1
 		arg1 = Util::trim(arg1);
-
 		bool arg1UnderScore = false;
 		bool arg1Variable = false;
 		bool arg1StringLiteral = false;
@@ -669,14 +689,9 @@ bool QueryValidator::isValidAddWhilePattern(string str, string synPattern) {
 	}
 }
 
-//This function checks if the given pattern that matches the if regex is of the allowed semantics
-//Possible if pattern : pattern ifs(x,_,_)		pattern ifs("x",_,_)		pattern ifs(1,_,_)		pattern ifs(_,_,_)
-//While taking note that the entity before ( must be an 'if design entity
-//This function assumes that the string received here will be
-//ifs(....)		or ifs(.....)	or ifs	(....)	or ifs	(....)
-//With pattern as the leading word
+//This function checks if a given if Pattern is valid
+//Returns true if valid, else returns false
 bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
-	//If it does not matches the if regex
 	if (!isValidIfPatternRegex(str)) {
 		if (!resultBoolean) {
 			return false;
@@ -685,22 +700,13 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 			return true;
 		}
 	} else {
-		//Since regex passed, try and get wad is contained inside the string now
-		//Find the occurence of the first left bracket
 		int idxFirstLeftBracket = str.find(SYMBOL_LEFT_BRACKET_STRING);
-		//Since it passed the regex, i am sure that arg2 and arg 3 will be wildcard i.e. underscore string
-		//So all i need to do is find out what is arg1 
 		string curr = str.substr(idxFirstLeftBracket, str.length() - idxFirstLeftBracket);
-		//Remove the brackets
 		curr = Util::trim(curr);
 		curr = curr.substr(ONE, curr.length() - TWO);
-
 		vector<string> ifPatternVec = splitBySymbol(curr, SYMBOL_COMMA);
 		string arg1 = ifPatternVec.at(ZERO);
-		//trim arg1
 		arg1 = Util::trim(arg1);
-
-		//Possible identities of arg1 entRef: stringliterals, synonym variable, number, underscore_String
 		bool arg1UnderScore = false;
 		bool arg1Variable = false;
 		bool arg1StringLiteral = false;
@@ -729,9 +735,8 @@ bool QueryValidator::isValidAddIfPattern(string str, string synPattern) {
 		}
 	}
 }
-//This functions takes in arg1 and 4 boolean and 1 string and creates a	QueryElement to be added to the QueryStatement
+//This functions takes in a valid if Pattern, creates a QueryElement and adds to QueryStatement.
 void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
-	//If arg1 is a boolean, just add
 	if (arg1Underscore) {
 		QueryElement ifQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, UNDER_SCORE_STRING, IF_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, PATTERN_STRING);
 		queryStatement.addPatternQuery(ifQueryElement);
@@ -751,7 +756,7 @@ void QueryValidator::addIfPatternQueryElement(string arg1, bool arg1Underscore, 
 		queryStatement.addNormalMultiMap(arg1, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 	}
 }
-
+//This function takes in a valid while pattern, creates a QueryElement and adds to QueryStatement.
 void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscore, bool arg1Variable, bool arg1StringLiteral, string synPattern) {
 	if (arg1Underscore) {
 		QueryElement whileQueryElement = QueryElement(UNDER_SCORE_STRING, UNDER_SCORE_STRING, EMPTY_STRING, WHILE_STRING, synPattern, WILDCARD_STRING, WILDCARD_STRING, EMPTY_STRING, EMPTY_STRING, PATTERN_STRING);
@@ -772,6 +777,8 @@ void QueryValidator::addWhilePatternQueryElement(string arg1, bool arg1Underscor
 		queryStatement.addNormalMultiMap(arg1, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 	}
 }
+//This functions checks if given string has a valid leading and i.e. only allowed is 'and' or whitespaces or tab
+//Returns true if valid, else returns false
 bool QueryValidator::isLeadingAnd(string str) {
 	if (str.find(AND_STRING) == ZERO) {
 		if (isPartialPatternRegex(str)) {
@@ -783,160 +790,51 @@ bool QueryValidator::isLeadingAnd(string str) {
 		return false;
 	}
 }
-//This function removes the leading pattern string, then trim it and returns this trimmed string
-string QueryValidator::removeLeadingPatternString(string str) {
-
-	str = str.substr(PATTERN_STRING.length(), str.length() - PATTERN_STRING.length());
-
+//This function takes in a string and removes all underscore and Quotation symbols and returns this new string.
+string QueryValidator::removeUnderScoreAndQuotation(string str) {
+	str = removeSymbols(str, INVERTED_COMMA_STRING);
+	str = removeSymbols(str, UNDER_SCORE_STRING);
 	return Util::trim(str);
 }
+//This function removes the leading pattern string, then trim it and returns this trimmed string
+string QueryValidator::removeLeadingPatternString(string str) {
+	str = str.substr(PATTERN_STRING.length(), str.length() - PATTERN_STRING.length());
+	return Util::trim(str);
+}
+//This function takes in a given string and remove leading 'and' pattern trail and returns new string.
 string QueryValidator::removeLeadingAnd(string str) {
 	str = Util::trim(str);
-
 	if (str.find(AND_STRING) == 0) {
 		str = str.substr(THREE, str.length() - THREE);
 	}
 	return str;
 }
-//This functions checks if the given str is of the design entity
+//This functions takes in a given string and checks if it is valid synonym
+//Returns true if valid, else returns false
 bool QueryValidator::isVariableSynonym(string str) {
 	string ent = getCorrespondingEntity(str);
 	return(ent == VARIABLE_STRING);
 }
+//This function takes in a given string and checks if it is a wildcard
+//Returns true if it is a wildcard, else returns false
 bool QueryValidator::isWildcard(string arg) {
 	return (arg == UNDER_SCORE_STRING);
 }
 //This function takes in an argument(2) and checks if it is an exact string
+//Returns true if it is an exact string, else returns false
 bool QueryValidator::isExactString(string arg2) {
-	if ((arg2.at(ZERO) == DOUBLE_QUOTATION) && (arg2.at(arg2.length() - 1) == DOUBLE_QUOTATION)) {
+	if ((arg2.at(ZERO) == DOUBLE_QUOTATION) && (arg2.at(arg2.length() - ONE) == DOUBLE_QUOTATION)) {
 		return true;
-	}
-	else {
-		return false;
-	}
-	return true;
-}
-//This function function checks for the select portion of the select query and ensure that the synonym
-bool QueryValidator::isValidSelect(vector<string> vectorClauses) {
-	//First element of this vector gives the select clause
-	string selectClause = vectorClauses.at(ZERO);
-
-	int toAdd = ZERO;
-	selectClause = Util::trim(selectClause);
-	if (!isValidSelectInitialRegex(selectClause)) {
-		return false;
-	}
-
-	string resultCl = selectClause.substr(SELECT_STRING.length(), selectClause.length() - SELECT_STRING.length());
-	resultCl = Util::trim(resultCl);
-	resultCl = removeSymbols(resultCl, WHITESPACE_STRING);
-	resultCl = removeSymbols(resultCl, TAB_STRING);
-
-	//If its a synonym
-	if (isIdent(resultCl) && isValidSynonym(resultCl)) {
-		string ent = getCorrespondingEntity(resultCl);
-		addSelectQueryElement(ent, resultCl, SYNONYM_STRING, SYNONYM_STRING);
-		return true;
-	} else if (resultCl == BOOLEAN_STRING) {
-		addSelectQueryElement(EMPTY_STRING, EMPTY_STRING, BOOLEAN_STRING, EMPTY_STRING);
-		resultBoolean = true;
-		return true;
-	} else if (isAttrRef(resultCl)) {
-		//Example p.procName, c.value etc
-		vector<string> resultVec = splitBySymbol(resultCl, DOT_CHAR);
-		string syn = resultVec.at(ZERO);
-		string attrName = resultVec.at(ONE);
-		//First check that synonym is declared and is a corresponding entity
-		if (isValidSynonym(syn) && isValidCorrespondingEntity(syn, attrName)) {
-			string ent = getCorrespondingEntity(syn);
-			addSelectQueryElement(ent, syn, ATTRREF_STRING, attrName);
-			return true;
-		} else {
-			return false;
-		}
-	} else if(isOnlyTuple(resultCl)) {
-		//a,b.stmt#,c,d
-		//Then remove the '<' and '>'
-		resultCl = resultCl.substr(ONE, resultCl.length() - TWO);
-		vector<string> resultVec = splitBySymbol(resultCl, SYMBOL_COMMA);
-		if (isValidCorrespondingTupleEntities(resultVec)) {
-			string allSyn = extractAllSyn(resultVec);		// a,b,c,d
-			string allEnt = extractAllEnt(resultVec);
-			string allSynAttr = extractAllSynAttr(resultVec);
-			addSelectQueryElement(allEnt, allSyn, TUPLE_STRING, allSynAttr);
-			return true;
-		}
-		else {
-			return false;
-		}
 	} else {
 		return false;
 	}
-}
-string QueryValidator::extractAllSynAttr(vector<string> resultVec) {
-	string toReturn;
-	for (size_t i = 0; i < resultVec.size(); i++) {
-		if (isAttrRef(resultVec.at(i))) {
-			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
-			string attrName = tempVec.at(ONE);
-			toReturn += attrName + COMMA_STRING;
-		} else {
-			toReturn += SYNONYM_STRING + COMMA_STRING;
-		}
-	}
-	return toReturn.substr(ZERO, toReturn.length() - ONE);
-}
-bool QueryValidator::isValidCorrespondingTupleEntities(vector<string> resultVec) {
-	for (size_t i = 0; i < resultVec.size(); i++) {
-		if (isAttrRef(resultVec.at(i))) {
-			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
-			string syn = tempVec.at(ZERO);
-			string attrName = tempVec.at(ONE);
-			if (!isValidCorrespondingEntity(syn, attrName)) {
-				return false;
-			}
-		} else {
-			
-			string ent = getCorrespondingEntity(resultVec.at(i));
-			if (ent == INVALID_STRING) {
-				return false;
-			}
-		}
-	}
 	return true;
 }
-string QueryValidator::extractAllEnt(vector<string> resultVec) {
-	string toReturn;
-	for (size_t i = 0; i < resultVec.size(); i ++) {
-		if (isAttrRef(resultVec.at(i))) {
-			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
-			string ent = getCorrespondingEntity(tempVec.at(ZERO));
-			toReturn += ent + COMMA_STRING;
-		} else {
-			string ent = getCorrespondingEntity(resultVec.at(i));
-			toReturn += ent + COMMA_STRING;
-		}
-	}
-	return toReturn.substr(ZERO, toReturn.length() - ONE);
-}
-string QueryValidator::extractAllSyn(vector<string> resultVec) {
-	string toReturn;
-	for (size_t i = 0; i < resultVec.size();  i++) {
-		if (isAttrRef(resultVec.at(i))) {
-			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
-			toReturn += tempVec.at(ZERO) + COMMA_STRING;
-		}
-		else {
-			toReturn += resultVec.at(i) + COMMA_STRING;
-		}
-	}
-	return toReturn.substr(ZERO, toReturn.length() - ONE);
-}
+//This function takes in a given string and checks if it is a permitted entity i.e. it exists
+//Returns true if it exists, else returns false
 bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName) {
 	string ent = getCorrespondingEntity(synonym);
-	
 	vector<string> permittedEntities = attrNameBank[attrName];
-
 	for (size_t i = 0; i < permittedEntities.size(); i++) {
 		if (permittedEntities[i] == ent) {
 			return true;
@@ -944,15 +842,16 @@ bool QueryValidator::isValidCorrespondingEntity(string synonym, string attrName)
 	}
 	return false;
 }
+//This function adds a Select QueryElement
 void QueryValidator::addSelectQueryElement(string ent, string syn, string selectType, string str) {
 	queryStatement.addSelectQuery(QueryElement(ent, syn, selectType, str));
 }
-
+//This function adds a suchThat QueryElement
 void QueryValidator::addSuchThatQueryElement(QueryElement qe) {
 	queryStatement.addSuchThatQuery(qe);
 }
-
-//isValid others currently accepts such that and pattern clause
+//This functions checks for all other clauses'(suchthat, pattern, with) validity
+//Returns true if the clauses are all valid, else returns false
 bool QueryValidator::isValidOthers(vector<string> vec) {
 	//This implies its a short query i.e. stmt s
 	if (vec.size() < 2) {
@@ -1007,9 +906,8 @@ bool QueryValidator::isValidOthers(vector<string> vec) {
 		return true;
 	}
 }
-
-
-//This function takes in e.g. str = Follows, type = stmt, idx = 1
+//This function takes in e.g. str = Follows, type = stmt, idx = 1 and checks if the argument is permitted in the relationshipTable
+//Returns true if permitted, else returns false
 bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 	if (relationshipTable.isValidArg(rel, type, idx)) {
 		return true;
@@ -1017,6 +915,7 @@ bool QueryValidator::checkRelationshipTable(string rel, string type, int idx) {
 		return false;
 	}
 }
+//This function takes in a given string/synonym and gets its corresponding design entity
 string QueryValidator::getCorrespondingEntity(string syn) {
 	string reqEntity = INVALID_STRING;
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
@@ -1031,14 +930,13 @@ string QueryValidator::getCorrespondingEntity(string syn) {
 	}
 	return reqEntity;
 }
+//This function takes in a given string and checks if it is a number
+//Returns true if it is a number, else returns false
 bool QueryValidator::is_number(string s) {
 	return s.find_first_not_of(NUMBER_ZERO_TO_NINE) == string::npos;
 }
-QueryStatement QueryValidator::getQueryStatement()
-{
-	return queryStatement;
-}
 //This function takes in a string to check if synonym asked exists in the SynonymEntityPair
+//Returns true if it does not exists, else returns false
 bool QueryValidator::isValidSynonym(string syn) {
 	for (size_t i = ZERO; i < synonymAndEntityList.size(); i++) {
 		SynonymEntityPair tempPair = synonymAndEntityList.at(i);
@@ -1053,25 +951,22 @@ bool QueryValidator::isValidSynonym(string syn) {
 }
 //Splits the string into vectors of string with the required symbol and returns a vector of string
 vector<string> QueryValidator::splitBySymbol(string str, char symbolSplitWith) {
-
 	vector<string> result = vector<string>();
 	std::string token;
-
 	istringstream f(str);
 	while (getline(f, token, symbolSplitWith)) {
 		result.push_back(token);
 	}
 	return result;
 }
+//Takes in a given string and split them up to clauses and store in a vector, returns this vector
 vector<string> QueryValidator::splitToSentences(string strToSplit) {
 	string curr = strToSplit;
 	vector<string> results;
 	int currIdx = ZERO;
 
 	size_t posSuchThat = curr.find(SUCH_THAT_STRING);
-
 	size_t posPattern = curr.find(PATTERN_STRING);
-
 	size_t posWith = curr.find(WITH_STRING);
 
 	//Compare to get the one with smallest index
@@ -1094,25 +989,19 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 		results.push_back(curr);
 		return results;
 	}
-
 	size_t nextPosInterest = posInterest;
 	string nextClauseInterest = clauseInterest;
-
 	int count = ZERO;
-	while (currIdx != -1) {
+	while (currIdx != -ONE) {
 		string toPush = curr.substr(ZERO, nextPosInterest);
 		toPush = Util::trim(toPush);
 		toPush = trim(toPush);
 		results.push_back(toPush);
 		//Get the next instance of the string
 		curr = curr.substr(nextPosInterest, curr.length());
-
 		size_t nextPosSuchThat = curr.find(SUCH_THAT_STRING);
-
 		size_t nextPosPattern = curr.find(PATTERN_STRING);
-
 		size_t nextPosWith = curr.find(WITH_STRING);
-
 		if ((nextPosSuchThat != std::string::npos) && (nextPosSuchThat != ZERO)
 			&& (((nextPosPattern == ZERO) && (nextPosSuchThat < nextPosWith)) || ((nextPosWith == ZERO) && (nextPosSuchThat < nextPosPattern)))) {
 			nextPosInterest = nextPosSuchThat;
@@ -1136,14 +1025,55 @@ vector<string> QueryValidator::splitToSentences(string strToSplit) {
 			results.push_back(toPush);
 			break;
 		} else {
-			//Sth went wrong
 			break;
 		}
 		currIdx = nextPosInterest;
 	}
 	return results;
 }
-
+//This function takes in a given vector and extract all the attRef and concat them into a string delimited by a comma, returns this string
+string QueryValidator::extractAllSynAttr(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string attrName = tempVec.at(ONE);
+			toReturn += attrName + COMMA_STRING;
+		} else {
+			toReturn += SYNONYM_STRING + COMMA_STRING;
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+//This function takes in a given vector and extract all the Design entity and concat them into a string delimited by a comma, returns this string
+string QueryValidator::extractAllEnt(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			string ent = getCorrespondingEntity(tempVec.at(ZERO));
+			toReturn += ent + COMMA_STRING;
+		} else {
+			string ent = getCorrespondingEntity(resultVec.at(i));
+			toReturn += ent + COMMA_STRING;
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+//This function takes in a given vector and extract all the synonym and concat them into a string delimited by a comma, returns this string
+string QueryValidator::extractAllSyn(vector<string> resultVec) {
+	string toReturn;
+	for (size_t i = 0; i < resultVec.size(); i++) {
+		if (isAttrRef(resultVec.at(i))) {
+			vector<string> tempVec = splitBySymbol(resultVec.at(i), DOT_CHAR);
+			toReturn += tempVec.at(ZERO) + COMMA_STRING;
+		} else {
+			toReturn += resultVec.at(i) + COMMA_STRING;
+		}
+	}
+	return toReturn.substr(ZERO, toReturn.length() - ONE);
+}
+//This function takes in a given string and extract all the with clauses and places them into a vector, returns this vector
 vector<string> QueryValidator::extractWithClauses(string str) {
 	regex withRegex(ATTRCOMPARE_STRING_REGEX);
 	smatch m;
@@ -1157,18 +1087,12 @@ vector<string> QueryValidator::extractWithClauses(string str) {
 	}
 	return toReturnVec;
 }
-
+//This function takes in a given string and extract all the pattern clauses and places them into a vector, returns this vector
 vector<string> QueryValidator::extractPatternClauses(string str) {
-	
 	size_t pos = ZERO;
 	string curr = str;
 	vector<string> vecPattern;
 	try {
-		//These are some example strings: 
-		//pattern a(_,_) pattern ifs(_,_)
-		//pattern a(_,_) and ifs(_,_) pattern ifs(_,_)
-		//pattern a(_,_) pattern ifs(_,_) and ifs(_,_)
-		//While pos is not end of string
 		while (pos != string::npos) {
 			//Try to find the next occurence of pattern
 			size_t initFound = curr.find(PATTERN_STRING);
@@ -1182,8 +1106,7 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 				}
 				vecPattern.push_back(curr);
 				break;
-			}
-			else {
+			} else {
 				//curr is now pattern(....)...
 				string currTwo = curr.substr(ZERO, found);
 				size_t lastBracket = currTwo.find_last_of(SYMBOL_RIGHT_BRACKET_STRING);
@@ -1196,8 +1119,7 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 					vecPattern.push_back(currTwo);
 					curr = curr.substr(lastBracket + ONE, curr.length() - lastBracket);
 					pos = lastBracket + ONE;
-				}
-				else {
+				} else {
 					if (lastBracket == string::npos) {
 						throw (INVALID_BRACKET_EXEPTION);
 					}
@@ -1216,7 +1138,7 @@ vector<string> QueryValidator::extractPatternClauses(string str) {
 	return vecPattern;
 }
 
-//At this point the string consists of 'And' string
+//This function takes in a given string and a vector, extracts out all the and clauses classified under pattern and places them into the vector, returns this vector
 vector<string> QueryValidator::extractAndPattern(string currTwo, vector<string>vecPattern) {
 	size_t pos = ZERO;
 	//While there are no more 'And' in the given string
@@ -1231,23 +1153,40 @@ vector<string> QueryValidator::extractAndPattern(string currTwo, vector<string>v
 	}
 	return vecPattern;
 }
+//This method function all the relationship involved in the such that clauses and returns them in a vector
+vector<string> QueryValidator::extractSuchThatClauses(string str) {
+	regex suchThatRelRegex(RELREF_STRING_REGEX);
+	smatch m;
+	string temp;
+	vector<string> toReturnVec;
+
+	while (regex_search(str, m, suchThatRelRegex)) {
+		temp = m[ZERO];
+		toReturnVec.push_back(temp);
+		str = m.suffix().str();
+	}
+	return toReturnVec;
+}
+//This function takes in a given string and another string that indicates the symbol to remove, then remove all occurence of this symbol in given string and returns this new string
 string QueryValidator::removeSymbols(string str, string symbolToRemove) {
 	std::regex pattern(symbolToRemove);
 	std::string toReturn = std::regex_replace(str, pattern, "");
 	return toReturn;
 }
-
+//This function takes in a given string and remove all duplicate whitespaces and returns this new string
 string QueryValidator::removeDuplicatesWhiteSpaces(string str) {
 	size_t pos;
 	while ((pos = str.find("  ")) != std::string::npos)
 		str = str.replace(pos, 2, " ");
 	return str;
 }
+//This function takes in a given string and removes its outer paranthese, returns this new string
 string QueryValidator::removeOuterParentheses(string str) {
 	str = str.substr(ONE, str.length() - ONE);
 	str = str.substr(ZERO, str.length() - ONE);
 	return str;
 }
+//This function takes in a given string and removes all unrequired whitespaces and tabs and returns this new string
 string QueryValidator::trim(string str) {
 	return regex_replace(str, regex("^ +| +$|( ) +"), "$1");
 }
@@ -1263,26 +1202,38 @@ bool QueryValidator::isValidSuchThatRegex(string str) {
 	regex suchThatRegex(SUCH_THAT_CL_REGEX);
 	return regex_match(str, suchThatRegex);
 }
+//Takes in a given string and checks that it matches the such that extended regex
+//Returns true if matches, else false
 bool QueryValidator::isValidSuchThaExtendedRegex(string str) {
 	regex suchThatExtendedRegex(SUCH_THAT_CL_EXTENDED_REGEX);
 	return regex_match(str, suchThatExtendedRegex);
 }
+//Takes in a given string and checks that it matches the with regex
+//Returns true if matches, else returns false
 bool QueryValidator::isValidWithRegex(string str) {
 	regex withRegex(WITH_CL_REGEX);
 	return regex_match(str, withRegex);
 }
+//Takes in a given string and checks that it matches the with extended regex
+//Returns true if matches, else returns false
 bool QueryValidator::isValidWithExtendedRegex(string str) {
 	regex withExtendedRegex(WITH_CL_EXTENDED_REGEX);
 	return regex_match(str, withExtendedRegex);
 }
+//Takes in a given string and checks that it is a valid attrCond as indicated in handbook
+//Returns true if valid, else returns false
 bool QueryValidator::isValidAttrCondRegex(string str) {
 	regex attrCondRegex(ATTRCOND_STRING_REGEX);
 	return regex_match(str, attrCondRegex);
 }
+//Takes in a given string and checks that it is a valid attrCompare as indicated in handbook
+//Returns true if valid, else returns false
 bool QueryValidator::isValidAttrCompareRegex(string str) {
 	regex attrCompareRegex(ATTRCOMPARE_STRING_REGEX);
 	return regex_match(str, attrCompareRegex);
 }
+//Takes in a given string and checks that it has valid lead trail i.e. only AND or nth
+//Returns true if valid, else returns false
 bool QueryValidator::isValidLeadTrail(string str) {
 	str = Util::trim(str);
 	if (str == AND_STRING) {
@@ -1295,63 +1246,80 @@ bool QueryValidator::isValidLeadTrail(string str) {
 		}
 	}
 }
+//This function takes in a given string and checks that if it is valid attrRef as indicated in handbook
+//Returns true if valid, else returns false
 bool QueryValidator::isValidAttRefRegex(string str) {
 	regex attrRefRegex(ATTRREF_STRING_REGEX);
 	return regex_match(str, attrRefRegex);
 }
-bool QueryValidator::isValidIfMultiplePatternRegex(string str) {
-	regex ifPatternAndRegex(IF_PATTERN_AND_REGEX);
-	return regex_match(str, ifPatternAndRegex);
-}
+//This function takes in a given string and checks that it is a valid Select clause as indicated in handbook
+//Returns true if valid, else returns false
 bool QueryValidator::isValidSelectInitialRegex(string str) {
 	regex patternRegex(SELECT_INITIAL_REGEX);
 	return regex_match(str, patternRegex);
 }
+//This function takes in a given string and checks that it is a valid pattern clause as indicated in handbook
+//Returns true if valid ,else returns false
 bool QueryValidator::isValidGeneralPatternRegex(string str) {
 	regex generalPatternRegex(GENERAL_PATTERN_CL_REGEX);
 	return regex_match(str, generalPatternRegex);
 }
+//This function takes in a given string and checks that it is a valid with pattern clause as indicated in handbook
+//Returns true if valid ,else returns false
 bool QueryValidator::isValidWhilePatternRegex(string str) {
 	regex whilePatternRegex(WHILE_PATTERN_REGEX);
 	return regex_match(str, whilePatternRegex);
 }
+//This function takes in a given string and checks that it is a valid if pattern clause as indicated in handbook
+//Returns true if valid ,else returns false
 bool QueryValidator::isValidIfPatternRegex(string str) {
 	regex ifPatternRegex(IF_PATTERN_REGEX);
 	return regex_match(str, ifPatternRegex);
 }
-bool QueryValidator::isQuotationIdentRegex(string str) {
-	regex quotationRegex(QUOTATION_IDENT_STRING_REGEX);
-	return regex_match(str, quotationRegex);
-}
-bool QueryValidator::isPartialPatternRegex(string str) {
-	regex partialPatternRegex(PARTIAL_PATTERN_REGEX);
-	return regex_match(str, partialPatternRegex);
-}
+//This function takes in a given string and checks that it is a valid assign pattern clause as indicated in handbook
+//Returns true if valid ,else returns false
 bool QueryValidator::isAssignPatternRegex(string str) {
 	regex assignPatternRegex(ASSIGN_PATTERN_REGEX);
 	return regex_match(str, assignPatternRegex);
 }
-bool QueryValidator::isString(string str) {
-	regex isStringRegex(STRING_REGEX);
-	return regex_match(str, isStringRegex);
+//This function takes in a given string and checks that it is a valid Ident that has double quotation mark
+//Returns true if valid, else returns false
+bool QueryValidator::isQuotationIdentRegex(string str) {
+	regex quotationRegex(QUOTATION_IDENT_STRING_REGEX);
+	return regex_match(str, quotationRegex);
 }
+//This function takes in a given string and only checks up to before argument 2 of a given assign pattern clause
+//Returns true if check is valid, else returns false
+bool QueryValidator::isPartialPatternRegex(string str) {
+	regex partialPatternRegex(PARTIAL_PATTERN_REGEX);
+	return regex_match(str, partialPatternRegex);
+}
+//This function takes in a given string and checks that it is indeed a whiteSpace or tab
+//Returns true if so, else returns false
 bool QueryValidator::isWhiteSpaceTab(string str) {
 	regex isWhiteSpaceTabRegex(WHITESPACE_TAB_REGEX);
 	return regex_match(str, isWhiteSpaceTabRegex);
 }
+//This function takes in a given string and checks that it is indeed a substring e.g. _"x"_
+//Returns true if so, else returns false
 bool QueryValidator::isSubstring(string str) {
 	regex subStringRegex(SUBSTRING_REGEX);
 	return regex_match(str, subStringRegex);
 }
+//This function takes in a given string and checks that it is indeed a tuple
+//Returns true if so, else returns false
 bool QueryValidator::isValidTuple(string str) {
-	regex tupleRegex(TUPLE_REGEX);
-	return regex_match(str, tupleRegex);
+	regex onlyTupleRegex(ONLY_TUPLE_REGEX);
+	return regex_match(str, onlyTupleRegex);
 }
+//This function takes in a given string and checks that it is indeed an IDENT as indicated in handbook
+//Returns true if so, else returns false
 bool QueryValidator::isIdent(string str) {
 	regex identRegex(IDENT_STRING_REGEX);
 	return regex_match(str, identRegex);
 }
-bool QueryValidator::isOnlyTuple(string str) {
-	regex onlyTupleRegex(ONLY_TUPLE_REGEX);
-	return regex_match(str, onlyTupleRegex);
+//This function returns a query object: queryStatement
+QueryStatement QueryValidator::getQueryStatement()
+{
+	return queryStatement;
 }

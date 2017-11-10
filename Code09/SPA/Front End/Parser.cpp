@@ -149,12 +149,7 @@ bool Parse(string fileName, PKB& pkb) {
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isCallStatement(nextLine)) {
-				string proc_name;
-				if (nextLine[1].substr(nextLine[1].size() - 1) == SEMICOLON) {
-					proc_name = nextLine[1].substr(0, nextLine[1].size() - 1);
-				} else {
-					proc_name = nextLine[1];
-				}
+				string proc_name = nextLine[1].substr(0, nextLine[1].find(SEMICOLON));
 				pkb.setStatementType(lineCounter, CALL);
 				pkb.setCalls(lineCounter, procName, proc_name);
 				isSameLevel = true;
@@ -213,9 +208,17 @@ bool isProcedure(vector<string> line) {
 }
 
 bool isCallStatement(vector<string> line) {
-	return (line.size() >= 2 && line[0] == CALL) &&
-		((line[0] == CALL && Util::isValidName(line[1].substr(0, line[1].size() - 1)) && line[1].substr(line[1].size() - 1) == SEMICOLON && endsWithBrackets(line, 2)) ||
-		(line.size() >= 3 && Util::isValidName(line[1]) && line[2] == SEMICOLON && endsWithBrackets(line, 3)));
+	if (line.size() < 2) {
+		return false;
+	} else if (line[0] != CALL) {
+		return false;
+	} else {
+		if (line.size() == 2) {
+			return Util::isValidName(Util::splitLine(line[1], ';')[0]) && line[1].find(SEMICOLON) != string::npos;
+		} else {
+			return Util::isValidName(Util::splitLine(line[1], ';')[0]) && (line[1].find(SEMICOLON) != string::npos || line[2].find(SEMICOLON) != string::npos);
+		}
+	}
 }
 
 bool isWhileStatement(vector<string> line) {

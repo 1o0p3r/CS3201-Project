@@ -563,5 +563,5 @@ private:
 	vector<string> modifiedVariables;
 	vector<string> usedVariables;
 	void affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int & max, vector<vector<int>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
-	void affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<bool>& exploredOnce, set<pair<int, int>>& included);
+	void affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, int& max, vector<vector<set<int>>> explored, vector<int>& exploredOnce, set<pair<int, int>>& included);
 };

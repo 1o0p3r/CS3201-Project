@@ -1,3 +1,4 @@
+//This method exists Only to contain the process of handling with clauses while still using existing methods in QueryValidator.cpp
 #include "WithHandler.h"
 #include <QueryValidator.h>
 #include <vector>
@@ -19,20 +20,6 @@ const string SYMBOL_SEMI_COLON_STRING = ";";
 const string UNDER_SCORE_STRING = "_";
 const string SYMBOL_LEFT_BRACKET_STRING = "(";
 const string SYMBOL_RIGHT_BRACKET_STRING = ")";
-const string NAME_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d)*";
-const string INTEGER_STRING_REGEX = "\\d+";
-const string CONSTANT_STRING_REGEX = "\\d+";
-const string FACTOR_STRING_REGEX = "\\d+|([a-zA-Z])([a-zA-Z]|\\d)*";
-const string IDENT_STRING_REGEX = "(\\s*(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*)";
-const string QUOTATION_IDENT_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "\"" + IDENT_STRING_REGEX + "\"" + SYMBOL_RIGHT_BRACKET_STRING;
-const string SYNONYM_STRING_REGEX = "([a-zA-Z])([a-zA-Z]|\\d|\#)*";
-const string STMTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+))"; //Nth wrg here
-const string LINEREF_STRING_REGEX = STMTREF_STRING_REGEX;
-const string ENTREF_STRING_REGEX = "((([a-zA-Z])([a-zA-Z]|\\d|\#)*)|(\_)|(\\d+)|(\"\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*\\s*\"))"; //Nth wrg here either
-const string EXPSPEC_STRING_REGEX = "((\_\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"\_)|(\_)|(\"(([a-zA-Z])([a-zA-Z]|\\d)*)\"))";
-const string DESIGN_ENTITY_REGEX = "(stmt|assign|while|variable|constant|prog_line|procedure|stmtLst|if|call)";
-const string DECLARATION_STRING_REGEX = "(stmt|assign|while|variable|constant|prog_line|procedure|stmtLst|if|call)\\s+(([a-zA-Z])([a-zA-Z]|\\d|\#)*)\\s*(\,\\s*([a-zA-Z])([a-zA-Z]|\\d|\#)*)*;";
-const string DECLARATIONS_STRING_REGEX = "(((stmt|assign|while|variable|constant|prog_line|procedure|stmtLst|if|call)\\s+(([a-zA-Z])([a-zA-Z]|\d|\#)*)\\s*(\,\\s*([a-zA-Z])(([a-zA-Z]|\\d|\#)\\s*)*)*;)\\s*)+";
 
 const string EMPTY_STRING = "empty";
 const string ASSIGN_STRING = "assign";
@@ -61,57 +48,28 @@ const string BOOLEAN_STRING = "BOOLEAN";
 const string CALL_STRING = "call";
 const string NUMBER_STRING = "number";
 
-const string ATTRNAME_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + "procName|varName|value|stmt#" + SYMBOL_RIGHT_BRACKET_STRING;
-const string ATTRREF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + SYNONYM_STRING_REGEX + "\." + ATTRNAME_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
-const string REF_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRREF_STRING_REGEX + OR + SYNONYM_STRING_REGEX + OR + QUOTATION_IDENT_STRING_REGEX
-+ OR + INTEGER_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
-const string ATTRCOMPARE_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + REF_STRING_REGEX + "\\s*" + EQUAL_STRING + "\\s*" + REF_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
-const string ATTRCOND_STRING_REGEX = SYMBOL_LEFT_BRACKET_STRING + ATTRCOMPARE_STRING_REGEX + SYMBOL_LEFT_BRACKET_STRING + "\\s+" + AND_STRING + "\\s+" + ATTRCOMPARE_STRING_REGEX + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK + SYMBOL_RIGHT_BRACKET_STRING;
-const string WITH_CL_REGEX = WITH_STRING + "\\s+" + ATTRCOND_STRING_REGEX;
-const string TEMPORARY_WITH = SYMBOL_LEFT_BRACKET_STRING + WITH_CL_REGEX + SYMBOL_RIGHT_BRACKET_STRING;
-const string WITH_CL_EXTENDED_REGEX = TEMPORARY_WITH + SYMBOL_LEFT_BRACKET_STRING + "\\s*" + TEMPORARY_WITH + "\\s*" + SYMBOL_RIGHT_BRACKET_STRING + ASTERIK;
-const string LEAD_TRAIL = "and|\\s+";
-
 WithHandler::WithHandler()
 {
 
 }
-
-//This method checks if the with clauses is a valid with clause by initially checking with the regex 
-//Then proceed to check if LHS = RHS in terms of type
+//This method checks if the with clauses is a valid with clause
+//Returns true if valid, else returns false
 bool QueryValidator::isValidWith(string str) {
 	str = Util::trim(str);
-
 	//If there is a match with a regex simply proceed to compare
 	if (isValidWithRegex(str) || isValidWithExtendedRegex(str)) {
 		vector<string> vecWith = extractWithClauses(str);
-		//Only need to keep track of prev if vecWith.size() is bigger than 1
-		//value stmt# procName varName prog_line string number
-		//Some examples of cases to consider
-		//with v.value = 1 and v.value = 2 which is invalid
-		//
-		//with s.stmt# = 1 and s.stmt# = v.value is valid 
-		//with p.procName = v.varName and p.procName = v2.varName is valid 
-		//TLDR: Only need to check if same attrName is involved and has multiple with clauses
-
 		//Loop through for every with clauses and compare LHS AND RHS
 		for (size_t i = ZERO; i < vecWith.size(); i++) {
 			//Split the string by equal symbol
 			string currWith = vecWith.at(i);
 			vector<string> argsWith = splitBySymbol(currWith, EQUAL_CHAR);
-
-			//Gets the LHS and RHS
 			string arg1 = argsWith.at(ZERO);
 			string arg2 = argsWith.at(ONE);
-
 			string arg1Ent, arg1Syn, arg1attrName, arg1Identity;
 			string arg2Ent, arg2Syn, arg2attrName, arg2Identity;
 			bool arg1AttrRef = false;
 			bool arg2AttrRef = false;
-			//Checks to be done sequentially in this order: 
-			//Checks if arg1 arg2 is and attrRef, if so check if the synonym is a valid one and get the corresponding entity and checks if it is a valid entity for the attrRef
-			//Checks if it is a prog_line as well
-			//Then proceed to check LHS and RHS
 			arg1 = Util::trim(arg1);
 			arg2 = Util::trim(arg2);
 			//Implies that e.g. v.varName as a whole is a valid, so i can go and get its respective entity, synonym, etc
@@ -179,48 +137,23 @@ bool QueryValidator::isValidWith(string str) {
 						return false;
 					}
 				}
-
-
 				//If arg1 and 2 are both attrRref	
 				if (arg1AttrRef && arg2AttrRef) {
 					//E.g. p.procName = v.varName
 					addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				}
-				else if (arg1AttrRef && !arg2AttrRef) {
+				} else if (arg1AttrRef && !arg2AttrRef) {
 					//E.g. p.procName = "sth"
 					addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
-				}
-				else if (!arg1AttrRef && arg2AttrRef) {
+				} else if (!arg1AttrRef && arg2AttrRef) {
 						//E.g. "sth" = p.procName
 					addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
-				}
-				else {
+				} else {
 					//E.g. n = 1
 					addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
 				}
 			} else if (!bothSameType && resultBoolean) {
 				queryStatement.setInvalidQueryBoolean();
 				return true;
-				//if (arg1Identity == STRING_LITERAL || arg2Identity == STRING_LITERAL) {
-				//	arg1 = removeSymbols(arg1, INVERTED_COMMA_STRING);
-				//	arg2 = removeSymbols(arg2, INVERTED_COMMA_STRING);
-				//}
-				//if (arg1AttrRef && arg2AttrRef) {
-				//	//E.g. p.procName = v.varName
-				//	addWithQueryElement(arg1attrName, arg2attrName, arg1Ent, arg2Ent, arg1Syn, arg2Syn);
-				//}
-				//else if (arg1AttrRef && !arg2AttrRef) {
-				//		//E.g. p.procName = "sth"
-				//	addWithQueryElement(arg1attrName, arg2Identity, arg1Ent, arg2Ent, arg1Syn, arg2);
-				//}
-				//else if (!arg1AttrRef && arg2AttrRef) {
-				//	//E.g. "sth" = p.procName
-				//	addWithQueryElement(arg1Identity, arg2attrName, arg1Ent, arg2Ent, arg1, arg2Syn);
-				//}
-				//else {
-				//	//E.g. n = 1
-				//	addWithQueryElement(arg1Identity, arg2Identity, arg1Ent, arg2Ent, arg1, arg2);
-				//}
 			} else {
 				return false;
 			}
@@ -235,6 +168,8 @@ bool QueryValidator::isValidWith(string str) {
 		}
 	}
 }
+//This function takes in 2 argument and checks if both are stringLiterals
+//Returns true if so, else returns false
 bool QueryValidator::bothStringLiteral(string arg1Identity, string arg2Identity) {
 	if (arg1Identity == STRING_LITERAL && arg1Identity == arg2Identity) {
 		return true;
@@ -242,6 +177,8 @@ bool QueryValidator::bothStringLiteral(string arg1Identity, string arg2Identity)
 		return false;
 	}
 }
+//This function takes in 2 argument and checks if both are numbers
+//Returns true if so, else returns false
 bool QueryValidator::bothNumber(string arg1Identity, string arg2Identity) {
 	if (arg1Identity == NUMBER_STRING && arg1Identity == arg2Identity) {
 		return true;
@@ -250,7 +187,7 @@ bool QueryValidator::bothNumber(string arg1Identity, string arg2Identity) {
 		return false;
 	}
 }
-
+//This function creates a with QueryElement and adds to QueryStatement
 void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, string arg1Ent, string arg2Ent, string arg1Synonym,
 	string arg2Synonym) {
 	QueryElement queryElement = QueryElement(arg1Type, arg2Type, arg1Ent, arg2Ent, arg1Synonym, arg2Synonym, WITH_STRING);
@@ -272,15 +209,16 @@ void QueryValidator::addWithQueryElement(string arg1Type, string arg2Type, strin
 	} else {
 		queryStatement.addNormalQueryElement(queryElement);
 		queryStatement.addWithQueryElementTwoSyn(queryElement);
-	//	queryStatement.addNormalMultiMap(arg1Synonym, ONE, queryStatement.getNormalQueryElementsSize() - ONE);
-	//	queryStatement.addNormalMultiMap(arg2Synonym, TWO, queryStatement.getNormalQueryElementsSize() - ONE);
 	}
 }
+//This function checks if given string is a stringLiteral or Number
+//Returns true if either is true, else returns false
 bool QueryValidator::isStringLiteralOrNumber(string syn) {
 	return (isQuotationIdentRegex(syn) || is_number(syn));
 }
 
-//Checks if it is attrRef
+//This function checks given string is attrRef
+//Returns true if so, else returns false
 bool QueryValidator::isAttrRef(string arg) {
 	if (isValidAttRefRegex(arg)) {
 		vector<string> argVec = splitBySymbol(arg, DOT_CHAR);
@@ -291,16 +229,15 @@ bool QueryValidator::isAttrRef(string arg) {
 
 		if (isValidCorrespondingEntity(argSyn, argAttrName)) {
 			return true;
-		}
-		else {
+		} else {
 			return false;
 		}
-	}
-	else {
+	} else {
 		return false;
 	}
 }
-//This function compare LHS and RHS 
+//This function compare LHS and RHS and checks for their type as indicated on handbook i.e. both must be same Type: stringType or intType
+//Returns true if they are same type, else returns false
 bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool arg2AttrRef, string arg1AttrName, string arg2AttrName
 	, string arg1Identity, string arg2Identity) {
 	//First check if LHS is an attrRef
@@ -310,8 +247,6 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			//LHS and RHS are both attrRef
 			string arg1Type = withClauseTypeBank[arg1AttrName];
 			string arg2Type = withClauseTypeBank[arg2AttrName];
-
-//			return ((arg1Type == arg2Type) || resultBoolean);
 			return (arg1Type == arg2Type);
 		} else {
 			//LHS IS attrRef, RHS is not attrRef
@@ -319,7 +254,6 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 			//RHS is not attrRef, so it can be either a synonym, stringliteral or integer
 			string arg2TypeTemp = arg2Identity;
 			string arg2Type = withClauseTypeBank[arg2TypeTemp];
-
 			return(arg1Type == arg2Type);
 		}
 	} else {
@@ -327,7 +261,6 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 		if (arg2AttrRef) {
 			string arg1Type = withClauseTypeBank[arg1Identity];
 			string arg2Type = withClauseTypeBank[arg2AttrName];
-
 			return (arg1Type == arg2Type);
 		} else {
 			//LHS and RHS are both not attrRef, means arg1 and arg 2 are both default things like n,1,"hi"
@@ -367,6 +300,7 @@ bool QueryValidator::isSameType(string arg1, string arg2, bool arg1AttrRef, bool
 }
 
 //This function finds the identity of the given argument i.e. either a synonym, stringliterl or integer
+//Returns the identity string
 string QueryValidator::extractIdentity(string arg) {
 	if (isQuotationIdentRegex(arg)) {
 		return STRING_LITERAL;
@@ -376,8 +310,7 @@ string QueryValidator::extractIdentity(string arg) {
 		if (isValidSynonym(arg)) {
 			string toReturn = getCorrespondingEntity(arg);
 			return toReturn;
-		}
-		else {
+		} else {
 			return INVALID_STRING;
 		}
 	}

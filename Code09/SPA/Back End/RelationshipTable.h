@@ -1,3 +1,4 @@
+//This class holds all the allowed arguments for every relationhips in the such that clause
 #pragma once
 #include <string>
 #include "Relationship.h"
