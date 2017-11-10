@@ -11,7 +11,7 @@ public:
 	TEST_METHOD(parse) {
 		PKB pkb;
 		string filename = "..\\..\\Tests09\\Sample-Source(actual).txt";
-		/*Assert::IsTrue(Parse(filename, pkb));
+		Assert::IsTrue(Parse(filename, pkb));
 
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-3.txt";
@@ -43,11 +43,12 @@ public:
 
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-Pattern-2.txt";
-		Assert::IsTrue(Parse(filename, pkb));*/
+		Assert::IsTrue(Parse(filename, pkb));
 
 		pkb = PKB();
 		filename = "..\\..\\Tests09\\Sample-Source-7.txt";
 		Assert::IsTrue(Parse(filename, pkb));
+		pkb.getAffectStarTwoSynonyms();
 	}
 
 	TEST_METHOD(elseParse) {
