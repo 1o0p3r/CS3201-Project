@@ -641,7 +641,8 @@ public:
 			//"if ifs; prog_line n; Select BOOLEAN such that Follows*(ifs, n)",
 		//	"call c; while w; if ifs; Select <c, ifs, w> such that Follows*(ifs, w)"
 			//"assign a1; stmt s; Select s such that Affects(a1, s)",
-			"assign a2;  Select a2 such that Affects*(a2, _)"
+			//"assign a2;  Select a2 such that Affects*(a2, _)"
+			"assign a1; Select a1 such that Affects*(_ , a1)"
 
 
 		};

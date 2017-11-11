@@ -146,7 +146,7 @@ tuple<bool, vector<vector<string>>> AffectsStarAnalyzer::addBothSynResult(string
 			}
 		}
 	}
-	if (pkbResultForArg1.empty())
+	if (pkbResultForArg1.empty() && pkbResultForArg2.empty())
 		hasAffectStar = false;
 	else if (isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);

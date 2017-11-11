@@ -146,7 +146,7 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addBothSynResult(string arg
 			}
 		}
 	}
-	if (pkbResultForArg1.empty())
+	if (pkbResultForArg1.empty() && pkbResultForArg2.empty())
 		hasAffects = false;
 	else if (isSameSynonym && !pkbResultForArg1.empty()) {
 		pkbResultForArg1.push_back(arg1);
