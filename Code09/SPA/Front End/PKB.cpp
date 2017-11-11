@@ -582,15 +582,6 @@ void PKB::ifCFG(int& i) {
 	ifHolders.pop_back();
 }
 
-bool PKB::contains(vector<int> list, int i) {
-	for each (int j in list) {
-		if (i == j) {
-			return true;
-		}
-	}
-	return false;
-}
-
 vector<int> PKB::getNext(int stmtNum) {
 	return next.getNext(stmtNum);
 }
@@ -691,7 +682,7 @@ bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
 	if (typeTable[statementNum1] != assign || typeTable[statementNum2] != assign || statementProcedureTable[statementNum1] != statementProcedureTable[statementNum2]) {
 		return false;
 	}
-	vector<int> variables = getIntersection(modify.getModifies(statementNum1), use.getUses(statementNum2));
+	vector<int> variables = Util::getIntersection(modify.getModifies(statementNum1), use.getUses(statementNum2));
 	if (variables.size() != 1) {
 		return false;
 	}
@@ -705,7 +696,7 @@ bool PKB::getAffectsTwoLiterals(int statementNum1, int statementNum2) {
 			for each (int statement in next.getNext(current)) {
 				if (statement == statementNum2) {
 					return true;
-				} else if ((typeTable[statement] == _call || typeTable[statement] == assign) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+				} else if ((typeTable[statement] == _call || typeTable[statement] == assign) && !Util::contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
 					nextFrontier.push_back(statement);
 					explored.insert(statement);
 				} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
@@ -732,14 +723,14 @@ vector<int> PKB::getAffectsFirstLiteral(int statementNum) {
 		vector<int> nextFrontier;
 		for each (int current in frontier) {
 			for each (int statement in next.getNext(current)) {
-				if ((typeTable[statement] == _call) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+				if ((typeTable[statement] == _call) && !Util::contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
 					nextFrontier.push_back(statement);
 					explored.insert(statement);
 				} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
 					nextFrontier.push_back(statement);
 					explored.insert(statement);
 				} else if (typeTable[statement] == assign && explored.find(statement) == explored.end()) {
-					if (contains(use.getUses(statement), var)) {
+					if (Util::contains(use.getUses(statement), var)) {
 						results.push_back(statement);
 					}
 					if (modify.getModifies(statement)[0] != var) {
@@ -768,7 +759,7 @@ vector<int> PKB::getAffectsSecondLiteral(int statementNum) {
 			vector<int> nextFrontier;
 			for each (int current in frontier) {
 				for each (int statement in next.getPrevious(current)) {
-					if ((typeTable[statement] == _call) && !contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
+					if ((typeTable[statement] == _call) && !Util::contains(modify.getModifies(statement), var) && explored.find(statement) == explored.end()) {
 						nextFrontier.push_back(statement);
 						explored.insert(statement);
 					} else if ((typeTable[statement] == _while || typeTable[statement] == _if) && explored.find(statement) == explored.end()) {
@@ -857,21 +848,6 @@ void PKB::affectsRecurse(vector<int>& s1, vector<int>& s2, vTuple current, int& 
 			affectsRecurse(s1, s2, { statement, temp }, max, explored, exploredOnce, included);
 		}
 	}
-}
-
-vector<int> PKB::getIntersection(vector<int> v1, vector<int> v2) {
-	vector<int> result;
-	sort(v1.begin(), v1.end());
-	sort(v2.begin(), v2.end());
-	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
-	return result;
-}
-
-vector<int> PKB::removeIntersection(vector<int> v1, vector<int> v2) {
-	for each (int var in v2) {
-		v1[var] = 0;
-	}
-	return v1;
 }
 
 struct equalFirst {

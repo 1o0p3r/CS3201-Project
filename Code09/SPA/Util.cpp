@@ -457,3 +457,20 @@ string Util::trimLead(const string& str)
 		[](char a, char b) { return isspace(a) && isspace(b); });
 	return output;
 }
+
+bool Util::contains(vector<int> list, int i) {
+	for each (int j in list) {
+		if (i == j) {
+			return true;
+		}
+	}
+	return false;
+}
+
+vector<int> Util::getIntersection(vector<int> v1, vector<int> v2) {
+	vector<int> result;
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+	set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(result));
+	return result;
+}

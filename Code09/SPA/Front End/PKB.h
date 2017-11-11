@@ -642,17 +642,12 @@ private:
 	void assignCallCFG(int & i);
 	void ifCFG(int & i);
 	void processNext(int & i);
-	bool contains(vector<int> list, int i);
 	bool toPop;
 	vector<int> goBack;
 	vector<int> state;
 	int lastLineOfIf;
 	vector<vector<int>> ifHolders;
 	vector<int> ifParent;
-	
-	vector<int> getIntersection(vector<int> v1, vector<int> v2);
-
-	vector<int> removeIntersection(vector<int> v1, vector<int> v2);
 	
 	vector<int> statementProcedureTable;
 	vector<string> modifiedVariables;

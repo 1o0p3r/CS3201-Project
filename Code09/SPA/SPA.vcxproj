@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AffectsAnalyzer.cpp" />
-    <ClCompile Include="AffectsStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\AffectsAnalyzer.cpp" />
+    <ClCompile Include="Back End\AffectsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\AnalyzerFactory.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
     <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
@@ -44,12 +44,12 @@
     <ClCompile Include="Front End\Parser.cpp" />
     <ClCompile Include="Front End\PKB.cpp" />
     <ClCompile Include="Front End\Use.cpp" />
-    <ClCompile Include="QueryOptimizer.cpp" />
+    <ClCompile Include="Back End\QueryOptimizer.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AffectsAnalyzer.h" />
-    <ClInclude Include="AffectsStarAnalyzer.h" />
+    <ClInclude Include="Back End\AffectsAnalyzer.h" />
+    <ClInclude Include="Back End\AffectsStarAnalyzer.h" />
     <ClInclude Include="Back End\QaConstants.h" />
     <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
@@ -83,7 +83,7 @@
     <ClInclude Include="Front End\Parser.h" />
     <ClInclude Include="Front End\PKB.h" />
     <ClInclude Include="Front End\Use.h" />
-    <ClInclude Include="QueryOptimizer.h" />
+    <ClInclude Include="Back End\QueryOptimizer.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

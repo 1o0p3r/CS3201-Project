@@ -32,10 +32,10 @@
     <ClCompile Include="Back End\WithAnalyzer.cpp" />
     <ClCompile Include="Back End\WithHandler.cpp" />
     <ClCompile Include="Back End\suchThatHandler.cpp" />
-    <ClCompile Include="QueryOptimizer.cpp" />
     <ClCompile Include="Back End\NextStarAnalyzer.cpp" />
-    <ClCompile Include="AffectsAnalyzer.cpp" />
-    <ClCompile Include="AffectsStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\AffectsAnalyzer.cpp" />
+    <ClCompile Include="Back End\AffectsStarAnalyzer.cpp" />
+    <ClCompile Include="Back End\QueryOptimizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Util.h" />
@@ -70,10 +70,10 @@
     <ClInclude Include="Back End\WithAnalyzer.h" />
     <ClInclude Include="Back End\WithHandler.h" />
     <ClInclude Include="Back End\suchThatHandler.h" />
-    <ClInclude Include="QueryOptimizer.h" />
     <ClInclude Include="Back End\NextStarAnalyzer.h" />
-    <ClInclude Include="AffectsAnalyzer.h" />
-    <ClInclude Include="AffectsStarAnalyzer.h" />
     <ClInclude Include="Back End\QaConstants.h" />
+    <ClInclude Include="Back End\AffectsAnalyzer.h" />
+    <ClInclude Include="Back End\AffectsStarAnalyzer.h" />
+    <ClInclude Include="Back End\QueryOptimizer.h" />
   </ItemGroup>
 </Project>

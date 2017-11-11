@@ -30,4 +30,6 @@ public:
 	static bool isEndOfWord(const char &c);
 	static vector<string> convertIntToString(const vector<int> &vint);
 	static vector<int> convertStringToInt(const vector<string> &vstring);
+	static bool contains(vector<int> list, int i);
+	static vector<int> getIntersection(vector<int> v1, vector<int> v2);
 };
