@@ -94,17 +94,6 @@ vector<int> Parent::getParentStar(int statementNum) {
 	}
 }
 
-vector<int> Parent::getAllParent() {
-	if (allParentTable.size() > 0) {
-		vector<int> result;
-		result.insert(result.end(), allParentTable.begin(), allParentTable.end());
-		return result;
-	}
-	else {
-		return vector<int>();
-	}
-}
-
 int Parent::getParentCount() {
 	return parentCount;
 }

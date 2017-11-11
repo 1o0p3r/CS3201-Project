@@ -113,7 +113,6 @@ int PKB::getProcIndex(string procName) {
 }
 
 vector<string> PKB::getAllVariables() {
-
 	vector<string> result;
 	result.insert(result.end(), allVariables.begin(), allVariables.end());
 	return result;
@@ -306,10 +305,6 @@ vector<int> PKB::getParentStar(int statementNum) {
 
 vector<int> PKB::getChildStar(int statementNum) {
 	return parent.getChildStar(statementNum);
-}
-
-vector<int> PKB::getAllParent() {
-	return parent.getAllParent();
 }
 
 void PKB::setModifies(int statementNum, string varName) {
@@ -618,6 +613,7 @@ void PKB::setStatementType(int statementNum, string type) {
 	case _while:
 		whileTable.push_back(statementNum);
 		typeTable[statementNum] = _while;
+		insertStatementList(statementNum + 1);
 		break;
 	case assign:
 		assignTable.push_back(statementNum);
@@ -626,6 +622,7 @@ void PKB::setStatementType(int statementNum, string type) {
 	case _if:
 		ifTable.push_back(statementNum);
 		typeTable[statementNum] = _if;
+		insertStatementList(statementNum + 1);
 		break;
 	case _call:
 		callTable.push_back(statementNum);
