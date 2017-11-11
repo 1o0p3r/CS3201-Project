@@ -26,7 +26,7 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgTwoResult(string arg1
 	}
 	else {
 		if (arg1 == WILDCARD_SYMBOL)
-			return addBothSynResult(arg1, arg2);
+			vecOfCandidates = pkbReadOnly.getAssign();
 		else
 			vecOfCandidates.push_back(stoi(arg1));
 		for (int candidates : vecOfCandidates) {
@@ -65,7 +65,7 @@ tuple<bool, vector<vector<string>>> AffectsAnalyzer::addArgOneResult(string arg2
 	}
 	else {
 		if (arg2 == WILDCARD_SYMBOL) // to be optimized
-			return addBothSynResult(arg1, arg2);
+			vecOfCandidates = pkbReadOnly.getAssign();
 		else
 			vecOfCandidates.push_back(stoi(arg2));
 		for (int candidates : vecOfCandidates) {

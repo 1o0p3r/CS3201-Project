@@ -152,12 +152,12 @@ tuple<bool, vector<vector<string>>> AffectsStarAnalyzer::addBothSynResult(string
 		pkbResultForArg1.push_back(arg1);
 		AffectStarResult.push_back(pkbResultForArg1);
 	}
-	else if (!isSameSynonym && !pkbResultForArg1.empty()) {
-		if (arg1 != WILDCARD_SYMBOL) {
+	else if (!isSameSynonym) {
+		if (arg1 != WILDCARD_SYMBOL && !pkbResultForArg1.empty()) {
 			pkbResultForArg1.push_back(arg1);
 			AffectStarResult.push_back(pkbResultForArg1);
 		}
-		if (arg2 != WILDCARD_SYMBOL) {
+		if (arg2 != WILDCARD_SYMBOL && !pkbResultForArg2.empty()) {
 			pkbResultForArg2.push_back(arg2);
 			AffectStarResult.push_back(pkbResultForArg2);
 		}

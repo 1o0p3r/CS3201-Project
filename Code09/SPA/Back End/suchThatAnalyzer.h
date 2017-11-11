@@ -84,6 +84,6 @@ public:
 	void setUnitTestInputs(vector<vector<string>> hcInput);
 	vector<string> getUnitTestInputs();
 	vector<string> getArgEntityResults(const string& argEnt);
-	tuple<vector<string>, vector<string>> validatePKBResultsInt(vector<int>& v1, vector<int>& v2);
+	tuple<vector<string>, vector<string>> validatePKBResultsInt(vector<int> v1, vector<int> v2);
 };
 
