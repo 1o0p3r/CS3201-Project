@@ -536,28 +536,72 @@ public:
 	@returns the number of next relationship
 	*/
 	int getNextCount();
-
+	/**
+	Checks if next*(statement 1, statement 2)
+	@param statementNum1 statement number 1
+	@param statementNum2 statement number 2
+	@returns true if next*(statement 1, statement 2) is true
+	*/
 	bool getNextStarTwoLiterals(int s1, int s2);
-
+	/**
+	Gets next*(synonym, statement)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that is the next* of the literal
+	*/
 	vector<int> getNextStarFirstLiteral(int s);
-
+	/**
+	Gets next*(statement, synonym)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that the literal is the next* of
+	*/
 	vector<int> getNextStarSecondLiteral(int s);
-
+	/**
+	Gets next*(synonym, synonym)
+	@returns a tuple of vectors of statements that correspond to the first and second synonyms
+	*/
 	tuple<vector<int>, vector<int>> getNextStarTwoSynonyms();
-
+	/*
+	Gets all variables that have been modified
+	@returns a vector of all variables that have been modified
+	*/
 	vector<string> getAllModifiedVariables();
-
+	/*
+	Gets all variables that have been used
+	@returns a vector of all variables that have been used
+	*/
 	vector<string> getAllUsedVariables();
-
+	/*
+	Get the procedure that is called by the call statement
+	@param statement the call statement
+	@returns the procedure that is called by the statement
+	*/
 	string getProcCalledByStatement(int statement);
-
+	/**
+	Checks if affect*(statement 1, statement 2)
+	@param statementNum1 statement number 1
+	@param statementNum2 statement number 2
+	@returns true if affect*(statement 1, statement 2) is true
+	*/
 	bool getAffectStarTwoLiterals(int s1, int s2);
-
+	/**
+	Gets affect*(synonym, statement)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that is the affect* of the literal
+	*/
 	vector<int> getAffectStarFirstLiteral(int s1);
-
+	/**
+	Gets affect*(statement, synonym)
+	@param statementNum statement number of the literal
+	@returns a vector of statements that the literal is the affect* of
+	*/
 	vector<int> getAffectStarSecondLiteral(int s2);
-
+	/**
+	Gets affect*(synonym, synonym)
+	@returns a tuple of vectors of statements that correspond to the first and second synonyms
+	*/
 	tuple<vector<int>, vector<int>> getAffectStarTwoSynonyms();
+
+	int maxLevel;
 
 private:
 	Follow follow;

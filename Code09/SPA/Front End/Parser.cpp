@@ -31,7 +31,7 @@ bool Parse(string fileName, PKB& pkb) {
 	ifstream file(fileName);
 	string line;
 	string procName;
-
+	int maxLevel = 0;
 	int lineCounter = 0;
 	bool isSameLevel = false;	//is same nesting level
 	bool isNewContainer = true;
@@ -48,6 +48,9 @@ bool Parse(string fileName, PKB& pkb) {
 			pkb.insertElse(lineCounter);
 			lineCounter--;
 			Parent.push_back(prevFollow);
+			if (Parent.size() > maxLevel) {
+				maxLevel = Parent.size();
+			}
 			isSameLevel = false; //start of a new container
 			isNewContainer = true; //start of a new container
 		} else if (isProcedure(nextLine) && Parent.size() == 0) {
@@ -62,6 +65,9 @@ bool Parse(string fileName, PKB& pkb) {
 				procName = nextLine[1].substr(0, nextLine[1].size() - 1);// no spaces in between the procedure name and opening bracket
 			}
 			Parent.push_back(0);// include a dummy parent to indicate the start of a procedure
+			if (Parent.size() > maxLevel) {
+				maxLevel = Parent.size();
+			}
 			isNewContainer = true;
 			isSameLevel = false;
 		} else if (startsWithBrackets(nextLine) && !isNewContainer) {//make sure that there are statements in the container
@@ -82,6 +88,9 @@ bool Parse(string fileName, PKB& pkb) {
 					return false;// can only be else, so something is wrong
 				} else {
 					Parent.push_back(prevFollow);
+					if (Parent.size() > maxLevel) {
+						maxLevel = Parent.size();
+					}
 					isSameLevel = false;
 					isNewContainer = true;
 					pkb.insertElse(lineCounter);
@@ -128,6 +137,9 @@ bool Parse(string fileName, PKB& pkb) {
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
+				if (Parent.size() > maxLevel) {
+					maxLevel = Parent.size();
+				}
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isWhileStatement(nextLine)) {
@@ -142,6 +154,9 @@ bool Parse(string fileName, PKB& pkb) {
 				pkb.setUses(lineCounter, var);
 				pkb.setProcUses(procName, var);
 				Parent.push_back(lineCounter);
+				if (Parent.size() > maxLevel) {
+					maxLevel = Parent.size();
+				}
 				isSameLevel = false;
 				isNewContainer = true;
 			} else if (isCallStatement(nextLine)) {
@@ -170,6 +185,7 @@ bool Parse(string fileName, PKB& pkb) {
 		}
 	}
 	pkb.setLastline(procName, lineCounter);//to set the last line of the last procedure
+	pkb.maxLevel = maxLevel;
 	if (Parent.size() == 0) {//all opening brackets should be closed
 		pkb.createCFG();//create next information
 		return true;
@@ -210,8 +226,14 @@ bool isCallStatement(vector<string> line) {
 		return false;
 	} else if (line.size() == 2) {
 		return Util::isValidName(Util::splitLine(line[1], ';')[0]) && line[1].find(SEMICOLON) != string::npos;//"call procedure;" no space
+	} else if (line.size() == 3) {
+		return Util::isValidName(Util::splitLine(line[1], ';')[0]) &&
+			((line[1].find(SEMICOLON) == line[1].size() - 1 && endsWithBrackets(line, 2)) ||//"call procedure; }" no space
+			(line[2].find(SEMICOLON) == 0 && endsWithBrackets({line[2].substr(1)}, 0)));//"call procedure ;" space
 	} else {
-		return Util::isValidName(Util::splitLine(line[1], ';')[0]) && (line[1].find(SEMICOLON) != string::npos || line[2].find(SEMICOLON) != string::npos);//"call procedure ;" space
+		return Util::isValidName(Util::splitLine(line[1], ';')[0]) &&
+			((line[1].find(SEMICOLON) == line[1].size() - 1 && endsWithBrackets(line, 2)) ||
+			(line[2].find(SEMICOLON) == 0 && endsWithBrackets({ line[2].substr(1) }, 0) && endsWithBrackets(line, 3)));
 	}
 }
 

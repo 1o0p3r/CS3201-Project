@@ -17,8 +17,7 @@
 #include <iterator>
 #include <algorithm>
 #include <unordered_map>
-#include <iostream>
-#include <fstream>
+#include <cmath>
 
 typedef tuple<int, vector<int>> vTuple;
 typedef tuple<int, vector<set<int>>> vsTuple;
@@ -1247,25 +1246,7 @@ void PKB::affectStarRecurse(vector<int>& s1, vector<int>& s2, vsTuple current, i
 			}
 			temp[var].insert(statement);
 		}
-		if (explored[statement] != temp && exploredOnce[statement] < 100) {
-			/*ofstream file;
-			file.open("debug.txt", ios::app);
-			file << "Current statement :" << statement << "\n";
-			for (int i = 0; i < temp.size(); i++) {
-				file << "temp: " << i << " --> ";
-				for each (int var in temp[i]) {
-					file << var << " ,";
-				}
-				file << "\n";
-			}
-			for (int i = 0; i < explored[statement].size(); i++) {
-				file << "actual: " << i << " --> ";
-				for each (int var in explored[statement][i]) {
-					file << var << " ,";
-				}
-				file << "\n";
-			}
-			file.close();*/
+		if (explored[statement] != temp && exploredOnce[statement] <= pow(2, maxLevel)) {
 			if (statement > max) {
 				max = statement;
 			}
