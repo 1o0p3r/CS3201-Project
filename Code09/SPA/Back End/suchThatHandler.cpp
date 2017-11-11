@@ -186,7 +186,8 @@ bool QueryValidator::isValidSuchThat(string str) {
 bool QueryValidator::isAllowedParametersCheck(string arg1, string arg1Ent, bool arg1_STRING_LITERAL, string arg2, string arg2Ent, bool arg2_STRING_LITERAL, string relation) {
 	//Do further checking only if arg1 equals to arg2
 	if (arg1 == arg2) {
-		if (resultBoolean) {
+		if (resultBoolean && !isCornerRelation(relation) && arg1 != UNDER_SCORE_STRING) {
+			queryStatement.setInvalidQueryBoolean();
 			return true;
 		} //Then check the relationships, the only such that clauses with same arg1 and arg2 are Next*, Affects*
 		else if (isCornerRelation(relation)) {

@@ -1,0 +1,30 @@
+195 - Multiple Valid Query Affects*
+assign a1, a2, a3;
+Select a2 such that Affects*(a1, a2) and Affects*(a2, a3)
+10,11,13,15,17,18,21,24,25,44,48,51,53,54,56,7
+5000
+196 - Multiple Valid Query Affects
+assign a1, a2; prog_line n;
+Select a2 such that Affects*(a1, n) and Affects*(n , a2)
+10,11,13,15,17,18,21,24,25,29,44,48,51,53,54,55,56,7,9
+5000
+197 - Multiple Valid Query Affects
+assign a1, a2; prog_line n; stmt s;
+Select <a2, n> such that Affects*(a1, a2) and Affects*(a2, n) and Affects*(n, s)
+10 10,10 11,10 13,10 15,10 17,10 18,10 21,10 24,10 25,11 10,11 11,11 13,11 15,11 17,11 18,11 21,11 24,11 25,13 10,13 11,13 13,13 15,13 17,13 18,13 21,13 24,13 25,15 10,15 11,15 13,15 15,15 17,15 18,15 21,15 24,15 25,21 10,21 11,21 13,21 15,21 17,21 18,21 21,21 24,21 25,24 10,24 11,24 13,24 15,24 17,24 18,24 21,24 24,24 25,25 10,25 11,25 13,25 15,25 17,25 18,25 21,25 24,25 25,44 44,44 48,44 51,44 53,44 54,44 56,48 44,48 48,48 51,48 53,48 54,48 56,51 44,51 48,51 51,51 53,51 54,51 56,53 44,53 48,53 51,53 53,53 54,53 56,54 44,54 48,54 51,54 53,54 54,54 56,56 44,56 48,56 51,56 53,56 54,56 56,7 7
+5000
+198 - Multiple Valid Query Affects
+assign a1, a2; prog_line n; stmt s;
+Select s such that Affects*(s, a1) and Affects*(n , a1) and Affects*(a2, a1) and Affects*(_ , s)
+10,11,13,15,17,18,21,24,25,44,48,51,53,54,56,7
+5000
+199 - Multiple Valid Query Affects and Affects*
+assign a1, a2; stmt s;
+Select s such that Affects(s,_) and Affects*(a1, s) and Affects*(a2, a1)
+10,11,13,15,17,18,21,24,25,44,48,51,53,54,56,7
+5000
+200 - Multiple Valid Query Affects and Affects*
+assign a1, a2; stmt s;
+Select s such that Affects(_, s) and Affects*(a1, a2) and Affects*(s, a2)
+10,11,13,15,17,18,21,24,25,44,48,51,53,54,56,7
+5000

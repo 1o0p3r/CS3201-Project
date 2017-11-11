@@ -434,8 +434,12 @@ bool QueryValidator::isValidPattern(string str) {
 	str = Util::trim(str);
 	//Extract out all the pattern
 	vector<string> vecPattern = extractPatternClauses(str);
-	if (vecPattern[ZERO] == INVALID_BRACKET_EXEPTION) {
+	if (vecPattern[ZERO] == INVALID_BRACKET_EXEPTION && !resultBoolean) {
 		return false;
+	}
+	else if (vecPattern[ZERO] == INVALID_BRACKET_EXEPTION && resultBoolean) {
+		queryStatement.setInvalidQueryBoolean();
+		return true;
 	}
 	for (size_t i = ZERO; i < vecPattern.size(); i++) {
 		string currentStr = vecPattern.at(i);
