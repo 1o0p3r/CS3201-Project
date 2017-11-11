@@ -113,7 +113,7 @@ tuple<bool, vector<vector<string>>> AffectsStarAnalyzer::addBothSynResult(string
 	const auto synArg1Iterator = queryMap.find(arg1);
 	const auto synArg2Iterator = queryMap.find(arg2);
 
-	if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
+	//if (synArg1Iterator == queryMap.end() && synArg2Iterator == queryMap.end()) {
 		auto pkbAnswers = pkbReadOnly.getAffectStarTwoSynonyms();
 		auto validatedPKBAnswers = validatePKBResultsInt(get<ARGONE>(pkbAnswers), get<ARGTWO>(pkbAnswers));
 		pkbResultForArg1 = get<ARGONE>(validatedPKBAnswers);
@@ -128,24 +128,24 @@ tuple<bool, vector<vector<string>>> AffectsStarAnalyzer::addBothSynResult(string
 			pkbResultForArg1 = clauseResultForSameSynonym;
 		}
 
-	}
-	else {
-		getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
+	//}
+	//else {
+	//	getArgsPriorResults(vecOfCandidates, hasArg2EvalBefore, synArg1Iterator, synArg2Iterator);
 
-		for (int candidates : vecOfCandidates) {
-			getValuesFromPKB(retrievedPKBResults, hasArg2EvalBefore, candidates);
-			for (int candidatesChosen : retrievedPKBResults) {
-				if (!hasArg2EvalBefore) {
-					pkbResultForArg1.push_back(to_string(candidates));
-					pkbResultForArg2.push_back(to_string(candidatesChosen));
-				}
-				else {
-					pkbResultForArg1.push_back(to_string(candidatesChosen));
-					pkbResultForArg2.push_back(to_string(candidates));
-				}
-			}
-		}
-	}
+	//	for (int candidates : vecOfCandidates) {
+	//		getValuesFromPKB(retrievedPKBResults, hasArg2EvalBefore, candidates);
+	//		for (int candidatesChosen : retrievedPKBResults) {
+	//			if (!hasArg2EvalBefore) {
+	//				pkbResultForArg1.push_back(to_string(candidates));
+	//				pkbResultForArg2.push_back(to_string(candidatesChosen));
+	//			}
+	//			else {
+	//				pkbResultForArg1.push_back(to_string(candidatesChosen));
+	//				pkbResultForArg2.push_back(to_string(candidates));
+	//			}
+	//		}
+	//	}
+	//}
 	if (pkbResultForArg1.empty() && pkbResultForArg2.empty())
 		hasAffectStar = false;
 	else if (isSameSynonym && !pkbResultForArg1.empty()) {
@@ -183,11 +183,8 @@ bool AffectsStarAnalyzer::checkClauseWildVariable(string arg2)
 
 bool AffectsStarAnalyzer::checkClauseBothWild()
 {
-	vector<int>  AffectStarArg1Candidates = pkbReadOnly.getAssign();
-	for (const auto candidates : AffectStarArg1Candidates) {
-		auto result = pkbReadOnly.getAffectStarFirstLiteral(candidates);
-		if (!result.empty())
+	vector<int>  affectsArg1Candidates = get<ARGONE>(pkbReadOnly.getAffectsTwoSynonyms());
+	if (!affectsArg1Candidates.empty())
 			return true;
-	}
 	return false;
 }
