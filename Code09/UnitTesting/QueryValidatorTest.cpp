@@ -383,6 +383,11 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
+
+			query = "assign a1, a2; prog_line n; stmt s; Select s such that Affects(s, a1) and Affects(n , a1) and Affects(a2, a1) and Affects(_ , s)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
 		}
 		TEST_METHOD(testQueryAll) {
 
@@ -424,6 +429,7 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") pattern a(_, _\"x\")";
 			Assert::IsFalse(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 		
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 such that Modifies(6,\"x\") and Parent(1, _)pattern a1(v1, \"x\") with d.value = 4";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -431,6 +437,7 @@ namespace UnitTesting
 
 			query = "variable v1,v#; assign a1,a#; constant d; while w1, w2; Select v1 pattern a#(v#,_\"x+y\"_) such that Parent(1, _)pattern a1(v1, \"x\")";
 			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
 
 			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; Select <p1, c1> such that Uses(p1, v1) with p1.procName = \"SystemTestThree\" pattern a1(v1, _\"hThree\"_)";
 			Assert::IsTrue(queryValidator.parseInput(query));
@@ -444,6 +451,30 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			queryStatement = queryValidator.getQueryStatement();
 
+			query = "assign a1; if ifs; variable v; Select v such that Next*(a1, ifs) pattern ifs(v, _ , _ ) with v.varName = \"bOne\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
+
+			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; stmt s; Select <a1,ifs1,p1,w1,v2> such that Next*(w1, s) and Parent*(s, c1) and Modifies(c1, v1) and Uses(p1, v1) pattern a1(v2, _\"hOne\"_) and a2(v1, _\"hOne\"_) with ifs1.stmt# = 12 and p1.procName = \"SystemTestOne\"";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
+
+			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; Select <p1, c1> such that Uses(p1, v1) with p1.procName = \"SystemTestThree\" pattern a1(v1, _\"hThree\"_)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
+
+			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; Select <v1, ifs1> such that Next*(ifs1, w1) and Modifies(p1, v1) and Calls(p1, p2) and Parent*(ifs1, w1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
+
+			query = "assign a1, a2; if ifs1; variable v1, v2; procedure p1, p2; while w1, w2; call c1, c2; Select <v1, ifs1> such that Calls(p1, p2) and Modifies(p2, v1) and Uses(a1, v1) and Parent*(w1, ifs1)";
+			Assert::IsTrue(queryValidator.parseInput(query));
+			queryStatement = queryValidator.getQueryStatement();
+			Assert::IsTrue(queryStatement.getInvalidQueryBoolean() == FALSE);
 		}
 
 		TEST_METHOD(testPatternQuery) {
