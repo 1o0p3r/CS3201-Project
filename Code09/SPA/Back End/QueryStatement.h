@@ -22,9 +22,8 @@ private:
 public:
 	QueryStatement();
 	QueryElement getSelectQueryElement();
-	vector<QueryElement> getWithQueryElement();
 	vector<SynonymEntityPair> getSynonymEntityList();
-
+	vector<QueryElement> getWithQueryElement();
 	vector<QueryElement> getNormalQueryElements();
 	vector<QueryElement> getHardQueryElements();
 	multimap<string, pair<int, int>> getNormalMultiMap();

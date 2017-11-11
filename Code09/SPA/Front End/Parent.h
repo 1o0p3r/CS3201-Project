@@ -45,8 +45,6 @@ public:
 	*/
 	vector<int> getChildStar(int statementNum);
 
-	vector<int> Parent::getAllParent();
-
 	int getParentCount();
 
 	int getParentStarCount();

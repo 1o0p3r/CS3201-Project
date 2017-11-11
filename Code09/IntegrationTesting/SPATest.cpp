@@ -489,9 +489,9 @@ public:
 		}
 		
 	}
-	TEST_METHOD(SampleSouce6_v2) {
+	TEST_METHOD(SampleSouce6) {
 		PKB pkb;
-		string filename = "..\\..\\Tests09\\Sample-Source-6-v2.txt";
+		string filename = "..\\..\\Tests09\\Sample-Source-6.txt";
 		Parse(filename, pkb);
 		QueryValidator validator;
 		QueryStatement statement;
@@ -502,7 +502,7 @@ public:
 			//"procedure p1; Select p1 such that Calls*(p1, _)", //getAllCalls broken api
 			//"procedure p1; Select p1 such that Calls*(p1, \"SystemTestFour\")",
 			//"procedure p1, p2, p3; Select p1 such that Calls(p3, p2) and Calls(p2, \"SystemTestThree\") and Calls*(p3, \"SystemTestFour\") and Calls*(p1, p2)",
-			//"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")",
+			"procedure p1; Select p1 such that Calls*(_, \"SystemTestTwo\")",
 			
 
 			//frm sample source 6-v2 Next Queries
@@ -510,7 +510,7 @@ public:
 			//"assign a1, a2; if ifsOne, ifsTwo; while wOne, wTwo; stmt s; Select s such that Next(s, wOne) and Next(wOne, wTwo) and Next(wTwo,a1) and Next(a1, ifsOne)",
 			//"assign a1, a2; if ifs; while w; Select ifs such that Next*(a2, ifs) and Next*(ifs, w) and Next*(w, a1) and Next*(a1, a2)",
 			//"assign a; while w; if ifs; Select a Pattern a(_, _) and w(_, _) and ifs(_, _, _)",
-			"while w; Select w such that Next*(w, _)"
+		//	"while w; Select w such that Next*(w, _)"
 		};
 		vector<vector<string>> expected = {
 			//{ "SystemTestOne","SystemTestThree","SystemTestTwo" },
@@ -531,13 +531,13 @@ public:
 				answer = analyzer.runQueryEval();
 			}
 			else {
-				Logger::WriteMessage("Invalid Query in Source 6-V2");
+				Logger::WriteMessage("Invalid Query in Source 6");
 				Logger::WriteMessage(queries[i].c_str());
 				answer = {};
 			}
-			string testNo = "size error in Source 6-V2 in test ";
+			string testNo = "size error in Source 6 in test ";
 			testNo.append(to_string(i + 1));
-			string testNo_1 = "value error in Source 6-V2 in test ";
+			string testNo_1 = "value error in Source 6 in test ";
 			testNo_1.append(to_string(i + 1));
 			wstring error = wstring(testNo.begin(), testNo.end());
 			vector<string> result = answer;

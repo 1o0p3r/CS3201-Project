@@ -88,7 +88,7 @@ bool QueryValidator::isValidWith(string str) {
 				arg1Identity = extractIdentity(arg1);
 				if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING) && !resultBoolean) {
 					return false;
-				} else if ((arg2Identity != STRING_LITERAL) && (arg2Identity != NUMBER_STRING) && (arg2Identity != PROG_LINE_STRING) && resultBoolean) {
+				} else if ((arg1Identity != STRING_LITERAL) && (arg1Identity != NUMBER_STRING) && (arg1Identity != PROG_LINE_STRING) && resultBoolean) {
 					queryStatement.setInvalidQueryBoolean();
 					return true;
 				}
