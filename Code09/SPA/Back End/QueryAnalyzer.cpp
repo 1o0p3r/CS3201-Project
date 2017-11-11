@@ -42,7 +42,7 @@ enum patternValues
 
 enum resultType
 {
-	undefinedResultType, synonymResult, tupleResult, booleanResult
+	undefinedResultType, synonymResult, tupleResult, booleanResult, attrResult
 };
 
 enum patternExpType
@@ -113,6 +113,7 @@ void QueryAnalyzer::initResultTypeMap()
 	mapResultTypeValues["synonym"] = synonymResult;
 	mapResultTypeValues["BOOLEAN"] = booleanResult;
 	mapResultTypeValues["tuple"] = tupleResult;
+	mapResultTypeValues["attrRef"] = attrResult;
 }
 
 QueryAnalyzer::QueryAnalyzer() {
@@ -256,13 +257,14 @@ vector<string> QueryAnalyzer::rearrange(vector<string> cartVec,
 
 }
 
-void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string> &synonymEntities, vector<vector<tuple<int, int, string, string>>> &synLoc, vector<tuple<int, int, string, string>> &selectSynTableAttr)
+void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string>& synonymAttrRef, vector<string> &synonymEntities, vector<vector<tuple<int
+                                              , int, string, string, string>>>& synLoc, vector<tuple<int, int, string, string, string>>& selectSynTableAttr)
 {
 	int numSynTables = 0;
 	for (int i = 0; i < synonymTokens.size(); i++) {
 		auto searchInQueryTable = synTableMap.find(synonymTokens[i]);
 		if (searchInQueryTable != synTableMap.end()) { //if synonym in immediate table
-			selectSynTableAttr = vector<tuple<int, int, string, string>>();
+			selectSynTableAttr = vector<tuple<int, int, string, string,string>>();
 			auto searchInSelectSynMap = selectSynMap.find(get<TABLELOC>(searchInQueryTable->second)); //check if select clause has synonyms from same table
 			
 			if (searchInSelectSynMap == selectSynMap.end()) { //find synonyms from same table, insert at next row if not found,
@@ -272,7 +274,7 @@ void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vec
 				selectSynTableAttr.push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
-					synonymEntities[i],synonymTokens[i]));
+					synonymEntities[i],synonymTokens[i],synonymAttrRef[i]));
 			
 				synLoc.push_back(selectSynTableAttr);
 				numSynTables++;
@@ -282,24 +284,24 @@ void QueryAnalyzer::groupSynonymFromSameTable(vector<string> &synonymTokens, vec
 				synLoc[insertAtRow].push_back(make_tuple(
 					get<TABLELOC>(searchInQueryTable->second),
 					get<SYNVECLOC>(searchInQueryTable->second),
-					synonymEntities[i],synonymTokens[i]));
+					synonymEntities[i],synonymTokens[i],synonymAttrRef[i]));
 			}
 		} else {
-			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i],synonymTokens[i]) });
+			synLoc.push_back({ make_tuple(NOSYNENTRY,NOSYNENTRY,synonymEntities[i],synonymTokens[i],synonymAttrRef[i]) });
 			numSynTables++;
 
 		}
 	}
 }
 
-void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, string, string>>> &synLoc, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
+void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, string, string, string>>>& synLoc, vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap)
 {
 	int k = 0;
 	for (auto commonTableSyn : synLoc) { //synonyms from same table,
 
 		//record arrangement of synonym for rearrangement after cartesian product
 		for (auto entry : commonTableSyn) {
-			string synonym = get<3>(entry);
+			string synonym = get<SYNNAMELOC>(entry);
 			synCartMap.insert(make_pair(synonym, k));
 			k++;
 		}
@@ -312,15 +314,22 @@ void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, str
 
 			//append values to vector, ignore last element which is non-existant, used for maaping
 			int numElementsInTable = mergedQueryTable[get<TABLELOC>(commonTableSyn.front())].front().size()-1;
+			bool foundAttrRef = false;
 			for (int index = 0; index < numElementsInTable; index++) {
 				string appendSynValue;
 				for (auto concatSyn : commonTableSyn) {
 					string element = mergedQueryTable[get<TABLELOC>(concatSyn)][get<SYNVECLOC>(concatSyn)][index];
+					if (get<SYNATRREFLOC>(concatSyn) == "procName" && get<SYNENTITY>(concatSyn) == "call") {
+						element = pkbPtr.getProcCalledByStatement(stoi(element));
+						foundAttrRef = true;
+					}
 					appendSynValue.append(element);
 					appendSynValue.append(DELIMITER);		
 				}
 				appendSynValue.pop_back(); //remove last delimiter ","
 				vecAppendedSynValues.push_back(appendSynValue);
+			if(foundAttrRef)
+				vecAppendedSynValues = Util::removeDuplicates(vecAppendedSynValues);
 			}
 		} else {
 			//retrieve design entity values
@@ -344,9 +353,9 @@ void QueryAnalyzer::getCartesianProductResults(vector<string>& answer, vector<st
 			vector<string> vecCartProdstring;
 			for (auto& j : result) {
 				string concatCartProdString;
-				concatCartProdString.append(get<0>(j))
+				concatCartProdString.append(get<ARGONE>(j))
 				                    .append(DELIMITER)
-				                    .append(get<1>(j));
+				                    .append(get<ARGTWO>(j));
 				vecCartProdstring.push_back(concatCartProdString);
 			}
 			vecToCartProd = vecCartProdstring;
@@ -361,12 +370,14 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 {
 	auto tupleSynonyms = selectElement.getSelectSynonym();
 	auto tupleEntity = selectElement.getSelectEntity();
+	auto tupleAttrRef = selectElement.getSynAtrr();
 	vector<string> synonymTokens = Util::splitLine(tupleSynonyms, ',');
 	auto synonymEntities = Util::splitLine(tupleEntity, ',');
-	vector<vector<tuple<int,int,string,string>>> synLoc;
+	vector<string> synonymAttrRef = Util::splitLine(tupleAttrRef, ',');
+	vector<vector<tuple<int,int,string,string,string>>> synLoc;
 	vector<vector<string>> synTableConcatEntries;
 	unordered_map<string, int> synCartMap;
-	vector<tuple<int, int, string, string>> selectSynTableAttr;
+	vector<tuple<int, int, string, string,string>> selectSynTableAttr;
 
 	if (isQueryFalse()) {
 		answer = {};
@@ -374,7 +385,7 @@ void QueryAnalyzer::selectTuple(vector<string> &answer)
 	}
 
 	//init mapping of synonyms from same table
-	groupSynonymFromSameTable(synonymTokens, synonymEntities, synLoc, selectSynTableAttr);
+	groupSynonymFromSameTable(synonymTokens, synonymAttrRef, synonymEntities, synLoc, selectSynTableAttr);
 	concatResultsFromSameTable(synLoc, synTableConcatEntries, synCartMap);
 	getCartesianProductResults(answer, synonymTokens, synTableConcatEntries, synCartMap);
 	
@@ -403,7 +414,7 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 		case booleanResult:
 			return{ "true" };
 
-		case synonymResult: 
+		case synonymResult: case attrResult: 
 			selectSynonym(answer);
 			break;
 		
@@ -417,6 +428,8 @@ vector<string> QueryAnalyzer::analyzeClauseResults() {
 vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string selectEntity) {
 	vector<int> selectResultInt;
 	vector<string> answer;
+	vector<string> procAttrResult;
+	string attrName = selectElement.getSynAtrr();
 
 	switch (mapSelectValues[selectEntity]) {
 	case stmtSelect: //stmt
@@ -458,11 +471,17 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 		selectResultInt = pkbPtr.getStatementList();
 		break;
 	}
+
 	if (!selectResultInt.empty())
 		for (int i : selectResultInt)
 			answer.push_back(to_string(i));
 	if (!queryResult.empty()) {
-		answer = intersectionT(answer, queryResult);
+		auto temp = intersectionT(answer, queryResult);
+		if (selectElement.getSynAtrr() == "procName" && selectEntity == "call") {
+			for (auto candidate : temp)
+				procAttrResult.push_back(pkbPtr.getProcCalledByStatement(stoi(candidate)));
+			answer = Util::removeDuplicates(procAttrResult);
+		}
 	}
 	return answer;
 }

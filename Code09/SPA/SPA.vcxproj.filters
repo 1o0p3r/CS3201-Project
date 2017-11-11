@@ -65,7 +65,6 @@
     <ClInclude Include="Back End\UsesAnalyzer.h" />
     <ClInclude Include="Back End\NextAnalyzer.h" />
     <ClInclude Include="Back End\CallsStarAnalyzer.h" />
-    <ClInclude Include="Back End\Abstract_QA_API.h" />
     <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\PatternAnalyzer.h" />
     <ClInclude Include="Back End\WithAnalyzer.h" />
@@ -75,5 +74,6 @@
     <ClInclude Include="Back End\NextStarAnalyzer.h" />
     <ClInclude Include="AffectsAnalyzer.h" />
     <ClInclude Include="AffectsStarAnalyzer.h" />
+    <ClInclude Include="Back End\QaConstants.h" />
   </ItemGroup>
 </Project>

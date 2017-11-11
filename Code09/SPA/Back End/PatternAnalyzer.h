@@ -1,5 +1,5 @@
 #include "PKB.h"
-#include "Abstract_QA_API.h"
+#include "QaConstants.h"
 #include "QueryElement.h"
 #include "TupleHash.h"
 #include "Util.h"

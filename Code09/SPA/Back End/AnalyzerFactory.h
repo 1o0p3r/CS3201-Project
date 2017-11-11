@@ -1,5 +1,5 @@
 #pragma once
-#include "Abstract_QA_API.h"
+#include "QaConstants.h"
 
 #include <unordered_map>
 #include <tuple>

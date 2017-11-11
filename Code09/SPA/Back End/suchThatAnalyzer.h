@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Abstract_QA_API.h"
+#include "QaConstants.h"
 #include "TupleHash.h"
 #include "PKB.h"
 #include "QueryElement.h"

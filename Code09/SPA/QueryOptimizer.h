@@ -3,7 +3,7 @@
 #include <vector>
 #include <unordered_map>
 #include <queue>
-#include "Abstract_QA_API.h"
+#include "QaConstants.h"
 #include "PKB.h"
 #include <functional>
 

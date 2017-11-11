@@ -16,7 +16,7 @@
 #include "Util.h"
 #include "WithAnalyzer.h"
 #include "CallsStarAnalyzer.h"
-#include "Abstract_QA_API.h"
+#include "QaConstants.h"
 #include "QueryOptimizer.h"
 #include "NextStarAnalyzer.h"
 #include "AffectsAnalyzer.h"
@@ -77,10 +77,11 @@ public:
 	void selectSynonym(vector<string> &answer);
 	void setClauseFalse();
 	vector<string> rearrange(vector<string>, vector<string>, const unordered_map<string,int> &);
-	void groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string> &synonymEntities,
-	                               vector<vector<tuple<int, int, string, string>>> &synLoc,
-	                               vector<tuple<int, int, string, string>> &selectSynTableAttr);
-	void concatResultsFromSameTable(vector<vector<tuple<int, int, string, string>>> &synLoc,
+	void groupSynonymFromSameTable(vector<string> &synonymTokens, vector<string>& synonymAttrRef,
+	                               vector<string> &synonymEntities,
+	                               vector<vector<tuple<int, int, string, string, string>>>& synLoc, vector<tuple<int, int, string, string, string>>&
+	                               selectSynTableAttr);
+	void concatResultsFromSameTable(vector<vector<tuple<int, int, string, string, string>>>& synLoc,
 	                                vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap);
 	void getCartesianProductResults(vector<string>& answer, vector<string> &synonymTokens,
 	                                vector<vector<string>> &synTableConcatEntries, unordered_map<string, int> &synCartMap);
