@@ -300,7 +300,6 @@ public:
 
 	/**
 	Creates the CFG of the program after one parsing
-
 	@returns void
 	*/
 	void createCFG();
@@ -316,10 +315,11 @@ public:
 	@returns a vector containing the statment numbers that are the previous of the input statement
 	*/
 	vector<int> getPrevious(int stmtNum);
-
+	/**
+	Get all the statements who has a next statement
+	@returns a vector containing all the statements that has a next
+	*/
 	vector<int> getAllNext();
-	vector<int> getAllParent();
-
 	/**
 	Sets the stmt type of each stmt
 
@@ -328,16 +328,6 @@ public:
 	@returns void
 	*/
 	void setStatementType(int statementNum, string type);
-
-	/**
-	@Niv,
-	Stub functions for Next, 
-	*/
-	//vector<int> getNext(int statementNum);
-	//vector<int> getPrevious(int statementNum);
-	
-	//return all prog_lines that leads to another statement directly executed in the same procedure
-	//vector<int> getAllNext(); //next(n1,n2) , returns all possilble n1 values. 
 
 	/**
 	Gets all the while statements
@@ -416,7 +406,10 @@ public:
 	@returns a vector of statements that affects the literal
 	*/
 	vector<int> getAffectsSecondLiteral(int statementNum);
-
+	/**
+	Gets Affects(synonym, synonym)
+	@returns a tuple of vectors of statements that correspond to the first and second synonyms
+	*/
 	tuple<vector<int>, vector<int>> getAffectsTwoSynonyms();
 
 	/**
@@ -444,6 +437,10 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternWhile(string variable);
+	/**
+	Gets all the while statement numbers with their control variable
+	@returns a tuple of vectors containing all the statement number and the their control variable
+	*/
 	tuple<vector<int>, vector<string>> getAllPatternWhile();
 	/**
 	Adds a if pattern to PKB
@@ -457,33 +454,87 @@ public:
 	@returns a vector containing all the statement number for the input variable
 	*/
 	vector<int> getPatternIf(string variable);
+	/**
+	Gets all the if statement numbers with their control variable
+	@returns a tuple of vectors containing all the statement number and the their control variable
+	*/
 	tuple<vector<int>, vector<string>> getAllPatternIf();
-	tuple<vector<int>, vector<string>> getPatternVariable(string varName);
 	/**
 	Gets all the statement number and expressions that appears for a variable
 	@param varNamr name of variable
 	@returns a vector of tuple containing all the (statement number, expression) pairs for the input variable
 	*/
+	tuple<vector<int>, vector<string>> getPatternVariable(string varName);
+	/**
+	Gets all the statement number and variables that matches the whole expression
+	@param expression expression
+	@returns a tuple of vectors containing all the (statement number, variables) pairs for the input expression
+	*/
 	tuple<vector<int>, vector<string>> getPatternExpression(string expression);
+	/**
+	Gets all the statement number and variables that matches part of a expression
+	@param expression expression to match
+	@returns a tuple of vectors containing all the (statement number, variables) pairs for the input expression
+	*/
 	tuple<vector<int>, vector<string>> getPatternExpressionSubstring(string expression);
+	/**
+	Gets all the statement numbers that matches a part of the expression and has the variable
+	@param variable name of variable
+	@param expression expression to match
+	@returns a vector of statements that matches a part of the expression and modifies the variable
+	*/
 	vector<int> getPatternVariableExpressionSubstring(string variable, string expression);
+	/**
+	Gets all the statement numbers that matches the expression and has the variable
+	@param variable name of variable 
+	@param expression expression to match
+	@returns a vector of statements that matches the expression and modifies the variable
+	*/
 	vector<int> getPatternVariableExpression(string variable, string expression);
+	/**
+	Get the number of follows relationship
+	@returns the number of follows relationship
+	*/
 	int getFollowsCount();
-
+	/**
+	Get the number of follow* relationship
+	@returns the number of follow* relationship
+	*/
 	int getFollowStarCount();
-
+	/**
+	Get the number of parent relationship
+	@returns the number of parent relationship
+	*/
 	int getParentCount();
-
+	/**
+	Get the number of parent star relationship
+	@returns the number of parent star relationship
+	*/
 	int getParentStarCount();
-
+	/**
+	Get the number of modify relationship
+	@returns the number of modify relationship
+	*/
 	int getModifyCount();
-
+	/**
+	Get the number of procedure modify relationship
+	@returns the number of procedure modify relationship
+	*/
 	int getProcModifyCount();
-
+	/**
+	Get the number of use relationship
+	@returns the number of use relationship
+	*/
 	int getUseCount();
-
+	/**
+	Get the number of procedure use relationship
+	@returns the number of procedure use relationship
+	*/
 	int getProcUseCount();
-
+	/**
+	Get the number of next relationship
+	@returns the number of next relationship
+	*/
 	int getNextCount();
 
 	bool getNextStarTwoLiterals(int s1, int s2);

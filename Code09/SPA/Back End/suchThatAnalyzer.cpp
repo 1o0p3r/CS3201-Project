@@ -395,25 +395,31 @@ vector<string> suchThatAnalyzer::getArgEntityResults(const string& argEnt) {
 	
 }
 
-tuple<vector<string>,vector<string>> suchThatAnalyzer::validatePKBResultsInt(vector<int> &v1, vector<int> &v2) {
-	vector<string> arg1EntityValues = getArgEntityResults(arg1Entity);
-	vector<string> arg2EntityValues = getArgEntityResults(arg2Entity);
+tuple<vector<string>,vector<string>> suchThatAnalyzer::validatePKBResultsInt(vector<int> v1, vector<int> v2) {
+	
+	vector<string> arg1EntityValues;
+	vector<string> arg2EntityValues;
 
-	unordered_set<string> arg1EntResults(make_move_iterator(arg1EntityValues.begin()),make_move_iterator(arg1EntityValues.end()));
-	unordered_set<string> arg2EntResults(make_move_iterator(arg2EntityValues.begin()),make_move_iterator(arg2EntityValues.end()));
+	if(arg1 != WILDCARD_SYMBOL)
+		arg1EntityValues = getArgEntityResults(arg1Entity);
+	if(arg2 != WILDCARD_SYMBOL)
+		arg2EntityValues = getArgEntityResults(arg2Entity);
+
+	unordered_set<string> arg1EntResults(arg1EntityValues.begin(), arg1EntityValues.end());
+	unordered_set<string> arg2EntResults(arg2EntityValues.begin(),arg2EntityValues.end());
 	vector<string> arg1ValidatedResults; 
 	vector<string> arg2ValidatedResults;  
 
 	for (int i=0; i <  v1.size(); i++) {
-		if(arg1EntResults.find(to_string(v1[i])) != arg1EntResults.end() && 
+		if (arg2 == WILDCARD_SYMBOL && arg1EntResults.find(to_string(v1[i])) != arg1EntResults.end())
+		arg1ValidatedResults.push_back(to_string(v1[i]));
+		else if (arg1 == WILDCARD_SYMBOL && arg2EntResults.find(to_string(v2[i])) != arg2EntResults.end())
+		arg2ValidatedResults.push_back(to_string(v2[i]));
+		else if(arg1EntResults.find(to_string(v1[i])) != arg1EntResults.end() && 
 			arg2EntResults.find(to_string(v2[i])) != arg2EntResults.end()) {
 			arg1ValidatedResults.push_back(to_string(v1[i]));
 			arg2ValidatedResults.push_back(to_string(v2[i]));
 		} 
-		else if(arg2 == WILDCARD_SYMBOL && arg1EntResults.find(to_string(v1[i])) != arg1EntResults.end())
-			arg1ValidatedResults.push_back(to_string(v1[i]));
-		else if(arg1 == WILDCARD_SYMBOL && arg2EntResults.find(to_string(v2[i])) != arg2EntResults.end())
-			arg2ValidatedResults.push_back(to_string(v2[i]));
 	}
 	if (arg2 == WILDCARD_SYMBOL && !arg1ValidatedResults.empty())
 		arg1ValidatedResults = removeDuplicates(arg1ValidatedResults);
