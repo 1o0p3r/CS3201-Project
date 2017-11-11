@@ -328,9 +328,9 @@ void QueryAnalyzer::concatResultsFromSameTable(vector<vector<tuple<int, int, str
 				}
 				appendSynValue.pop_back(); //remove last delimiter ","
 				vecAppendedSynValues.push_back(appendSynValue);
-			if(foundAttrRef)
-				vecAppendedSynValues = Util::removeDuplicates(vecAppendedSynValues);
 			}
+			if (foundAttrRef)
+				vecAppendedSynValues = Util::removeDuplicates(vecAppendedSynValues);
 		} else {
 			//retrieve design entity values
 			vecAppendedSynValues = validateResult({}, get<SYNENTITY>(commonTableSyn.front()));
@@ -482,6 +482,8 @@ vector<string> QueryAnalyzer::validateResult(vector<string> queryResult, string 
 				procAttrResult.push_back(pkbPtr.getProcCalledByStatement(stoi(candidate)));
 			answer = Util::removeDuplicates(procAttrResult);
 		}
+		else
+			answer = temp;
 	}
 	return answer;
 }

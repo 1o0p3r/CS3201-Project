@@ -565,7 +565,8 @@ public:
 			//"stmt s; while w; Select <s, w> such that Follows(s, w)",
 			//"prog_line n1, n2; Select n1 such that Next*(n1, n2) and Uses(n2, \"b\") with n2 = 43"
 			//"stmt s, s1; Select <s, s1> such that Affects*(s, s1)"
-			"call c; Select <c.procName,c.procName> with c.procName = \"Second\""
+			//"call c; Select <c.procName,c.procName> with c.procName = \"Second\"",
+			"while w; if ifs; variable v; Select v such that Modifies(w, v) and Modifies(ifs, v)"			
 
 		};
 		vector<vector<string>> expected = {
@@ -598,7 +599,8 @@ public:
 			//	"83 86","83 89","83 91","83 92","83 93","84 84","84 89","84 91","84 92","84 93","86 86","86 89","86 91","86 92",
 			//	"86 93","89 91","89 92","89 93","9 11","9 14","9 15","9 16","9 17","9 19","9 21","9 22","9 23","9 25","9 27","9 29",
 			//	"9 31","9 33","9 34","9 35","9 5","9 8","9 9","91 91","91 92","91 93","92 91","92 92","92 93","93 91","93 92","93 93", }
-			{"Second Second"}
+			//{"Second Second"},
+			{"a", "b", "c", "d", "e", "f", "g"}
 
 			
 		};
