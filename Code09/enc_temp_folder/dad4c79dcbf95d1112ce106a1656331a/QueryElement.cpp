@@ -16,7 +16,7 @@ QueryElement::QueryElement(string entity, string synonym, string type, string at
 	synAttr = attrName;
 }
 
-//Such that: 8 parameteres
+//Such that: 7 parameteres
 QueryElement::QueryElement(string arg1, string arg1Type, string arg1Entity, string arg2, string arg2Type, string arg2Entity, string rel, string clause) {
 	argumentOneSuchThat = arg1;
 	argumentOneTypeSuchThat = arg1Type;

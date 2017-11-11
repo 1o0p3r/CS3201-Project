@@ -781,19 +781,19 @@ namespace UnitTesting
 			Assert::IsTrue(queryValidator.parseInput(query));
 			selectQueryElement = QueryElement("empty", "empty", "BOOLEAN", "empty");
 			expectedQueryStatement.addSelectQuery(selectQueryElement);
-			suchThatQueryElement = QueryElement("3", "number", "empty", "a", "variable", "empty", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("3", "number", "empty", "a", "variable", "empty", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("a", "synonym", "assign", "v", "synonym", "variable", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("a", "synonym", "assign", "v", "synonym", "variable", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("x", "variable", "empty", "x", "variable", "empty", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("x", "variable", "empty", "x", "variable", "empty", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("s", "synonym", "stmt", "v", "synonym", "variable", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("s", "synonym", "stmt", "v", "synonym", "variable", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("w", "synonym", "while", "v", "synonym", "variable", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("w", "synonym", "while", "v", "synonym", "variable", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("i", "synonym", "if", "v", "synonym", "variable", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("i", "synonym", "if", "v", "synonym", "variable", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
-			suchThatQueryElement = QueryElement("p", "synonym", "procedure", "v", "synonym", "variable", "Modifies", "suchThat");
+			suchThatQueryElement = QueryElement("p", "synonym", "procedure", "v", "synonym", "variable", "Modifies");
 			expectedQueryStatement.addNormalQueryElement(suchThatQueryElement);
 			queryStatement = queryValidator.getQueryStatement();
 
