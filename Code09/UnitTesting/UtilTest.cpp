@@ -25,6 +25,9 @@ namespace UnitTesting {
 			string test = "This is  a test";
 			vector<string> actual = { "This", "is", "a", "test" };
 			Assert::IsTrue(actual == Util::splitLine(test,' '));
+			actual = { "apple" };
+			Assert::IsTrue(actual == Util::splitLine("apple;", ';'));
+			Assert::IsTrue(actual == Util::splitLine("apple", ';'));
 		}
 
 		TEST_METHOD(isValidName) {

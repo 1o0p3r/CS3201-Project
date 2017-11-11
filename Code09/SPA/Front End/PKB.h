@@ -559,6 +559,8 @@ public:
 
 	tuple<vector<int>, vector<int>> getAffectStarTwoSynonyms();
 
+	int maxLevel;
+
 private:
 	Follow follow;
 	Parent parent;
