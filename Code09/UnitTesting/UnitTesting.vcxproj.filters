@@ -12,19 +12,12 @@
     <ClCompile Include="PKBTest.cpp" />
     <ClCompile Include="QueryValidatorTest.cpp" />
     <ClCompile Include="RelationshipTableTest.cpp" />
-    <ClCompile Include="QueryAnalyzerTest.cpp" />
-    <ClCompile Include="ModifiesAnalyzerTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
     <ClCompile Include="JoinAlgorithmTest.cpp" />
-    <ClCompile Include="UsesAnalyzerTest.cpp" />
     <ClCompile Include="NextTest.cpp" />
-    <ClCompile Include="ParentAnalyzerTest.cpp" />
-    <ClCompile Include="CallsAnalyzerTest.cpp" />
-    <ClCompile Include="PatternAnalyzerTest.cpp" />
     <ClCompile Include="AffectsTest.cpp" />
-    <ClCompile Include="SelectTupleTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

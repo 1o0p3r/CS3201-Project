@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClCompile Include="Back End\AffectsAnalyzer.cpp" />
     <ClCompile Include="Back End\AffectsStarAnalyzer.cpp" />
-    <ClCompile Include="Back End\AnalyzerFactory.cpp" />
     <ClCompile Include="Back End\CallsAnalyzer.cpp" />
     <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
     <ClCompile Include="Back End\FollowsAnalyzer.cpp" />
@@ -51,7 +50,6 @@
     <ClInclude Include="Back End\AffectsAnalyzer.h" />
     <ClInclude Include="Back End\AffectsStarAnalyzer.h" />
     <ClInclude Include="Back End\QaConstants.h" />
-    <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\CallsAnalyzer.h" />
     <ClInclude Include="Back End\CallsStarAnalyzer.h" />
     <ClInclude Include="Back End\FollowsAnalyzer.h" />

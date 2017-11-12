@@ -27,7 +27,6 @@
     <ClCompile Include="Back End\UsesAnalyzer.cpp" />
     <ClCompile Include="Back End\NextAnalyzer.cpp" />
     <ClCompile Include="Back End\CallsStarAnalyzer.cpp" />
-    <ClCompile Include="Back End\AnalyzerFactory.cpp" />
     <ClCompile Include="Back End\PatternAnalyzer.cpp" />
     <ClCompile Include="Back End\WithAnalyzer.cpp" />
     <ClCompile Include="Back End\WithHandler.cpp" />
@@ -65,7 +64,6 @@
     <ClInclude Include="Back End\UsesAnalyzer.h" />
     <ClInclude Include="Back End\NextAnalyzer.h" />
     <ClInclude Include="Back End\CallsStarAnalyzer.h" />
-    <ClInclude Include="Back End\AnalyzerFactory.h" />
     <ClInclude Include="Back End\PatternAnalyzer.h" />
     <ClInclude Include="Back End\WithAnalyzer.h" />
     <ClInclude Include="Back End\WithHandler.h" />

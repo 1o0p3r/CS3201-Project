@@ -577,21 +577,16 @@ public:
 		vector<string> queries = {
 			//"if ifs; prog_line n; Select BOOLEAN such that Follows*(ifs, n)",
 		//	"call c; while w; if ifs; Select <c, ifs, w> such that Follows*(ifs, w)"
-			//"assign a1; stmt s; Select s such that Affects(a1, s)",
-			//"assign a2;  Select a2 such that Affects*(a2, _)"
-		/*	"assign a1; Select a1 such that Affects*(_ , a1)"*/
-
+			
 
 		};
 		vector<vector<string>> expected = {
 			//{"true"},
-		/*	{ "119 102 105","119 46 50","120 102 105","120 46 50","122 102 105","122 46 50",
+			{ "119 102 105","119 46 50","120 102 105","120 46 50","122 102 105","122 46 50",
 				"124 102 105","124 46 50","125 102 105","125 46 50","129 102 105","129 46 50",
 				"16 102 105","16 46 50","18 102 105","18 46 50","22 102 105","22 46 50","6 102 105",
-				"6 46 50","64 102 105","64 46 50","66 102 105","66 46 50","99 102 105","99 46 50" }
-*/			
-			//{}, // invalid just for debuging
-			{}
+				"6 46 50","64 102 105","64 46 50","66 102 105","66 46 50","99 102 105","99 46 50"
+			}
 		};
 		validator = QueryValidator(); //re-init validator.
 		for (int i = 0; i < queries.size(); i++) {

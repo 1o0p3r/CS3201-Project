@@ -163,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AffectsTest.cpp" />
-    <ClCompile Include="CallsAnalyzerTest.cpp" />
     <ClCompile Include="FollowsAnalyzerTest.cpp" />
     <ClCompile Include="FollowsStarAnalyzerTest.cpp" />
     <ClCompile Include="CallsTest.cpp" />
@@ -171,24 +170,18 @@
     <ClCompile Include="JoinAlgorithmTest.cpp" />
     <ClCompile Include="ModifyTest.cpp" />
     <ClCompile Include="NextTest.cpp" />
-    <ClCompile Include="ParentAnalyzerTest.cpp" />
     <ClCompile Include="ParentStarAnalyzer.cpp" />
     <ClCompile Include="ParentTest.cpp" />
     <ClCompile Include="ParserTest.cpp" />
-    <ClCompile Include="PatternAnalyzerTest.cpp" />
     <ClCompile Include="PKBTest.cpp" />
     <ClCompile Include="QueryValidatorTest.cpp" />
     <ClCompile Include="RelationshipTableTest.cpp" />
-    <ClCompile Include="QueryAnalyzerTest.cpp" />
-    <ClCompile Include="ModifiesAnalyzerTest.cpp" />
-    <ClCompile Include="SelectTupleTest.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="UsesAnalyzerTest.cpp" />
     <ClCompile Include="UseTest.cpp" />
     <ClCompile Include="UtilTest.cpp" />
   </ItemGroup>
