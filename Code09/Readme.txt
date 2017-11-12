@@ -12,5 +12,3 @@ How to test testcases:
 	2) Click Test > Run > All Tests
 
 Visual Studio 2015(Release)
-
-FrontEndTest unit test does not pass as it is being worked on for iteration 2
